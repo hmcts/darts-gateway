@@ -1,0 +1,12 @@
+#!groovy
+
+@Library("Infrastructure")
+
+def type = "java"
+def product = "darts"
+def component = "gateway"
+
+withPipeline(type, product, component) {
+  enableSlackNotifications('#darts-builds')
+}
+
