@@ -32,7 +32,7 @@ public class GatewayController {
         value = "/validate",
         consumes = MediaType.TEXT_XML_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ValidateResult> validate(@RequestBody String sdtRequest) {
+    public ResponseEntity<ValidateResult> validate(@RequestBody String dartsRequest) {
 
         ValidateResult result = new ValidateResult(true, "");
 
@@ -41,7 +41,7 @@ public class GatewayController {
 
         while (serviceListIterator.hasNext() && result.isValid()) {
             service = serviceListIterator.next();
-            result = service.validateContent(sdtRequest);
+            result = service.validateContent(dartsRequest);
         }
 
         return ResponseEntity.ok().body(result);

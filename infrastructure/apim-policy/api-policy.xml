@@ -9,7 +9,7 @@
         <set-variable name="origRequest" value="@(context.Request.Body.As<string>(preserveContent: true))" />
         <!--
             Check if the request contains a certificate.  If it does search the entries in the subject field for the part that
-            specifies the SDT system id (CN=X#######_## where X is 'C' or 'P' and # is a digit) and extract the system id from it.
+            specifies the system id (CN=X#######_## where X is 'C' or 'P' and # is a digit) and extract the system id from it.
 
             A regular expression is used to identify the part that specifies the system id.
 

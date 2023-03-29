@@ -3,6 +3,7 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
+  id 'idea'
   id "io.freefair.lombok" version "6.6.1"
   id 'io.spring.dependency-management' version '1.1.0'
   id 'org.springframework.boot' version '3.0.5'
@@ -203,6 +204,7 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.5.1'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.darts.Application'
@@ -220,6 +222,14 @@ rootProject.tasks.named("processSmokeTestResources") {
   duplicatesStrategy = 'include'
 }
 
+rootProject.tasks.named("processIntegrationTestResources") {
+  duplicatesStrategy = 'include'
+}
+
+rootProject.tasks.named("processFunctionalTestResources") {
+  duplicatesStrategy = 'include'
+}
+
 wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+  distributionType = Wrapper.DistributionType.ALL
 }

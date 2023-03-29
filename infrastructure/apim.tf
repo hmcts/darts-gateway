@@ -61,7 +61,7 @@ module "api_mgmt_product" {
 # Uses output variable from api_mgmt_product to set product_id
 # content_format needs to be set to wsdl-link as specs are in WSDL format
 module "api_mgmt_api" {
-  source         = "git@github.com:hmcts/cnp-module-api-mgmt-api?ref=api_type"
+  source         = "git@github.com:hmcts/cnp-module-api-mgmt-api?ref=master"
   name           = local.api_mgmt_api_name
   display_name   = "Darts Gateway API"
   api_mgmt_name  = local.api_mgmt_name
