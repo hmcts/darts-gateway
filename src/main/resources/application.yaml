@@ -19,7 +19,7 @@ spring:
   config:
     import: "optional:configtree:/mnt/secrets/darts/"
   application:
-    name: Spring Boot Template
+    name: Darts Gateway
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
@@ -45,3 +45,47 @@ spring:
 azure:
   application-insights:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
+validate:
+  threatening-content-rules:
+    - name: "asciiControlCharacters"
+      pattern: "[\\x00-\\x1F\\x7F&&[^\\x0A]&&[^\\x0D]]"
+      message: "Text contains ASCII control character"
+    - name: "cdata"
+      pattern: "(?i)<\\s*!\\s*\\[\\s*CDATA\\s*\\["
+      message: "Text contains CDATA"
+    - name: "doubleComma"
+      pattern: ",,"
+      message: "Text contains double comma"
+    - name: "docType"
+      pattern: "(?i)<\\s*!\\s*DOCTYPE"
+      message: "Text contains DOCTYPE"
+    - name: "orAttack"
+      pattern: "(?i)'[\\s]*or"
+      message: "Text contains OR attack"
+    - name: "percentageAttack"
+      pattern: "%[0-9A-Fa-f]"
+      message: "Text contains percentage attack"
+    - name: "sqlDeleteAttack"
+      pattern: "(?i)'[\\s]*;[\\s]*delete"
+      message: "Text contains SQL delete attack"
+    - name: "sqlDropTableAttack"
+      pattern: "(?i)'[\\s]*;[\\s]*drop[\\s]*table"
+      message: "Text contains SQL drop table attack"
+    - name: "sqlInsertAttack"
+      pattern: "(?i)'[\\s]*;[\\s]*insert"
+      message: "Text contains SQL insert attack"
+    - name: "sqlServerShutdownAttack"
+      pattern: "(?i)'[\\s]*;[\\s]*shutdown[\\s]*with[\\s]*nowait"
+      message: "Text contains SQL server shutdown attack"
+    - name: "sqlUpdateAttack"
+      pattern: "(?i)'[\\s]*;[\\s]*update"
+      message: "Text contains SQL update attack"
+    - name: "colonEquals"
+      pattern: ":="
+      message: "Text contains colon equals"
+  xml-complexity:
+    max-nodes: 1370000
+    max-levels-descendant-nodes: 2000
+    max-child-nodes-per-node: 2000
+    max-attributes-per-node: 200

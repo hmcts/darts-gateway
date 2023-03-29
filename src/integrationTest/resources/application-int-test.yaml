@@ -1,0 +1,7 @@
+# Override properties in application.yaml for integration tests
+validate:
+  xml-complexity:
+    max-nodes: 10
+    max-levels-descendant-nodes: 2
+    max-child-nodes-per-node: 3
+    max-attributes-per-node: 4
