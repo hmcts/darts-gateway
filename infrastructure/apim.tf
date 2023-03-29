@@ -51,10 +51,3 @@ module "api-mgmt-api-policy" {
   api_name               = module.api_mgmt_api.name
   api_policy_xml_content = data.local_file.api_policy.content
 }
-
-data "azurerm_api_management" "cft-api-mgmt" {
-  name                = local.api_mgmt_name
-  resource_group_name = local.api_mgmt_resource_group
-}
-
-data "azuread_client_config" "current" {}
