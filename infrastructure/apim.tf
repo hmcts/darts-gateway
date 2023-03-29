@@ -1,41 +1,23 @@
 locals {
-  key_vault_name = "${var.product}-${var.env}"
+  key_vault_name           = "${var.product}-${var.env}"
   key_vault_resource_group = "${var.product}-service-${var.env}"
-  api_mgmt_name = "${var.env}" == "aat" ? "cft-api-mgmt-stg" : "cft-api-mgmt-${var.env}"
-  api_mgmt_resource_group = "cft-${var.env}-network-rg"
-  api_mgmt_product_name = "${var.product}-${var.component}"
-  api_mgmt_api_name = "${var.product}-${var.component}-api"
-  api_base_path = "${var.product}"
-  url_darts_gateway = "http://darts-gateway-${var.env}.service.core-compute-${var.env}.internal"
-  url_swagger = "https://raw.githubusercontent.com/hmcts/darts-gateway/demo/src/main/resources/test.wsdl"
+  api_mgmt_name            = "${var.env}" == "aat" ? "cft-api-mgmt-stg" : "cft-api-mgmt-${var.env}"
+  api_mgmt_resource_group  = "cft-${var.env}-network-rg"
+  api_mgmt_product_name    = "${var.product}-${var.component}"
+  api_mgmt_api_name        = "${var.product}-${var.component}-api"
+  api_base_path            = var.product
+  url_darts_gateway        = "http://darts-gateway-${var.env}.service.core-compute-${var.env}.internal"
+  url_swagger              = "https://raw.githubusercontent.com/hmcts/darts-gateway/demo/src/main/resources/test.wsdl"
 
   key_vault_subscription_id = {
-    sbox = {
-      subscription = "bf308a5c-0624-4334-8ff8-8dca9fd43783"
+    stg = {
+      subscription = "74dacd4f-a248-45bb-a2f0-af700dc4cf68"
     }
-    perftest = {
-      subscription = "7a4e3bd5-ae3a-4d0c-b441-2188fee3ff1c"
-    }
-    aat = {
-      subscription = "1c4f0704-a29e-403d-b719-b90c34ef14c9"
-    }
-    ithc = {
-      subscription = "7a4e3bd5-ae3a-4d0c-b441-2188fee3ff1c"
-    }
-    ptlsbox = {
-      subscription = "1497c3d7-ab6d-4bb7-8a10-b51d03189ee3"
-    }
-    preview = {
-      subscription = "1c4f0704-a29e-403d-b719-b90c34ef14c9"
-    }
-    ptl = {
-      subscription = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
-    }
-    prod = {
-      subscription = "8999dec3-0104-4a27-94ee-6588559729d1"
+    dev = {
+      subscription = "867a878b-cb68-4de5-9741-361ac9e178b6"
     }
     demo = {
-      subscription = "1c4f0704-a29e-403d-b719-b90c34ef14c9"
+      subscription = "c68a4bed-4c3d-4956-af51-4ae164c1957c"
     }
   }
 }
