@@ -1,6 +1,6 @@
 locals {
-  api_mgmt_name           = "${var.env}" == "aat" ? "cft-api-mgmt-stg" : "cft-api-mgmt-${var.env}"
-  api_mgmt_resource_group = "cft-${var.env}-network-rg"
+  api_mgmt_name           = "sds-api-mgmt-${var.env}"
+  api_mgmt_resource_group = "ss-${var.env}-network-rg"
   api_mgmt_product_name   = "${var.product}-${var.component}"
   api_mgmt_api_name       = "${var.product}-${var.component}-api"
   api_base_path           = var.product
