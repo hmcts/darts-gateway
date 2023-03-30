@@ -6,7 +6,11 @@ def type = "java"
 def product = "darts"
 def component = "gateway"
 
+def branchesToSync = ['demo', 'sandbox']
+
 withPipeline(type, product, component) {
   enableSlackNotifications('#darts-builds')
+  
+  syncBranchesWithMaster(branchesToSync)
 }
 
