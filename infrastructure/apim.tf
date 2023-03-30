@@ -1,10 +1,10 @@
 locals {
-  api_mgmt_name           = "sds-api-mgmt-sbox"
-  api_mgmt_resource_group = "ss-sbox-network-rg"
+  api_mgmt_name           = "sds-api-mgmt-${var.env}"
+  api_mgmt_resource_group = "ss-${var.env}-network-rg"
   api_mgmt_product_name   = "${var.product}-${var.component}"
   api_mgmt_api_name       = "${var.product}-${var.component}-api"
   api_base_path           = var.product
-  url_darts_gateway       = "http://darts-gateway-sbox.service.core-compute-sbox.internal"
+  url_darts_gateway       = "http://darts-gateway-${var.env}.service.core-compute-${var.env}.internal"
   url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/test.wsdl"
 }
 
