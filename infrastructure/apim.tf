@@ -46,7 +46,7 @@ data "local_file" "api_schema" {
   filename = "${path.module}/../src/main/resources/darts-gateway-schema.xml"
 }
 
-resource "azurerm_api_management_api_schema" "example" {
+resource "azurerm_api_management_api_schema" "darts-gateway-schema" {
   api_name            = module.api_mgmt_api.name
   api_management_name = local.api_mgmt_name
   resource_group_name = local.api_mgmt_resource_group
