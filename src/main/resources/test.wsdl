@@ -58,7 +58,7 @@
   </wsdl:binding>
   <wsdl:service name="CountriesPortService">
     <wsdl:port binding="tns:CountriesPortSoap11" name="CountriesPortSoap11">
-      <soap:address location="http://darts-gateway-demo.service.core-compute-demo.internal"/>
+      <soap:address location="http://darts-gateway-stg.service.core-compute-stg.internal"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

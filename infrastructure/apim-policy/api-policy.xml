@@ -109,10 +109,10 @@
             https://learn.microsoft.com/en-us/azure/api-management/validation-policies#schemas-for-content-validation
             https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_schema
         -->
-        <validate-content unspecified-content-type-action="prevent" max-size="102400" size-exceeded-action="prevent" errors-variable-name="validateContentErrors">
+        <!-- <validate-content unspecified-content-type-action="prevent" max-size="102400" size-exceeded-action="prevent" errors-variable-name="validateContentErrors">
             <content-type-map any-content-type-value="text/xml" />
             <content type="text/xml" validate-as="soap" action="prevent" schema-id="darts-gateway-schema" />
-        </validate-content>
+        </validate-content> -->
     </inbound>
     <backend>
         <base />
