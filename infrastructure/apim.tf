@@ -42,19 +42,6 @@ data "local_file" "api_policy" {
   filename = "${path.module}/apim-policy/api-policy.xml"
 }
 
-data "local_file" "api_schema" {
-  filename = "${path.module}/../src/main/resources/darts-gateway-schema.xml"
-}
-
-resource "azurerm_api_management_api_schema" "darts-gateway-schema" {
-  api_name            = module.api_mgmt_api.name
-  api_management_name = local.api_mgmt_name
-  resource_group_name = local.api_mgmt_resource_group
-  schema_id           = "darts-gateway-schema"
-  content_type        = "application/vnd.ms-azure-apim.xsd+xml"
-  value               = data.local_file.api_schema.content
-}
-
 # Include CNP module for setting up a policy on an API
 # Uses output variable from api_mgmt_api to set api_name
 module "api-mgmt-api-policy" {
