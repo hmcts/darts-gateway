@@ -1,0 +1,853 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<definitions name="DARTSService" targetNamespace="http://com.synapps.mojdarts.service.com" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://com.synapps.mojdarts.service.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <types>
+    <xsd:schema />
+    <xs:schema xmlns:tns="http://rt.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-rt="http://rt.fs.documentum.emc.com/" elementFormDefault="unqualified" targetNamespace="http://rt.fs.documentum.emc.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <!--FROM: 'DARTSService_schema1.xsd' BEGIN-->
+      <xs:element name="ServiceException" type="dfs-rt:ServiceException" />
+      <xs:complexType name="ServiceException">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="exceptionBean" nillable="true" type="dfs-rt:DfsExceptionHolder" />
+          <xs:element minOccurs="0" name="message" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="messageArgs" nillable="true" type="xs:anyType" />
+          <xs:element minOccurs="0" name="messageId" type="xs:string" />
+          <xs:element minOccurs="0" name="stackTraceAsString" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DfsExceptionHolder">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="attribute" nillable="true" type="dfs-rt:DfsAttributeHolder" />
+          <xs:element minOccurs="0" name="exceptionClass" type="xs:string" />
+          <xs:element minOccurs="0" name="genericType" type="xs:string" />
+          <xs:element minOccurs="0" name="message" type="xs:string" />
+          <xs:element minOccurs="0" name="messageId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="stackTrace" nillable="true" type="dfs-rt:StackTraceHolder" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DfsAttributeHolder">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="type" type="xs:string" />
+          <xs:element minOccurs="0" name="value" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="StackTraceHolder">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="className" type="xs:string" />
+          <xs:element minOccurs="0" name="fileName" type="xs:string" />
+          <xs:element name="lineNumber" type="xs:int" />
+          <xs:element minOccurs="0" name="methodName" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <!--FROM: 'DARTSService_schema1.xsd' END-->
+    </xs:schema>
+    <xs:schema xmlns:tns="http://response.dfs.moj.synapps.com/" targetNamespace="http://response.dfs.moj.synapps.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <!--FROM: 'DARTSService_schema2.xsd' BEGIN-->
+      <xs:complexType name="DARTSResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="code" type="xs:string" />
+          <xs:element minOccurs="0" name="message" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetCourtLogResponse">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:DARTSResponse">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="court_log" type="tns:court_log" />
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="entries" nillable="true" type="tns:CourtLogEntry" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="court_log">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="entry" type="tns:CourtLogEntry" />
+        </xs:sequence>
+        <xs:attribute name="courthouse" type="xs:string" />
+        <xs:attribute name="case_number" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="CourtLogEntry">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:attribute name="Y" type="xs:string" />
+            <xs:attribute name="M" type="xs:string" />
+            <xs:attribute name="D" type="xs:string" />
+            <xs:attribute name="H" type="xs:string" />
+            <xs:attribute name="MIN" type="xs:string" />
+            <xs:attribute name="S" type="xs:string" />
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:complexType name="RegisterNodeResponse">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:DARTSResponse">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="node_id" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="GetCasesResponse">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:DARTSResponse">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="cases" type="tns:cases" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="cases">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="case" type="tns:Case" />
+        </xs:sequence>
+        <xs:attribute name="courthouse" type="xs:string" />
+        <xs:attribute name="courtroom" type="xs:string" />
+        <xs:attribute name="Y" type="xs:string" />
+        <xs:attribute name="M" type="xs:string" />
+        <xs:attribute name="D" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="Case">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="case_number" type="xs:string" />
+          <xs:element minOccurs="0" name="scheduled_start" type="xs:string" />
+          <xs:element minOccurs="0" name="upload_priority" type="xs:string" />
+          <xs:element minOccurs="0" name="defendants" type="tns:defendants" />
+          <xs:element minOccurs="0" name="judges" type="tns:judges" />
+          <xs:element minOccurs="0" name="prosecutors" type="tns:prosecutors" />
+          <xs:element minOccurs="0" name="defenders" type="tns:defenders" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="defendants">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="defendant" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="judges">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="judge" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="prosecutors">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="prosecutor" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="defenders">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="defender" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <!--FROM: 'DARTSService_schema2.xsd' END-->
+    </xs:schema>
+    <xs:schema xmlns:tns="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" elementFormDefault="qualified" targetNamespace="http://properties.core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <!--FROM: 'DARTSService_schema3.xsd' BEGIN-->
+      <xs:complexType name="PropertySet">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Properties" type="dfs-dm-core-properties:Property" />
+        </xs:sequence>
+        <xs:attribute name="isInternal" type="xs:boolean" use="required" />
+      </xs:complexType>
+      <xs:complexType name="Property" abstract="true">
+        <xs:sequence />
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="isTransient" type="xs:boolean" use="required" />
+      </xs:complexType>
+      <xs:complexType name="StringProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:Property">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="Value" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="NumberProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:Property">
+            <xs:sequence>
+              <xs:choice minOccurs="0">
+                <xs:element name="Short" type="xs:short" />
+                <xs:element name="Integer" type="xs:int" />
+                <xs:element name="Long" type="xs:long" />
+                <xs:element name="Double" type="xs:double" />
+              </xs:choice>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="DateProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:Property">
+            <xs:sequence>
+              <xs:element name="Value" type="xs:dateTime" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="BooleanProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:Property">
+            <xs:sequence>
+              <xs:element name="Value" type="xs:boolean" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ObjectIdProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:Property">
+            <xs:sequence>
+              <xs:element name="Value" type="dfs-dm-core:ObjectId" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="StringArrayProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:ArrayProperty">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="Values" nillable="true" type="xs:string" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ArrayProperty" abstract="true">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:Property">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="ValueActions" type="dfs-dm-core-properties:ValueAction" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ValueAction">
+        <xs:sequence />
+        <xs:attribute name="type" type="dfs-dm-core-properties:ValueActionType" use="required" />
+        <xs:attribute name="index" type="xs:int" use="required" />
+      </xs:complexType>
+      <xs:complexType name="NumberArrayProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:ArrayProperty">
+            <xs:sequence>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="Short" nillable="true" type="xs:short" />
+                <xs:element name="Integer" nillable="true" type="xs:int" />
+                <xs:element name="Long" nillable="true" type="xs:long" />
+                <xs:element name="Double" nillable="true" type="xs:double" />
+              </xs:choice>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="BooleanArrayProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:ArrayProperty">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Values" nillable="true" type="xs:boolean" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="DateArrayProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:ArrayProperty">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Values" nillable="true" type="xs:dateTime" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ObjectIdArrayProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:ArrayProperty">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Values" nillable="true" type="dfs-dm-core:ObjectId" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="RichTextProperty">
+        <xs:complexContent mixed="false">
+          <xs:extension base="dfs-dm-core-properties:Property">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="Value" type="dfs-dm-core:RichText" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:simpleType name="ValueActionType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="APPEND" />
+          <xs:enumeration value="INSERT" />
+          <xs:enumeration value="DELETE" />
+          <xs:enumeration value="SET" />
+        </xs:restriction>
+      </xs:simpleType>
+      <!--FROM: 'DARTSService_schema3.xsd' END-->
+    </xs:schema>
+    <xs:schema xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" elementFormDefault="qualified" targetNamespace="http://core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <!--FROM: 'DARTSService_schema4.xsd' BEGIN-->
+      <xs:complexType name="DataPackage">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DataObjects" type="tns:DataObject" />
+        </xs:sequence>
+        <xs:attribute name="repositoryName" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="DataObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Aspects" type="tns:Aspect" />
+          <xs:element minOccurs="0" name="Identity" type="tns:ObjectIdentity" />
+          <xs:element minOccurs="0" name="Properties" type="dfs-dm-core-properties:PropertySet" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Relationships" type="tns:Relationship" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Contents" type="dfs-dm-core-content:Content" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Permissions" type="tns:Permission" />
+        </xs:sequence>
+        <xs:attribute name="type" type="xs:string" />
+        <xs:attribute name="transientId" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="Aspect">
+        <xs:sequence />
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="intentModifier" type="tns:AspectIntentModifier" />
+      </xs:complexType>
+      <xs:complexType name="ObjectIdentity">
+        <xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:element name="ObjectId" type="tns:ObjectId" />
+            <xs:element name="ObjectKey" type="tns:ObjectKey" />
+            <xs:element name="ObjectPath" type="tns:ObjectPath" />
+            <xs:element name="Qualification" type="tns:Qualification" />
+            <xs:element name="CompositeObjectId" type="tns:CompositeObjectId" />
+            <xs:element name="StringUri" type="xs:string" />
+          </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="valueType" type="tns:ObjectIdentityType" />
+        <xs:attribute name="repositoryName" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="ObjectId">
+        <xs:sequence />
+        <xs:attribute name="id" type="xs:string" use="required" />
+      </xs:complexType>
+      <xs:complexType name="ObjectKey">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PropertySet" type="dfs-dm-core-properties:PropertySet" />
+        </xs:sequence>
+        <xs:attribute name="objectType" type="xs:string" use="required" />
+      </xs:complexType>
+      <xs:complexType name="RichText">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Body" type="dfs-dm-core-content:Content" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Contents" type="dfs-dm-core-content:Content" />
+        </xs:sequence>
+        <xs:attribute name="format" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="ObjectPath">
+        <xs:sequence />
+        <xs:attribute name="path" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="Qualification">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="String" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="qualificationValueType" type="tns:QualificationValueType" />
+        <xs:attribute name="objectType" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="CompositeObjectId">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PropertySet" type="dfs-dm-core-properties:PropertySet" />
+        </xs:sequence>
+        <xs:attribute name="objectType" type="xs:string" use="required" />
+      </xs:complexType>
+      <xs:complexType name="Relationship" abstract="true">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="RelationshipProperties" type="dfs-dm-core-properties:PropertySet" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="targetRole" type="xs:string" use="required" />
+        <xs:attribute name="intentModifier" type="tns:RelationshipIntentModifier" />
+      </xs:complexType>
+      <xs:complexType name="ReferenceRelationship">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:Relationship">
+            <xs:sequence>
+              <xs:element name="Target" type="tns:ObjectIdentity" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ObjectRelationship">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:Relationship">
+            <xs:sequence>
+              <xs:element name="Target" type="tns:DataObject" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Permission">
+        <xs:sequence />
+        <xs:attribute name="type" type="tns:PermissionType" use="required" />
+        <xs:attribute name="name" type="xs:string" use="required" />
+      </xs:complexType>
+      <xs:simpleType name="AspectIntentModifier">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ATTACH" />
+          <xs:enumeration value="DETACH" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ObjectIdentityType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="UNDEFINED" />
+          <xs:enumeration value="OBJECT_ID" />
+          <xs:enumeration value="OBJECT_KEY" />
+          <xs:enumeration value="OBJECT_PATH" />
+          <xs:enumeration value="QUALIFICATION" />
+          <xs:enumeration value="COMPOSITE_OBJECT_ID" />
+          <xs:enumeration value="STRING_URI" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="QualificationValueType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="UNDEFINED" />
+          <xs:enumeration value="STRING" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="RelationshipIntentModifier">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ADD" />
+          <xs:enumeration value="REMOVE" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="PermissionType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="BASIC" />
+          <xs:enumeration value="EXTENDED" />
+          <xs:enumeration value="CUSTOM" />
+        </xs:restriction>
+      </xs:simpleType>
+      <!--FROM: 'DARTSService_schema4.xsd' END-->
+    </xs:schema>
+    <xs:schema xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://content.core.datamodel.fs.documentum.emc.com/" elementFormDefault="qualified" targetNamespace="http://content.core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <!--FROM: 'DARTSService_schema5.xsd' BEGIN-->
+      <xs:complexType name="Content" abstract="true">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="renditionType" nillable="true" type="tns:RenditionType" />
+        </xs:sequence>
+        <xs:attribute name="format" type="xs:string" use="required" />
+        <xs:attribute name="pageNumber" type="xs:int" use="required" />
+        <xs:attribute name="pageModifier" type="xs:string" />
+        <xs:attribute name="contentTransferMode" type="tns:ContentTransferMode" />
+      </xs:complexType>
+      <xs:complexType name="BinaryContent">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:Content">
+            <xs:sequence>
+              <xs:element name="Value" type="xs:base64Binary" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="DataHandlerContent">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:Content">
+            <xs:sequence>
+              <xs:element xmlns:ns1="http://www.w3.org/2005/05/xmlmime" ns1:expectedContentTypes="*/*" name="Value" type="xs:base64Binary" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="UcfContent">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:Content">
+            <xs:sequence>
+              <xs:element name="LocalFilePath" type="xs:string" />
+              <xs:element minOccurs="0" name="ActivityInfo" type="tns:ActivityInfo" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ActivityInfo">
+        <xs:sequence />
+        <xs:attribute name="sessionId" type="xs:string" use="required" />
+        <xs:attribute name="initiatorSessionId" type="xs:string" />
+        <xs:attribute name="activityId" type="xs:string" use="required" />
+        <xs:attribute name="autoCloseConnection" type="xs:boolean" use="required" />
+        <xs:attribute name="closed" type="xs:boolean" use="required" />
+        <xs:attribute name="targetDeploymentId" type="xs:string" />
+        <xs:attribute name="initiatorDeploymentId" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="UrlContent">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:Content">
+            <xs:sequence />
+            <xs:attribute name="url" type="xs:string" use="required" />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:simpleType name="RenditionType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="CLIENT" />
+          <xs:enumeration value="SERVER" />
+          <xs:enumeration value="PRIMARY" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ContentTransferMode">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="BASE64" />
+          <xs:enumeration value="MTOM" />
+          <xs:enumeration value="UCF" />
+        </xs:restriction>
+      </xs:simpleType>
+      <!--FROM: 'DARTSService_schema5.xsd' END-->
+    </xs:schema>
+    <xs:schema xmlns:tns="http://com.synapps.mojdarts.service.com" xmlns:ns1="http://response.dfs.moj.synapps.com/" xmlns:ns2="http://core.datamodel.fs.documentum.emc.com/" targetNamespace="http://com.synapps.mojdarts.service.com" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <!--FROM: 'DARTSService_schema6.xsd' BEGIN-->
+      <xs:element name="Exception" type="tns:Exception" />
+      <xs:element name="addAudio" type="tns:addAudio" />
+      <xs:element name="addAudioResponse" type="tns:addAudioResponse" />
+      <xs:element name="addCase" type="tns:addCase" />
+      <xs:element name="addCaseResponse" type="tns:addCaseResponse" />
+      <xs:element name="addDocument" type="tns:addDocument" />
+      <xs:element name="addDocumentResponse" type="tns:addDocumentResponse" />
+      <xs:element name="addLogEntry" type="tns:addLogEntry" />
+      <xs:element name="addLogEntryResponse" type="tns:addLogEntryResponse" />
+      <xs:element name="getCases" type="tns:getCases" />
+      <xs:element name="getCasesResponse" type="tns:getCasesResponse" />
+      <xs:element name="getCourtLog" type="tns:getCourtLog" />
+      <xs:element name="getCourtLogResponse" type="tns:getCourtLogResponse" />
+      <xs:element name="registerNode" type="tns:registerNode" />
+      <xs:element name="registerNodeResponse" type="tns:registerNodeResponse" />
+      <xs:element name="requestTranscription" type="tns:requestTranscription" />
+      <xs:element name="requestTranscriptionResponse" type="tns:requestTranscriptionResponse" />
+      <xs:element name="response" type="ns1:DARTSResponse" />
+      <xs:complexType name="addLogEntry">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="document" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addLogEntryResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:DARTSResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Exception">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="message" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addDocument">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="messageId" type="xs:string" />
+          <xs:element minOccurs="0" name="type" type="xs:string" />
+          <xs:element minOccurs="0" name="subType" type="xs:string" />
+          <xs:element minOccurs="0" name="document" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addDocumentResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:DARTSResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addAudio">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="document" type="xs:string" />
+          <xs:element minOccurs="0" name="dataPackage" type="ns2:DataPackage" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addAudioResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:DARTSResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requestTranscription">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="document" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requestTranscriptionResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:DARTSResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addCase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="document" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addCaseResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:DARTSResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getCourtLog">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="courthouse" type="xs:string" />
+          <xs:element minOccurs="0" name="caseNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="startTime" type="xs:string" />
+          <xs:element minOccurs="0" name="endTime" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getCourtLogResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:GetCourtLogResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="registerNode">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="document" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="registerNodeResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:RegisterNodeResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getCases">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="courthouse" type="xs:string" />
+          <xs:element minOccurs="0" name="courtroom" type="xs:string" />
+          <xs:element minOccurs="0" name="date" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getCasesResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:GetCasesResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <!--FROM: 'DARTSService_schema6.xsd' END-->
+    </xs:schema>
+  </types>
+  <message name="addAudio">
+    <part element="tns:addAudio" name="parameters" />
+  </message>
+  <message name="addAudioResponse">
+    <part element="tns:addAudioResponse" name="parameters" />
+  </message>
+  <message name="Exception">
+    <part element="tns:Exception" name="fault" />
+  </message>
+  <message name="ServiceException">
+    <part element="ns1:ServiceException" name="fault" xmlns:ns1="http://rt.fs.documentum.emc.com/" />
+  </message>
+  <message name="addCase">
+    <part element="tns:addCase" name="parameters" />
+  </message>
+  <message name="addCaseResponse">
+    <part element="tns:addCaseResponse" name="parameters" />
+  </message>
+  <message name="requestTranscription">
+    <part element="tns:requestTranscription" name="parameters" />
+  </message>
+  <message name="requestTranscriptionResponse">
+    <part element="tns:requestTranscriptionResponse" name="parameters" />
+  </message>
+  <message name="registerNode">
+    <part element="tns:registerNode" name="parameters" />
+  </message>
+  <message name="registerNodeResponse">
+    <part element="tns:registerNodeResponse" name="parameters" />
+  </message>
+  <message name="getCases">
+    <part element="tns:getCases" name="parameters" />
+  </message>
+  <message name="getCasesResponse">
+    <part element="tns:getCasesResponse" name="parameters" />
+  </message>
+  <message name="getCourtLog">
+    <part element="tns:getCourtLog" name="parameters" />
+  </message>
+  <message name="getCourtLogResponse">
+    <part element="tns:getCourtLogResponse" name="parameters" />
+  </message>
+  <message name="addLogEntry">
+    <part element="tns:addLogEntry" name="parameters" />
+  </message>
+  <message name="addLogEntryResponse">
+    <part element="tns:addLogEntryResponse" name="parameters" />
+  </message>
+  <message name="addDocument">
+    <part element="tns:addDocument" name="parameters" />
+  </message>
+  <message name="addDocumentResponse">
+    <part element="tns:addDocumentResponse" name="parameters" />
+  </message>
+  <portType name="DARTSServicePort">
+    <operation name="addAudio">
+      <input message="tns:addAudio" />
+      <output message="tns:addAudioResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+    <operation name="addCase">
+      <input message="tns:addCase" />
+      <output message="tns:addCaseResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+    <operation name="requestTranscription">
+      <input message="tns:requestTranscription" />
+      <output message="tns:requestTranscriptionResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+    <operation name="registerNode">
+      <input message="tns:registerNode" />
+      <output message="tns:registerNodeResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+    <operation name="getCases">
+      <input message="tns:getCases" />
+      <output message="tns:getCasesResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+    <operation name="getCourtLog">
+      <input message="tns:getCourtLog" />
+      <output message="tns:getCourtLogResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+    <operation name="addLogEntry">
+      <input message="tns:addLogEntry" />
+      <output message="tns:addLogEntryResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+    <operation name="addDocument">
+      <input message="tns:addDocument" />
+      <output message="tns:addDocumentResponse" />
+      <fault message="tns:Exception" name="Exception" />
+      <fault message="tns:ServiceException" name="ServiceException" />
+    </operation>
+  </portType>
+  <binding name="DARTSServicePortBinding" type="tns:DARTSServicePort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="addAudio">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+    <operation name="addCase">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+    <operation name="requestTranscription">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+    <operation name="registerNode">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+    <operation name="getCases">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+    <operation name="getCourtLog">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+    <operation name="addLogEntry">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+    <operation name="addDocument">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+      <fault name="Exception">
+        <soap:fault name="Exception" use="literal" />
+      </fault>
+      <fault name="ServiceException">
+        <soap:fault name="ServiceException" use="literal" />
+      </fault>
+    </operation>
+  </binding>
+  <service name="DARTSService">
+    <documentation><![CDATA[@author ewingsg]]></documentation>
+    <port binding="tns:DARTSServicePortBinding" name="DARTSServicePort">
+      <soap:address location="http://com.synapps.mojdarts.service.com:7080/service/darts/DARTSService" />
+    </port>
+  </service>
+</definitions>
