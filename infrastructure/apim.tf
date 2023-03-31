@@ -5,7 +5,7 @@ locals {
   api_mgmt_api_name       = "${var.product}-${var.component}-api"
   api_base_path           = var.product
   url_darts_gateway       = "http://darts-gateway-${var.env}.service.core-compute-${var.env}.internal"
-  url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/test.wsdl"
+  url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/dartsService.wsdl"
 }
 
 # Include CNP module for setting up an APIM product
