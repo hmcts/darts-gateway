@@ -204,7 +204,7 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
-  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.11.0'
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.darts.Application'
