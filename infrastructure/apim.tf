@@ -8,6 +8,12 @@ locals {
   url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/dartsService.wsdl"
 }
 
+provider "azurerm" {
+  alias           = "aks-sdsapps"
+  subscription_id = var.aks_subscription_id
+  features {}
+}
+
 # Include CNP module for setting up an APIM product
 module "api_mgmt_product" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-product?ref=master"
@@ -16,6 +22,9 @@ module "api_mgmt_product" {
   subscription_required = "false"
   api_mgmt_name         = local.api_mgmt_name
   api_mgmt_rg           = local.api_mgmt_resource_group
+  providers = {
+    azurerm = azurerm.aks-sdsapps
+  }
 }
 
 # Include CNP module for setting up an API on an APIM product
@@ -35,6 +44,9 @@ module "api_mgmt_api" {
   swagger_url    = local.url_swagger
   content_format = "wsdl-link"
   revision       = "1"
+  providers = {
+    azurerm = azurerm.aks-sdsapps
+  }
 }
 
 # Reference to file containing API policy
@@ -50,4 +62,7 @@ module "api-mgmt-api-policy" {
   api_mgmt_rg            = local.api_mgmt_resource_group
   api_name               = module.api_mgmt_api.name
   api_policy_xml_content = data.local_file.api_policy.content
+  providers = {
+    azurerm = azurerm.aks-sdsapps
+  }
 }
