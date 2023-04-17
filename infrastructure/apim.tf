@@ -4,7 +4,7 @@ locals {
   api_mgmt_product_name   = "${var.product}-${var.component}"
   api_mgmt_api_name       = "${var.product}-${var.component}-api"
   api_base_path           = var.product
-  url_darts_gateway       = "http://darts-gateway-${var.env}.service.core-compute-${var.env}.internal"
+  url_darts_api_backend   = "http://${var.api_host_ip_address}"
   url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/dartsService.wsdl"
 }
 
@@ -38,7 +38,7 @@ module "api_mgmt_api" {
   api_mgmt_rg    = local.api_mgmt_resource_group
   product_id     = module.api_mgmt_product.product_id
   path           = local.api_base_path
-  service_url    = local.url_darts_gateway
+  service_url    = local.url_darts_api_backend
   protocols      = ["http", "https"]
   api_type       = "soap"
   swagger_url    = local.url_swagger
@@ -49,11 +49,6 @@ module "api_mgmt_api" {
   }
 }
 
-# Reference to file containing API policy
-data "local_file" "api_policy" {
-  filename = "${path.module}/apim-policy/api-policy.xml"
-}
-
 # Include CNP module for setting up a policy on an API
 # Uses output variable from api_mgmt_api to set api_name
 module "api-mgmt-api-policy" {
@@ -61,7 +56,7 @@ module "api-mgmt-api-policy" {
   api_mgmt_name          = local.api_mgmt_name
   api_mgmt_rg            = local.api_mgmt_resource_group
   api_name               = module.api_mgmt_api.name
-  api_policy_xml_content = data.local_file.api_policy.content
+  api_policy_xml_content = templatefile("${path.module}/apim-policy/api-policy.xml", { "api_hostname" = var.api_hostname })
   providers = {
     azurerm = azurerm.aks-sdsapps
   }
