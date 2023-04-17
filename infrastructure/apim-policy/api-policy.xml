@@ -7,6 +7,9 @@
         <base />
         <!-- Store original request so it can be output as part of error processing -->
         <set-variable name="origRequest" value="@(context.Request.Body.As<string>(preserveContent: true))" />
+        <set-header name="HOST" exists-action="override">
+            <value>${api_hostname}</value>
+        </set-header>
         <!--
             Check if the request contains a certificate.  If it does search the entries in the subject field for the part that
             specifies the system id (CN=X#######_## where X is 'C' or 'P' and # is a digit) and extract the system id from it.
@@ -15,7 +18,7 @@
 
             Note: GetNameInfo() can also be used to get system id - see following email address extraction section.
         -->
-        <choose>
+        <!-- <choose>
             <when condition="@(context.Request.Certificate == null)">
                 <set-variable name="hasCert" value="No certificate" />
             </when>
@@ -37,7 +40,7 @@
                     return sysId;
                 }" />
             </when>
-        </choose>
+        </choose> -->
         <!--
             Check if the request contains a certificate.  If it does then extract the email address from the certificate.
             GetNameInfo() will extract the email address from either the subject or subjectAltName fields - whichever one
@@ -51,11 +54,11 @@
             https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509certificate2.getnameinfo?view=net-7.0
             https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509nametype?view=net-7.0
         -->
-        <choose>
+        <!-- <choose>
             <when condition="@(context.Request.Certificate != null)">
                 <set-variable name="certEmail" value="@(context.Request.Certificate.GetNameInfo(System.Security.Cryptography.X509Certificates.X509NameType.EmailName, false))" />
             </when>
-        </choose>
+        </choose> -->
         <!--
             The validate-client-certificate policy is used to validate the certificate presented by a client.  This prototype
             uses certificates signed by a custom CA, so the custom root and intermediate CA certificates for it need to be
@@ -70,7 +73,7 @@
             https://learn.microsoft.com/en-gb/azure/api-management/api-management-howto-ca-certificates
             https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_gateway_certificate_authority (possibly)
         -->
-        <validate-client-certificate validate-not-before="true" validate-not-after="true" validate-revocation="false" />
+        <!-- <validate-client-certificate validate-not-before="true" validate-not-after="true" validate-revocation="false" /> -->
         <!--
             Check if the request contains a certificate.  If it does then check if it exists within those uploaded to Azure API Management.
             The certificate thumbprint is used to search for a match.
@@ -83,7 +86,7 @@
             https://learn.microsoft.com/en-gb/azure/api-management/api-management-howto-mutual-certificates (for backend but applies here as well)
             https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_certificate
         -->
-        <choose>
+        <!-- <choose>
             <when condition="@(context.Request.Certificate != null)">
                 <set-variable name="certThumbprint" value="@(context.Request.Certificate.Thumbprint)" />
                 <set-variable name="certExists" value="@{
@@ -95,7 +98,7 @@
                     return exists;
                 }" />
             </when>
-        </choose>
+        </choose> -->
         <!--
             The validate-content policy is used to validate the content of the request.  Here it is being used to validate the
             content against an XSD that has been added to the Azure API Management instance with the name 'darts-gateway-schema'.
