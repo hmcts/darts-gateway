@@ -7,9 +7,6 @@
         <base />
         <!-- Store original request so it can be output as part of error processing -->
         <set-variable name="origRequest" value="@(context.Request.Body.As<string>(preserveContent: true))" />
-        <set-header name="HOST" exists-action="override">
-            <value>${api_hostname}</value>
-        </set-header>
         <!--
             Check if the request contains a certificate.  If it does search the entries in the subject field for the part that
             specifies the system id (CN=X#######_## where X is 'C' or 'P' and # is a digit) and extract the system id from it.

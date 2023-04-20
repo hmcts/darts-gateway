@@ -28,11 +28,6 @@ variable "aks_subscription_id" {
   description = "The AKS subscription id for the environment.  Set by pipeline."
 }
 
-variable "api_host_ip_address" {
-  type        = string
-  description = "The IP address for the ingress on the cluster"
-}
-
 variable "api_hostname" {
   type        = string
   description = "The hostname for the DARTS API on the cluster"
