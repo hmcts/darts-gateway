@@ -27,6 +27,7 @@ sourceSets {
       compileClasspath += main.output
       runtimeClasspath += main.output
       srcDir file('src/functionalTest/java')
+      srcDir 'build/jaxb'
     }
     resources.srcDir file('src/functionalTest/resources')
   }
@@ -51,6 +52,8 @@ sourceSets {
 }
 
 configurations {
+  jaxb
+
   functionalTestImplementation.extendsFrom testImplementation
   functionalTestRuntimeOnly.extendsFrom runtimeOnly
 
@@ -60,6 +63,8 @@ configurations {
   smokeTestImplementation.extendsFrom testImplementation
   smokeTestRuntimeOnly.extendsFrom runtimeOnly
 }
+
+compileJava.dependsOn genJaxb
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
@@ -107,6 +112,32 @@ checkstyle {
   maxWarnings = 0
   toolVersion = '10.9.3'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
+}
+
+task genJaxb {
+  ext.sourcesDir = "${buildDir}/jaxb"
+  ext.wsdlDir = "src/main/resources/"
+
+  outputs.dir sourcesDir
+
+  doLast() {
+    project.ant {
+      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
+        classpath: configurations.jaxb.asPath
+      mkdir(dir: sourcesDir)
+
+      def wsdlFileSet = ant.path {
+        fileset(dir: wsdlDir, includes: '*.wsdl')
+      }
+
+      wsdlFileSet.list().each {
+        xjc(destdir: sourcesDir, schema: it) {
+          arg(value: "-wsdl")
+          produces(dir: sourcesDir, includes: "**/*.java")
+        }
+      }
+    }
+  }
 }
 
 pmd {
@@ -190,6 +221,9 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
+  implementation group: 'wsdl4j', name: 'wsdl4j'
+  implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
 
