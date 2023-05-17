@@ -89,3 +89,7 @@ validate:
     max-levels-descendant-nodes: 2000
     max-child-nodes-per-node: 2000
     max-attributes-per-node: 200
+
+darts:
+  api:
+    baseUrl: "${DARTS_API_URL}:localhost:4550"
