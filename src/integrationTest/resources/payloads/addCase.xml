@@ -1,0 +1,20 @@
+<addCase xmlns="http://com.synapps.mojdarts.service.com">
+  <document xmlns="">
+    &lt;case type="someType" id="someId"&gt;
+      &lt;courthouse&gt;someCourtHouse&lt;/courthouse&gt;&lt;!--Optional:--&gt;
+      &lt;courtroom&gt;someCourtRoom&lt;/courtroom&gt;&lt;!--Zero or more repetitions:--&gt;
+      &lt;defendants&gt;&lt;!--Zero or more repetitions:--&gt;
+        &lt;defendant&gt;some defendant&lt;/defendant&gt;
+      &lt;/defendants&gt;&lt;!--Zero or more repetitions:--&gt;
+      &lt;judges&gt;&lt;!--Zero or more repetitions:--&gt;
+        &lt;judge&gt;some judge&lt;/judge&gt;
+      &lt;/judges&gt;&lt;!--Zero or more repetitions:--&gt;
+      &lt;prosecutors&gt;&lt;!--Zero or more repetitions:--&gt;
+        &lt;prosecutor&gt;some prosecutor&lt;/prosecutor&gt;
+      &lt;/prosecutors&gt;&lt;!--Zero or more repetitions:--&gt;
+      &lt;defenders&gt;&lt;!--Zero or more repetitions:--&gt;
+        &lt;defender&gt;some defender&lt;/defender&gt;
+      &lt;/defenders&gt;
+    &lt;/case&gt;
+  </document>
+</addCase>
