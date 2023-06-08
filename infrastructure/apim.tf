@@ -29,7 +29,7 @@ resource "azurerm_api_management_api_operation" "add-x" {
   operation_id        = "addX"
   api_name            = "spike-api"
   api_management_name = local.api_mgmt_name
-  resource_group_name = api_mgmt_resource_group
+  resource_group_name = local.api_mgmt_resource_group
   display_name        = "Add X"
   method              = "POST"
   url_template        = "/ws"
