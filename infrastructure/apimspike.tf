@@ -1,3 +1,9 @@
+provider "azurerm" {
+  alias           = "aks-sdsapps-spike"
+  subscription_id = var.aks_subscription_id
+  features {}
+}
+
 # Include CNP module for setting up an API on an APIM product
 # Uses output variable from api_mgmt_product to set product_id
 # content_format needs to be set to wsdl-link as specs are in WSDL format
@@ -14,7 +20,7 @@ module "api_mgmt_api_spike" {
   api_type       = "soap"
   revision       = "1"
   providers = {
-    azurerm = azurerm.aks-sdsapps
+    azurerm = azurerm.aks-sdsapps-spike
   }
 }
 
