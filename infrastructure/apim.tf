@@ -9,9 +9,20 @@ locals {
 }
 
 provider "azurerm" {
-  features {}
   alias           = "aks-sdsapps"
   subscription_id = var.aks_subscription_id
+  features {}
+}
+
+resource "azurerm_api_management_api" "api_spike" {
+  name                = "spike-api"
+  resource_group_name = local.api_mgmt_resource_group
+  api_management_name = local.api_mgmt_name
+  revision            = "1"
+  display_name        = "Spike API"
+  path                = "example"
+  protocols           = ["https"]
+  api_type            = "soap"
 }
 
 # Include CNP module for setting up an APIM product
@@ -25,17 +36,6 @@ module "api_mgmt_product" {
   providers = {
     azurerm = azurerm.aks-sdsapps
   }
-}
-
-resource "azurerm_api_management_api" "api_spike" {
-  name                = "spike-api"
-  resource_group_name = local.api_mgmt_resource_group
-  api_management_name = local.api_mgmt_name
-  revision            = "1"
-  display_name        = "Spike API"
-  path                = "example"
-  protocols           = ["https"]
-  api_type            = "soap"
 }
 
 # Include CNP module for setting up an API on an APIM product
