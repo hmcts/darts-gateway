@@ -25,6 +25,21 @@ resource "azurerm_api_management_api" "api_spike" {
   api_type            = "soap"
 }
 
+resource "azurerm_api_management_api_operation" "add-x" {
+  operation_id        = "addX"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = api_mgmt_resource_group
+  display_name        = "Add X"
+  method              = "POST"
+  url_template        = "/ws
+  description         = "This can only be done by the logged in user."
+
+  response {
+    status_code = 200
+  }
+}
+
 # Include CNP module for setting up an APIM product
 module "api_mgmt_product" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-product?ref=master"
