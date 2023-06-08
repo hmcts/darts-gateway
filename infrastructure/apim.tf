@@ -60,6 +60,8 @@ module "api_mgmt_api_spike" {
   service_url    = local.url_darts_api_hostname
   protocols      = ["http", "https"]
   api_type       = "soap"
+  swagger_url    = local.url_swagger
+  content_format = "wsdl-link"
   revision       = "1"
 #  providers = {
 #    azurerm = azurerm.aks-sdsapps
