@@ -27,17 +27,16 @@ module "api_mgmt_product" {
   }
 }
 
-resource "azurerm_api_management_api" "api_spike" {
-  name                = "spike-api"
-  resource_group_name = local.api_mgmt_resource_group
-  api_management_name = local.api_mgmt_name
-  revision            = "1"
-  display_name        = "Spike API"
-  path                = "example"
-  protocols           = ["https"]
-  api_type            = "soap"
-}
-
+#resource "azurerm_api_management_api" "api_spike" {
+#  name                = "spike-api"
+#  resource_group_name = local.api_mgmt_resource_group
+#  api_management_name = local.api_mgmt_name
+#  revision            = "1"
+#  display_name        = "Spike API"
+#  path                = "example"
+#  protocols           = ["https"]
+#  api_type            = "soap"
+#}
 
 # Include CNP module for setting up an API on an APIM product
 # Uses output variable from api_mgmt_product to set product_id
