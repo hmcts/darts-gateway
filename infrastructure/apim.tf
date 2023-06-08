@@ -27,7 +27,7 @@ module "api_mgmt_product" {
   }
 }
 
-resource "azurerm_api_management_api" "example" {
+resource "azurerm_api_management_api" "api_spike" {
   name                = "spike-api"
   resource_group_name = local.api_mgmt_resource_group
   api_management_name = local.api_mgmt_name
