@@ -32,7 +32,7 @@ resource "azurerm_api_management_api_operation" "add-x" {
   resource_group_name = api_mgmt_resource_group
   display_name        = "Add X"
   method              = "POST"
-  url_template        = "/ws
+  url_template        = "/ws"
   description         = "This can only be done by the logged in user."
 
   response {
