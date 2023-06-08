@@ -14,6 +14,17 @@ provider "azurerm" {
   features {}
 }
 
+resource "azurerm_api_management_api" "api_spike" {
+  name                = "spike-api"
+  resource_group_name = local.api_mgmt_resource_group
+  api_management_name = local.api_mgmt_name
+  revision            = "1"
+  display_name        = "Spike API"
+  path                = "example"
+  protocols           = ["https"]
+  api_type            = "soap"
+}
+
 # Include CNP module for setting up an APIM product
 module "api_mgmt_product" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-product?ref=master"
@@ -38,28 +49,6 @@ module "api_mgmt_api" {
   api_mgmt_rg    = local.api_mgmt_resource_group
   product_id     = module.api_mgmt_product.product_id
   path           = local.api_base_path
-  service_url    = local.url_darts_api_hostname
-  protocols      = ["http", "https"]
-  api_type       = "soap"
-  swagger_url    = local.url_swagger
-  content_format = "wsdl-link"
-  revision       = "1"
-  providers = {
-    azurerm = azurerm.aks-sdsapps
-  }
-}
-
-# Include CNP module for setting up an API on an APIM product
-# Uses output variable from api_mgmt_product to set product_id
-# content_format needs to be set to wsdl-link as specs are in WSDL format
-module "api_mgmt_api_spike" {
-  source         = "git@github.com:hmcts/cnp-module-api-mgmt-api?ref=master"
-  name           = "${local.api_mgmt_api_name}-spike"
-  display_name   = "Darts Gateway API Spike"
-  api_mgmt_name  = local.api_mgmt_name
-  api_mgmt_rg    = local.api_mgmt_resource_group
-  product_id     = module.api_mgmt_product.product_id
-  path           = "spike"
   service_url    = local.url_darts_api_hostname
   protocols      = ["http", "https"]
   api_type       = "soap"
