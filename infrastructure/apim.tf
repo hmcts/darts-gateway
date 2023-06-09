@@ -31,7 +31,7 @@ resource "azurerm_api_management_api_schema" "example" {
   resource_group_name = local.api_mgmt_resource_group
   schema_id           = "example-schema"
   content_type        = "application/vnd.ms-azure-apim.xsd+xml"
-  value               = file("https://github.com/hmcts/darts-legacy/blob/2e512caf650aeb532fbdad539a714cd191a7144c/workspace/dartsdev/darts-webservice/wsdl/com.service.mojdarts.synapps.com/DARTSService_schema6.xsd")
+  value               = file("https://raw.githubusercontent.com/hmcts/darts-legacy/2e512caf650aeb532fbdad539a714cd191a7144c/workspace/dartsdev/darts-webservice/wsdl/com.service.mojdarts.synapps.com/DARTSService_schema1.xsd?token=GHSAT0AAAAAACBNH2B7UFE5E6337FTZ5AJGZEC7IWA")
 }
 
 resource "azurerm_api_management_api_operation" "add-x" {
