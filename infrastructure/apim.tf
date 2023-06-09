@@ -27,13 +27,58 @@ resource "azurerm_api_management_api" "api_spike" {
   api_type            = "soap"
 }
 
-resource "azurerm_api_management_api_schema" "example" {
+resource "azurerm_api_management_api_schema" "darts-schema-1" {
   api_name            = azurerm_api_management_api.api_spike.name
   api_management_name = local.api_mgmt_name
   resource_group_name = local.api_mgmt_resource_group
-  schema_id           = "example-schema"
+  schema_id           = "darts-schema-1"
   content_type        = "application/vnd.ms-azure-apim.xsd+xml"
   value               = file("${local.xsd_dir}/darts-schema-1.xsd")
+}
+
+resource "azurerm_api_management_api_schema" "darts-schema-2" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  schema_id           = "darts-schema-2"
+  content_type        = "application/vnd.ms-azure-apim.xsd+xml"
+  value               = file("${local.xsd_dir}/darts-schema-2.xsd")
+}
+
+resource "azurerm_api_management_api_schema" "darts-schema-5" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  schema_id           = "darts-schema-5"
+  content_type        = "application/vnd.ms-azure-apim.xsd+xml"
+  value               = file("${local.xsd_dir}/darts-schema-5.xsd")
+}
+
+resource "azurerm_api_management_api_schema" "darts-schema-3" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  schema_id           = "darts-schema-3"
+  content_type        = "application/vnd.ms-azure-apim.xsd+xml"
+  value               = file("${local.xsd_dir}/darts-schema-3.xsd")
+}
+
+resource "azurerm_api_management_api_schema" "darts-schema-4" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  schema_id           = "darts-schema-4"
+  content_type        = "application/vnd.ms-azure-apim.xsd+xml"
+  value               = file("${local.xsd_dir}/darts-schema-4.xsd")
+}
+
+resource "azurerm_api_management_api_schema" "darts-schema-6" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  schema_id           = "darts-schema-6"
+  content_type        = "application/vnd.ms-azure-apim.xsd+xml"
+  value               = file("${local.xsd_dir}/darts-schema-6.xsd")
 }
 
 resource "azurerm_api_management_api_operation" "add-x" {

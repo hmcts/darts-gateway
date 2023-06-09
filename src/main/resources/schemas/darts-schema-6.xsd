@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://com.synapps.mojdarts.service.com" xmlns:tns="http://com.synapps.mojdarts.service.com" xmlns:ns1="http://response.dfs.moj.synapps.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://core.datamodel.fs.documentum.emc.com/">
+
+  <xs:import namespace="http://response.dfs.moj.synapps.com/" schemaLocation="DARTSService_schema2.xsd"/>
+
+  <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="DARTSService_schema4.xsd"/>
+
+  <xs:element name="Exception" type="tns:Exception"/>
+
+  <xs:element name="addAudio" type="tns:addAudio"/>
+
+  <xs:element name="addAudioResponse" type="tns:addAudioResponse"/>
+
+  <xs:element name="addCase" type="tns:addCase"/>
+
+  <xs:element name="addCaseResponse" type="tns:addCaseResponse"/>
+
+  <xs:element name="addDocument" type="tns:addDocument"/>
+
+  <xs:element name="addDocumentResponse" type="tns:addDocumentResponse"/>
+
+  <xs:element name="addLogEntry" type="tns:addLogEntry"/>
+
+  <xs:element name="addLogEntryResponse" type="tns:addLogEntryResponse"/>
+
+  <xs:element name="getCases" type="tns:getCases"/>
+
+  <xs:element name="getCasesResponse" type="tns:getCasesResponse"/>
+
+  <xs:element name="getCourtLog" type="tns:getCourtLog"/>
+
+  <xs:element name="getCourtLogResponse" type="tns:getCourtLogResponse"/>
+
+  <xs:element name="registerNode" type="tns:registerNode"/>
+
+  <xs:element name="registerNodeResponse" type="tns:registerNodeResponse"/>
+
+  <xs:element name="requestTranscription" type="tns:requestTranscription"/>
+
+  <xs:element name="requestTranscriptionResponse" type="tns:requestTranscriptionResponse"/>
+
+  <xs:element name="response" type="ns1:DARTSResponse"/>
+
+  <xs:complexType name="addLogEntry">
+    <xs:sequence>
+      <xs:element name="document" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addLogEntryResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:DARTSResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="Exception">
+    <xs:sequence>
+      <xs:element name="message" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addDocument">
+    <xs:sequence>
+      <xs:element name="messageId" type="xs:string" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="subType" type="xs:string" minOccurs="0"/>
+      <xs:element name="document" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addDocumentResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:DARTSResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAudio">
+    <xs:sequence>
+      <xs:element name="document" type="xs:string" minOccurs="0"/>
+      <xs:element name="dataPackage" type="ns2:DataPackage" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAudioResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:DARTSResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="requestTranscription">
+    <xs:sequence>
+      <xs:element name="document" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="requestTranscriptionResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:DARTSResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addCase">
+    <xs:sequence>
+      <xs:element name="document" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addCaseResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:DARTSResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getCourtLog">
+    <xs:sequence>
+      <xs:element name="courthouse" type="xs:string" minOccurs="0"/>
+      <xs:element name="caseNumber" type="xs:string" minOccurs="0"/>
+      <xs:element name="startTime" type="xs:string" minOccurs="0"/>
+      <xs:element name="endTime" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getCourtLogResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:GetCourtLogResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="registerNode">
+    <xs:sequence>
+      <xs:element name="document" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="registerNodeResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:RegisterNodeResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getCases">
+    <xs:sequence>
+      <xs:element name="courthouse" type="xs:string" minOccurs="0"/>
+      <xs:element name="courtroom" type="xs:string" minOccurs="0"/>
+      <xs:element name="date" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getCasesResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:GetCasesResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+
