@@ -30,7 +30,7 @@ resource "azurerm_api_management_api_schema" "example" {
   api_management_name = local.api_mgmt_name
   resource_group_name = local.api_mgmt_resource_group
   schema_id           = "example-schema"
-  content_type        = "xml"
+  content_type        = "application/vnd.ms-azure-apim.xsd+xml"
   value               = file("https://github.com/hmcts/darts-legacy/blob/2e512caf650aeb532fbdad539a714cd191a7144c/workspace/dartsdev/darts-webservice/wsdl/com.service.mojdarts.synapps.com/DARTSService_schema6.xsd")
 }
 
