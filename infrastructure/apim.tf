@@ -105,6 +105,29 @@ resource "azurerm_api_management_api_operation" "add-document" {
   }
 }
 
+resource "azurerm_api_management_api_operation_policy" "add-document-policy" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  operation_id        = azurerm_api_management_api_operation.add-document.operation_id
+
+  xml_content = <<XML
+          <policies>
+            <inbound>
+                <base />
+            </inbound>
+            <backend>
+                <base />
+            </backend>
+            <outbound>
+                <base />
+            </outbound>
+            <on-error>
+                <base />
+            </on-error>
+          </policies>
+  XML
+
 # Include CNP module for setting up an APIM product
 module "api_mgmt_product" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-product?ref=master"
