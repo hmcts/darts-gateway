@@ -8,6 +8,10 @@ locals {
   url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/dartsService.wsdl"
 
   xsd_dir = "../src/main/resources/schemas"
+
+  api_policy_vars = {
+      backend-url = "https://${var.env}"
+  }
 }
 
 provider "azurerm" {
@@ -111,23 +115,8 @@ resource "azurerm_api_management_api_operation_policy" "add-document-policy" {
   resource_group_name = local.api_mgmt_resource_group
   operation_id        = azurerm_api_management_api_operation.add-document.operation_id
 
-  xml_content = <<XML
-          <policies>
-            <inbound>
-                <base />
-                <!-- test -->
-            </inbound>
-            <backend>
-                <base />
-            </backend>
-            <outbound>
-                <base />
-            </outbound>
-            <on-error>
-                <base />
-            </on-error>
-          </policies>
-  XML
+  xml_content = templatefile("${path.module}/apim-policy/add-document-policy.xml", local.api_policy_vars)
+
 }
 
 # Include CNP module for setting up an APIM product
