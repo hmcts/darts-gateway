@@ -81,14 +81,14 @@ resource "azurerm_api_management_api_schema" "darts-schema-6" {
   value               = file("${local.xsd_dir}/darts-schema-6.xsd")
 }
 
-resource "azurerm_api_management_api_operation" "add-x" {
-  operation_id        = "addX"
+resource "azurerm_api_management_api_operation" "add-document" {
+  operation_id        = "add-document"
   api_name            = "spike-api"
   api_management_name = local.api_mgmt_name
   resource_group_name = local.api_mgmt_resource_group
-  display_name        = "Add X"
+  display_name        = "Add Document"
   method              = "POST"
-  url_template        = "/?soapAction=addX"
+  url_template        = "/?soapAction=addDocument"
   description         = "This can only be done by the logged in user."
 
   response {
