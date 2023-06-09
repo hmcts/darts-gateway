@@ -93,7 +93,7 @@ resource "azurerm_api_management_api_operation" "add-document" {
 
   request {
     description       = "addDocument"
-    representations {
+    representation {
         contentType = "text/xml"
         schemaId    = "darts-schema-6"
         typeName    = "addDocument"
