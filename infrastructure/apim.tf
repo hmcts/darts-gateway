@@ -115,6 +115,7 @@ resource "azurerm_api_management_api_operation_policy" "add-document-policy" {
           <policies>
             <inbound>
                 <base />
+                <!-- test -->
             </inbound>
             <backend>
                 <base />
@@ -127,6 +128,7 @@ resource "azurerm_api_management_api_operation_policy" "add-document-policy" {
             </on-error>
           </policies>
   XML
+}
 
 # Include CNP module for setting up an APIM product
 module "api_mgmt_product" {
