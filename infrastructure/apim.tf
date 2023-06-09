@@ -91,19 +91,14 @@ resource "azurerm_api_management_api_operation" "add-document" {
   url_template        = "/?soapAction=addDocument"
   description         = "This can only be done by the logged in user."
 
-  request: {
-    description: "addDocument",
-    headers: [],
-    queryParameters: [],
-    representations: [
-      {
-        contentType: "text/xml",
-        formParameters: null,
-        schemaId: "darts-schema-6",
-        typeName: "addDocument"
+  request {
+    description       = "addDocument"
+    representations {
+        contentType = "text/xml"
+        schemaId    = "darts-schema-6"
+        typeName    = "addDocument"
       }
-    ]
-  },
+  }
 
   response {
     status_code = 200
