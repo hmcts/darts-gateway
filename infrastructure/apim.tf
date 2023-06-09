@@ -25,6 +25,15 @@ resource "azurerm_api_management_api" "api_spike" {
   api_type            = "soap"
 }
 
+resource "azurerm_api_management_api_schema" "example" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  schema_id           = "example-schema"
+  content_type        = "xml"
+  value               = file("https://github.com/hmcts/darts-legacy/blob/2e512caf650aeb532fbdad539a714cd191a7144c/workspace/dartsdev/darts-webservice/wsdl/com.service.mojdarts.synapps.com/DARTSService_schema6.xsd")
+}
+
 resource "azurerm_api_management_api_operation" "add-x" {
   operation_id        = "addX"
   api_name            = "spike-api"
