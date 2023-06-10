@@ -13,10 +13,9 @@
 <policies>
   <inbound>
     <base />
-    <!-- Store original request so it can be output as part of error processing -->
-<!--    <validate-content unspecified-content-type-action="detect" max-size="100000" size-exceeded-action="detect">-->
-<!--      <content type="text/xml" validate-as="soap" schema-id="DARTSServiceSchema6" action="prevent" />-->
-<!--    </validate-content>-->
+    <validate-content unspecified-content-type-action="detect" max-size="100000" size-exceeded-action="detect">
+      <content type="text/xml" validate-as="soap" schema-id="darts-schema-6" action="prevent" />
+    </validate-content>
   </inbound>
   <backend>
     <base />

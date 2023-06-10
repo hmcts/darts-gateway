@@ -109,6 +109,174 @@ resource "azurerm_api_management_api_operation" "add-document" {
   }
 }
 
+resource "azurerm_api_management_api_operation" "add-audio" {
+  operation_id        = "add-audio"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  display_name        = "Add Audio"
+  method              = "POST"
+  url_template        = "/?soapAction=addAudio"
+  description         = ""
+
+  request {
+    description       = "addAudio"
+    representation {
+      content_type = "text/xml"
+      schema_id    = "darts-schema-6"
+      type_name    = "addAudio"
+    }
+  }
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation" "add-case" {
+  operation_id        = "add-case"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  display_name        = "Add Case"
+  method              = "POST"
+  url_template        = "/?soapAction=addCase"
+  description         = ""
+
+  request {
+    description       = "addCase"
+    representation {
+      content_type = "text/xml"
+      schema_id    = "darts-schema-6"
+      type_name    = "addCase"
+    }
+  }
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation" "add-log-entry" {
+  operation_id        = "add-log-entry"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  display_name        = "Add Log Entry"
+  method              = "POST"
+  url_template        = "/?soapAction=addLogEntry"
+  description         = ""
+
+  request {
+    description       = "addLogEntry"
+    representation {
+      content_type = "text/xml"
+      schema_id    = "darts-schema-6"
+      type_name    = "addLogEntry"
+    }
+  }
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation" "get-cases" {
+  operation_id        = "get-cases"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  display_name        = "Get Cases"
+  method              = "POST"
+  url_template        = "/?soapAction=getCases"
+  description         = ""
+
+  request {
+    description       = "getCases"
+    representation {
+      content_type = "text/xml"
+      schema_id    = "darts-schema-6"
+      type_name    = "getCases"
+    }
+  }
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation" "get-court-log" {
+  operation_id        = "get-court-log"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  display_name        = "Get Court Log"
+  method              = "POST"
+  url_template        = "/?soapAction=getCourtLog"
+  description         = ""
+
+  request {
+    description       = "getCourtLog"
+    representation {
+      content_type = "text/xml"
+      schema_id    = "darts-schema-6"
+      type_name    = "getCourtLog"
+    }
+  }
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation" "register-node" {
+  operation_id        = "register-node"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  display_name        = "Get Court Log"
+  method              = "POST"
+  url_template        = "/?soapAction=getCourtLog"
+  description         = ""
+
+  request {
+    description       = "getCourtLog"
+    representation {
+      content_type = "text/xml"
+      schema_id    = "darts-schema-6"
+      type_name    = "getCourtLog"
+    }
+  }
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation" "request-transcription" {
+  operation_id        = "request-transcription"
+  api_name            = "spike-api"
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+  display_name        = "Request Transcription"
+  method              = "POST"
+  url_template        = "/?soapAction=requestTranscription"
+  description         = ""
+
+  request {
+    description       = "requestTranscription"
+    representation {
+      content_type = "text/xml"
+      schema_id    = "darts-schema-6"
+      type_name    = "requestTranscription"
+    }
+  }
+
+  response {
+    status_code = 200
+  }
+}
+
 resource "azurerm_api_management_api_operation_policy" "add-document-policy" {
   api_name            = azurerm_api_management_api.api_spike.name
   api_management_name = local.api_mgmt_name
@@ -131,6 +299,8 @@ module "api_mgmt_product" {
     azurerm = azurerm.aks-sdsapps
   }
 }
+
+################################################################
 
 # Include CNP module for setting up an API on an APIM product
 # Uses output variable from api_mgmt_product to set product_id
