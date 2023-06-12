@@ -277,6 +277,14 @@ resource "azurerm_api_management_api_operation" "request-transcription" {
   }
 }
 
+resource "azurerm_api_management_api_policy" "api-policy" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+
+  xml_content         = file("${path.module}/apim-policy/api-spike-policy.xml")
+}
+
 resource "azurerm_api_management_api_operation_policy" "add-document-policy" {
   api_name            = azurerm_api_management_api.api_spike.name
   api_management_name = local.api_mgmt_name
@@ -284,7 +292,6 @@ resource "azurerm_api_management_api_operation_policy" "add-document-policy" {
   operation_id        = azurerm_api_management_api_operation.add-document.operation_id
 
   xml_content = templatefile("${path.module}/apim-policy/add-document-policy.xml", local.api_policy_vars)
-
 }
 
 # Include CNP module for setting up an APIM product
