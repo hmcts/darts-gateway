@@ -10,7 +10,7 @@ locals {
   xsd_dir = "../src/main/resources/schemas"
 
   api_policy_vars = {
-      backend-url = "https://${var.env}"
+      darts-gateway-url = "https://${var.env}"
   }
 }
 
@@ -29,6 +29,21 @@ resource "azurerm_api_management_api" "api_spike" {
   path                = "example"
   protocols           = ["https", "http"]
   api_type            = "soap"
+  service_url         = local.url_darts_api_hostname
+}
+
+resource "azurerm_api_management_product_api" "link_to_product" {
+  api_name            = azurerm_api_management_api.api_spike.name
+  api_management_name = local.api_mgmt_name
+  resource_group_name = local.api_mgmt_resource_group
+
+  product_id = local.api_mgmt_product_name
+
+  count = local.api_mgmt_product_name != "" ? 1 : 0
+
+  depends_on = [
+    azurerm_api_management_api.api_spike
+  ]
 }
 
 resource "azurerm_api_management_api_schema" "darts-schema-1" {
