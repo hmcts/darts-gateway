@@ -234,17 +234,17 @@ resource "azurerm_api_management_api_operation" "register-node" {
   api_name            = "spike-api"
   api_management_name = local.api_mgmt_name
   resource_group_name = local.api_mgmt_resource_group
-  display_name        = "Get Court Log"
+  display_name        = "Registers a node"
   method              = "POST"
-  url_template        = "/?soapAction=getCourtLog"
+  url_template        = "/?soapAction=registerNode"
   description         = ""
 
   request {
-    description       = "getCourtLog"
+    description       = "registerNode"
     representation {
       content_type = "text/xml"
       schema_id    = "darts-schema-6"
-      type_name    = "getCourtLog"
+      type_name    = "registerNode"
     }
   }
 
