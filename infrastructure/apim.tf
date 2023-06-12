@@ -106,6 +106,12 @@ resource "azurerm_api_management_api_operation" "add-document" {
 
   response {
     status_code = 200
+    description = "addDocumentResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "addDocumentResponse"
+    }
   }
 }
 
@@ -160,6 +166,12 @@ resource "azurerm_api_management_api_operation" "add-case" {
 
   response {
     status_code = 200
+    description = "addCaseResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "addCaseResponse"
+    }
   }
 }
 
@@ -184,6 +196,12 @@ resource "azurerm_api_management_api_operation" "add-log-entry" {
 
   response {
     status_code = 200
+    description = "addLogEntryResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "addLogEntryResponse"
+    }
   }
 }
 
@@ -208,6 +226,12 @@ resource "azurerm_api_management_api_operation" "get-cases" {
 
   response {
     status_code = 200
+    description = "getCasesResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "getCasesResponse"
+    }
   }
 }
 
@@ -232,6 +256,12 @@ resource "azurerm_api_management_api_operation" "get-court-log" {
 
   response {
     status_code = 200
+    description = "getCourtLogResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "getCourtLogResponse"
+    }
   }
 }
 
@@ -256,6 +286,12 @@ resource "azurerm_api_management_api_operation" "register-node" {
 
   response {
     status_code = 200
+    description = "registerNodeResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "registerNodeResponse"
+    }
   }
 }
 
@@ -280,6 +316,12 @@ resource "azurerm_api_management_api_operation" "request-transcription" {
 
   response {
     status_code = 200
+    description = "requestTranscriptionResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "requestTranscriptionResponse"
+    }
   }
 }
 
