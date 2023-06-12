@@ -14,7 +14,7 @@
   <inbound>
     <base />
     <validate-content unspecified-content-type-action="detect" max-size="100000" size-exceeded-action="detect">
-      <content type="text/xml" validate-as="soap" schema-id="/subscriptions/a8140a9e-f1b0-481f-a4de-09e2ee23f7ab/resourceGroups/ss-sbox-network-rg/providers/Microsoft.ApiManagement/service/sds-api-mgmt-sbox/apis/spike-api/schemas/darts-schema-6" action="prevent" />
+      <content type="text/xml" validate-as="soap" schema-id="darts-schema-6" action="prevent" />
     </validate-content>
   </inbound>
   <backend>
