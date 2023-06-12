@@ -3,7 +3,7 @@
 
   <xs:import namespace="http://response.dfs.moj.synapps.com/" schemaLocation="darts-schema-2"/>
 
-  <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="/schemas/darts-schema-4"/>
+  <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="darts-schema-4"/>
 
   <xs:element name="Exception" type="tns:Exception"/>
 

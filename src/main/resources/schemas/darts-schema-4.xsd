@@ -10,9 +10,9 @@
            xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/"
            xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/">
 
-  <xs:import namespace="http://properties.core.datamodel.fs.documentum.emc.com/" schemaLocation="/schemas/darts-schema-3"/>
+  <xs:import namespace="http://properties.core.datamodel.fs.documentum.emc.com/" schemaLocation="darts-schema-3"/>
 
-  <xs:import namespace="http://content.core.datamodel.fs.documentum.emc.com/" schemaLocation="/schemas/darts-schema-5"/>
+  <xs:import namespace="http://content.core.datamodel.fs.documentum.emc.com/" schemaLocation="darts-schema-5"/>
 
   <xs:complexType name="DataPackage">
     <xs:sequence>
