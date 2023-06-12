@@ -27,7 +27,7 @@ resource "azurerm_api_management_api" "api_spike" {
   revision            = "1"
   display_name        = "Spike API"
   path                = "example"
-  protocols           = ["https"]
+  protocols           = ["https", "http"]
   api_type            = "soap"
 }
 
@@ -130,6 +130,12 @@ resource "azurerm_api_management_api_operation" "add-audio" {
 
   response {
     status_code = 200
+    description = "addAudioResponse"
+    representation {
+      content_type = "text/xml"
+      schema_id = "darts-schema-6"
+      type_name = "addAudioResponse"
+    }
   }
 }
 
