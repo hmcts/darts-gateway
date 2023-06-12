@@ -14,7 +14,7 @@
   <inbound>
     <base />
     <validate-content unspecified-content-type-action="detect" max-size="100000" size-exceeded-action="detect">
-      <content type="text/xml" validate-as="soap" schema-id="darts-schema-6" action="prevent" />
+      <content type="text/xml" validate-as="soap" action="prevent" />
     </validate-content>
   </inbound>
   <backend>
