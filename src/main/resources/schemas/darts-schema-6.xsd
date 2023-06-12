@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema version="1.0" targetNamespace="http://com.synapps.mojdarts.service.com" xmlns:tns="http://com.synapps.mojdarts.service.com" xmlns:ns1="http://response.dfs.moj.synapps.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://core.datamodel.fs.documentum.emc.com/">
 
-  <xs:import namespace="http://response.dfs.moj.synapps.com/" schemaLocation="/schemas/darts-schema-2"/>
+  <xs:import namespace="http://response.dfs.moj.synapps.com/" schemaLocation="darts-schema-2"/>
 
   <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="/schemas/darts-schema-4"/>
 
