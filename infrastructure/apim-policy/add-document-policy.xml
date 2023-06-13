@@ -23,7 +23,7 @@
         }" />
     <!-- Send the stringfied XML validated & translated into JSON -->
     <send-request mode="new" response-variable-name="transformationResponse" timeout="20" ignore-error="true">
-      <set-url>https://72019.wiremockapi.cloud/json</set-url>
+      <set-url>${darts-gateway-url}</set-url>
       <set-method>POST</set-method>
       <set-header name="Content-Type" exists-action="override">
         <value>application/json</value>
