@@ -11,6 +11,7 @@ locals {
 
   api_policy_vars = {
       darts-gateway-url = "https://${var.env}"
+      backend-url       = local.url_darts_api_hostname
   }
 }
 
