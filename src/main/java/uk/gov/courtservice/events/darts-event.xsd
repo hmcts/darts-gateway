@@ -1,12 +1,22 @@
 <?xml version='1.0' encoding='utf-8'?>
-<xs:schema id="addDocument" targetNamespace="urn:integration-cjsonline-gov-uk:pilot:entities" xmlns="urn:integration-cjsonline-gov-uk:pilot:entities" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" attributeFormDefault="qualified" elementFormDefault="qualified">
+<xs:schema xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  attributeFormDefault="qualified" elementFormDefault="qualified"
+  id="addDocument" targetNamespace="urn:integration-cjsonline-gov-uk:pilot:entities" xmlns="urn:integration-cjsonline-gov-uk:pilot:entities">
 
   <xs:element name="DartsEvent" msdata:Prefix="be">
     <xs:complexType>
 
+      <xs:attribute form="unqualified" name="ID" type="xs:integer"/>
+
+      <xs:attribute form="unqualified" name="Y" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="M" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="D" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="H" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="MIN" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="S" type="xs:integer" use="required"/>
       <xs:sequence>
 
-        <xs:element name="CourtHouse" msdata:Prefix="be" minOccurs="1">
+        <xs:element minOccurs="1" name="CourtHouse" msdata:Prefix="be">
           <xs:simpleType>
             <xs:restriction base="xs:string">
               <xs:maxLength value="255"></xs:maxLength>
@@ -14,7 +24,7 @@
           </xs:simpleType>
         </xs:element>
 
-        <xs:element name="CourtRoom" msdata:Prefix="be" minOccurs="0">
+        <xs:element minOccurs="0" name="CourtRoom" msdata:Prefix="be">
           <xs:simpleType>
             <xs:restriction base="xs:string">
               <xs:maxLength value="64"></xs:maxLength>
@@ -22,10 +32,10 @@
           </xs:simpleType>
         </xs:element>
 
-        <xs:element name="CaseNumbers" msdata:Prefix="be" minOccurs="1" maxOccurs="1">
+        <xs:element maxOccurs="1" minOccurs="1" name="CaseNumbers" msdata:Prefix="be">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="CaseNumber" msdata:Prefix="be" minOccurs="1" maxOccurs="unbounded">
+              <xs:element maxOccurs="unbounded" minOccurs="1" name="CaseNumber" msdata:Prefix="be">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="32"></xs:maxLength>
@@ -35,7 +45,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="EventText" msdata:Prefix="be" minOccurs="0">
+        <xs:element minOccurs="0" name="EventText" msdata:Prefix="be">
           <xs:simpleType>
             <xs:restriction base="xs:string">
               <xs:maxLength value="2000"></xs:maxLength>
@@ -44,21 +54,13 @@
         </xs:element>
       </xs:sequence>
 
-      <xs:attribute name="ID" form="unqualified" type="xs:integer" />
-      <xs:attribute name="Y" form="unqualified" type="xs:integer" use="required" />
-      <xs:attribute name="M" form="unqualified" type="xs:integer" use="required" />
-      <xs:attribute name="D" form="unqualified" type="xs:integer" use="required" />
-      <xs:attribute name="H" form="unqualified" type="xs:integer" use="required" />
-      <xs:attribute name="MIN" form="unqualified" type="xs:integer" use="required" />
-      <xs:attribute name="S" form="unqualified" type="xs:integer" use="required" />
-
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msdata:Prefix="be">
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:Prefix="be" msdata:UseCurrentLocale="true">
     <xs:complexType>
-      <xs:choice minOccurs="1" maxOccurs="unbounded">
-        <xs:element ref="DartsEvent" />
+      <xs:choice maxOccurs="unbounded" minOccurs="1">
+        <xs:element ref="DartsEvent"/>
       </xs:choice>
     </xs:complexType>
   </xs:element>
