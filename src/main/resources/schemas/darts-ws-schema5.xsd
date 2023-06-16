@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/">
+
+  <xs:complexType name="Content" abstract="true">
+    <xs:sequence>
+      <xs:element name="renditionType" type="tns:RenditionType" nillable="true" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="format" type="xs:string" use="required"/>
+    <xs:attribute name="pageNumber" type="xs:int" use="required"/>
+    <xs:attribute name="pageModifier" type="xs:string"/>
+    <xs:attribute name="contentTransferMode" type="tns:ContentTransferMode"/>
+  </xs:complexType>
+
+  <xs:complexType name="BinaryContent">
+    <xs:complexContent>
+      <xs:extension base="tns:Content">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:base64Binary"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DataHandlerContent">
+    <xs:complexContent>
+      <xs:extension base="tns:Content">
+        <xs:sequence>
+          <xs:element name="Value" ns1:expectedContentTypes="*/*" type="xs:base64Binary" xmlns:ns1="http://www.w3.org/2005/05/xmlmime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="UcfContent">
+    <xs:complexContent>
+      <xs:extension base="tns:Content">
+        <xs:sequence>
+          <xs:element name="LocalFilePath" type="xs:string"/>
+          <xs:element name="ActivityInfo" type="tns:ActivityInfo" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ActivityInfo">
+    <xs:sequence/>
+    <xs:attribute name="sessionId" type="xs:string" use="required"/>
+    <xs:attribute name="initiatorSessionId" type="xs:string"/>
+    <xs:attribute name="activityId" type="xs:string" use="required"/>
+    <xs:attribute name="autoCloseConnection" type="xs:boolean" use="required"/>
+    <xs:attribute name="closed" type="xs:boolean" use="required"/>
+    <xs:attribute name="targetDeploymentId" type="xs:string"/>
+    <xs:attribute name="initiatorDeploymentId" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="UrlContent">
+    <xs:complexContent>
+      <xs:extension base="tns:Content">
+        <xs:sequence/>
+        <xs:attribute name="url" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="RenditionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CLIENT"/>
+      <xs:enumeration value="SERVER"/>
+      <xs:enumeration value="PRIMARY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ContentTransferMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BASE64"/>
+      <xs:enumeration value="MTOM"/>
+      <xs:enumeration value="UCF"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

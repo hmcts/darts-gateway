@@ -1,0 +1,8 @@
+<addDocument xmlns="http://com.synapps.mojdarts.service.com">
+  <messageId xmlns="">12345</messageId>
+  <type xmlns="">21300</type>
+  <subType xmlns="">21300</subType>
+  <document xmlns="">
+    &lt;be:DartsEvent xmlns:be="urn:integration-cjsonline-gov-uk:pilot:entities" ID="0" Y="2019" M="10" D="24" H="15" MIN="52" S="41"&gt;&lt;be:invalid&gt;SNARESBROOK mu&lt;/be:invalid&gt;&lt;be:CourtRoom&gt;7&lt;/be:CourtRoom&gt;&lt;be:CaseNumbers&gt;&lt;be:CaseNumber&gt;T20190441&lt;/be:CaseNumber&gt;&lt;/be:CaseNumbers&gt;&lt;be:EventText&gt; test&lt;/be:EventText&gt;&lt;/be:DartsEvent&gt;
+  </document>
+</addDocument>
