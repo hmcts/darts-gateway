@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xs:schema xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  attributeFormDefault="qualified" elementFormDefault="qualified"
+  id="addDocument" targetNamespace="urn:integration-cjsonline-gov-uk:pilot:entities" xmlns="urn:integration-cjsonline-gov-uk:pilot:entities">
+
+  <xs:element name="DartsEvent" msdata:Prefix="be">
+    <xs:complexType>
+
+      <xs:attribute form="unqualified" name="ID" type="xs:integer"/>
+
+      <xs:attribute form="unqualified" name="Y" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="M" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="D" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="H" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="MIN" type="xs:integer" use="required"/>
+      <xs:attribute form="unqualified" name="S" type="xs:integer" use="required"/>
+      <xs:sequence>
+
+        <xs:element minOccurs="1" name="CourtHouse" msdata:Prefix="be">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="255"></xs:maxLength>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+
+        <xs:element minOccurs="0" name="CourtRoom" msdata:Prefix="be">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="64"></xs:maxLength>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+
+        <xs:element maxOccurs="1" minOccurs="1" name="CaseNumbers" msdata:Prefix="be">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="1" name="CaseNumber" msdata:Prefix="be">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="32"></xs:maxLength>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" name="EventText" msdata:Prefix="be">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="2000"></xs:maxLength>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:Prefix="be" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded" minOccurs="1">
+        <xs:element ref="DartsEvent"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
