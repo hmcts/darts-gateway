@@ -22,6 +22,10 @@ java {
   }
 }
 
+configurations {
+  jaxb
+}
+
 sourceSets {
   functionalTest {
     java {
@@ -189,6 +193,7 @@ repositories {
 
 ext {
   log4JVersion = "2.20.0"
+  wsdl4jVersion = "1.6.3"
 }
 
 ext['snakeyaml.version'] = '2.0'
@@ -199,6 +204,9 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
+  implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
+  jaxb("org.glassfish.jaxb:jaxb-xjc")
+
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.1', {
     exclude group: 'commons-fileupload', module: 'commons-fileupload'
@@ -266,5 +274,24 @@ tasks.withType(Pmd) {
   exclude 'com/synapps/moj/dfs/response/**'
   exclude 'com/emc/**/*.java'
   exclude 'uk/gov/courtservice/**/*.java'
+}
+
+task genJaxb {
+  ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+  ext.schema = "src/main/resources/dartsService.wsdl"
+
+  outputs.dir sourcesDir
+
+  doLast() {
+    project.ant {
+      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+      mkdir(dir: sourcesDir)
+
+      xjc(destdir: sourcesDir, schema: schema) {
+        arg(value: "-wsdl")
+        produces(dir: sourcesDir, includes: "**/*.java")
+      }
+    }
+  }
 }
 
