@@ -207,6 +207,7 @@ dependencies {
   implementation ('io.github.openfeign:feign-gson:12.3') {
     exclude group: 'com.google.code.gson', module: 'gson'
   }
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.5'
   implementation('com.google.code.gson:gson:2.10.1')
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
