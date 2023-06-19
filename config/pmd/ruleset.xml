@@ -9,6 +9,7 @@
   <rule ref="category/java/bestpractices.xml">
     <exclude name="GuardLogStatement"/>
     <exclude name="JUnitTestContainsTooManyAsserts"/>
+    <exclude name="JUnitAssertionsShouldIncludeMessage"/>
   </rule>
   <rule ref="category/java/codestyle.xml">
     <exclude name="AtLeastOneConstructor"/>
@@ -41,6 +42,7 @@
     <exclude name="UseUtilityClass"/>
     <exclude name="LoosePackageCoupling"/>
     <exclude name="DataClass"/>
+    <exclude name="TooManyFields"/>
   </rule>
   <rule ref="category/java/design.xml/ExcessiveImports">
     <properties>
@@ -62,8 +64,12 @@
     <exclude name="CommentSize"/>
     <exclude name="UncommentedEmptyMethodBody"/>
   </rule>
+  <rule ref="category/java/errorprone.xml">
+    <exclude name="NonSerializableClass"/>
+    <exclude name="MissingSerialVersionUID"/>
+  </rule>
   <rule ref="category/java/multithreading.xml"/>
   <rule ref="category/java/performance.xml"/>
   <rule ref="category/java/security.xml"/>
-
+  <exclude-pattern>.*/generated.*</exclude-pattern>
 </ruleset>

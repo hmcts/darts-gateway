@@ -204,6 +204,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
+  implementation group: 'org.springframework.ws', name: 'spring-ws-security'
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb("org.glassfish.jaxb:jaxb-xjc")
 
@@ -267,6 +268,7 @@ tasks.withType(Checkstyle) {
   exclude 'com/synapps/moj/dfs/response/*.java'
   exclude 'com/emc/**/*.java'
   exclude 'uk/gov/courtservice/**/*.java'
+  exclude 'com/viqsoultions/**/*.java'
 }
 
 tasks.withType(Pmd) {
@@ -274,6 +276,7 @@ tasks.withType(Pmd) {
   exclude 'com/synapps/moj/dfs/response/**'
   exclude 'com/emc/**/*.java'
   exclude 'uk/gov/courtservice/**/*.java'
+  exclude 'com/viqsoultions/**/*.java'
 }
 
 task genJaxb {
