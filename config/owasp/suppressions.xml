@@ -8,6 +8,7 @@
     <cve>CVE-2016-1000027</cve>
     <cve>CVE-2023-20873</cve>
     <cve>CVE-2023-24998</cve>
+    <cve>CVE-2023-35116</cve>
   </suppress>
   <!--End of false positives section -->
 
