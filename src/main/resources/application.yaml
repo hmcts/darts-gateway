@@ -68,3 +68,14 @@ validate:
     max-levels-descendant-nodes: 2000
     max-child-nodes-per-node: 2000
     max-attributes-per-node: 200
+
+darts-gateway:
+  ws:
+    request-validation: false
+    response-validation: false
+  events:
+    validate: false
+    schema: "darts-event.xsd"
+  darts-api:
+    base-url: ${DARTS_API_URL:http://localhost:4550}
+    events: ${darts-gateway.darts-api.base-url}/events
