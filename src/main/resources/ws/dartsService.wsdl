@@ -1,5 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<definitions name="DARTSService" targetNamespace="http://com.synapps.mojdarts.service.com" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://com.synapps.mojdarts.service.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<definitions name="DARTSService"
+             targetNamespace="http://com.synapps.mojdarts.service.com"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://com.synapps.mojdarts.service.com"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <types>
     <xsd:schema />
     <xs:schema xmlns:tns="http://rt.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-rt="http://rt.fs.documentum.emc.com/" elementFormDefault="unqualified" targetNamespace="http://rt.fs.documentum.emc.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -847,7 +852,7 @@
   <service name="DARTSService">
     <documentation><![CDATA[@author ewingsg]]></documentation>
     <port binding="tns:DARTSServicePortBinding" name="DARTSServicePort">
-      <soap:address location="http://com.synapps.mojdarts.service.com:7080/service/darts/DARTSService" />
+      <soap:address location="http://someurl.com" />
     </port>
   </service>
 </definitions>
