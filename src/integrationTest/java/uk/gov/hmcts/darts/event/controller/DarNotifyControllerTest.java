@@ -72,7 +72,7 @@ class DarNotifyControllerTest {
     }
 
     @Test
-    void darNotifyEventApiPostEndpoint() throws Exception {
+    void shouldSendDarNotifyEventSoapAction() throws Exception {
         String requestBody = """
             {
               "notification_type": "3",
