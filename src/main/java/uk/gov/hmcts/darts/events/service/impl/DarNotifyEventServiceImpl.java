@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.event.service.impl;
+package uk.gov.hmcts.darts.events.service.impl;
 
 import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.Event;
@@ -8,9 +8,10 @@ import com.viqsoultions.XMLEventDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
-import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
-import uk.gov.hmcts.darts.event.service.DarNotifyEventService;
+import uk.gov.hmcts.darts.events.client.DarNotifyEventClient;
+import uk.gov.hmcts.darts.events.config.DarNotifyEventConfigurationProperties;
+import uk.gov.hmcts.darts.events.model.DarNotifyEvent;
+import uk.gov.hmcts.darts.events.service.DarNotifyEventService;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -23,12 +24,13 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
 
     public static final String EVENT_DATE_TIME_ATTRIBUTE = "%d";
 
+    private final DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties;
     private final DarNotifyEventClient darNotifyEventClient;
 
     @Override
     public void darNotify(DarNotifyEvent darNotifyEvent) {
         DARNotifyEvent xmlDarNotifyEvent = convertToXmlDarNotifyEvent(darNotifyEvent);
-        darNotifyEventClient.darNotifyEvent(xmlDarNotifyEvent);
+        darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), xmlDarNotifyEvent);
     }
 
     private DARNotifyEvent convertToXmlDarNotifyEvent(DarNotifyEvent darNotifyEvent) {

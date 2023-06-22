@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.event.controller;
+package uk.gov.hmcts.darts.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
-import uk.gov.hmcts.darts.event.service.DarNotifyEventService;
+import uk.gov.hmcts.darts.events.model.DarNotifyEvent;
+import uk.gov.hmcts.darts.events.service.DarNotifyEventService;
 
 @Slf4j
 @RequiredArgsConstructor

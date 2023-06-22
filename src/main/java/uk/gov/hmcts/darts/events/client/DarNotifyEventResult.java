@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.event.client;
+package uk.gov.hmcts.darts.events.client;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
-package uk.gov.hmcts.darts.event.service;
+package uk.gov.hmcts.darts.events.service;
 
-import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
+import uk.gov.hmcts.darts.events.model.DarNotifyEvent;
 
 public interface DarNotifyEventService {
 

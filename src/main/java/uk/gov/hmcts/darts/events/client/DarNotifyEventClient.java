@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.event.client;
+package uk.gov.hmcts.darts.events.client;
 
 import com.viqsoultions.DARNotifyEvent;
 import lombok.RequiredArgsConstructor;
@@ -6,19 +6,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import uk.gov.hmcts.darts.events.config.DarNotifyEventConfigurationProperties;
 
-@RequiredArgsConstructor
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class DarNotifyEventClient {
 
+    private final DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties;
     private final WebServiceTemplate webServiceTemplate;
 
-    public void darNotifyEvent(DARNotifyEvent darNotifyEvent) {
+    public void darNotifyEvent(String darNotificationUrl, DARNotifyEvent darNotifyEvent) {
         Object responseObj = webServiceTemplate.marshalSendAndReceive(
-            "http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx",
+            darNotificationUrl != null ? darNotificationUrl
+                : darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toExternalForm(),
             darNotifyEvent,
-            new SoapActionCallback("http://www.VIQSoultions.com/DARNotifyEvent")
+            new SoapActionCallback(darNotifyEventConfigurationProperties.getSoapAction().toExternalForm())
         );
         log.debug((String) responseObj);
 

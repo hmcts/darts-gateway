@@ -17,9 +17,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
-import uk.gov.hmcts.darts.event.config.DarNotifyEventConfiguration;
-import uk.gov.hmcts.darts.event.service.impl.DarNotifyEventServiceImpl;
+import uk.gov.hmcts.darts.events.client.DarNotifyEventClient;
+import uk.gov.hmcts.darts.events.config.DarNotifyEventConfiguration;
+import uk.gov.hmcts.darts.events.controller.DarNotifyController;
+import uk.gov.hmcts.darts.events.service.impl.DarNotifyEventServiceImpl;
 
 import java.io.StringReader;
 import java.io.StringWriter;
