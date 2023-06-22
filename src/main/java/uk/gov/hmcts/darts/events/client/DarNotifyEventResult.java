@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -18,7 +18,7 @@ public enum DarNotifyEventResult {
     NO_MATCHING_EVENT(4, "No matching event"),
     OTHER_ERROR(5, "Other error");
 
-    private static final Map<Integer, DarNotifyEventResult> BY_RESULT = new HashMap<>();
+    private static final Map<Integer, DarNotifyEventResult> BY_RESULT = new ConcurrentHashMap<>();
 
     static {
         for (DarNotifyEventResult e : values()) {

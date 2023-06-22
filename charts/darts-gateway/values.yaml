@@ -1,12 +1,16 @@
 java:
   applicationPort: 8070
-  image: "sdshmctspublic.azurecr.io/darts/gateway:latest"
+  image: 'sdshmctspublic.azurecr.io/darts/gateway:latest'
   ingressHost: darts-gateway.{{ .Values.global.environment }}.platform.hmcts.net
   aadIdentityName: darts
+  keyVaults:
+    "darts":
+      secrets:
+        - name: darts-gateway-DarNotifyEventSecurementUsername
+          alias: DAR_NOTIFY_EVENT_SECUREMENT_USERNAME
+        - name: darts-gateway-DarNotifyEventSecurementPassword
+          alias: DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD
   #  Uncomment once the vault containing the app insights key has been set up
-  #  keyVaults:
-  #    darts:
-  #      secrets:
   #        - name: AppInsightsInstrumentationKey
   #          alias: azure.application-insights.instrumentation-key
   environment:

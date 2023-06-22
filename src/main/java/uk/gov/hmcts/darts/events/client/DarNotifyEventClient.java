@@ -8,6 +8,8 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import uk.gov.hmcts.darts.events.config.DarNotifyEventConfigurationProperties;
 
+import static uk.gov.hmcts.darts.events.client.DarNotifyEventResult.OK;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class DarNotifyEventClient {
             result = DarNotifyEventResult.valueOfResult(Integer.valueOf((String) responseObj));
         }
 
-        if (DarNotifyEventResult.OK.equals(result)) {
+        if (OK.equals(result)) {
             log.info("DAR Notify was successful");
         } else if (result != null) {
             log.warn("DAR Notify failed with message: {}", result.getMessage());
