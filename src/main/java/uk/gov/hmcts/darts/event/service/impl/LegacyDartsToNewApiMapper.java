@@ -1,9 +1,11 @@
-package uk.gov.hmcts.darts.events;
+package uk.gov.hmcts.darts.event.service.impl;
 
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
+import uk.gov.hmcts.darts.event.model.EventRequest;
+import uk.gov.hmcts.darts.event.model.EventResponse;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -31,7 +33,8 @@ public class LegacyDartsToNewApiMapper {
             dartsEvent.getD().intValue(),
             dartsEvent.getH().intValue(),
             dartsEvent.getMIN().intValue(),
-            dartsEvent.getS().intValue());
+            dartsEvent.getS().intValue()
+        );
     }
 
     public AddDocumentResponse toLegacyApi(EventResponse eventResponse) {

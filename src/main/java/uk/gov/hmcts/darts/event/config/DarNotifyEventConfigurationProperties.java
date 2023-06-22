@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.events.config;
+package uk.gov.hmcts.darts.event.config;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

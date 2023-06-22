@@ -1,7 +1,6 @@
-package uk.gov.hmcts.darts.event.client;
+package uk.gov.hmcts.darts.event.enums;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.darts.events.client.DarNotifyEventResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

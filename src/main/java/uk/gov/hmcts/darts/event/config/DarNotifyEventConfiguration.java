@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.events.config;
+package uk.gov.hmcts.darts.event.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

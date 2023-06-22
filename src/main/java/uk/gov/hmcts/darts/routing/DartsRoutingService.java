@@ -5,7 +5,7 @@ import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.dailylist.DailyListRoute;
-import uk.gov.hmcts.darts.events.EventRoute;
+import uk.gov.hmcts.darts.event.service.impl.EventRoute;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +28,8 @@ public class DartsRoutingService {
                 request.getDocument(),
                 request.getMessageId(),
                 request.getType(),
-                request.getSubType());
+                request.getSubType()
+            );
         }
     }
 

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.events.client;
+package uk.gov.hmcts.darts.event.client;
 
 import com.viqsoultions.DARNotifyEvent;
 import lombok.RequiredArgsConstructor;
@@ -6,9 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import uk.gov.hmcts.darts.events.config.DarNotifyEventConfigurationProperties;
+import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
+import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 
-import static uk.gov.hmcts.darts.events.client.DarNotifyEventResult.OK;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.OK;
 
 @Component
 @Slf4j
