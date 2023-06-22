@@ -146,6 +146,7 @@ def sonarExclusions = [
   '**/com/emc/**',
   '**/com/service/**',
   '**/com/synapps/**',
+  '**/com/viqsoultions/**',
   '**/uk/gov/courtservice/**',
 ]
 
