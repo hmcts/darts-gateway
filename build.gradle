@@ -22,6 +22,13 @@ java {
   }
 }
 
+
+configurations.all {
+  exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
+  exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on' // bcprov-jdk15on-1.69.jar CVE-2023-33201
+  exclude group: 'org.bouncycastle', module: 'bcutil-jdk15on'
+}
+
 configurations {
   jaxb
 }
@@ -205,7 +212,14 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
-  implementation group: 'org.springframework.ws', name: 'spring-ws-security'
+  implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
+    exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
+  }
+  implementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
+  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.75'
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.75'
+  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.75'
+
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb("org.glassfish.jaxb:jaxb-xjc")
 
@@ -214,7 +228,7 @@ dependencies {
     exclude group: 'commons-fileupload', module: 'commons-fileupload'
   }
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
-  implementation ('io.github.openfeign:feign-gson:12.3') {
+  implementation('io.github.openfeign:feign-gson:12.3') {
     exclude group: 'com.google.code.gson', module: 'gson'
   }
   implementation('com.google.code.gson:gson:2.10.1')
@@ -234,7 +248,8 @@ dependencies {
   testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '3.0.6.RELEASE'
   testImplementation group: 'commons-io', name: 'commons-io', version: '2.8.0'// CVE-2021-29425
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.3'
-  testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2' // bumping: Cx78f40514-81ff
+  testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
+  // bumping: Cx78f40514-81ff
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
