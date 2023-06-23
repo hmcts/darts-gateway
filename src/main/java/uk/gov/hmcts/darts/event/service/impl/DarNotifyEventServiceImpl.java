@@ -13,7 +13,6 @@ import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.event.service.DarNotifyEventService;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
@@ -39,10 +38,10 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
         Event event = factory.createEvent();
         event.setType(darNotifyEvent.getNotificationType());
 
-        LocalDateTime localDateTime = OffsetDateTime.ofInstant(
+        OffsetDateTime localDateTime = OffsetDateTime.ofInstant(
             darNotifyEvent.getTimestamp().toInstant(),
             ZoneId.of("Europe/London")
-        ).toLocalDateTime();
+        );
         event.setY(String.format(EVENT_DATE_TIME_ATTRIBUTE, localDateTime.getYear()));
         event.setM(String.format(EVENT_DATE_TIME_ATTRIBUTE, localDateTime.getMonthValue()));
         event.setD(String.format(EVENT_DATE_TIME_ATTRIBUTE, localDateTime.getDayOfMonth()));

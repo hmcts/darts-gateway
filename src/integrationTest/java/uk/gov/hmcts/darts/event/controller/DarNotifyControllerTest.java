@@ -51,7 +51,7 @@ class DarNotifyControllerTest {
             <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
             <ns2:DARNotifyEvent xmlns:ns2="http://www.VIQSoultions.com">
                 <XMLEventDocument>
-                    <event type="3" Y="2023" M="6" D="19" H="14" MIN="30" S="25">
+                    <event type="3" Y="2023" M="6" D="19" H="15" MIN="30" S="25">
                         <courthouse>courthouse</courthouse>
                         <courtroom>courtroom</courtroom>
                         <case_numbers>
