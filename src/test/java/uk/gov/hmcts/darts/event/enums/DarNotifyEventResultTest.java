@@ -9,13 +9,29 @@ class DarNotifyEventResultTest {
 
     @Test
     void shouldReturnDarNotifyEventResultWhenResultCodeValid() {
-        assertEquals(DarNotifyEventResult.OK, DarNotifyEventResult.valueOfResult(Integer.valueOf(0)));
-        assertEquals(DarNotifyEventResult.OK, DarNotifyEventResult.valueOfResult(0));
-        assertEquals(DarNotifyEventResult.MALFORMED, DarNotifyEventResult.valueOfResult(1));
-        assertEquals(DarNotifyEventResult.NO_DESTINATION_DATA, DarNotifyEventResult.valueOfResult(2));
-        assertEquals(DarNotifyEventResult.WRONG_DESTINATION, DarNotifyEventResult.valueOfResult(3));
-        assertEquals(DarNotifyEventResult.NO_MATCHING_EVENT, DarNotifyEventResult.valueOfResult(4));
-        assertEquals(DarNotifyEventResult.OTHER_ERROR, DarNotifyEventResult.valueOfResult(5));
+        DarNotifyEventResult darNotifyEventResult = DarNotifyEventResult.OK;
+        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(0));
+        assertEquals("OK", darNotifyEventResult.getMessage());
+
+        darNotifyEventResult = DarNotifyEventResult.MALFORMED;
+        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(1));
+        assertEquals("XML malformed", darNotifyEventResult.getMessage());
+
+        darNotifyEventResult = DarNotifyEventResult.NO_DESTINATION_DATA;
+        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(2));
+        assertEquals("No destination data", darNotifyEventResult.getMessage());
+
+        darNotifyEventResult = DarNotifyEventResult.WRONG_DESTINATION;
+        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(3));
+        assertEquals("Wrong destination", darNotifyEventResult.getMessage());
+
+        darNotifyEventResult = DarNotifyEventResult.NO_MATCHING_EVENT;
+        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(4));
+        assertEquals("No matching event", darNotifyEventResult.getMessage());
+
+        darNotifyEventResult = DarNotifyEventResult.OTHER_ERROR;
+        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(5));
+        assertEquals("Other error", darNotifyEventResult.getMessage());
     }
 
     @Test

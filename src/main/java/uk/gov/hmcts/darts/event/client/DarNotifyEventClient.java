@@ -22,7 +22,8 @@ public class DarNotifyEventClient {
     private final WebServiceTemplate webServiceTemplate;
 
     // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
-    public void darNotifyEvent(String darNotificationUrl, DARNotifyEvent request) {
+    public boolean darNotifyEvent(String darNotificationUrl, DARNotifyEvent request) {
+        boolean successful = false;
 
         String uri = darNotificationUrl != null ? darNotificationUrl
             : darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toExternalForm();
@@ -44,6 +45,7 @@ public class DarNotifyEventClient {
                     log.info("DAR Notify successfully sent to: {}, caseNumbers: {}",
                              uri, caseNumbers
                     );
+                    successful = true;
                 } else if (result != null) {
                     log.warn("DAR Notify to {} failed with message: {}, caseNumbers: {}",
                              uri, result.getMessage(), caseNumbers
@@ -65,6 +67,7 @@ public class DarNotifyEventClient {
             );
         }
 
+        return successful;
     }
 
 }

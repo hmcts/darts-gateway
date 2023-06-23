@@ -21,7 +21,7 @@ import java.time.ZoneId;
 @Slf4j
 public class DarNotifyEventServiceImpl implements DarNotifyEventService {
 
-    public static final String EVENT_DATE_TIME_ATTRIBUTE = "%d";
+    private static final String EVENT_DATE_TIME_ATTRIBUTE = "%d";
 
     private final DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties;
     private final DarNotifyEventClient darNotifyEventClient;
