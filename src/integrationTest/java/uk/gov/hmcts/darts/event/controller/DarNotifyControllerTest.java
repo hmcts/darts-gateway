@@ -44,6 +44,7 @@ class DarNotifyControllerTest {
     @MockBean
     private WebServiceTemplate mockWebServiceTemplate;
 
+    // Initial test added here to check the DARNotifyEvent XML request for convenience
     @Test
     void shouldMarshalDarNotifyEventAsExpected() throws JAXBException {
         Unmarshaller unmarshaller = jaxb2Marshaller.createUnmarshaller();
@@ -71,6 +72,7 @@ class DarNotifyControllerTest {
         assertThat(sw.toString()).isEqualTo(expectedDarNotifyEventXml);
     }
 
+    // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
     @Test
     void shouldSendDarNotifyEventSoapAction() throws Exception {
         String requestBody = """

@@ -14,7 +14,7 @@ public class DarNotifyEventConfiguration {
 
     @Bean
     public Jaxb2Marshaller marshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        var marshaller = new Jaxb2Marshaller();
         marshaller.setPackagesToScan("com.viqsoultions");
         return marshaller;
     }
@@ -24,7 +24,7 @@ public class DarNotifyEventConfiguration {
         DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties,
         Jaxb2Marshaller marshaller,
         Wss4jSecurityInterceptor securityInterceptor) {
-        WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+        var webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setDefaultUri(darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toString());
         webServiceTemplate.setMarshaller(marshaller);
         webServiceTemplate.setInterceptors(new ClientInterceptor[]{securityInterceptor});
@@ -34,7 +34,7 @@ public class DarNotifyEventConfiguration {
     @Bean
     public Wss4jSecurityInterceptor securityInterceptor(
         DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties) {
-        Wss4jSecurityInterceptor securityInterceptor = new Wss4jSecurityInterceptor();
+        var securityInterceptor = new Wss4jSecurityInterceptor();
         securityInterceptor.setSecurementActions(darNotifyEventConfigurationProperties.getSecurementActions());
         securityInterceptor.setSecurementUsername(darNotifyEventConfigurationProperties.getSecurementUsername());
         securityInterceptor.setSecurementPassword(darNotifyEventConfigurationProperties.getSecurementPassword());

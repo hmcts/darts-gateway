@@ -66,6 +66,16 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DARNotifyEventResponse }
+     * 
+     * @return
+     *     the new instance of {@link DARNotifyEventResponse }
+     */
+    public DARNotifyEventResponse createDARNotifyEventResponse() {
+        return new DARNotifyEventResponse();
+    }
+
+    /**
      * Create an instance of {@link Event.CaseNumbers }
      * 
      * @return

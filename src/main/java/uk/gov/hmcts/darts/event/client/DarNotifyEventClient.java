@@ -1,9 +1,11 @@
 package uk.gov.hmcts.darts.event.client;
 
 import com.viqsoultions.DARNotifyEvent;
+import com.viqsoultions.DARNotifyEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
@@ -19,29 +21,50 @@ public class DarNotifyEventClient {
     private final DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties;
     private final WebServiceTemplate webServiceTemplate;
 
-    public void darNotifyEvent(String darNotificationUrl, DARNotifyEvent darNotifyEvent) {
-        Object responseObj = webServiceTemplate.marshalSendAndReceive(
-            darNotificationUrl != null ? darNotificationUrl
-                : darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toExternalForm(),
-            darNotifyEvent,
-            new SoapActionCallback(darNotifyEventConfigurationProperties.getSoapAction().toExternalForm())
-        );
-        log.debug((String) responseObj);
+    // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
+    public void darNotifyEvent(String darNotificationUrl, DARNotifyEvent request) {
 
-        DarNotifyEventResult result = null;
-        if (responseObj instanceof Integer) {
-            result = DarNotifyEventResult.valueOfResult((Integer) responseObj);
-        } else if (responseObj instanceof String) {
-            result = DarNotifyEventResult.valueOfResult(Integer.valueOf((String) responseObj));
+        String uri = darNotificationUrl != null ? darNotificationUrl
+            : darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toExternalForm();
+
+        String caseNumbers = request.getXMLEventDocument().getEvent().getCaseNumbers().getCaseNumber().toString();
+
+        try {
+            Object responseObj = webServiceTemplate.marshalSendAndReceive(
+                uri,
+                request,
+                new SoapActionCallback(darNotifyEventConfigurationProperties.getSoapAction().toExternalForm())
+            );
+
+            if (responseObj instanceof DARNotifyEventResponse) {
+                DARNotifyEventResponse response = (DARNotifyEventResponse) responseObj;
+                DarNotifyEventResult result = DarNotifyEventResult.valueOfResult(response.getDARNotifyEventResult());
+
+                if (OK.equals(result)) {
+                    log.info("DAR Notify successfully sent to: {}, caseNumbers: {}",
+                             uri, caseNumbers
+                    );
+                } else if (result != null) {
+                    log.warn("DAR Notify to {} failed with message: {}, caseNumbers: {}",
+                             uri, result.getMessage(), caseNumbers
+                    );
+                } else {
+                    log.warn("DAR Notify to {} failed with unknown result code: {}, caseNumbers: {}",
+                             uri, response.getDARNotifyEventResult(), caseNumbers
+                    );
+                }
+            } else {
+                log.warn("DAR Notify to {} did not respond, caseNumbers: {}",
+                         uri, caseNumbers
+                );
+            }
+
+        } catch (WebServiceException webServiceException) {
+            log.error("DAR Notify to {} FAILED",
+                      uri, webServiceException
+            );
         }
 
-        if (OK.equals(result)) {
-            log.info("DAR Notify was successful");
-        } else if (result != null) {
-            log.warn("DAR Notify failed with message: {}", result.getMessage());
-        } else {
-            log.warn("DAR Notify failed with unknown result code");
-        }
     }
 
 }
