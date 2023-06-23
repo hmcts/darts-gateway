@@ -298,6 +298,15 @@ tasks.withType(Pmd) {
   exclude 'com/viqsoultions/**/*.java'
 }
 
+sourceSets {
+  main {
+    java {
+      srcDir 'src/main/java'
+      srcDir 'build/generated-sources/jaxb'
+    }
+  }
+}
+
 task genJaxb {
   ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
   ext.schema = "src/main/resources/schemas/dar-notify-event.xsd"
@@ -317,3 +326,4 @@ task genJaxb {
   }
 }
 
+compileJava.dependsOn genJaxb
