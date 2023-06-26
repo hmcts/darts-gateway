@@ -18,6 +18,7 @@ public class LegacyDartsToNewApiMapper {
             messageId,
             type,
             subType,
+            dartsEvent.getID().toString(),
             dartsEvent.getCourtHouse(),
             dartsEvent.getCourtRoom(),
             dartsEvent.getCaseNumbers().getCaseNumber(),

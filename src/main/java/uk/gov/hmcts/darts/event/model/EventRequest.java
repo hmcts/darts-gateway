@@ -8,6 +8,7 @@ public record EventRequest(
     String messageId,
     String type,
     String subType,
+    String eventId,
     String courtHouse,
     String courtRoom,
     List<String> caseNumbers,
