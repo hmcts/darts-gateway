@@ -1,8 +1,9 @@
-package uk.gov.hmcts.darts.events;
+package uk.gov.hmcts.darts.event.service.impl;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.courtservice.events.DartsEvent;
 import uk.gov.courtservice.events.DartsEvent.CaseNumbers;
+import uk.gov.hmcts.darts.event.model.EventRequest;
 
 import static java.math.BigInteger.ONE;
 import static org.assertj.core.api.Assertions.assertThat;

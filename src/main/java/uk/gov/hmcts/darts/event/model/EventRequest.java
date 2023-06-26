@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.events;
+package uk.gov.hmcts.darts.event.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,4 +13,5 @@ public record EventRequest(
     List<String> caseNumbers,
     String eventText,
     LocalDateTime dateTime) {
+
 }
