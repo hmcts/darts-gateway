@@ -2,6 +2,7 @@ package com.service.mojdarts.synapps.com;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 
@@ -11,6 +12,7 @@ import jakarta.xml.bind.annotation.XmlType;
     "courtroom",
     "date"
 })
+@XmlRootElement(name = "getCases")
 public class GetCases {
 
     protected String courthouse;
