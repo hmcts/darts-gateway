@@ -1,0 +1,237 @@
+{
+  "_return": {
+    "cases": {
+      "_case": [
+        {
+          "caseNumber": "Case0000001",
+          "scheduledStart": "09:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000001 Bloggs1",
+              "Mr Defendant0000001 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000011",
+              "Prosecutor00000012"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000011",
+              "Defence00000012"
+            ]
+          }
+        },
+        {
+          "caseNumber": "Case0000002",
+          "scheduledStart": "10:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000002 Bloggs1",
+              "Mr Defendant0000002 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000021",
+              "Prosecutor00000022"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000021",
+              "Defence00000022"
+            ]
+          }
+        },
+        {
+          "caseNumber": "Case0000003",
+          "scheduledStart": "11:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000003 Bloggs1",
+              "Mr Defendant0000003 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000031",
+              "Prosecutor00000032"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000031",
+              "Defence00000032"
+            ]
+          }
+        },
+        {
+          "caseNumber": "Case0000004",
+          "scheduledStart": "12:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000004 Bloggs1",
+              "Mr Defendant0000004 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000041",
+              "Prosecutor00000042"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000041",
+              "Defence00000042"
+            ]
+          }
+        },
+        {
+          "caseNumber": "Case0000005",
+          "scheduledStart": "13:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000005 Bloggs1",
+              "Mr Defendant0000005 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000051",
+              "Prosecutor00000052"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000051",
+              "Defence00000052"
+            ]
+          }
+        },
+        {
+          "caseNumber": "Case0000006",
+          "scheduledStart": "14:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000006 Bloggs1",
+              "Mr Defendant0000006 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000061",
+              "Prosecutor00000062"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000061",
+              "Defence00000062"
+            ]
+          }
+        },
+        {
+          "caseNumber": "Case0000007",
+          "scheduledStart": "15:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000007 Bloggs1",
+              "Mr Defendant0000007 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000071",
+              "Prosecutor00000072"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000071",
+              "Defence00000072"
+            ]
+          }
+        },
+        {
+          "caseNumber": "Case0000008",
+          "scheduledStart": "16:00",
+          "uploadPriority": "",
+          "defendants": {
+            "defendant": [
+              "Mr Defendant0000008 Bloggs1",
+              "Mr Defendant0000008 Bloggs2"
+            ]
+          },
+          "judges": {
+            "judge": [
+              "Judge1"
+            ]
+          },
+          "prosecutors": {
+            "prosecutor": [
+              "Prosecutor00000081",
+              "Prosecutor00000082"
+            ]
+          },
+          "defenders": {
+            "defender": [
+              "Defence00000081",
+              "Defence00000082"
+            ]
+          }
+        }
+      ],
+      "courthouse": "Swansea",
+      "courtroom": "1",
+      "y": "2023",
+      "m": "6",
+      "d": "20"
+    }
+  }
+}

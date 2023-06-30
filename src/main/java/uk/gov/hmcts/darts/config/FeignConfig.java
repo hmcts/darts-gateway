@@ -12,7 +12,9 @@ import feign.okhttp.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.darts.utilities.LocalDateTimeTypeAdapter;
+import uk.gov.hmcts.darts.utilities.LocalDateTypeAdapter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Configuration
@@ -42,6 +44,7 @@ public class FeignConfig {
     public Gson gson() {
         return new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+            .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
             .create();
     }
 }
