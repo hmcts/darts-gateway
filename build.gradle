@@ -238,9 +238,6 @@ swaggerList.each {
     skipValidateSpec = true
     configOptions = [
       dateLibrary   : "java8",
-      interfaceOnly : "true",
-      useTags       : "true",
-      useSpringBoot3: "true",
       serializationLibrary       : "gson",
       useJakartaEe :"true",
       library : "feign"
@@ -306,7 +303,6 @@ dependencies {
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.3'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
 
-  implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
   compileJava.dependsOn = openApiGenerateTaskList
 }
 
