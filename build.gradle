@@ -307,7 +307,6 @@ dependencies {
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
 
   implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
-  println "tasklist = ${openApiGenerateTaskList}"
   compileJava.dependsOn = openApiGenerateTaskList
 }
 
