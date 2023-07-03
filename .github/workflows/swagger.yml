@@ -23,7 +23,7 @@ jobs:
           java-version: 17
           cache: "gradle"
       - name: Run Swagger Publisher
-        run: ./gradlew integration --tests uk.gov.hmcts.darts.apim.config.SwaggerPublisherTest
+        run: ./gradlew integration --tests uk.gov.hmcts.darts.common.config.SwaggerPublisherTest
       - name: Commit to repository
         run: |
           mkdir swagger-staging

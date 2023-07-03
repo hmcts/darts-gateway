@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
-import uk.gov.hmcts.darts.event.client.EventApiClient;
+import uk.gov.hmcts.darts.common.client.DartsFeignClient;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
@@ -19,7 +19,7 @@ public class EventRoute {
     @Value("${darts-gateway.events.validate}")
     private boolean validateEvent;
     private final XmlValidator xmlValidator;
-    private final EventApiClient eventApiClient;
+    private final DartsFeignClient dartsFeignClient;
     private final XmlParser xmlParser;
     private final LegacyDartsToNewApiMapper dartsXmlMapper;
 
@@ -32,7 +32,7 @@ public class EventRoute {
         var dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
         var eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
 
-        EventResponse eventResponse = eventApiClient.sendEvent(eventRequest);
+        EventResponse eventResponse = dartsFeignClient.sendEvent(eventRequest);
 
         return dartsXmlMapper.toLegacyApi(eventResponse);
     }

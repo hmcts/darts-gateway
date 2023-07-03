@@ -11,6 +11,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.47.0'
   id 'org.sonarqube' version '4.2.1.3168'
   id 'java-library'
+  id "org.openapi.generator" version "6.6.0"
 }
 
 group = 'uk.gov.hmcts'
@@ -208,6 +209,55 @@ ext {
 
 ext['snakeyaml.version'] = '2.0'
 
+//here we are going to store swagger files
+def swaggerList = []
+
+//iteration by swagger file root folder and save into swaggerList variable
+def dir = new File("$rootDir/src/main/resources/openapi/".toString())
+import static groovy.io.FileType.FILES
+
+dir.eachFileRecurse(FILES) {file ->
+  if (file.getName().endsWith(".yaml"))
+    swaggerList << file
+}
+
+def openApiGenerateTaskList = []
+
+// Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
+swaggerList.each {
+  def apiName = it.getName().replace(".yaml", "");
+  def taskName = "openApiGenerate" + apiName.capitalize()
+  openApiGenerateTaskList << taskName
+  tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
+    generatorName = "java"
+    inputSpec = "$rootDir/src/main/resources/openapi/".toString() + "${apiName}.yaml"
+    outputDir = "$buildDir/generated/openapi".toString()
+    modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
+    //    https://openapi-generator.tech/docs/generators/java/#config-options
+    skipOperationExample = true
+    skipValidateSpec = true
+    configOptions = [
+      dateLibrary   : "java8",
+      serializationLibrary       : "gson",
+      useJakartaEe :"true",
+      library : "feign"
+    ]
+    globalProperties.set([
+      apis: "false",
+      models: ""
+    ])
+  })
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir("$buildDir/generated/openapi/src/gen/java")
+      srcDir("$buildDir/generated/openapi/src/main/java")
+    }
+  }
+}
+
 dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -252,7 +302,8 @@ dependencies {
   testImplementation group: 'commons-io', name: 'commons-io', version: '2.13.0'// CVE-2021-29425
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.3'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
-  // bumping: Cx78f40514-81ff
+
+  compileJava.dependsOn = openApiGenerateTaskList
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'

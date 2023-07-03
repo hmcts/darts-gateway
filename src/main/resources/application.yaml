@@ -84,4 +84,3 @@ darts-gateway:
       securement-password: ${DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD:<password>}
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
-    events: ${darts-gateway.darts-api.base-url}/events
