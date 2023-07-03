@@ -233,7 +233,7 @@ swaggerList.each {
     inputSpec = "$rootDir/src/main/resources/openapi/".toString() + "${apiName}.yaml"
     outputDir = "$buildDir/generated/openapi".toString()
     modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
-    //    https://openapi-generator.tech/docs/generators/spring/#config-options
+    //    https://openapi-generator.tech/docs/generators/java/#config-options
     skipOperationExample = true
     skipValidateSpec = true
     configOptions = [
@@ -290,6 +290,9 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.3'
   implementation group: 'io.rest-assured', name: 'rest-assured'
+
+  implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+  annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation(platform('org.junit:junit-bom:5.9.3'))

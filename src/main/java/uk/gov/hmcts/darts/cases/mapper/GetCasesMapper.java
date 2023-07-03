@@ -49,40 +49,13 @@ public class GetCasesMapper {
     private Case mapToCase(ScheduledCase scheduledCase) {
         Case newCase = new Case();
         newCase.setCaseNumber(scheduledCase.getCaseNumber());
-        newCase.setDefendants(createDefendants(scheduledCase.getDefendants()));
-        newCase.setDefenders(createDefenders(scheduledCase.getDefenders()));
-        newCase.setJudges(createJudges(scheduledCase.getJudges()));
-        newCase.setProsecutors(createProsecutors(scheduledCase.getProsecutors()));
+        newCase.setDefendants(new Defendants(scheduledCase.getDefendants()));
+        newCase.setDefenders(new Defenders(scheduledCase.getDefenders()));
+        newCase.setJudges(new Judges(scheduledCase.getJudges()));
+        newCase.setProsecutors(new Prosecutors(scheduledCase.getProsecutors()));
         newCase.setScheduledStart(scheduledCase.getScheduledStart());
         newCase.setUploadPriority(StringUtils.defaultIfBlank(scheduledCase.getUploadPriority(), ""));
         return newCase;
     }
 
-    private Defendants createDefendants(List<String> defendantList) {
-        Defendants defendants = new Defendants();
-        List<String> newDefendants = defendants.getDefendant();
-        newDefendants.addAll(defendantList);
-        return defendants;
-    }
-
-    private Defenders createDefenders(List<String> defenderList) {
-        Defenders defenders = new Defenders();
-        List<String> newDefenders = defenders.getDefender();
-        newDefenders.addAll(defenderList);
-        return defenders;
-    }
-
-    private Judges createJudges(List<String> defenderList) {
-        Judges judges = new Judges();
-        List<String> newJudges = judges.getJudge();
-        newJudges.addAll(defenderList);
-        return judges;
-    }
-
-    private Prosecutors createProsecutors(List<String> defenderList) {
-        Prosecutors prosecutors = new Prosecutors();
-        List<String> newProsecutors = prosecutors.getProsecutor();
-        newProsecutors.addAll(defenderList);
-        return prosecutors;
-    }
 }
