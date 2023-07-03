@@ -291,9 +291,6 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.3'
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-  annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation(platform('org.junit:junit-bom:5.9.3'))
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
