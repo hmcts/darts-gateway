@@ -2,12 +2,15 @@ package uk.gov.hmcts.darts.ws;
 
 import com.service.mojdarts.synapps.com.AddDocument;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
+import com.service.mojdarts.synapps.com.GetCases;
+import com.service.mojdarts.synapps.com.GetCasesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.routing.DartsRoutingService;
 
 @Endpoint
@@ -16,6 +19,7 @@ import uk.gov.hmcts.darts.routing.DartsRoutingService;
 public class DartsEndpoint {
 
     private final DartsRoutingService dartsRoutingService;
+    private final CasesRoute casesRoute;
 
     private final DartsResponseUtils utils;
 
@@ -32,5 +36,13 @@ public class DartsEndpoint {
 
         return addDocumentResponse;
     }
+
+    @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCases")
+    @ResponsePayload
+    public GetCasesResponse getCases(@RequestPayload GetCases getCases) {
+        return casesRoute.getCases(getCases);
+    }
+
+
 
 }

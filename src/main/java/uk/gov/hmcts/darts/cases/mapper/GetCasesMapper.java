@@ -27,10 +27,6 @@ public class GetCasesMapper {
     private com.synapps.moj.dfs.response.GetCasesResponse mapToDfsResponse(GetCases getCasesRequest, List<ScheduledCase> modernisedDartsResponse) {
         Cases cases = new Cases();
         setCasesAttributes(getCasesRequest, cases);
-        cases.setCourthouse(getCasesRequest.getCourthouse());
-        cases.setCourthouse(getCasesRequest.getCourthouse());
-        cases.setCourthouse(getCasesRequest.getCourthouse());
-        cases.setCourthouse(getCasesRequest.getCourthouse());
         List<Case> caseList = cases.getCase();
         for (ScheduledCase scheduledCase : modernisedDartsResponse) {
             caseList.add(mapToCase(scheduledCase));
