@@ -34,7 +34,7 @@ public class DartsEndpoint {
         try {
             addDocumentResponse = eventRoutingService.route(addDocument);
         } catch (Exception e) {
-            addDocumentResponse.setReturn(utils.createResponseMessage(e));
+            addDocumentResponse.setReturn(utils.createDartsResponseMessage(e));
             return addDocumentResponse;
         }
 

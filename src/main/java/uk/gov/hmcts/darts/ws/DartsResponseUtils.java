@@ -11,19 +11,19 @@ import static uk.gov.hmcts.darts.ws.CodeAndMessage.INVALID_XML;
 @Component
 public class DartsResponseUtils {
 
-    DARTSResponse createResponseMessage(Exception ex) {
+    DARTSResponse createDartsResponseMessage(Exception ex) {
         if (ex instanceof DartsException) {
-            return createResponseMessage(((DartsException) ex).getCodeAndMessage());
+            return createDartsResponseMessage(((DartsException) ex).getCodeAndMessage());
         }
 
         if (ex instanceof DartsValidationException) {
-            return createResponseMessage(INVALID_XML);
+            return createDartsResponseMessage(INVALID_XML);
         }
 
-        return createResponseMessage(ERROR);
+        return createDartsResponseMessage(ERROR);
     }
 
-    DARTSResponse createResponseMessage(CodeAndMessage codeAndMessage) {
+    DARTSResponse createDartsResponseMessage(CodeAndMessage codeAndMessage) {
         var responseMessage = new DARTSResponse();
         responseMessage.setCode(codeAndMessage.getCode());
         responseMessage.setMessage(codeAndMessage.getMessage());
