@@ -23,8 +23,8 @@ import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class CourtLogsWebServiceTest extends IntegrationBase {
 
-    static final String VALID_GET_COURTLOGS_XML = "classpath:payloads/courtlogs/valid-get-courtlogs.xml";
-    public static final String INVALID_GET_COURTLOGS_XML = "classpath:payloads/events/invalid-soap-message.xml";
+    private static final String VALID_GET_COURTLOGS_XML = "classpath:payloads/courtlogs/valid-get-courtlogs.xml";
+    private static final String INVALID_GET_COURTLOGS_XML = "classpath:payloads/events/invalid-soap-message.xml";
 
     @Autowired
     MockWebServiceClient wsClient;

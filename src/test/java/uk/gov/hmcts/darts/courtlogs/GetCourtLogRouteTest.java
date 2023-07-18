@@ -19,6 +19,7 @@ class GetCourtLogRouteTest {
 
     private final OffsetDateTime offsetStartTime = OffsetDateTime.now().minusDays(1);
     private final OffsetDateTime offsetEndTime = OffsetDateTime.now();
+
     @Mock
     DartsFeignClient dartsFeignClient;
     @Mock

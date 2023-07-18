@@ -17,6 +17,7 @@ import static java.util.Arrays.asList;
 public class EventRoutingService {
 
     private static final Set<String> DAILY_LIST_TYPES = new HashSet<>(asList("CPPDL", "DL"));
+
     private final DailyListRoute dailyListRoute;
     private final EventRoute eventRoute;
 
