@@ -2,15 +2,10 @@ package uk.gov.hmcts.darts.ws;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.cloud.openfeign.FeignAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseActions;
 import org.springframework.xml.transform.StringSource;
+import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 
 import java.io.IOException;
@@ -23,13 +18,8 @@ import static org.springframework.ws.test.server.RequestCreators.withPayload;
 import static org.springframework.ws.test.server.ResponseMatchers.noFault;
 import static org.springframework.ws.test.server.ResponseMatchers.payload;
 
-@WebServiceServerTest
-@ImportAutoConfiguration({FeignAutoConfiguration.class})
-@ComponentScan("uk.gov.hmcts.darts")
-@ActiveProfiles("int-test")
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-@AutoConfigureWireMock(port = 8090)
-class CasesApiTest {
+class CasesWebServiceTest extends IntegrationBase {
     @Autowired
     MockWebServiceClient wsClient;
 

@@ -5,4 +5,8 @@ server:
 darts-gateway:
   darts-api:
     base-url: http://localhost:8090
-    events:  http://localhost:8090/events
+    events: ${darts-gateway.darts-api.base-url}/events
+    courtlogs: ${darts-gateway.darts-api.base-url}/courtlogs
+  ws:
+    request-validation: true
+    response-validation: false

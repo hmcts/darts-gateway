@@ -2,7 +2,7 @@ package uk.gov.hmcts.darts.utilities;
 
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXParseException;
-import uk.gov.hmcts.darts.exceptions.DartsValidationException;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 
 import java.io.File;
 

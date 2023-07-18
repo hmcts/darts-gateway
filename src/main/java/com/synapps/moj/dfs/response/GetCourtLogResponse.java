@@ -8,6 +8,8 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetCourtLogResponse", propOrder = {

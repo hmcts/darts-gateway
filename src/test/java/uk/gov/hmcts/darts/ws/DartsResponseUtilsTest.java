@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.darts.exceptions.DartsValidationException;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
