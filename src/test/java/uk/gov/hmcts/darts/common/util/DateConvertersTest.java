@@ -11,7 +11,7 @@ class DateConvertersTest {
     private final DateConverters dateConverters = new DateConverters();
 
     @Test
-    void convertsLegacyDateFormatToOffsetDateTimeWhenTimezoneIsGMT() {
+    void convertsLegacyDateFormatToOffsetDateTimeWhenTimezoneIsGmt() {
         var offsetDateTime = dateConverters.offsetDateTimeFrom("20221228115959");
 
         assertThat(offsetDateTime.getYear()).isEqualTo(2022);
@@ -25,7 +25,7 @@ class DateConvertersTest {
     }
 
     @Test
-    void convertsLegacyDateFormatToOffsetDateTimeWhenTimezoneIsBST() {
+    void convertsLegacyDateFormatToOffsetDateTimeWhenTimezoneIsBst() {
         var offsetDateTime = dateConverters.offsetDateTimeFrom("20220628115959");
 
         assertThat(offsetDateTime.getYear()).isEqualTo(2022);
