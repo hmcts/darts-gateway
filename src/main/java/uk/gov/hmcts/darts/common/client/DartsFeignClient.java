@@ -34,8 +34,8 @@ public interface DartsFeignClient {
     @RequestMapping(method = GET, value = "/courtlogs")
     @Headers("Content-Type: application/json")
     CourtLogs getCourtLogs(@RequestParam("courthouse") String courthouse,
-                           @RequestParam("caseNumber") String casNumber,
-                           @RequestParam("startDateTime") OffsetDateTime startDateTime,
-                           @RequestParam("endDateTime") OffsetDateTime endDateTime);
+                           @RequestParam("case_number") String caseNumber,
+                           @RequestParam("start_date_time") OffsetDateTime startDateTime,
+                           @RequestParam("end_date_time") OffsetDateTime endDateTime);
 
 }

@@ -3,11 +3,13 @@ package uk.gov.hmcts.darts.courtlogs;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.synapps.moj.dfs.response.CourtLog;
 import com.synapps.moj.dfs.response.CourtLogEntry;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.model.courtLogs.CourtLogs;
 import uk.gov.hmcts.darts.model.courtLogs.Entry;
 
 @Service
+@SuppressWarnings("PMD.LawOfDemeter")
 public class GetCourtLogsMapper {
 
     public GetCourtLogResponse toLegacyApi(CourtLogs courtLogs) {
@@ -19,8 +21,8 @@ public class GetCourtLogsMapper {
 
         var innerResponse = createInnerResponse();
         innerResponse.setCourtLog(legacyCourtLog);
-        innerResponse.setCode("200");
-        innerResponse.setMessage("OK");
+        innerResponse.setCode(String.valueOf(HttpStatus.OK.value()));
+        innerResponse.setMessage(HttpStatus.OK.name());
 
         var outerResponse = new GetCourtLogResponse();
         outerResponse.setReturn(innerResponse);

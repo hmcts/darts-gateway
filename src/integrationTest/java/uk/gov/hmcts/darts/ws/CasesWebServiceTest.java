@@ -21,7 +21,7 @@ import static org.springframework.ws.test.server.ResponseMatchers.payload;
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class CasesWebServiceTest extends IntegrationBase {
     @Autowired
-    MockWebServiceClient wsClient;
+    private MockWebServiceClient wsClient;
 
     @Test
     void handlesGetCases() throws IOException {

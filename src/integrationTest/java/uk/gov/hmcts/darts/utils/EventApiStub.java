@@ -1,7 +1,5 @@
 package uk.gov.hmcts.darts.utils;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -11,7 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
-public class EventApiStub {
+public class EventApiStub extends DartsApiStub {
 
     private static final String EVENT_API_PATH = "/events";
 
@@ -20,6 +18,10 @@ public class EventApiStub {
               "code": "200",
               "message": "OK"
           }""";
+
+    public EventApiStub() {
+        super(EVENT_API_PATH);
+    }
 
     public void willRespondSuccessfully() {
         stubFor(post(urlEqualTo(EVENT_API_PATH))
@@ -36,9 +38,5 @@ public class EventApiStub {
         var messageIdField = "\"messageId\":\"" + messageId + "\"";
         verify(exactly(1), postRequestedFor(urlEqualTo(EVENT_API_PATH))
               .withRequestBody(containing(messageIdField)));
-    }
-
-    public void clearStubs() {
-        WireMock.reset();
     }
 }

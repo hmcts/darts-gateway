@@ -18,7 +18,7 @@ import static org.springframework.ws.test.server.ResponseMatchers.payload;
 class EventWebServiceTest extends IntegrationBase {
 
     @Autowired
-    MockWebServiceClient wsClient;
+    private MockWebServiceClient wsClient;
 
     @Test
     void routesValidEventPayload(

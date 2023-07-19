@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class DateConvertersTest {
 
-    DateConverters dateConverters = new DateConverters();
+    private final DateConverters dateConverters = new DateConverters();
 
     @Test
     void convertsLegacyDateFormatToOffsetDateTimeInLocalTimeZone() {

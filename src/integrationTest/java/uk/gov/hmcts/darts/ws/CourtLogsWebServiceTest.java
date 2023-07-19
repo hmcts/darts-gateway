@@ -27,7 +27,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     private static final String INVALID_GET_COURTLOGS_XML = "classpath:payloads/events/invalid-soap-message.xml";
 
     @Autowired
-    MockWebServiceClient wsClient;
+    private MockWebServiceClient wsClient;
 
     @Test
     void routesGetCourtLogRequest(@Value(VALID_GET_COURTLOGS_XML) Resource getCourtLogs) throws IOException {

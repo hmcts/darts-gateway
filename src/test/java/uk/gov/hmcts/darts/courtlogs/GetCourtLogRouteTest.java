@@ -21,20 +21,19 @@ class GetCourtLogRouteTest {
     private final OffsetDateTime offsetEndTime = OffsetDateTime.now();
 
     @Mock
-    DartsFeignClient dartsFeignClient;
+    private DartsFeignClient dartsFeignClient;
     @Mock
-    GetCourtLogsMapper getCourtLogsMapper;
+    private GetCourtLogsMapper getCourtLogsMapper;
     @Mock
-    DateConverters dateConverters;
+    private DateConverters dateConverters;
 
-    GetCourtLog legacyCourtLogRequest;
-    GetCourtLogRoute getCourtLogRoute;
+    private GetCourtLogRoute getCourtLogRoute;
 
     @BeforeEach
     void setUp() {
         getCourtLogRoute = new GetCourtLogRoute(dartsFeignClient, getCourtLogsMapper, dateConverters);
 
-        legacyCourtLogRequest = someLegacyGetCourtLogRequest();
+        GetCourtLog legacyCourtLogRequest = someLegacyGetCourtLogRequest();
 
         when(dateConverters.offsetDateTimeFrom(legacyCourtLogRequest.getStartTime()))
               .thenReturn(offsetStartTime);

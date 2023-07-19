@@ -21,20 +21,20 @@ paths:
         An Endpoint which allows users to request courtlogs using courthouse, casenumber, startdate and enddate
       parameters:
         - in: query
-          name: Courthouse
+          name: courthouse
           schema:
             type: string
         - in: query
-          name: caseNumber
+          name: case_number
           schema:
             type: string
         - in: query
-          name: startDateTime
+          name: start_date_time
           schema:
             type: string
             format: date-time
         - in: query
-          name: endDateTime
+          name: end_date_time
           schema:
             type: string
             format: date-time

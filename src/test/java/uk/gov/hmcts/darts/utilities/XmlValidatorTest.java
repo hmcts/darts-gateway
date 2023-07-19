@@ -23,7 +23,7 @@ class XmlValidatorTest {
             <a:z>000</a:z>
         </a:x>""";
 
-    final XmlValidator xmlValidator = new XmlValidator();
+    private final XmlValidator xmlValidator = new XmlValidator();
 
     @Test
     void throwsWhenXmlInvalid() {
