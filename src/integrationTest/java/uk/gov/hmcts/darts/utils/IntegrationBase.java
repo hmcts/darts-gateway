@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.utils;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest;
@@ -19,8 +20,7 @@ public class IntegrationBase {
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
 
     @BeforeEach
-    void clearDbInThisOrder() {
-        theEventApi.clearStubs();
-        courtLogsApi.clearStubs();
+    void clearStubs() {
+        WireMock.reset();
     }
 }

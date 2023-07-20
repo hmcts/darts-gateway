@@ -8,7 +8,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Component
-@SuppressWarnings({"PMD.LawOfDemeter", "PMD.SystemPrintln"})
+@SuppressWarnings("PMD.LawOfDemeter")
 public class DateConverters {
 
     private static final DateTimeFormatter LEGACY_COURT_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

@@ -47,9 +47,6 @@ public class CourtLog {
     }
 
     public void addCourtLogEntry(CourtLogEntry courtLogEntry) {
-        if(isNull(entry)) {
-            entry = new ArrayList<>();
-        }
-        entry.add(courtLogEntry);
+        getEntry().add(courtLogEntry);
     }
 }

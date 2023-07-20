@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.zalando.problem.jackson.ProblemModule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -30,9 +29,5 @@ public class DartsApiStub {
 
     public void verifyDoesntReceiveRequest() {
         verify(exactly(0), getRequestedFor(urlEqualTo(baseApiUrl)));
-    }
-
-    public void clearStubs() {
-        WireMock.reset();
     }
 }
