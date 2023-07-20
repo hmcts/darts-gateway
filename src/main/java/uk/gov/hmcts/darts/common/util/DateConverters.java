@@ -12,7 +12,7 @@ import java.util.Date;
 import static java.util.TimeZone.getTimeZone;
 
 @Component
-@SuppressWarnings("PMD.LawOfDemeter")
+@SuppressWarnings({"PMD.LawOfDemeter", "PMD.SystemPrintln"})
 public class DateConverters {
 
     private final SimpleDateFormat legacyCourtLogDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -21,13 +21,19 @@ public class DateConverters {
         Date date;
         try {
             date = legacyCourtLogDateFormat.parse(timeString);
+            System.out.println(date);
         } catch (ParseException e) {
             throw new DartsValidationException(e);
         }
 
         var zoneId = getTimeZone("Europe/London").toZoneId();
+        System.out.println(zoneId);
         var zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), zoneId);
+        System.out.println(zonedDateTime);
 
-        return zonedDateTime.toOffsetDateTime();
+        OffsetDateTime offsetDateTime = zonedDateTime.toOffsetDateTime();
+        System.out.println(offsetDateTime);
+        System.out.println();
+        return offsetDateTime;
     }
 }
