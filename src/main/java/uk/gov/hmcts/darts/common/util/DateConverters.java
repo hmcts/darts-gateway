@@ -1,39 +1,24 @@
 package uk.gov.hmcts.darts.common.util;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
-import java.util.Date;
-
-import static java.util.TimeZone.getTimeZone;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Component
 @SuppressWarnings({"PMD.LawOfDemeter", "PMD.SystemPrintln"})
 public class DateConverters {
 
-    private final SimpleDateFormat legacyCourtLogDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    private static final DateTimeFormatter LEGACY_COURT_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final ZoneId ASSUMED_SOURCE_ZONE_ID= ZoneId.of("Europe/London");
 
     public OffsetDateTime offsetDateTimeFrom(final String timeString) {
-        Date date;
-        try {
-            date = legacyCourtLogDateFormat.parse(timeString);
-            System.out.println(date);
-        } catch (ParseException e) {
-            throw new DartsValidationException(e);
-        }
+        var localDateTime = LocalDateTime.parse(timeString, LEGACY_COURT_LOG_DATE_FORMAT);
 
-        var zoneId = getTimeZone("Europe/London").toZoneId();
-        System.out.println(zoneId);
-        var zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), zoneId);
-        System.out.println(zonedDateTime);
-
-        OffsetDateTime offsetDateTime = zonedDateTime.toOffsetDateTime();
-        System.out.println(offsetDateTime);
-        System.out.println();
-        return offsetDateTime;
+        return localDateTime.atZone(ASSUMED_SOURCE_ZONE_ID)
+              .toOffsetDateTime();
     }
+
 }
