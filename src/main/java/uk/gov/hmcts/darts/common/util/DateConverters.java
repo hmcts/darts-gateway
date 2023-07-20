@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class DateConverters {
 
     private static final DateTimeFormatter LEGACY_COURT_LOG_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-    private static final ZoneId ASSUMED_SOURCE_ZONE_ID= ZoneId.of("Europe/London");
+    private static final ZoneId ASSUMED_SOURCE_ZONE_ID = ZoneId.of("Europe/London");
 
     public OffsetDateTime offsetDateTimeFrom(final String timeString) {
         var localDateTime = LocalDateTime.parse(timeString, LEGACY_COURT_LOG_DATE_FORMAT);
