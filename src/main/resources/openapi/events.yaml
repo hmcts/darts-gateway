@@ -17,6 +17,7 @@ paths:
       tags:
         - Event
       summary: An Endpoint which allows users to request and submit events.
+      operationId: sendEvent
       description: |-
         Event data received from XHIBIT and CPP through a custom web service to add context to the audio recordings it stores.
       requestBody:

@@ -1,0 +1,6 @@
+<getCourtLog xmlns="http://com.synapps.mojdarts.service.com">
+  <courthouse xmlns="">some-courthouse</courthouse>
+  <caseNumber xmlns="">some-case</caseNumber>
+  <startTime xmlns="">20220106125901</startTime>
+  <endTime xmlns="">20220606125901</endTime>
+</getCourtLog>

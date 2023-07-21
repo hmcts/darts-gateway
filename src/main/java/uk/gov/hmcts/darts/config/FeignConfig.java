@@ -13,9 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.darts.utilities.LocalDateTimeTypeAdapter;
 import uk.gov.hmcts.darts.utilities.LocalDateTypeAdapter;
+import uk.gov.hmcts.darts.utilities.OffsetDateTimeTypeAdapter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Configuration
 public class FeignConfig {
@@ -45,6 +47,7 @@ public class FeignConfig {
         return new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
             .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
+            .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter())
             .create();
     }
 }

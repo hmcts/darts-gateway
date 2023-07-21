@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
-import uk.gov.hmcts.darts.exceptions.DartsValidationException;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 
 import java.io.File;
 import java.io.IOException;

@@ -8,6 +8,8 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "court_log", propOrder = {
@@ -44,4 +46,7 @@ public class CourtLog {
         this.caseNumber = value;
     }
 
+    public void addCourtLogEntry(CourtLogEntry courtLogEntry) {
+        getEntry().add(courtLogEntry);
+    }
 }

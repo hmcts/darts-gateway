@@ -2,7 +2,7 @@ package uk.gov.hmcts.darts.utilities;
 
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXParseException;
-import uk.gov.hmcts.darts.exceptions.DartsValidationException;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 
 import java.io.File;
 
@@ -23,7 +23,7 @@ class XmlValidatorTest {
             <a:z>000</a:z>
         </a:x>""";
 
-    final XmlValidator xmlValidator = new XmlValidator();
+    private final XmlValidator xmlValidator = new XmlValidator();
 
     @Test
     void throwsWhenXmlInvalid() {

@@ -13,7 +13,7 @@ class RootControllerTest {
     private static final String WELCOME_RESPONSE = "Welcome to darts-gateway";
 
     /** Class being tested. */
-    RootController rootController;
+    private RootController rootController;
 
     @BeforeEach
     void setUp() {

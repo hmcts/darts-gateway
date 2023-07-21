@@ -14,9 +14,10 @@ import static java.util.Arrays.asList;
 
 @Service
 @RequiredArgsConstructor
-public class DartsRoutingService {
+public class EventRoutingService {
 
     private static final Set<String> DAILY_LIST_TYPES = new HashSet<>(asList("CPPDL", "DL"));
+
     private final DailyListRoute dailyListRoute;
     private final EventRoute eventRoute;
 
@@ -32,6 +33,4 @@ public class DartsRoutingService {
             );
         }
     }
-
-
 }
