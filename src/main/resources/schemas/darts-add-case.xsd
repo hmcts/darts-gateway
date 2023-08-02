@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xs:schema id="addCase" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="case">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="courthouse" minOccurs="1">
+        	<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="64"></xs:maxLength>
+				</xs:restriction>
+			</xs:simpleType>
+        </xs:element>
+        <xs:element name="courtroom" minOccurs="0">
+        	<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="64"></xs:maxLength>
+				</xs:restriction>
+			</xs:simpleType>
+        </xs:element>
+        <xs:element name="defendants" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="defendant" nillable="true" minOccurs="0" maxOccurs="unbounded">
+        		<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="2000"></xs:maxLength>
+					</xs:restriction>
+				</xs:simpleType>
+ 		      </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="judges" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="judge" nillable="true" minOccurs="0" maxOccurs="unbounded">
+        		<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="2000"></xs:maxLength>
+					</xs:restriction>
+				</xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prosecutors" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="prosecutor" nillable="true" minOccurs="0" maxOccurs="unbounded">
+        		<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="2000"></xs:maxLength>
+					</xs:restriction>
+				</xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="defenders" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="defender" nillable="true" minOccurs="0" maxOccurs="unbounded">
+        		<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="2000"></xs:maxLength>
+					</xs:restriction>
+				</xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="type" use="required">
+        <xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="32"></xs:maxLength>
+			</xs:restriction>
+		</xs:simpleType>
+   	  </xs:attribute>
+      <xs:attribute name="id" use="required">
+        <xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="32"></xs:maxLength>
+			</xs:restriction>
+		</xs:simpleType>
+   	  </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="case" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

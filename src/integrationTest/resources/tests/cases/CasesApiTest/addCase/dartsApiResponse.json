@@ -1,0 +1,23 @@
+{
+  "courthouse": "CARDIFF",
+  "courtroom": "1",
+  "hearing_date": "2023-06-20",
+  "case_number": "U20221006-143541",
+  "scheduled_start": "09:00",
+  "defendantList": [
+    "U20221006-143541",
+    "U20221006-143542"
+  ],
+  "judgeList": [
+    "Mr Judge",
+    "Mrs Judge"
+  ],
+  "prosecutorList": [
+    "Mr Prosecutor",
+    "Mrs Prosecutor"
+  ],
+  "defenceList": [
+    "Mr Defender",
+    "Mrs Defender"
+  ]
+}

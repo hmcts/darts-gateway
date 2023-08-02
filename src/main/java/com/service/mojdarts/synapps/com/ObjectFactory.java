@@ -1,5 +1,7 @@
 package com.service.mojdarts.synapps.com;
 
+import com.service.mojdarts.synapps.com.addcase.AddCaseResponse;
+import com.service.mojdarts.synapps.com.addcase.NewDataSet;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
@@ -75,8 +77,8 @@ public class ObjectFactory {
         return new AddAudioResponse();
     }
 
-    public AddCase createAddCase() {
-        return new AddCase();
+    public NewDataSet createAddCase() {
+        return new NewDataSet();
     }
 
     public AddCaseResponse createAddCaseResponse() {
@@ -147,8 +149,8 @@ public class ObjectFactory {
     }
 
     @XmlElementDecl(namespace = "http://com.synapps.mojdarts.service.com", name = "addCase")
-    public JAXBElement<AddCase> createAddCase(AddCase value) {
-        return new JAXBElement<>(_AddCase_QNAME, AddCase.class, null, value);
+    public JAXBElement<NewDataSet> createAddCase(NewDataSet value) {
+        return new JAXBElement<>(_AddCase_QNAME, NewDataSet.class, null, value);
     }
 
     @XmlElementDecl(namespace = "http://com.synapps.mojdarts.service.com", name = "addCaseResponse")

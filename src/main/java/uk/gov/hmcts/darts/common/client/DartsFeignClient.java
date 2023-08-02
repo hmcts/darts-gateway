@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.darts.config.FeignConfig;
 import uk.gov.hmcts.darts.event.model.EventRequest;
 import uk.gov.hmcts.darts.event.model.EventResponse;
+import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.model.courtLogs.CourtLogs;
 
@@ -26,6 +27,10 @@ public interface DartsFeignClient {
                                  @RequestParam("courtroom") String courtroom,
                                  @RequestParam("date") String date
     );
+
+    @RequestMapping(method = POST, value = "/cases")
+    @Headers("Content-Type: application/json")
+    ScheduledCase addCase(@RequestBody AddCaseRequest addCaseRequest);
 
     @RequestMapping(method = POST, value = "/events")
     @Headers("Content-Type: application/json")
