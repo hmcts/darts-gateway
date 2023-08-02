@@ -84,10 +84,6 @@ class CasesWebServiceTest extends IntegrationBase {
 
         stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
 
-        String expectedResponseStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/addCase/expectedResponse.xml");
-        StringSource expectedResponse = new StringSource(expectedResponseStr);
-
         wsClient.sendRequest(withPayload(soapRequest))
             .andExpect(clientOrSenderFault());
     }
