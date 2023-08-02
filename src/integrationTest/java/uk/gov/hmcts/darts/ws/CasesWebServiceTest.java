@@ -88,7 +88,7 @@ class CasesWebServiceTest extends IntegrationBase {
             "tests/cases/CasesApiTest/addCase/expectedResponse.xml");
         StringSource expectedResponse = new StringSource(expectedResponseStr);
 
-        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
+        wsClient.sendRequest(withPayload(soapRequest))
             .andExpect(clientOrSenderFault());
     }
 }

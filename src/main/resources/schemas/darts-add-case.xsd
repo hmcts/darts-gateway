@@ -3,7 +3,7 @@
   <xs:element name="case">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="courthouse" minOccurs="1">
+        <xs:element name="courthouse">
         	<xs:simpleType>
 				<xs:restriction base="xs:string">
           <xs:maxLength value="64"/>
