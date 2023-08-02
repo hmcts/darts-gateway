@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.config;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +21,6 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 import org.springframework.xml.xsd.XsdSchemaCollection;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,13 +56,11 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
                 return schemas.toArray(new XsdSchema[0]);
             }
 
+            @SneakyThrows
             @Override
             public XmlValidator createValidator() {
-                try {
-                    return XmlValidatorFactory.createValidator(getSchemas(), "http://www.w3.org/2001/XMLSchema");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                return XmlValidatorFactory.createValidator(getSchemas(), "http://www.w3.org/2001/XMLSchema");
+
             }
         };
         validatingInterceptor.setXsdSchemaCollection(schemaCollection);
@@ -73,7 +71,7 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
         List<Resource> schemaResources = new ArrayList<>();
         schemaResources.add(new ClassPathResource(SCHEMAS_DARTS_WS_SCHEMA_6_XSD));
         schemaResources.add(new ClassPathResource(SCHEMAS_DARTS_ADD_CASE_XSD));
-        return schemaResources.toArray(new Resource[schemaResources.size()]);
+        return schemaResources.toArray(new Resource[0]);
     }
 
     @Bean

@@ -53,9 +53,9 @@ public class DartsResponseUtils {
         return createCourtLogResponse(ERROR);
     }
 
-    public AddCaseResponse createErrorAddCaseResponse(Exception e) {
+    public AddCaseResponse createErrorAddCaseResponse(Exception exception) {
         DARTSResponse value = createDartsResponseMessage(ERROR);
-        value.setMessage(e.getMessage());
+        value.setMessage(exception.getMessage());
 
         AddCaseResponse response = new AddCaseResponse();
         response.setReturn(value);
@@ -63,8 +63,6 @@ public class DartsResponseUtils {
     }
 
     public AddCaseResponse createSuccessfulAddCaseResponse() {
-
-
         AddCaseResponse response = new AddCaseResponse();
         response.setReturn(createDartsResponseMessage(OK));
         return response;
