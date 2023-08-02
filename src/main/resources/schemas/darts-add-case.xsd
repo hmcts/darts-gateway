@@ -6,14 +6,14 @@
         <xs:element name="courthouse" minOccurs="1">
         	<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:maxLength value="64"></xs:maxLength>
+          <xs:maxLength value="64"/>
 				</xs:restriction>
 			</xs:simpleType>
         </xs:element>
         <xs:element name="courtroom" minOccurs="0">
         	<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:maxLength value="64"></xs:maxLength>
+          <xs:maxLength value="64"/>
 				</xs:restriction>
 			</xs:simpleType>
         </xs:element>
@@ -23,7 +23,7 @@
               <xs:element name="defendant" nillable="true" minOccurs="0" maxOccurs="unbounded">
         		<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:maxLength value="2000"></xs:maxLength>
+            <xs:maxLength value="2000"/>
 					</xs:restriction>
 				</xs:simpleType>
  		      </xs:element>
@@ -36,7 +36,7 @@
               <xs:element name="judge" nillable="true" minOccurs="0" maxOccurs="unbounded">
         		<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:maxLength value="2000"></xs:maxLength>
+            <xs:maxLength value="2000"/>
 					</xs:restriction>
 				</xs:simpleType>
               </xs:element>
@@ -49,7 +49,7 @@
               <xs:element name="prosecutor" nillable="true" minOccurs="0" maxOccurs="unbounded">
         		<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:maxLength value="2000"></xs:maxLength>
+            <xs:maxLength value="2000"/>
 					</xs:restriction>
 				</xs:simpleType>
               </xs:element>
@@ -62,7 +62,7 @@
               <xs:element name="defender" nillable="true" minOccurs="0" maxOccurs="unbounded">
         		<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:maxLength value="2000"></xs:maxLength>
+            <xs:maxLength value="2000"/>
 					</xs:restriction>
 				</xs:simpleType>
               </xs:element>
@@ -73,14 +73,14 @@
       <xs:attribute name="type" use="required">
         <xs:simpleType>
 			<xs:restriction base="xs:string">
-				<xs:maxLength value="32"></xs:maxLength>
+        <xs:maxLength value="32"/>
 			</xs:restriction>
 		</xs:simpleType>
    	  </xs:attribute>
       <xs:attribute name="id" use="required">
         <xs:simpleType>
 			<xs:restriction base="xs:string">
-				<xs:maxLength value="32"></xs:maxLength>
+        <xs:maxLength value="32"/>
 			</xs:restriction>
 		</xs:simpleType>
    	  </xs:attribute>

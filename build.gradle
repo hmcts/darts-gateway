@@ -335,7 +335,7 @@ wrapper {
 }
 
 tasks.withType(Checkstyle) {
-  exclude 'com/service/mojdarts/synapps/com/*.java'
+  exclude 'com/service/mojdarts/synapps/com/**'
   exclude 'com/synapps/moj/dfs/response/*.java'
   exclude 'com/emc/**/*.java'
   exclude 'uk/gov/courtservice/**/*.java'

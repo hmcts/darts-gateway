@@ -34,8 +34,6 @@ class CasesRouteImplTest {
     @Mock
     private DartsFeignClient dartsFeignClient;
 
-    private AddCaseMapper addCaseMapper;
-
     private CasesRouteImpl casesRoute;
 
     @NotNull
@@ -70,7 +68,7 @@ class CasesRouteImplTest {
 
     @BeforeEach
     void setUp() {
-        addCaseMapper = new AddCaseMapper();
+        AddCaseMapper addCaseMapper = new AddCaseMapper();
         casesRoute = new CasesRouteImpl(dartsFeignClient, addCaseMapper, new DartsResponseUtils());
     }
 

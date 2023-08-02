@@ -4,11 +4,8 @@
 // Any modifications to this file will be lost upon recompilation of the source schema.
 //
 
-
 package com.service.mojdarts.synapps.com.addcase;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
@@ -16,121 +13,9 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * <p>Java class for anonymous complex type.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>{@code
- * <complexType>
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="courthouse">
- *           <simpleType>
- *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               <maxLength value="64"/>
- *             </restriction>
- *           </simpleType>
- *         </element>
- *         <element name="courtroom" minOccurs="0">
- *           <simpleType>
- *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               <maxLength value="64"/>
- *             </restriction>
- *           </simpleType>
- *         </element>
- *         <element name="defendants" maxOccurs="unbounded" minOccurs="0">
- *           <complexType>
- *             <complexContent>
- *               <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 <sequence>
- *                   <element name="defendant" maxOccurs="unbounded" minOccurs="0">
- *                     <simpleType>
- *                       <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *                         <maxLength value="2000"/>
- *                       </restriction>
- *                     </simpleType>
- *                   </element>
- *                 </sequence>
- *               </restriction>
- *             </complexContent>
- *           </complexType>
- *         </element>
- *         <element name="judges" maxOccurs="unbounded" minOccurs="0">
- *           <complexType>
- *             <complexContent>
- *               <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 <sequence>
- *                   <element name="judge" maxOccurs="unbounded" minOccurs="0">
- *                     <simpleType>
- *                       <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *                         <maxLength value="2000"/>
- *                       </restriction>
- *                     </simpleType>
- *                   </element>
- *                 </sequence>
- *               </restriction>
- *             </complexContent>
- *           </complexType>
- *         </element>
- *         <element name="prosecutors" maxOccurs="unbounded" minOccurs="0">
- *           <complexType>
- *             <complexContent>
- *               <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 <sequence>
- *                   <element name="prosecutor" maxOccurs="unbounded" minOccurs="0">
- *                     <simpleType>
- *                       <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *                         <maxLength value="2000"/>
- *                       </restriction>
- *                     </simpleType>
- *                   </element>
- *                 </sequence>
- *               </restriction>
- *             </complexContent>
- *           </complexType>
- *         </element>
- *         <element name="defenders" maxOccurs="unbounded" minOccurs="0">
- *           <complexType>
- *             <complexContent>
- *               <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 <sequence>
- *                   <element name="defender" maxOccurs="unbounded" minOccurs="0">
- *                     <simpleType>
- *                       <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *                         <maxLength value="2000"/>
- *                       </restriction>
- *                     </simpleType>
- *                   </element>
- *                 </sequence>
- *               </restriction>
- *             </complexContent>
- *           </complexType>
- *         </element>
- *       </sequence>
- *       <attribute name="type" use="required">
- *         <simpleType>
- *           <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *             <maxLength value="32"/>
- *           </restriction>
- *         </simpleType>
- *       </attribute>
- *       <attribute name="id" use="required">
- *         <simpleType>
- *           <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *             <maxLength value="32"/>
- *           </restriction>
- *         </simpleType>
- *       </attribute>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * }</pre>
- *
- *
- */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "courthouse",
@@ -155,78 +40,22 @@ public class Case {
     @XmlAttribute(name = "id", required = true)
     protected String id;
 
-    /**
-     * Gets the value of the courthouse property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
     public String getCourthouse() {
         return courthouse;
     }
 
-    /**
-     * Sets the value of the courthouse property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
     public void setCourthouse(String value) {
         this.courthouse = value;
     }
 
-    /**
-     * Gets the value of the courtroom property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
     public String getCourtroom() {
         return courtroom;
     }
 
-    /**
-     * Sets the value of the courtroom property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
     public void setCourtroom(String value) {
         this.courtroom = value;
     }
 
-    /**
-     * Gets the value of the defendants property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a {@code set} method for the defendants property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getDefendants().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Defendants }
-     *
-     *
-     * @return
-     *     The value of the defendants property.
-     */
     public List<Defendants> getDefendants() {
         if (defendants == null) {
             defendants = new ArrayList<>();
@@ -234,30 +63,6 @@ public class Case {
         return this.defendants;
     }
 
-    /**
-     * Gets the value of the judges property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a {@code set} method for the judges property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getJudges().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Judges }
-     *
-     *
-     * @return
-     *     The value of the judges property.
-     */
     public List<Judges> getJudges() {
         if (judges == null) {
             judges = new ArrayList<>();
@@ -265,30 +70,6 @@ public class Case {
         return this.judges;
     }
 
-    /**
-     * Gets the value of the prosecutors property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a {@code set} method for the prosecutors property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProsecutors().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Prosecutors }
-     *
-     *
-     * @return
-     *     The value of the prosecutors property.
-     */
     public List<Prosecutors> getProsecutors() {
         if (prosecutors == null) {
             prosecutors = new ArrayList<>();
@@ -296,30 +77,6 @@ public class Case {
         return this.prosecutors;
     }
 
-    /**
-     * Gets the value of the defenders property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a {@code set} method for the defenders property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getDefenders().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Defenders }
-     *
-     *
-     * @return
-     *     The value of the defenders property.
-     */
     public List<Defenders> getDefenders() {
         if (defenders == null) {
             defenders = new ArrayList<>();
@@ -327,80 +84,22 @@ public class Case {
         return this.defenders;
     }
 
-    /**
-     * Gets the value of the type property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     * Sets the value of the type property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
     public void setType(String value) {
         this.type = value;
     }
 
-    /**
-     * Gets the value of the id property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * Sets the value of the id property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
     public void setId(String value) {
         this.id = value;
     }
 
-
-    /**
-     * <p>Java class for anonymous complex type.
-     *
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     *
-     * <pre>{@code
-     * <complexType>
-     *   <complexContent>
-     *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       <sequence>
-     *         <element name="defendant" maxOccurs="unbounded" minOccurs="0">
-     *           <simpleType>
-     *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
-     *               <maxLength value="2000"/>
-     *             </restriction>
-     *           </simpleType>
-     *         </element>
-     *       </sequence>
-     *     </restriction>
-     *   </complexContent>
-     * </complexType>
-     * }</pre>
-     *
-     *
-     */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "defendant"
@@ -410,30 +109,6 @@ public class Case {
         @XmlElement(nillable = true)
         protected List<String> defendant;
 
-        /**
-         * Gets the value of the defendant property.
-         *
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the Jakarta XML Binding object.
-         * This is why there is not a {@code set} method for the defendant property.
-         *
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getDefendant().add(newItem);
-         * </pre>
-         *
-         *
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
-         *
-         *
-         * @return
-         *     The value of the defendant property.
-         */
         public List<String> getDefendant() {
             if (defendant == null) {
                 defendant = new ArrayList<>();
@@ -443,32 +118,6 @@ public class Case {
 
     }
 
-
-    /**
-     * <p>Java class for anonymous complex type.
-     *
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     *
-     * <pre>{@code
-     * <complexType>
-     *   <complexContent>
-     *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       <sequence>
-     *         <element name="defender" maxOccurs="unbounded" minOccurs="0">
-     *           <simpleType>
-     *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
-     *               <maxLength value="2000"/>
-     *             </restriction>
-     *           </simpleType>
-     *         </element>
-     *       </sequence>
-     *     </restriction>
-     *   </complexContent>
-     * </complexType>
-     * }</pre>
-     *
-     *
-     */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "defender"
@@ -478,30 +127,6 @@ public class Case {
         @XmlElement(nillable = true)
         protected List<String> defender;
 
-        /**
-         * Gets the value of the defender property.
-         *
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the Jakarta XML Binding object.
-         * This is why there is not a {@code set} method for the defender property.
-         *
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getDefender().add(newItem);
-         * </pre>
-         *
-         *
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
-         *
-         *
-         * @return
-         *     The value of the defender property.
-         */
         public List<String> getDefender() {
             if (defender == null) {
                 defender = new ArrayList<>();
@@ -511,32 +136,6 @@ public class Case {
 
     }
 
-
-    /**
-     * <p>Java class for anonymous complex type.
-     *
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     *
-     * <pre>{@code
-     * <complexType>
-     *   <complexContent>
-     *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       <sequence>
-     *         <element name="judge" maxOccurs="unbounded" minOccurs="0">
-     *           <simpleType>
-     *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
-     *               <maxLength value="2000"/>
-     *             </restriction>
-     *           </simpleType>
-     *         </element>
-     *       </sequence>
-     *     </restriction>
-     *   </complexContent>
-     * </complexType>
-     * }</pre>
-     *
-     *
-     */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "judge"
@@ -546,30 +145,6 @@ public class Case {
         @XmlElement(nillable = true)
         protected List<String> judge;
 
-        /**
-         * Gets the value of the judge property.
-         *
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the Jakarta XML Binding object.
-         * This is why there is not a {@code set} method for the judge property.
-         *
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getJudge().add(newItem);
-         * </pre>
-         *
-         *
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
-         *
-         *
-         * @return
-         *     The value of the judge property.
-         */
         public List<String> getJudge() {
             if (judge == null) {
                 judge = new ArrayList<>();
@@ -579,32 +154,6 @@ public class Case {
 
     }
 
-
-    /**
-     * <p>Java class for anonymous complex type.
-     *
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     *
-     * <pre>{@code
-     * <complexType>
-     *   <complexContent>
-     *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       <sequence>
-     *         <element name="prosecutor" maxOccurs="unbounded" minOccurs="0">
-     *           <simpleType>
-     *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
-     *               <maxLength value="2000"/>
-     *             </restriction>
-     *           </simpleType>
-     *         </element>
-     *       </sequence>
-     *     </restriction>
-     *   </complexContent>
-     * </complexType>
-     * }</pre>
-     *
-     *
-     */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "prosecutor"
@@ -614,30 +163,6 @@ public class Case {
         @XmlElement(nillable = true)
         protected List<String> prosecutor;
 
-        /**
-         * Gets the value of the prosecutor property.
-         *
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the Jakarta XML Binding object.
-         * This is why there is not a {@code set} method for the prosecutor property.
-         *
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getProsecutor().add(newItem);
-         * </pre>
-         *
-         *
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
-         *
-         *
-         * @return
-         *     The value of the prosecutor property.
-         */
         public List<String> getProsecutor() {
             if (prosecutor == null) {
                 prosecutor = new ArrayList<>();

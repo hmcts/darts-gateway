@@ -8,5 +8,5 @@ darts-gateway:
     events: ${darts-gateway.darts-api.base-url}/events
     courtlogs: ${darts-gateway.darts-api.base-url}/courtlogs
   ws:
-    request-validation: false
+    request-validation: true
     response-validation: false

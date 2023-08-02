@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.ws;
 
-import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.test.server.MockWebServiceClient;
@@ -18,6 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
+import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
 import static org.springframework.ws.test.server.ResponseMatchers.noFault;
 import static org.springframework.ws.test.server.ResponseMatchers.payload;
 
@@ -70,5 +70,25 @@ class CasesWebServiceTest extends IntegrationBase {
         ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
             .andExpect(noFault());
         responseActions.andExpect(payload(expectedResponse));
+    }
+
+    @Test
+    void handlesAddCaseError() throws IOException {
+
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "tests/cases/CasesApiTest/addCase/invalidSoapRequest.xml");
+
+        StringSource soapRequest = new StringSource(soapRequestStr);
+        String dartsApiResponseStr = TestUtils.getContentsFromFile(
+            "tests/cases/CasesApiTest/addCase/dartsApiResponse.json");
+
+        stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
+
+        String expectedResponseStr = TestUtils.getContentsFromFile(
+            "tests/cases/CasesApiTest/addCase/expectedResponse.xml");
+        StringSource expectedResponse = new StringSource(expectedResponseStr);
+
+        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
+            .andExpect(clientOrSenderFault());
     }
 }
