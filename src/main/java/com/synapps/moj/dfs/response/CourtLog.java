@@ -18,6 +18,7 @@ import static java.util.Objects.isNull;
 public class CourtLog {
 
     protected List<CourtLogEntry> entry;
+
     @XmlAttribute(name = "courthouse")
     protected String courthouse;
     @XmlAttribute(name = "case_number")

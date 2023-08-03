@@ -50,8 +50,8 @@ class GetCourtLogRouteTest {
         verify(dartsFeignClient).getCourtLogs(
               "some-court-house",
               "some-court-house",
-              offsetStartTime,
-              offsetEndTime
+              offsetStartTime.toString(),
+              offsetEndTime.toString()
         );
     }
 

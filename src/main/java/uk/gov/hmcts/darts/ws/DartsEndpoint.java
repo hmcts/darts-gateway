@@ -6,6 +6,8 @@ import com.service.mojdarts.synapps.com.GetCases;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import com.service.mojdarts.synapps.com.addcase.AddCaseResponse;
+import com.service.mojdarts.synapps.com.addcase.NewDataSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -45,6 +47,12 @@ public class DartsEndpoint {
     @ResponsePayload
     public GetCasesResponse getCases(@RequestPayload GetCases getCases) {
         return casesRoute.getCases(getCases);
+    }
+
+    @PayloadRoot(namespace = "", localPart = "NewDataSet")
+    @ResponsePayload
+    public AddCaseResponse addCase(@RequestPayload NewDataSet addCaseRequest) {
+        return casesRoute.addCase(addCaseRequest);
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCourtLog")

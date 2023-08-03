@@ -49,13 +49,14 @@ public class GetCasesMapper {
     private Case mapToCase(ScheduledCase scheduledCase) {
         Case newCase = new Case();
         newCase.setCaseNumber(scheduledCase.getCaseNumber());
-        newCase.setDefendants(new Defendants(scheduledCase.getDefendants()));
-        newCase.setDefenders(new Defenders(scheduledCase.getDefenders()));
-        newCase.setJudges(new Judges(scheduledCase.getJudges()));
-        newCase.setProsecutors(new Prosecutors(scheduledCase.getProsecutors()));
+        newCase.setDefendants(new Defendants(scheduledCase.getDefendantList()));
+        newCase.setDefenders(new Defenders(scheduledCase.getDefenceList()));
+        newCase.setJudges(new Judges(scheduledCase.getJudgeList()));
+        newCase.setProsecutors(new Prosecutors(scheduledCase.getProsecutorList()));
         newCase.setScheduledStart(scheduledCase.getScheduledStart());
         newCase.setUploadPriority(StringUtils.defaultIfBlank(scheduledCase.getUploadPriority(), ""));
         return newCase;
     }
+
 
 }

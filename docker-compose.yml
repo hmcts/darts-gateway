@@ -2,25 +2,29 @@ version: '2.1'
 
 services:
   darts-gateway:
+    container_name: darts-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - AAD_B2C_CLIENT_ID_KEY
+      - AAD_B2C_CLIENT_SECRET_KEY
+      - AAD_B2C_TENANT_ID_KEY
+      - GOVUK_NOTIFY_API_KEY
+      - AAD_B2C_ROPC_CLIENT_ID_KEY
+      - AAD_B2C_ROPC_CLIENT_SECRET_KEY
+      - AZURE_STORAGE_CONNECTION_STRING
     build:
       context: .
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
-    image: hmctspublic.azurecr.io/spring-boot/template
-    environment:
-      # these environment variables are used by java-logging library
-      - ROOT_APPENDER
-      - JSON_CONSOLE_PRETTY_PRINT
-      - ROOT_LOGGING_LEVEL
-      - REFORM_SERVICE_TYPE
-      - REFORM_SERVICE_NAME
-      - REFORM_TEAM
-      - REFORM_ENVIRONMENT
-      - LOGBACK_DATE_FORMAT
-      - LOGBACK_REQUIRE_THREAD
-      - LOGBACK_REQUIRE_ALERT_LEVEL=false
-      - LOGBACK_REQUIRE_ERROR_CODE=false
+      dockerfile: Dockerfile
+    image: darts-gateway:latest
     ports:
-      - $SERVER_PORT:$SERVER_PORT
+      - "8070:8070"
+    networks:
+      - darts-network
+
+volumes:
+  darts-db:
+    driver: local
+
+networks:
+  darts-network:
+    driver: bridge
