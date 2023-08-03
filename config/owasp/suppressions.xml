@@ -26,5 +26,11 @@
     <vulnerabilityName>CVE-2023-3635</vulnerabilityName>
   </suppress>
 
+  <suppress until="2023-09-14">
+    <notes>Waiting for feign-okhttp update transitive dependency on okio-vm to >= 3.4.0</notes>
+    <packageUrl>pkg:maven/com.squareup.okhttp3/okhttp@4.10.0</packageUrl>
+    <vulnerabilityName>CVE-2023-3782</vulnerabilityName>
+  </suppress>
+
   <!--End of temporary suppression section -->
 </suppressions>
