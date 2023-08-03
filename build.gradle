@@ -396,5 +396,5 @@ task genJaxbAddCase {
   }
 }
 
-
-compileJava.dependsOn = [ "genJaxb", "genJaxbAddCase"]
+compileJava.dependsOn genJaxb
+compileJava.dependsOn genJaxbAddCase
