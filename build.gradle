@@ -335,7 +335,7 @@ wrapper {
 }
 
 tasks.withType(Checkstyle) {
-  exclude 'com/service/mojdarts/synapps/com/*.java'
+  exclude 'com/service/mojdarts/synapps/com/**'
   exclude 'com/synapps/moj/dfs/response/*.java'
   exclude 'com/emc/**/*.java'
   exclude 'uk/gov/courtservice/**/*.java'
@@ -377,5 +377,24 @@ task genJaxb {
     }
   }
 }
+task genJaxbAddCase {
+  ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddCase"
+  ext.schema = "src/main/resources/schemas/darts-add-case.xsd"
+
+  outputs.dir sourcesDir
+
+  doLast() {
+    project.ant {
+      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+      mkdir(dir: sourcesDir)
+
+      xjc(destdir: sourcesDir, schema: schema) {
+        arg(value: "-wsdl")
+        produces(dir: sourcesDir, includes: "**/*.java")
+      }
+    }
+  }
+}
 
 compileJava.dependsOn genJaxb
+compileJava.dependsOn genJaxbAddCase
