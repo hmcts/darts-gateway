@@ -10,7 +10,7 @@ def branchesToSync = ['demo']
 
 withPipeline(type, product, component) {
   enableSlackNotifications('#darts-builds')
-  
+
   syncBranchesWithMaster(branchesToSync)
 }
 

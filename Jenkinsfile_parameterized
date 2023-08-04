@@ -9,5 +9,5 @@ def kv = product + '-ss-kv'
 
 
 withParameterizedPipeline(type, product, component, 'sbox', 'sbox') {
-  enableSlackNotifications('#darts-builds')
+    enableSlackNotifications('#darts-builds')
 }

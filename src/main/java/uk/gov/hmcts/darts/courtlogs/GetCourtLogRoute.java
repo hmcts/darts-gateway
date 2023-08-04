@@ -24,8 +24,8 @@ public class GetCourtLogRoute {
         var dartsApiCourtLogs = dartsFeignClient.getCourtLogs(
               courthouse,
               caseNumber,
-              startDateTime,
-              endDateTime);
+              startDateTime.toString(),
+              endDateTime.toString());
 
         return getCourtLogsMapper.toLegacyApi(dartsApiCourtLogs);
     }

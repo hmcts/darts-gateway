@@ -25,50 +25,6 @@ azure:
   application-insights:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
 
-validate:
-  threatening-content-rules:
-    - name: "asciiControlCharacters"
-      pattern: "[\\x00-\\x1F\\x7F&&[^\\x0A]&&[^\\x0D]]"
-      message: "Text contains ASCII control character"
-    - name: "cdata"
-      pattern: "(?i)<\\s*!\\s*\\[\\s*CDATA\\s*\\["
-      message: "Text contains CDATA"
-    - name: "doubleComma"
-      pattern: ",,"
-      message: "Text contains double comma"
-    - name: "docType"
-      pattern: "(?i)<\\s*!\\s*DOCTYPE"
-      message: "Text contains DOCTYPE"
-    - name: "orAttack"
-      pattern: "(?i)'[\\s]*or"
-      message: "Text contains OR attack"
-    - name: "percentageAttack"
-      pattern: "%[0-9A-Fa-f]"
-      message: "Text contains percentage attack"
-    - name: "sqlDeleteAttack"
-      pattern: "(?i)'[\\s]*;[\\s]*delete"
-      message: "Text contains SQL delete attack"
-    - name: "sqlDropTableAttack"
-      pattern: "(?i)'[\\s]*;[\\s]*drop[\\s]*table"
-      message: "Text contains SQL drop table attack"
-    - name: "sqlInsertAttack"
-      pattern: "(?i)'[\\s]*;[\\s]*insert"
-      message: "Text contains SQL insert attack"
-    - name: "sqlServerShutdownAttack"
-      pattern: "(?i)'[\\s]*;[\\s]*shutdown[\\s]*with[\\s]*nowait"
-      message: "Text contains SQL server shutdown attack"
-    - name: "sqlUpdateAttack"
-      pattern: "(?i)'[\\s]*;[\\s]*update"
-      message: "Text contains SQL update attack"
-    - name: "colonEquals"
-      pattern: ":="
-      message: "Text contains colon equals"
-  xml-complexity:
-    max-nodes: 1370000
-    max-levels-descendant-nodes: 2000
-    max-child-nodes-per-node: 2000
-    max-attributes-per-node: 200
-
 darts-gateway:
   ws:
     request-validation: false
@@ -84,3 +40,10 @@ darts-gateway:
       securement-password: ${DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD:<password>}
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
+
+azure-ad-ropc:
+  token-uri: https://hmctsdartsb2csbox.b2clogin.com/hmctsdartsb2csbox.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token
+  scope: https://hmctsdartsb2csbox.onmicrosoft.com/053d44f9-cd27-463e-a995-bcf835233cf8/Functional.Test
+  username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
+  password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
+  client-id: ${AAD_B2C_ROPC_CLIENT_ID_KEY:#{null}}

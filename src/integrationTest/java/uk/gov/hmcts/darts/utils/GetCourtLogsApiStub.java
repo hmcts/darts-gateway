@@ -1,7 +1,9 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import uk.gov.hmcts.darts.model.courtLogs.CourtLogs;
+import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
+
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -20,7 +22,7 @@ public class GetCourtLogsApiStub extends DartsApiStub {
         super(GET_COURT_LOGS_API_PATH);
     }
 
-    public void returnsCourtLogs(CourtLogs courtLogs) throws JsonProcessingException {
+    public void returnsCourtLogs(List<CourtLog> courtLogs) throws JsonProcessingException {
         stubFor(get(urlPathEqualTo(GET_COURT_LOGS_API_PATH))
               .willReturn(aResponse()
                     .withHeader("Content-Type", "application/json")
