@@ -118,7 +118,7 @@ task smoke(type: Test) {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.12.1'
+  toolVersion = '10.12.2'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
@@ -268,16 +268,16 @@ dependencies {
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
     exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
   }
-  implementation group: 'com.google.guava', name: 'guava', version: '32.1.1-jre'
-  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.75'
-  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.75'
-  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.75'
+  implementation group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
+  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.76'
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.76'
+  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.76'
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb("org.glassfish.jaxb:jaxb-xjc")
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.3', {
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.4', {
     exclude group: 'commons-fileupload', module: 'commons-fileupload'
   }
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
@@ -301,7 +301,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '3.0.6.RELEASE'
   testImplementation group: 'commons-io', name: 'commons-io', version: '2.13.0'// CVE-2021-29425
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.3'
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.4'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
 
   compileJava.dependsOn = openApiGenerateTaskList
