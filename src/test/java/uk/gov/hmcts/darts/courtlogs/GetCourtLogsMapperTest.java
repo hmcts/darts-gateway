@@ -1,19 +1,32 @@
 package uk.gov.hmcts.darts.courtlogs;
 
+import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.darts.utilities.assetions.CustomAssertions.verifyThat;
 
 class GetCourtLogsMapperTest {
 
     private final OffsetDateTime today = OffsetDateTime.now();
     private final GetCourtLogsMapper courtLogsMapper = new GetCourtLogsMapper();
+
+    @Test
+    void mapsEmptyCourtLogsToLegacyApi() {
+        var emptyCourtLogs = new ArrayList<CourtLog>();
+
+        var legacyCourtLog = courtLogsMapper.toLegacyApi(emptyCourtLogs);
+
+        assertThat(legacyCourtLog).isInstanceOf(GetCourtLogResponse.class);
+        assertThat(legacyCourtLog.getReturn().getCourtLog()).isNull();
+    }
 
     @Test
     void mapsToLegacyApi() {

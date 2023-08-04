@@ -2,3 +2,12 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  keyVaults:
+    darts:
+      secrets:
+        - name: AzureAdB2CFuncTestROPCClientIdKey
+          alias: AAD_B2C_ROPC_CLIENT_ID_KEY
+        - name: api-FUNC-TEST-ROPC-USERNAME
+          alias: FUNC_TEST_ROPC_USERNAME
+        - name: api-FUNC-TEST-ROPC-PASSWORD
+          alias: FUNC_TEST_ROPC_PASSWORD

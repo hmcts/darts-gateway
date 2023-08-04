@@ -8,9 +8,26 @@ def component = "gateway"
 
 def branchesToSync = ['demo']
 
+def secrets = [
+        'darts-${env}': [
+                secret('api-FUNC-TEST-ROPC-USERNAME', 'FUNC_TEST_ROPC_USERNAME'),
+                secret('api-FUNC-TEST-ROPC-PASSWORD', 'FUNC_TEST_ROPC_PASSWORD'),
+                secret('AzureAdB2CFuncTestROPCClientIdKey', 'AAD_B2C_ROPC_CLIENT_ID_KEY')
+        ],
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
 withPipeline(type, product, component) {
   enableSlackNotifications('#darts-builds')
-  
+  loadVaultSecrets(secrets)
   syncBranchesWithMaster(branchesToSync)
 }
 

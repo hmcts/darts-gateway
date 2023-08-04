@@ -13,6 +13,7 @@ import feign.okhttp.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -80,6 +81,7 @@ public class FeignConfig {
 
     // Temporary fix for service to service authentication.
     @Bean
+    @Profile("!int-test")
     public RequestInterceptor requestInterceptor(RestTemplate restTemplate) {
         return
               template -> {
