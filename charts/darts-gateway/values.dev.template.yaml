@@ -11,3 +11,5 @@ java:
           alias: FUNC_TEST_ROPC_USERNAME
         - name: api-FUNC-TEST-ROPC-PASSWORD
           alias: FUNC_TEST_ROPC_PASSWORD
+  environment:
+    DARTS_API_URL: https://darts-api.staging.platform.hmcts.net
