@@ -87,7 +87,6 @@ class CasesRouteImplTest {
         uk.gov.hmcts.darts.model.cases.AddCaseRequest value = captor.getValue();
         assertEquals(CASE_NUMBER, value.getCaseNumber());
         assertEquals(COURTHOUSE, value.getCourthouse());
-        assertEquals(COURTROOM, value.getCourtroom());
 
         assert value.getDefenders() != null;
         assertEquals(1, value.getDefenders().size());

@@ -11,7 +11,6 @@ public class AddCaseMapper {
         uk.gov.hmcts.darts.model.cases.AddCaseRequest mojDartsRequest = new uk.gov.hmcts.darts.model.cases.AddCaseRequest();
         Case caseRequest = soapRequest.getCase().get(0);
         mojDartsRequest.setCourthouse(caseRequest.getCourthouse());
-        mojDartsRequest.setCourtroom(caseRequest.getCourtroom());
         mojDartsRequest.setCaseNumber(caseRequest.getId());
 
         caseRequest.getDefendants().stream().findFirst().ifPresent(defendantList -> mojDartsRequest.setDefendants(

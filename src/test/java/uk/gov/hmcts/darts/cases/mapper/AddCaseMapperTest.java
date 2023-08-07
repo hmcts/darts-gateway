@@ -51,7 +51,6 @@ class AddCaseMapperTest {
 
         uk.gov.hmcts.darts.model.cases.AddCaseRequest result = addCaseMapper.mapToMojDartsAddCaseRequest(addCaseRequest);
         assertEquals(COURTHOUSE, result.getCourthouse());
-        assertEquals(COURTROOM, result.getCourtroom());
         assertEquals(CASE_NUMBER, result.getCaseNumber());
 
         assert result.getDefendants() != null;
