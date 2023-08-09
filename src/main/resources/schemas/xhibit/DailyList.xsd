@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Doug Climie (Electronic Data Systems LTD) -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cs="http://www.courtservice.gov.uk/schemas/courtservice" xmlns="http://www.courtservice.gov.uk/schemas/courtservice" targetNamespace="http://www.courtservice.gov.uk/schemas/courtservice" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.3" id="DailyList">
+	<xsd:include schemaLocation="CourtService.xsd"/>
+	<xsd:annotation>
+		<xsd:appinfo>
+			<Metadata xmlns="http://www.govtalk.gov.uk/metadata/egms">
+				<Creator>Department for Constitutional Affairs</Creator>
+				<Created>2002-05-28</Created>
+				<Modified>2005-10-06</Modified>
+				<Format Schema="http://www.iana.org/assignments/media-types">text/xml</Format>
+				<Identifier>DailyList</Identifier>
+				<Language codeListID="ISO639-2" codeListURI="http://www.loc.gov/standards/iso639-2/langcodes.html">eng</Language>
+				<Publisher>Department for Constitutional Affairs, Clive House, 70 Petty France, London, SW1H 9HD</Publisher>
+				<ConformsTo>http://www.w3.org/2001/XMLSchema</ConformsTo>
+				<Copyright>Crown Copyright 2006</Copyright>
+				<ProtectiveMarking>unclassified</ProtectiveMarking>
+				<Status>final</Status>
+				<StatusDescription>definitive version for release</StatusDescription>
+				<Version>5.3</Version>
+				<Category codeListID="GCL">Justice System</Category>
+				<Title>Crown Court Daily List</Title>
+				<Type>message</Type>
+			</Metadata>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:complexType name="DailyListStructure">
+		<xsd:sequence>
+			<xsd:element name="DocumentID" type="DocumentIDstructure"/>
+			<xsd:element name="ListHeader" type="ListHeaderStructure"/>
+			<xsd:element name="CrownCourt" type="CourtHouseStructure"/>
+			<xsd:element name="CourtLists">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="CourtList" type="cs:DailyCourtListStructure" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="DailyCourtListStructure">
+		<xsd:sequence>
+			<xsd:element name="CourtHouse" type="CourtHouseStructure"/>
+			<xsd:element name="Sittings">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Sitting" type="SittingStructure" minOccurs="0" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DailyList" type="DailyListStructure"/>
+</xsd:schema>

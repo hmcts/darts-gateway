@@ -382,6 +382,7 @@ task genJaxb {
     }
   }
 }
+
 task genJaxbAddCase {
   ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddCase"
   ext.schema = "src/main/resources/schemas/addLogEntry.xsd"
