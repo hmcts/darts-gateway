@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" targetNamespace="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.2" id="apd">
+	<xsd:annotation>
+		<xsd:appinfo>
+			<Metadata xmlns="http://www.govtalk.gov.uk/metadata/egms">
+				<Creator>Department for Constitutional Affairs</Creator>
+				<Created>2002-05-28</Created>
+				<Modified>2005-10-06</Modified>
+				<Format Schema="http://www.iana.org/assignments/media-types">text/xml</Format>
+				<Identifier>apd</Identifier>
+				<Language codeListID="ISO639-2" codeListURI="http://www.loc.gov/standards/iso639-2/langcodes.html">eng</Language>
+				<Publisher>Department for Constitutional Affairs, Clive House, 70 Petty France, London, SW1H 9HD</Publisher>
+				<ConformsTo>http://www.w3.org/2001/XMLSchema</ConformsTo>
+				<Copyright>Crown Copyright 2006</Copyright>
+				<ProtectiveMarking>unclassified</ProtectiveMarking>
+				<Status>final</Status>
+				<StatusDescription>definitive version for release</StatusDescription>
+				<Version>5.2</Version>
+				<Category codeListID="GCL">Justice System</Category>
+				<Title>Crown Court Proxy for Govtalk Schemas</Title>
+				<Type>proxy</Type>
+			</Metadata>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- Schema to be linked -->
+	<xsd:include schemaLocation="AddressTypes.xsd"/>
+	<xsd:include schemaLocation="PersonalDetailsTypes.xsd"/>
+</xsd:schema>

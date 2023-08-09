@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by LCMG (LogicaCMG) -->
+<!--
+
+	CJS Exchange: Integration Messaging Protocol
+	Entities Schema
+
+	Version 0.22	05-08-2003   Added BusinessEventParameters arrays
+
+-->
+<xsd:schema xmlns:be="urn:integration-cjsonline-gov-uk:pilot:entities"
+            xmlns:bt="urn:integration-cjsonline-gov-uk:pilot:types"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="urn:integration-cjsonline-gov-uk:pilot:entities" elementFormDefault="qualified">
+	<!--Imports-->
+	<xsd:import namespace="urn:integration-cjsonline-gov-uk:pilot:types" schemaLocation="cjse-integration-pilot-types.xsd"/>
+	<!--Elements-->
+	<xsd:element name="BailStatus" type="be:BailStatus"/>
+	<xsd:element name="CaseFile" type="be:CaseFile"/>
+	<xsd:element name="CaseFileIdentifier" type="be:CaseFileIdentifier"/>
+	<xsd:element name="CaseFileIdentifier1" type="be:CaseFileIdentifier"/>
+	<xsd:element name="CaseFileIdentifier2" type="be:CaseFileIdentifier"/>
+	<xsd:element name="CaseFileUpdate" type="be:CaseFileUpdate"/>
+	<xsd:element name="Contact" type="be:Contact"/>
+	<xsd:element name="CRN" type="be:CRN"/>
+	<xsd:element name="CRNIdentifier" type="be:CRNIdentifier"/>
+	<xsd:element name="CRNIdentifier1" type="be:CRNIdentifier"/>
+	<xsd:element name="CRNIdentifier2" type="be:CRNIdentifier"/>
+	<xsd:element name="CRNLinkType" type="be:CRNLinkType"/>
+	<xsd:element name="CRNStatus" type="be:CRNStatus"/>
+	<xsd:element name="CRNUpdate" type="be:CRNUpdate"/>
+	<xsd:element name="DartsEvent" type="be:DartsEventElement"/>
+	<xsd:element name="Defendant" type="be:Defendant"/>
+	<xsd:element name="DefendantIdentifier" type="be:DefendantIdentifier"/>
+	<xsd:element name="DefendantIdentifierType" type="be:DefendantIdentifierType"/>
+	<xsd:element name="DefendantNationality" type="bt:DefendantNationalityType"/>
+	<xsd:element name="DeportationReason" type="bt:DeportationReasonType"/>
+	<xsd:element name="DefendantUpdate" type="be:DefendantUpdate"/>
+	<xsd:element name="Document" type="be:Document"/>
+	<xsd:element name="DocumentContent" type="be:DocumentContent"/>
+	<xsd:element name="DocumentIdentifier" type="be:DocumentIdentifier"/>
+	<xsd:element name="DocumentType" type="be:DocumentType"/>
+	<xsd:element name="DocumentUpdate" type="be:DocumentUpdate"/>
+	<xsd:element name="EventParameters" type="be:BusinessEventParameters"/>
+	<xsd:element name="LinkedCRN" type="be:LinkedCRN"/>
+	<xsd:element name="LinkTypeCode" type="bt:CRNLinkTypeCode"/>
+	<xsd:element name="NotificationsAndAlerts" type="be:NotificationsAndAlerts"/>
+	<xsd:element name="OrganisationalUnit" type="be:OrganisationalUnit"/>
+	<xsd:element name="Role" type="be:Role"/>
+	<xsd:element name="RoleID" type="bt:RoleID"/>
+	<xsd:element name="ServiceTest" type="be:ServiceTest"/>
+	<xsd:element name="VerdictStatus" type="be:VerdictStatus"/>
+	<!--Type definitions-->
+	<!--Complex types-->
+	<xsd:complexType name="BusinessEntityBase" abstract="true">
+		<xsd:attribute name="VersionNumber" type="xsd:long"/>
+	</xsd:complexType>
+	<xsd:complexType name="Address" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="bt:AddressLine"/>
+					<xsd:element name="AddressLine2" type="bt:AddressLine" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="bt:AddressLine" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="bt:AddressLine" minOccurs="0"/>
+					<xsd:element name="AddressLine5" type="bt:AddressLine" minOccurs="0"/>
+					<xsd:element name="Postcode" type="bt:UKPostcode" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="AliasUpdate">
+		<xsd:sequence>
+			<xsd:element name="Before" type="be:DefendantName" minOccurs="0"/>
+			<xsd:element name="After" type="be:DefendantName" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AlternateAddressUpdate">
+		<xsd:sequence>
+			<xsd:element name="Before" type="be:Address" minOccurs="0"/>
+			<xsd:element name="After" type="be:Address" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfAddress">
+		<xsd:sequence>
+			<xsd:element name="Address" type="be:Address" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfCourtAppearance">
+		<xsd:sequence>
+			<xsd:element name="CourtAppearance" type="be:CourtAppearance" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfDefendantIdentifier">
+		<xsd:sequence>
+			<xsd:element name="DefendantIdentifier" type="be:DefendantIdentifier" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfDefendantName">
+		<xsd:sequence>
+			<xsd:element name="DefendantName" type="be:DefendantName" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfObservation">
+		<xsd:sequence>
+			<xsd:element name="Observation" type="be:Observation" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessCaseFileID">
+		<xsd:sequence>
+			<xsd:element name="CaseFileID" type="bt:BusinessCaseFileID" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessCaseNumbers">
+		<xsd:sequence>
+			<xsd:element name="CaseNumber" type="bt:CaseFileName" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessCRNID">
+		<xsd:sequence>
+			<xsd:element name="CRNID" type="bt:BusinessCRNID" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessPrison">
+		<xsd:sequence>
+			<xsd:element name="Prison" type="bt:BusinessPrison" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessASN">
+		<xsd:sequence>
+			<xsd:element name="ASN" type="bt:BusinessASN" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessPNCID">
+		<xsd:sequence>
+			<xsd:element name="PNCID" type="bt:BusinessPNCID" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessPrisonerID">
+		<xsd:sequence>
+			<xsd:element name="PrisonerID" type="bt:BusinessPrisonerID" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessPTIURN">
+		<xsd:sequence>
+			<xsd:element name="PTI-URN" type="bt:BusinessPTIURN" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessCRONumber">
+		<xsd:sequence>
+			<xsd:element name="CRONumber" type="bt:BusinessCRONumber" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessGender">
+		<xsd:sequence>
+			<xsd:element name="Gender" type="bt:BusinessGender" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessBailStatusCode">
+		<xsd:sequence>
+			<xsd:element name="BailStatusCode" type="bt:BusinessBailStatusCode" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ArrayOfBusinessJuvenileIndicator">
+		<xsd:sequence>
+			<xsd:element name="IsJuvenile" type="bt:BusinessJuvenileIndicator" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--Below added for Darts-->
+	<xsd:complexType name="DartsEventElement" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="CourtHouse" type="bt:CourtAppearanceName" minOccurs="0"/>
+					<xsd:element name="CourtRoom" type="bt:CourtAppearanceRoomNumber" minOccurs="0"/>
+					<xsd:element name="CaseNumbers" type="be:ArrayOfBusinessCaseNumbers" minOccurs="0"/>
+					<xsd:element name="EventText" type="bt:DartsEventText" minOccurs="0"/>
+					<xsd:element name="RetentionPolicy" type="be:DartsRetentionPolicy" minOccurs="0"/>
+				</xsd:sequence>
+				<xsd:attribute name="ID" type="xsd:integer"/>
+				<xsd:attribute name="Y" type="xsd:integer"/>
+				<xsd:attribute name="M" type="xsd:integer"/>
+				<xsd:attribute name="D" type="xsd:integer"/>
+				<xsd:attribute name="H" type="xsd:integer"/>
+				<xsd:attribute name="MIN" type="xsd:integer"/>
+				<xsd:attribute name="S" type="xsd:integer"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+		<xsd:complexType name="DartsRetentionPolicy" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="CaseRetentionFixedPolicy" type="bt:DartsCaseRetentionFixedPolicy" minOccurs="0"/>
+					<xsd:element name="CaseTotalSentence" type="bt:DartsCaseTotalSentence" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- Above added for Darts-->
+	<xsd:complexType name="BailStatus" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="Code" type="bt:BailStatusCode"/>
+					<xsd:element name="Description" type="bt:BailStatusDescription" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="BusinessEventParameters" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="EventTypeID" type="bt:BusinessEventTypeID"/>
+					<xsd:element name="EventTime" type="bt:BusinessEventTime" minOccurs="0"/>
+					<xsd:element name="EventLocation" type="bt:OrganisationalUnitID" minOccurs="0"/>
+					<xsd:element name="MessageText" type="bt:BusinessMessageText" minOccurs="0"/>
+					<xsd:element name="IsUrgent" type="bt:MarkUrgent" minOccurs="0"/>
+					<xsd:element name="CaseFileIDs" type="be:ArrayOfBusinessCaseFileID" minOccurs="0"/>
+					<xsd:element name="CRNIDs" type="be:ArrayOfBusinessCRNID" minOccurs="0"/>
+					<xsd:element name="Prisons" type="be:ArrayOfBusinessPrison" minOccurs="0"/>
+					<xsd:element name="ASNs" type="be:ArrayOfBusinessASN" minOccurs="0"/>
+					<xsd:element name="PNCIDs" type="be:ArrayOfBusinessPNCID" minOccurs="0"/>
+					<xsd:element name="PrisonerIDs" type="be:ArrayOfBusinessPrisonerID" minOccurs="0"/>
+					<xsd:element name="PTI-URNs" type="be:ArrayOfBusinessPTIURN" minOccurs="0"/>
+					<xsd:element name="CRONumbers" type="be:ArrayOfBusinessCRONumber" minOccurs="0"/>
+					<xsd:element name="Genders" type="be:ArrayOfBusinessGender" minOccurs="0"/>
+					<xsd:element name="BailStatuses" type="be:ArrayOfBusinessBailStatusCode" minOccurs="0"/>
+					<xsd:element name="IsJuveniles" type="be:ArrayOfBusinessJuvenileIndicator" minOccurs="0"/>
+					<xsd:element name="DefendantNationality" type="bt:DefendantNationalityType" minOccurs="0"/>
+					<xsd:element name="DeportationReason" type="bt:DeportationReasonType" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaseFile" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="CaseFileIdentifier" type="be:CaseFileIdentifier"/>
+					<xsd:element name="RegisteringLocation" type="bt:OrganisationalUnitID" minOccurs="0"/>
+					<xsd:element name="Name" type="bt:CaseFileName" minOccurs="0"/>
+					<xsd:element name="Description" type="bt:CaseFileDescription" minOccurs="0"/>
+					<xsd:element name="Summary" type="bt:CaseFileSummary" minOccurs="0"/>
+					<xsd:element name="RegistrationDate" type="bt:FileDateTime" minOccurs="0"/>
+					<xsd:element name="ModificationDate" type="bt:FileDateTime" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaseFileCore" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="Name" type="bt:CaseFileName" minOccurs="0"/>
+					<xsd:element name="Description" type="bt:CaseFileDescription" minOccurs="0"/>
+					<xsd:element name="Summary" type="bt:CaseFileSummary" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaseFileIdentifier" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="CaseFileID" type="bt:CaseFileID"/>
+					<xsd:element name="SystemID" type="bt:SystemID" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaseFileUpdate">
+		<xsd:sequence>
+			<xsd:element name="CaseFileIdentifier" type="be:CaseFileIdentifier"/>
+			<xsd:element name="CaseFileCoreUpdate" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Before" type="be:CaseFileCore" minOccurs="0"/>
+						<xsd:element name="After" type="be:CaseFileCore" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Contact" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="LastName" type="bt:LastName" minOccurs="0"/>
+					<xsd:element name="FirstName" type="bt:FirstName" minOccurs="0"/>
+					<xsd:element name="EmailAddress1" type="bt:EmailAddress" minOccurs="0"/>
+					<xsd:element name="EmailAddress2" type="bt:EmailAddress" minOccurs="0"/>
+					<xsd:element name="PhoneNumber1" type="bt:PhoneNumber" minOccurs="0"/>
+					<xsd:element name="PhoneNumber2" type="bt:PhoneNumber" minOccurs="0"/>
+					<xsd:element name="MobilePhoneNumber1" type="bt:MobilePhoneNumber" minOccurs="0"/>
+					<xsd:element name="MobilePhoneNumber2" type="bt:MobilePhoneNumber" minOccurs="0"/>
+					<xsd:element name="PagerNumber" type="bt:PagerNumber" minOccurs="0"/>
+					<xsd:element name="FaxNumber" type="bt:FaxNumber" minOccurs="0"/>
+					<xsd:element name="Address" type="be:Address" minOccurs="0"/>
+				</xsd:sequence>
+				<xsd:attribute name="IsRegistered" type="xsd:boolean"/>
+				<xsd:attribute name="UserID" type="bt:UserID"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CourtAppearance" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="AppearanceType" type="bt:CourtAppearanceTypeCode" minOccurs="0"/>
+					<xsd:element name="AppearanceDate" type="bt:CourtAppearanceDate" minOccurs="0"/>
+					<xsd:element name="CourtLocation" type="bt:OrganisationalUnitID" minOccurs="0"/>
+					<xsd:element name="CourtRoom" type="bt:CourtAppearanceRoom" minOccurs="0"/>
+					<xsd:element name="Judge" type="bt:CourtAppearanceJudge" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CourtAppearanceUpdate">
+		<xsd:sequence>
+			<xsd:element name="Before" type="be:CourtAppearance" minOccurs="0"/>
+			<xsd:element name="After" type="be:CourtAppearance" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CRN" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="CRNIdentifier" type="be:CRNIdentifier"/>
+					<xsd:element name="RegisteringLocation" type="bt:OrganisationalUnitID" minOccurs="0"/>
+					<xsd:element name="CRNStatus" type="be:CRNStatus" minOccurs="0"/>
+					<xsd:element name="BailStatus" type="be:BailStatus" minOccurs="0"/>
+					<xsd:element name="VerdictStatus" type="be:VerdictStatus" minOccurs="0"/>
+					<xsd:element name="IncidentReferenceNumber" type="bt:CRNIncidentReferenceNumber" minOccurs="0"/>
+					<xsd:element name="ChargeDescription" type="bt:CRNChargeDescription" minOccurs="0"/>
+					<xsd:element name="ChargeSheetNumber" type="bt:CRNChargeSheetNumber" minOccurs="0"/>
+					<xsd:element name="OffenceLocation" type="bt:CRNOffenceLocation" minOccurs="0"/>
+					<xsd:element name="OffenceDate" type="bt:CRNOffenceDate" minOccurs="0"/>
+					<xsd:element name="AdjudicationDate" type="bt:CRNAdjudicationDate" minOccurs="0"/>
+					<xsd:element name="IsJuvenile" type="bt:Juvenile" minOccurs="0"/>
+					<xsd:element name="CJSIBISOffenceCode" type="bt:CJSIBISOffenceCode" minOccurs="0"/>
+					<xsd:element name="CourtAppearances" type="be:ArrayOfCourtAppearance" minOccurs="0"/>
+					<xsd:element name="SentenceDisposalValue" type="bt:CRNSentenceDisposal" minOccurs="0"/>
+					<xsd:element name="Plea" type="bt:CRNPlea" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CRNCore" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="CRNStatus" type="be:CRNStatus" minOccurs="0"/>
+					<xsd:element name="BailStatus" type="be:BailStatus" minOccurs="0"/>
+					<xsd:element name="VerdictStatus" type="be:VerdictStatus" minOccurs="0"/>
+					<xsd:element name="IncidentReferenceNumber" type="bt:CRNIncidentReferenceNumber" minOccurs="0"/>
+					<xsd:element name="ChargeDescription" type="bt:CRNChargeDescription" minOccurs="0"/>
+					<xsd:element name="ChargeSheetNumber" type="bt:CRNChargeSheetNumber" minOccurs="0"/>
+					<xsd:element name="OffenceLocation" type="bt:CRNOffenceLocation" minOccurs="0"/>
+					<xsd:element name="OffenceDate" type="bt:CRNOffenceDate" minOccurs="0"/>
+					<xsd:element name="AdjudicationDate" type="bt:CRNAdjudicationDate" minOccurs="0"/>
+					<xsd:element name="IsJuvenile" type="bt:Juvenile" minOccurs="0"/>
+					<xsd:element name="CJSIBISOffenceCode" type="bt:CJSIBISOffenceCode" minOccurs="0"/>
+					<xsd:element name="SentenceDisposalValue" type="bt:CRNSentenceDisposal" minOccurs="0"/>
+					<xsd:element name="Plea" type="bt:CRNPlea" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CRNIdentifier" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="CRNID" type="bt:CRNID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CRNLinkType" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="Code" type="bt:CRNLinkTypeCode"/>
+					<xsd:element name="Description" type="bt:CRNLinkTypeDescription" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CRNStatus" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="Code" type="bt:CRNStatusCode"/>
+					<xsd:element name="Description" type="bt:CRNStatusDescription" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CRNUpdate">
+		<xsd:sequence>
+			<xsd:element name="CRNIdentifier" type="be:CRNIdentifier"/>
+			<xsd:element name="CRNCoreUpdate" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Before" type="be:CRNCore" minOccurs="0"/>
+						<xsd:element name="After" type="be:CRNCore" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CourtAppearanceUpdates" minOccurs="0">
+				<xsd:complexType mixed="false">
+					<xsd:sequence>
+						<xsd:element name="CourtAppearanceUpdate" type="be:CourtAppearanceUpdate" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Defendant" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="DefendantIdentifiers" type="be:ArrayOfDefendantIdentifier"/>
+					<xsd:element name="DefaultName" type="be:DefendantName" minOccurs="0"/>
+					<xsd:element name="DefaultAddress" type="be:Address" minOccurs="0"/>
+					<xsd:element name="Aliases" type="be:ArrayOfDefendantName" minOccurs="0"/>
+					<xsd:element name="AlternateAddresses" type="be:ArrayOfAddress" minOccurs="0"/>
+					<xsd:element name="DateOfBirth" type="bt:DateOfBirth" minOccurs="0"/>
+					<xsd:element name="Gender" type="bt:Gender" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DefendantCore" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="DefaultName" type="be:DefendantName" minOccurs="0"/>
+					<xsd:element name="DefaultAddress" type="be:Address" minOccurs="0"/>
+					<xsd:element name="DateOfBirth" type="bt:DateOfBirth" minOccurs="0"/>
+					<xsd:element name="Gender" type="bt:Gender" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DefendantIdentifier" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="DefendantID" type="bt:DefendantID"/>
+					<xsd:element name="DefendantIdentifierType" type="be:DefendantIdentifierType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DefendantIdentifierType" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="Code" type="bt:DefendantIdentifierTypeCode"/>
+					<xsd:element name="Description" type="bt:DefendantIdentifierTypeDescription" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DefendantIdentifierUpdate">
+		<xsd:sequence>
+			<xsd:element name="Before" type="be:DefendantIdentifier" minOccurs="0"/>
+			<xsd:element name="After" type="be:DefendantIdentifier" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="DefendantName" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="LastName" type="bt:LastName"/>
+					<xsd:element name="FirstName" type="bt:FirstName" minOccurs="0"/>
+					<xsd:element name="MiddleNames" type="bt:MiddleName" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DefendantUpdate">
+		<xsd:sequence>
+			<xsd:element name="DefendantIdentifier" type="be:DefendantIdentifier"/>
+			<xsd:element name="DefendantCoreUpdate" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Before" type="be:DefendantCore" minOccurs="0"/>
+						<xsd:element name="After" type="be:DefendantCore" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DefendantIdentifierUpdates" minOccurs="0">
+				<xsd:complexType mixed="false">
+					<xsd:sequence>
+						<xsd:element name="DefendantIdentifierUpdate" type="be:DefendantIdentifierUpdate" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="AliasUpdates" minOccurs="0">
+				<xsd:complexType mixed="false">
+					<xsd:sequence>
+						<xsd:element name="AliasUpdate" type="be:AliasUpdate" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="AlternateAddressUpdates" minOccurs="0">
+				<xsd:complexType mixed="false">
+					<xsd:sequence>
+						<xsd:element name="AlternateAddressUpdate" type="be:AlternateAddressUpdate" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Document" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="DocumentIdentifier" type="be:DocumentIdentifier"/>
+					<xsd:element name="DocumentType" type="be:DocumentType" minOccurs="0"/>
+					<xsd:element name="RegisteringLocation" type="bt:OrganisationalUnitID" minOccurs="0"/>
+					<xsd:element name="Name" type="bt:DocumentName" minOccurs="0"/>
+					<xsd:element name="Description" type="bt:DocumentDescription" minOccurs="0"/>
+					<xsd:element name="RegistrationDate" type="bt:FileDateTime" minOccurs="0"/>
+					<xsd:element name="ModificationDate" type="bt:FileDateTime" minOccurs="0"/>
+					<xsd:element name="DocumentSize" type="bt:DocumentSize" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DocumentContent" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="DocumentIdentifier" type="be:DocumentIdentifier"/>
+					<xsd:element name="Filename" type="bt:DocumentFilename" minOccurs="0"/>
+					<xsd:element name="MimeType" type="bt:DocumentMimeType" minOccurs="0"/>
+					<xsd:element name="Content" type="bt:DocumentContentBody" minOccurs="0"/>
+					<xsd:element name="IsHumanReadable" type="bt:DocumentContentHumanReadable" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DocumentCore" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="DocumentType" type="be:DocumentType" minOccurs="0"/>
+					<xsd:element name="Name" type="bt:DocumentName" minOccurs="0"/>
+					<xsd:element name="Description" type="bt:DocumentDescription" minOccurs="0"/>
+					<xsd:element name="DocumentSize" type="bt:DocumentSize" nillable="true" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DocumentIdentifier" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="DocumentID" type="bt:DocumentID"/>
+					<xsd:element name="SystemID" type="bt:SystemID" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DocumentType" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="Code" type="bt:DocumentTypeCode"/>
+					<xsd:element name="Category" type="bt:DocumentTypeCategory" minOccurs="0"/>
+					<xsd:element name="Description" type="bt:DocumentTypeDescription" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DocumentUpdate">
+		<xsd:sequence>
+			<xsd:element name="DocumentIdentifier" type="be:DocumentIdentifier"/>
+			<xsd:element name="DocumentCoreUpdate" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Before" type="be:DocumentCore" minOccurs="0"/>
+						<xsd:element name="After" type="be:DocumentCore" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="LinkedCRN">
+		<xsd:sequence>
+			<xsd:element name="LinkTypeCode" type="bt:CRNLinkTypeCode"/>
+			<xsd:element name="CRN" type="be:CRN"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Observation" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="ObservationTime" type="bt:ObservationTime"/>
+					<xsd:element name="ObservationPoint" type="bt:ObservationPoint"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="NotificationsAndAlerts" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="NarrativeText" type="bt:NarrativeText" minOccurs="0"/>
+					<xsd:element name="IsUrgent" type="bt:MarkUrgent" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="OrganisationalUnit" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="OrganisationalUnitID" type="bt:OrganisationalUnitID"/>
+					<xsd:element name="Name" type="bt:OrganisationalUnitName" minOccurs="0"/>
+					<xsd:element name="Address" type="be:Address" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Role" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="RoleIdentifier" type="be:RoleIdentifier"/>
+					<xsd:element name="Name" type="bt:RoleName" minOccurs="0"/>
+					<xsd:element name="IsDiscriminatory" type="bt:Discrimination" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="RoleIdentifier" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="RoleID" type="bt:RoleID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ServiceTest" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="TestID" type="bt:ServiceTestID"/>
+					<xsd:element name="Observations" type="be:ArrayOfObservation" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="VerdictStatus" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:extension base="be:BusinessEntityBase">
+				<xsd:sequence>
+					<xsd:element name="Code" type="bt:VerdictStatusCode"/>
+					<xsd:element name="Description" type="bt:VerdictStatusDescription" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,340 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.courtservice.gov.uk/schemas/courtservice" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="DocumentName" type="xs:string"/>
+  <xs:element name="UniqueID" type="xs:string"/>
+  <xs:element name="DocumentType" type="xs:string"/>
+  <xs:element name="Version" type="xs:string"/>
+  <xs:element name="DocumentInformation" type="xs:string"/>
+  <xs:element name="TimeStamp" type="xs:string"/>
+  <xs:element name="ListCategory" type="xs:string"/>
+  <xs:element name="StartDate" type="xs:string"/>
+  <xs:element name="EndDate" type="xs:string"/>
+  <xs:element name="CRESTprintRef" type="xs:string"/>
+  <xs:element name="PublishedTime" type="xs:dateTime"/>
+  <xs:element name="CRESTlistID" type="xs:short"/>
+  <xs:element name="CourtHouseType" type="xs:string"/>
+  <xs:element name="CourtHouseCode">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="CourtHouseShortName" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CourtHouseName" type="xs:string"/>
+  <xs:element name="CourtHouseAddress">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="add:Line" maxOccurs="unbounded" minOccurs="0" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:PostCode" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CourtHouseTelephone" type="xs:int"/>
+  <xs:element name="CourtHouseFax" type="xs:int"/>
+  <xs:element name="CRESTjudgeID" type="xs:short"/>
+  <xs:element name="Judge">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="add:CitizenNameSurname" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:CitizenNameRequestedName" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="cour:CRESTjudgeID" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="HearingDescription" type="xs:string"/>
+  <xs:element name="HearingDate" type="xs:string"/>
+  <xs:element name="OrganisationName" type="xs:string"/>
+  <xs:element name="Name">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="add:CitizenNameTitle" minOccurs="0" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:CitizenNameForename" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:CitizenNameSurname" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:CitizenNameSuffix" minOccurs="0" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:CitizenNameRequestedName" minOccurs="0" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MaskedName" type="xs:string"/>
+  <xs:element name="IsMasked" type="xs:string"/>
+  <xs:element name="DateOfBirth">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="add:BirthDate" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:VerifiedBy" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Age" type="xs:byte"/>
+  <xs:element name="Sex" type="xs:string"/>
+  <xs:element name="Address">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="add:Line" maxOccurs="unbounded" minOccurs="0" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:PostCode" minOccurs="0" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PersonalDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:Name" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:MaskedName" minOccurs="0" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:IsMasked" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:DateOfBirth" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Age" minOccurs="0" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Sex" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Address" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ContactDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="add:Email" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:Telephone" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+        <xs:element ref="add:Fax" xmlns:add="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProsecutingReference" type="xs:string"/>
+  <xs:element name="ProsecutingOrganisation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:OrganisationName" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Advocate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:PersonalDetails" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:ContactDetails" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:StartDate" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:EndDate" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CourtHouseDX" type="xs:string"/>
+  <xs:element name="CRESTchargeID" type="xs:string"/>
+  <xs:element name="OffenceStatement" type="xs:string"/>
+  <xs:element name="OffenceParticulars" type="xs:string"/>
+  <xs:element name="Charge">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:CRN" minOccurs="0" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CRESTchargeID" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:OffenceStatement" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:OffenceParticulars" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+      <xs:attribute type="xs:byte" name="IndictmentCountNumber" use="optional"/>
+      <xs:attribute type="xs:string" name="CJSoffenceCode" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CRESTdefendantID" type="xs:short"/>
+  <xs:element name="URN" type="xs:string"/>
+  <xs:element name="MagistratesCourtRefNumber" type="xs:string"/>
+  <xs:element name="CustodyStatus" type="xs:string"/>
+  <xs:element name="Charges">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:Charge" maxOccurs="unbounded" minOccurs="0" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+      <xs:attribute type="xs:byte" name="NumberOfCharges" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Counsel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:Advocate" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Defendant">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:PersonalDetails" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:ASNs" minOccurs="0" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CRESTdefendantID" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:URN" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:MagistratesCourtRefNumber" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CustodyStatus" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Charges" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Counsel" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="HearingSequenceNumber" type="xs:short"/>
+  <xs:element name="HearingDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:HearingDescription" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:HearingDate" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="HearingType" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CRESThearingID" type="xs:byte"/>
+  <xs:element name="TimeMarkingNote" type="xs:string"/>
+  <xs:element name="CaseNumber" type="xs:string"/>
+  <xs:element name="Prosecution">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:ProsecutingReference" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:ProsecutingOrganisation" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Advocate" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="ProsecutingAuthority" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CommittingCourt">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:CourtHouseType" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseCode" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseName" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseAddress" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseDX" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Defendants">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:Defendant" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ASN" type="xs:string"/>
+  <xs:element name="CRN" type="xs:string"/>
+  <xs:element name="ASNs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:ASN" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Hearing">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:HearingSequenceNumber" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:HearingDetails" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CRESThearingID" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:TimeMarkingNote" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CaseNumber" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Prosecution" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CommittingCourt" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Defendants" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CourtRoomNumber" type="xs:string"/>
+  <xs:element name="SittingSequenceNo" type="xs:byte"/>
+  <xs:element name="SittingAt" type="xs:string"/>
+  <xs:element name="SittingPriority" type="xs:string"/>
+  <xs:element name="Judiciary">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:Judge" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Hearings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:Hearing" maxOccurs="unbounded" minOccurs="0" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Sitting">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:CourtRoomNumber" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:SittingSequenceNo" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:SittingAt" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:SittingPriority" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Judiciary" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Hearings" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CourtHouse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:CourtHouseType" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseCode" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseName" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Sittings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:Sitting" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CourtList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:CourtHouse" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Sittings" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DocumentID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:DocumentName" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:UniqueID" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:DocumentType" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Version" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:DocumentInformation" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:TimeStamp" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ListHeader">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:ListCategory" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:StartDate" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:EndDate" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:Version" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CRESTprintRef" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:PublishedTime" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CRESTlistID" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CrownCourt">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:CourtHouseType" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseCode" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseName" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseAddress" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseTelephone" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtHouseFax" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CourtLiSTSS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:CourtList" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DAILYLIST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cour:DocumentID" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:ListHeader" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CrownCourt" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+        <xs:element ref="cour:CourtLiSTSS" xmlns:cour="http://www.courtservice.gov.uk/schemas/courtservice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
