@@ -10,7 +10,8 @@ import uk.gov.hmcts.darts.event.model.EventRequest;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
-import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
+import uk.gov.hmcts.darts.model.events.CourtLog;
+import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
 
 import java.util.List;
 
@@ -35,5 +36,8 @@ public interface DartsFeignClient {
                                 @RequestParam("case_number") String caseNumber,
                                 @RequestParam("start_date_time") String startDateTime,
                                 @RequestParam("end_date_time") String endDateTime);
+
+    @RequestMapping(method = POST, value = "/courtlogs", headers = "accept=application/json")
+    EventResponse postCourtLogs(@RequestBody CourtLogsPostRequestBody requestBody);
 
 }

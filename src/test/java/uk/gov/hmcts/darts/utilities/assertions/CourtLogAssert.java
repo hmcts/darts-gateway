@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.utilities.assertions;
 import com.synapps.moj.dfs.response.CourtLogEntry;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
+import uk.gov.hmcts.darts.model.events.CourtLog;
 
 import java.time.OffsetDateTime;
 import java.util.Calendar;
