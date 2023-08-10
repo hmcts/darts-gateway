@@ -2,6 +2,7 @@ package com.service.mojdarts.synapps.com;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 
@@ -9,6 +10,7 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlType(name = "addLogEntry", propOrder = {
     "document"
 })
+@XmlRootElement(name = "addLogEntry")
 public class AddLogEntry {
 
     protected String document;

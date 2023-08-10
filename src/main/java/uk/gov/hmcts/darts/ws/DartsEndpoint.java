@@ -19,7 +19,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
-import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
 import uk.gov.hmcts.darts.routing.EventRoutingService;
 
 @Endpoint
@@ -81,11 +80,11 @@ public class DartsEndpoint {
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addLogEntry")
     @ResponsePayload
-    public AddLogEntryResponse addLogEntry(@RequestPayload AddLogEntry requestBody) {
+    public AddLogEntryResponse addLogEntry(@RequestPayload AddLogEntry addLogEntry) {
         var addLogEntryResponse = new AddLogEntryResponse();
 
         try {
-            addLogEntryResponse = addCourtLogsRoute.route(requestBody.getDocument());
+            addLogEntryResponse = addCourtLogsRoute.route(addLogEntry.getDocument());
 
         } catch (Exception e) {
             addLogEntryResponse.setReturn(utils.createCourtLogResponse(e));
