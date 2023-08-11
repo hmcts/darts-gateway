@@ -149,6 +149,7 @@ def sonarExclusions = [
   '**/com/synapps/**',
   '**/com/viqsoultions/**',
   '**/uk/gov/courtservice/**',
+  '**/uk/gov/addcase/**',
   '**/uk/gov/hmcts/darts/**/model/**',
   '**/uk/gov/hmcts/darts/**/config/**'
 ]
