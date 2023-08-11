@@ -53,5 +53,4 @@ class GetCasesMapperTest {
             "tests/cases/GetCasesMapperTest/mapOk/expectedResponse.json");
         JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.NON_EXTENSIBLE);
     }
-
 }
