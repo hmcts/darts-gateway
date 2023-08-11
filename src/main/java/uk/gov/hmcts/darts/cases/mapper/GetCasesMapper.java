@@ -9,7 +9,6 @@ import com.synapps.moj.dfs.response.Defenders;
 import com.synapps.moj.dfs.response.Judges;
 import com.synapps.moj.dfs.response.Prosecutors;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 
 import java.time.LocalDate;
@@ -49,14 +48,11 @@ public class GetCasesMapper {
     private Case mapToCase(ScheduledCase scheduledCase) {
         Case newCase = new Case();
         newCase.setCaseNumber(scheduledCase.getCaseNumber());
-        newCase.setDefendants(new Defendants(scheduledCase.getDefendantList()));
-        newCase.setDefenders(new Defenders(scheduledCase.getDefenceList()));
-        newCase.setJudges(new Judges(scheduledCase.getJudgeList()));
-        newCase.setProsecutors(new Prosecutors(scheduledCase.getProsecutorList()));
+        newCase.setDefendants(new Defendants(scheduledCase.getDefendants()));
+        newCase.setDefenders(new Defenders(scheduledCase.getDefenders()));
+        newCase.setJudges(new Judges(scheduledCase.getJudges()));
+        newCase.setProsecutors(new Prosecutors(scheduledCase.getProsecutors()));
         newCase.setScheduledStart(scheduledCase.getScheduledStart());
-        newCase.setUploadPriority(StringUtils.defaultIfBlank(scheduledCase.getUploadPriority(), ""));
         return newCase;
     }
-
-
 }

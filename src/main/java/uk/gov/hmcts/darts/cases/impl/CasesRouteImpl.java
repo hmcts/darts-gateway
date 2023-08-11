@@ -1,18 +1,19 @@
 package uk.gov.hmcts.darts.cases.impl;
 
+import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.GetCases;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
-import com.service.mojdarts.synapps.com.addcase.AddCaseResponse;
-import com.service.mojdarts.synapps.com.addcase.NewDataSet;
-import feign.FeignException;
+import com.service.mojdarts.synapps.com.addcase.Case;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.cases.mapper.AddCaseMapper;
 import uk.gov.hmcts.darts.cases.mapper.GetCasesMapper;
 import uk.gov.hmcts.darts.common.client.DartsFeignClient;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
-import uk.gov.hmcts.darts.ws.DartsResponseUtils;
+import uk.gov.hmcts.darts.utilities.XmlParser;
+import uk.gov.hmcts.darts.utilities.XmlValidator;
 
 import java.util.List;
 
@@ -20,12 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CasesRouteImpl implements CasesRoute {
 
+    @Value("${darts-gateway.addcase.schema}")
+    private String addCaseSchemaPath;
+    @Value("${darts-gateway.addcase.validate}")
+    private boolean validateAddCase;
+    private final XmlValidator xmlValidator;
     private final DartsFeignClient dartsFeignClient;
+    private final XmlParser xmlParser;
     private final AddCaseMapper addCaseMapper;
-    private final DartsResponseUtils responseUtils;
 
     @Override
-    public GetCasesResponse getCases(GetCases getCasesRequest) {
+    public GetCasesResponse route(GetCases getCasesRequest) {
 
         List<ScheduledCase> modernisedDartsResponse = dartsFeignClient.getCases(
             getCasesRequest.getCourthouse(),
@@ -36,16 +42,15 @@ public class CasesRouteImpl implements CasesRoute {
     }
 
     @Override
-    public AddCaseResponse addCase(NewDataSet addCaseRequest) {
-        uk.gov.hmcts.darts.model.cases.AddCaseRequest mojDartsAddCaseRequest =
-            addCaseMapper.mapToMojDartsAddCaseRequest(addCaseRequest);
-
-        try {
-            dartsFeignClient.addCase(mojDartsAddCaseRequest);
-        } catch (FeignException.FeignClientException e) {
-            return responseUtils.createErrorAddCaseResponse(e);
+    public void route(AddCase addCase) {
+        var caseDocumentXmlStr = addCase.getDocument();
+        if (validateAddCase) {
+            xmlValidator.validate(caseDocumentXmlStr, addCaseSchemaPath);
         }
 
-        return responseUtils.createSuccessfulAddCaseResponse();
+        var caseDocument = xmlParser.unmarshal(caseDocumentXmlStr, Case.class);
+        var addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
+
+        dartsFeignClient.addCase(addCaseRequest);
     }
 }

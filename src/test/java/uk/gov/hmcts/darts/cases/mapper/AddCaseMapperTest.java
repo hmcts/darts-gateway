@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.cases.mapper;
 
 import com.service.mojdarts.synapps.com.addcase.Case;
-import com.service.mojdarts.synapps.com.addcase.NewDataSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +23,8 @@ class AddCaseMapperTest {
     @Test
     void mapToMojDartsAddCaseRequest() {
         Case caseRequest = new Case();
+        caseRequest.setId(CASE_NUMBER);
+
         caseRequest.setCourthouse(COURTHOUSE);
         caseRequest.setCourtroom(COURTROOM);
 
@@ -44,12 +45,7 @@ class AddCaseMapperTest {
         defenders.getDefender().add("Defence1");
         caseRequest.getDefenders().add(defenders);
 
-
-        NewDataSet addCaseRequest = new NewDataSet();
-        addCaseRequest.getCase().add(caseRequest);
-        addCaseRequest.getCase().get(0).setId(CASE_NUMBER);
-
-        uk.gov.hmcts.darts.model.cases.AddCaseRequest result = addCaseMapper.mapToMojDartsAddCaseRequest(addCaseRequest);
+        uk.gov.hmcts.darts.model.cases.AddCaseRequest result = addCaseMapper.mapToDartsApi(caseRequest);
         assertEquals(COURTHOUSE, result.getCourthouse());
         assertEquals(CASE_NUMBER, result.getCaseNumber());
 
@@ -64,7 +60,5 @@ class AddCaseMapperTest {
 
         assert result.getDefenders() != null;
         assertEquals(1, result.getDefenders().size());
-
-
     }
 }

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
-import com.service.mojdarts.synapps.com.addcase.AddCaseResponse;
+import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import org.springframework.stereotype.Component;
@@ -67,5 +67,4 @@ public class DartsResponseUtils {
         response.setReturn(createDartsResponseMessage(OK));
         return response;
     }
-
 }
