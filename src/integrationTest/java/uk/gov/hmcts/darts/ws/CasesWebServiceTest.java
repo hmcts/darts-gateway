@@ -29,11 +29,11 @@ class CasesWebServiceTest extends IntegrationBase {
     @Test
     void handlesGetCases() throws IOException {
         String soapRequestStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/handlesGetCases/soapRequest.xml");
+            "payloads/getCases/soapRequest.xml");
 
         StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/handlesGetCases/dartsApiResponse.json");
+            "payloads/getCases/dartsApiResponse.json");
 
 
         stubFor(get(urlPathEqualTo("/cases"))
@@ -42,7 +42,7 @@ class CasesWebServiceTest extends IntegrationBase {
                                     .withBody(dartsApiResponseStr)));
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/handlesGetCases/expectedResponse.xml");
+            "payloads/getCases/expectedResponse.xml");
         StringSource expectedResponse = new StringSource(expectedResponseStr);
 
         ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
@@ -54,17 +54,17 @@ class CasesWebServiceTest extends IntegrationBase {
     void handlesAddCase() throws IOException {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/addCase/soapRequest.xml");
+            "payloads/addCase/soapRequest.xml");
 
         StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/addCase/dartsApiResponse.json");
+            "payloads/addCase/dartsApiResponse.json");
 
 
         stubFor(post(urlPathEqualTo("/cases"))
                     .willReturn(ok(dartsApiResponseStr)));
         String expectedResponseStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/addCase/expectedResponse.xml");
+            "payloads/addCase/expectedResponse.xml");
         StringSource expectedResponse = new StringSource(expectedResponseStr);
 
         ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
@@ -76,11 +76,11 @@ class CasesWebServiceTest extends IntegrationBase {
     void handlesAddCaseError() throws IOException {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/addCase/invalidSoapRequest.xml");
+            "payloads/addCase/invalidSoapRequest.xml");
 
         StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "tests/cases/CasesApiTest/addCase/dartsApiResponse.json");
+            "payloads/addCase/dartsApiResponse.json");
 
         stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
 

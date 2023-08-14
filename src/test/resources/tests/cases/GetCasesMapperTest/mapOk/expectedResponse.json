@@ -5,7 +5,6 @@
         {
           "caseNumber": "Case0000001",
           "scheduledStart": "09:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000001 Bloggs1",
@@ -33,7 +32,6 @@
         {
           "caseNumber": "Case0000002",
           "scheduledStart": "10:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000002 Bloggs1",
@@ -61,7 +59,6 @@
         {
           "caseNumber": "Case0000003",
           "scheduledStart": "11:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000003 Bloggs1",
@@ -89,7 +86,6 @@
         {
           "caseNumber": "Case0000004",
           "scheduledStart": "12:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000004 Bloggs1",
@@ -117,7 +113,6 @@
         {
           "caseNumber": "Case0000005",
           "scheduledStart": "13:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000005 Bloggs1",
@@ -145,7 +140,6 @@
         {
           "caseNumber": "Case0000006",
           "scheduledStart": "14:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000006 Bloggs1",
@@ -173,7 +167,6 @@
         {
           "caseNumber": "Case0000007",
           "scheduledStart": "15:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000007 Bloggs1",
@@ -201,7 +194,6 @@
         {
           "caseNumber": "Case0000008",
           "scheduledStart": "16:00",
-          "uploadPriority": "",
           "defendants": {
             "defendant": [
               "Mr Defendant0000008 Bloggs1",

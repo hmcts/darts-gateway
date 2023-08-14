@@ -1,0 +1,6 @@
+<ns3:addCaseResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
+  <return>
+    <code>200</code>
+    <message>OK</message>
+  </return>
+</ns3:addCaseResponse>

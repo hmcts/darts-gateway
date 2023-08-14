@@ -1,33 +1,32 @@
 package uk.gov.hmcts.darts.cases.mapper;
 
 import com.service.mojdarts.synapps.com.addcase.Case;
-import com.service.mojdarts.synapps.com.addcase.NewDataSet;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 
 @Service
 public class AddCaseMapper {
-    public uk.gov.hmcts.darts.model.cases.AddCaseRequest mapToMojDartsAddCaseRequest(NewDataSet soapRequest) {
 
-        uk.gov.hmcts.darts.model.cases.AddCaseRequest mojDartsRequest = new uk.gov.hmcts.darts.model.cases.AddCaseRequest();
-        Case caseRequest = soapRequest.getCase().get(0);
-        mojDartsRequest.setCourthouse(caseRequest.getCourthouse());
-        mojDartsRequest.setCaseNumber(caseRequest.getId());
+    public AddCaseRequest mapToDartsApi(Case legacyCase) {
+        var addCaseRequest = new AddCaseRequest();
+        addCaseRequest.setCourthouse(legacyCase.getCourthouse());
+        addCaseRequest.setCaseNumber(legacyCase.getId());
 
-        caseRequest.getDefendants().stream().findFirst().ifPresent(defendantList -> mojDartsRequest.setDefendants(
-            defendantList.getDefendant()));
+        legacyCase.getDefendants().stream()
+            .findFirst()
+            .ifPresent(defendantList -> addCaseRequest.setDefendants(defendantList.getDefendant()));
 
-        caseRequest.getJudges().stream().findFirst().ifPresent(judgeList -> mojDartsRequest.setJudges(judgeList.getJudge()));
+        legacyCase.getJudges().stream()
+            .findFirst()
+            .ifPresent(judgeList -> addCaseRequest.setJudges(judgeList.getJudge()));
 
-        caseRequest.getProsecutors().stream().findFirst().ifPresent(prosecutorList -> mojDartsRequest.setProsecutors(
-            prosecutorList.getProsecutor()));
+        legacyCase.getProsecutors().stream()
+            .findFirst()
+            .ifPresent(prosecutorList -> addCaseRequest.setProsecutors(prosecutorList.getProsecutor()));
 
-        caseRequest.getDefenders().stream().findFirst().ifPresent(defendersList -> mojDartsRequest.setDefenders(
+        legacyCase.getDefenders().stream().findFirst().ifPresent(defendersList -> addCaseRequest.setDefenders(
             defendersList.getDefender()));
 
-        return mojDartsRequest;
-
-
+        return addCaseRequest;
     }
-
-
 }

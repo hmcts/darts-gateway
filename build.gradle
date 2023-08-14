@@ -149,6 +149,7 @@ def sonarExclusions = [
   '**/com/synapps/**',
   '**/com/viqsoultions/**',
   '**/uk/gov/courtservice/**',
+  '**/uk/gov/addcase/**',
   '**/uk/gov/hmcts/darts/**/model/**',
   '**/uk/gov/hmcts/darts/**/config/**'
 ]
@@ -339,6 +340,7 @@ tasks.withType(Checkstyle) {
   exclude 'com/synapps/moj/dfs/response/*.java'
   exclude 'com/emc/**/*.java'
   exclude 'uk/gov/courtservice/**/*.java'
+  exclude 'uk/gov/addcase/**/*.java'
   exclude 'com/viqsoultions/**/*.java'
 }
 
@@ -347,6 +349,7 @@ tasks.withType(Pmd) {
   exclude 'com/synapps/moj/dfs/response/**'
   exclude 'com/emc/**/*.java'
   exclude 'uk/gov/courtservice/**/*.java'
+  exclude 'uk/gov/addcase/**/*.java'
   exclude 'com/viqsoultions/**/*.java'
 }
 
@@ -397,4 +400,3 @@ task genJaxbAddCase {
 }
 
 compileJava.dependsOn genJaxb
-compileJava.dependsOn genJaxbAddCase

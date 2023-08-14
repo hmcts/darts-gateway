@@ -30,7 +30,7 @@ public interface DartsFeignClient {
 
     @RequestMapping(method = POST, value = "/cases")
     @Headers("Content-Type: application/json")
-    ScheduledCase addCase(@RequestBody AddCaseRequest addCaseRequest);
+    void addCase(@RequestBody AddCaseRequest addCaseRequest);
 
     @RequestMapping(method = POST, value = "/events")
     @Headers("Content-Type: application/json")

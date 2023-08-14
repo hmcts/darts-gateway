@@ -4,7 +4,6 @@
       <case>
         <case_number>Case0000001</case_number>
         <scheduled_start>09:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000001 Bloggs1</defendant>
           <defendant>Mr Defendant0000001 Bloggs2</defendant>
@@ -24,7 +23,6 @@
       <case>
         <case_number>Case0000002</case_number>
         <scheduled_start>10:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000002 Bloggs1</defendant>
           <defendant>Mr Defendant0000002 Bloggs2</defendant>
@@ -44,7 +42,6 @@
       <case>
         <case_number>Case0000003</case_number>
         <scheduled_start>11:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000003 Bloggs1</defendant>
           <defendant>Mr Defendant0000003 Bloggs2</defendant>
@@ -64,7 +61,6 @@
       <case>
         <case_number>Case0000004</case_number>
         <scheduled_start>12:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000004 Bloggs1</defendant>
           <defendant>Mr Defendant0000004 Bloggs2</defendant>
@@ -84,7 +80,6 @@
       <case>
         <case_number>Case0000005</case_number>
         <scheduled_start>13:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000005 Bloggs1</defendant>
           <defendant>Mr Defendant0000005 Bloggs2</defendant>
@@ -104,7 +99,6 @@
       <case>
         <case_number>Case0000006</case_number>
         <scheduled_start>14:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000006 Bloggs1</defendant>
           <defendant>Mr Defendant0000006 Bloggs2</defendant>
@@ -124,7 +118,6 @@
       <case>
         <case_number>Case0000007</case_number>
         <scheduled_start>15:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000007 Bloggs1</defendant>
           <defendant>Mr Defendant0000007 Bloggs2</defendant>
@@ -144,7 +137,6 @@
       <case>
         <case_number>Case0000008</case_number>
         <scheduled_start>16:00</scheduled_start>
-        <upload_priority/>
         <defendants>
           <defendant>Mr Defendant0000008 Bloggs1</defendant>
           <defendant>Mr Defendant0000008 Bloggs2</defendant>

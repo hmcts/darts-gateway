@@ -1,13 +1,13 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.service.mojdarts.synapps.com.AddCase;
+import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocument;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.service.mojdarts.synapps.com.GetCases;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
-import com.service.mojdarts.synapps.com.addcase.AddCaseResponse;
-import com.service.mojdarts.synapps.com.addcase.NewDataSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -25,7 +25,6 @@ public class DartsEndpoint {
 
     private final EventRoutingService eventRoutingService;
     private final CasesRoute casesRoute;
-
     private final GetCourtLogRoute getCourtLogRoute;
     private final DartsResponseUtils utils;
 
@@ -46,13 +45,18 @@ public class DartsEndpoint {
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCases")
     @ResponsePayload
     public GetCasesResponse getCases(@RequestPayload GetCases getCases) {
-        return casesRoute.getCases(getCases);
+        return casesRoute.route(getCases);
     }
 
-    @PayloadRoot(namespace = "", localPart = "NewDataSet")
+    @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addCase")
     @ResponsePayload
-    public AddCaseResponse addCase(@RequestPayload NewDataSet addCaseRequest) {
-        return casesRoute.addCase(addCaseRequest);
+    public AddCaseResponse addCase(@RequestPayload AddCase addCase) {
+        try {
+            casesRoute.route(addCase);
+            return utils.createSuccessfulAddCaseResponse();
+        } catch (Exception e) {
+            return utils.createErrorAddCaseResponse(e);
+        }
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCourtLog")

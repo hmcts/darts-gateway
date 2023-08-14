@@ -38,6 +38,9 @@ darts-gateway:
       securement-actions: UsernameToken
       securement-username: ${DAR_NOTIFY_EVENT_SECUREMENT_USERNAME:<username>}
       securement-password: ${DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD:<password>}
+  addcase:
+    schema: "darts-addcase.xsd"
+    validate: false
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 
