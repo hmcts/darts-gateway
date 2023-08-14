@@ -276,7 +276,9 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.76'
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
-  jaxb("org.glassfish.jaxb:jaxb-xjc")
+  jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.3')
+    jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.3')
+  //compile 'org.glassfish.jaxb:jaxb-core:4.0.3'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.4', {
@@ -293,6 +295,10 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.4'
   implementation group: 'io.rest-assured', name: 'rest-assured'
   implementation 'org.zalando:problem-spring-web-starter:0.29.1'
+  implementation 'org.apache.commons:commons-collections4:4.4'
+
+  implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+  annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation(platform('org.junit:junit-bom:5.10.0'))
@@ -385,26 +391,7 @@ task genJaxb {
 
 task genJaxbAddCase {
   ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddCase"
-  ext.schema = "src/main/resources/schemas/addLogEntry.xsd"
-
-  outputs.dir sourcesDir
-
-  doLast() {
-    project.ant {
-      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
-      mkdir(dir: sourcesDir)
-
-      xjc(destdir: sourcesDir, schema: schema) {
-        arg(value: "-wsdl")
-        produces(dir: sourcesDir, includes: "**/*.java")
-      }
-    }
-  }
-}
-
-task genJaxbAddLogEntry {
-  ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddLogEntry"
-  ext.schema = "src/main/resources/schemas/addLogEntry.xsd"
+  ext.schema = "src/main/resources/schemas/darts-add-case.xsd"
 
   outputs.dir sourcesDir
 
@@ -423,4 +410,3 @@ task genJaxbAddLogEntry {
 
 compileJava.dependsOn genJaxb
 compileJava.dependsOn genJaxbAddCase
-compileJava.dependsOn genJaxbAddLogEntry
