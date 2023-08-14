@@ -12,6 +12,7 @@ import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.model.events.CourtLog;
+import uk.gov.hmcts.darts.model.dailyList.DailyList;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
 import uk.gov.hmcts.darts.model.dailyList.DailyList;
 

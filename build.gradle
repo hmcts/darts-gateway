@@ -277,8 +277,7 @@ dependencies {
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.3')
-    jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.3')
-  //compile 'org.glassfish.jaxb:jaxb-core:4.0.3'
+  jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.3')
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.4', {
@@ -409,4 +408,3 @@ task genJaxbAddCase {
 }
 
 compileJava.dependsOn genJaxb
-compileJava.dependsOn genJaxbAddCase
