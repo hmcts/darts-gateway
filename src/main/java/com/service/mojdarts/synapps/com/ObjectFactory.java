@@ -28,7 +28,9 @@ public class ObjectFactory {
         "http://com.synapps.mojdarts.service.com",
         "addDocumentResponse"
     );
-    private static final QName _AddLogEntry_QNAME = new QName("http://com.synapps.mojdarts.service.com", "addLogEntry");
+    private static final QName _AddLogEntry_QNAME = new QName("http://com.synapps.mojdarts.service.com",
+                                                              "schemas/addLogEntry"
+    );
     private static final QName _AddLogEntryResponse_QNAME = new QName(
         "http://com.synapps.mojdarts.service.com",
         "addLogEntryResponse"
@@ -168,7 +170,7 @@ public class ObjectFactory {
         return new JAXBElement<>(_AddDocumentResponse_QNAME, AddDocumentResponse.class, null, value);
     }
 
-    @XmlElementDecl(namespace = "http://com.synapps.mojdarts.service.com", name = "addLogEntry")
+    @XmlElementDecl(namespace = "http://com.synapps.mojdarts.service.com", name = "schemas/addLogEntry")
     public JAXBElement<AddLogEntry> createAddLogEntry(AddLogEntry value) {
         return new JAXBElement<>(_AddLogEntry_QNAME, AddLogEntry.class, null, value);
     }

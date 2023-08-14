@@ -358,6 +358,7 @@ sourceSets {
     java {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
+      srcDir('src/main/java/schemas')
     }
   }
 }
@@ -399,4 +400,25 @@ task genJaxbAddCase {
   }
 }
 
+task genJaxbAddLogEntry {
+  ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddLogEntry"
+  ext.schema = "src/main/resources/schemas/addLogEntry.xsd"
+
+  outputs.dir sourcesDir
+
+  doLast() {
+    project.ant {
+      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+      mkdir(dir: sourcesDir)
+
+      xjc(destdir: sourcesDir, schema: schema) {
+        arg(value: "-wsdl")
+        produces(dir: sourcesDir, includes: "**/*.java")
+      }
+    }
+  }
+}
+
 compileJava.dependsOn genJaxb
+compileJava.dependsOn genJaxbAddCase
+compileJava.dependsOn genJaxbAddLogEntry

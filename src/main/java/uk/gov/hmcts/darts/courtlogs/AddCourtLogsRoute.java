@@ -1,10 +1,9 @@
 package uk.gov.hmcts.darts.courtlogs;
 
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.courtservice.events.LogEntry;
+import uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.common.client.DartsFeignClient;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;

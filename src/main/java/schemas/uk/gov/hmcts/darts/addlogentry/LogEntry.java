@@ -5,17 +5,18 @@
 //
 
 
-package uk.gov.courtservice.events;
+package uk.gov.hmcts.darts.addlogentry;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
