@@ -24,7 +24,7 @@ paths:
           name: source_system
           schema:
             type: string
-            enum: [CPP, XHB]
+            enum: [ CPP, XHB ]
           description: "The source system that has sent the message"
           required: true
       requestBody:
@@ -244,7 +244,9 @@ components:
       type: object
       properties:
         citizen_name_forename:
-          type: string
+          type: array
+          items:
+            type: string
           example: "Susan Katherine"
           description: ""
         citizen_name_surname:
@@ -312,6 +314,10 @@ components:
               type: string
               example: "Crown Prosecution Service"
               description: ""
+        advocate:
+          type: array
+          items:
+            $ref: '#/components/schemas/Advocate'
     Defendant:
       type: object
       properties:
@@ -324,6 +330,8 @@ components:
               type: string
               example: "no"
               description: ""
+        counsel:
+          $ref: '#/components/schemas/Counsel'
         urn:
           type: string
           example: "42GD2391421"
@@ -347,6 +355,22 @@ components:
           type: string
           example: "Fail    / refuse give assistance to person executing Communications Act search warrant"
           description: ""
+    Counsel:
+      type: array
+      items:
+        $ref: '#/components/schemas/Advocate'
+    Advocate:
+      type: object
+      properties:
+        personal_details:
+          type: object
+          properties:
+            name:
+              $ref: '#/components/schemas/CitizenName'
+            is_masked:
+              type: string
+              example: "no"
+              description: ""
 
 
 

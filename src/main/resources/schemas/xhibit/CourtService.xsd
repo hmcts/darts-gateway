@@ -672,7 +672,6 @@
 			</xsd:sequence>
 			<xsd:element name="LifeSentence" type="LifeSentenceStructure"/>
 		</xsd:choice>
-		<xsd:attribute name="Section44" type="YesNoType" use="optional"/>
 		<xsd:attribute name="Section91" type="YesNoType" use="optional"/>
 		<xsd:attribute name="Section250" type="YesNoType" use="optional"/>
 		<xsd:attribute name="IndeterminateSentence" type="YesNoType" use="optional"/>
