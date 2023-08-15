@@ -6,6 +6,7 @@ import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import static uk.gov.hmcts.darts.utilities.assetions.CustomAssertions.verifyThat
 
 class GetCourtLogsMapperTest {
 
-    private final OffsetDateTime today = OffsetDateTime.now();
+    private final OffsetDateTime todayInUtc = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
     private final GetCourtLogsMapper courtLogsMapper = new GetCourtLogsMapper(new DateConverters());
 
     @Test
@@ -40,7 +41,7 @@ class GetCourtLogsMapperTest {
 
     private List<CourtLog> someCourtLogs(int quantity) {
         return rangeClosed(1, quantity)
-              .mapToObj((index) -> createCourtLog(today.minusDays(index), "some-text-" + index))
+              .mapToObj((index) -> createCourtLog(todayInUtc.minusDays(index), "some-text-" + index))
               .collect(toList());
     }
 

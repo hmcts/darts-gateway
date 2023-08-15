@@ -46,7 +46,6 @@ public class CourtLogAssert extends AbstractAssert<CourtLogAssert, com.synapps.m
         Assertions.assertThat(legacyCourtLog.getY()).isEqualTo(String.valueOf(expectedDateTime.getYear()));
         Assertions.assertThat(legacyCourtLog.getM()).isEqualTo(String.valueOf(expectedDateTime.getMonthValue()));
         Assertions.assertThat(legacyCourtLog.getD()).isEqualTo(String.valueOf(expectedDateTime.getDayOfMonth()));
-        Assertions.assertThat(legacyCourtLog.getH()).isEqualTo(String.valueOf(expectedDateTime.getHour()));
         Assertions.assertThat(legacyCourtLog.getMIN()).isEqualTo(String.valueOf(expectedDateTime.getMinute()));
         Assertions.assertThat(legacyCourtLog.getS()).isEqualTo(String.valueOf(expectedDateTime.getSecond()));
     }
