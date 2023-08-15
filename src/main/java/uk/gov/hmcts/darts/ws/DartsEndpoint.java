@@ -87,6 +87,7 @@ public class DartsEndpoint {
             addLogEntryResponse = addCourtLogsRoute.route(addLogEntry.getDocument());
 
         } catch (Exception e) {
+            log.error(e.getMessage());
             addLogEntryResponse.setReturn(utils.createCourtLogResponse(e));
             return addLogEntryResponse;
         }

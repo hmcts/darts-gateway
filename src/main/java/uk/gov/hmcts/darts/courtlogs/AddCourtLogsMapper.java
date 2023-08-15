@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.courtlogs;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.addlogentry.LogEntry;
+import schemas.uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
 import uk.gov.hmcts.darts.utilities.MapperUtility;
 
@@ -19,8 +19,8 @@ public class AddCourtLogsMapper {
         requestBody.setCourthouse(logEntry.getCourthouse());
         requestBody.setCourtroom(logEntry.getCourtroom());
         requestBody.setText(logEntry.getText());
-        requestBody.setCaseNumbers(List.of(logEntry.getCaseNumbers().toString()));
-        requestBody.setLogEntryDateTime(OffsetDateTime.of(MapperUtility.toLocalDateTime(logEntry), ZoneOffset.of("UTC")));
+        requestBody.setCaseNumbers(logEntry.getCaseNumbers().getCaseNumber());
+        requestBody.setLogEntryDateTime(OffsetDateTime.of(MapperUtility.toLocalDateTime(logEntry), ZoneOffset.of("+00:00")));
 
         return requestBody;
     }

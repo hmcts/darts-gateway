@@ -5,7 +5,7 @@
 //
 
 
-package uk.gov.hmcts.darts.addlogentry;
+package schemas.uk.gov.hmcts.darts.addlogentry;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

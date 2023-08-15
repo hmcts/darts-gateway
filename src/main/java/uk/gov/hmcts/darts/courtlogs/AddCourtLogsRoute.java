@@ -2,8 +2,10 @@ package uk.gov.hmcts.darts.courtlogs;
 
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.addlogentry.LogEntry;
+import org.springframework.web.client.HttpClientErrorException;
+import schemas.uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.common.client.DartsFeignClient;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.darts.utilities.XmlParser;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AddCourtLogsRoute {
 
     private final XmlParser xmlParser;
@@ -20,10 +23,17 @@ public class AddCourtLogsRoute {
 
     public AddLogEntryResponse route(String document) {
 
+        EventResponse response = null;
+
         LogEntry logEntry = xmlParser.unmarshal(document, LogEntry.class);
         CourtLogsPostRequestBody postRequestBody = mapper.mapToApi(logEntry);
 
-        EventResponse response = dartsFeignClient.postCourtLogs(postRequestBody);
+        try {
+            response = dartsFeignClient.postCourtLogs(postRequestBody);
+        } catch (HttpClientErrorException ce) {
+            log.error("Failure calling Darts API", ce);
+            throw ce;
+        }
 
         return MapperUtility.mapResponse(response);
     }
