@@ -21,4 +21,8 @@ public class DateConverters {
               .toOffsetDateTime();
     }
 
+    public LocalDateTime offsetDateTimeToLegacyDateTime(final OffsetDateTime offsetDateTime) {
+        return offsetDateTime.atZoneSameInstant(ASSUMED_SOURCE_ZONE_ID).toLocalDateTime();
+    }
+
 }

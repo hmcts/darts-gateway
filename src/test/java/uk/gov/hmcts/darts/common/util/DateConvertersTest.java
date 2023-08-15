@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.common.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,5 +37,23 @@ class DateConvertersTest {
         assertThat(offsetDateTime.getSecond()).isEqualTo(59);
 
         assertThat(offsetDateTime.getOffset()).isEqualTo(ZoneOffset.ofHours(1));
+    }
+
+    @Test
+    void convertsUtcLocalDateTimeToLegacyDateTimeForGmt() {
+        var utcDateTime = OffsetDateTime.parse("2022-01-11T16:00:00.000Z");
+
+        var dateTime = dateConverters.offsetDateTimeToLegacyDateTime(utcDateTime);
+
+        assertThat(dateTime.getHour()).isEqualTo(16);
+    }
+
+    @Test
+    void convertsUtcLocalDateTimeToLegacyDateTimeForBst() {
+        var utcDateTime = OffsetDateTime.parse("2022-06-11T16:00:00.000Z");
+
+        var dateTime = dateConverters.offsetDateTimeToLegacyDateTime(utcDateTime);
+
+        assertThat(dateTime.getHour()).isEqualTo(17);
     }
 }

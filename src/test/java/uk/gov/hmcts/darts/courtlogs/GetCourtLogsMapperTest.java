@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.courtlogs;
 
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
 
 import java.time.OffsetDateTime;
@@ -16,7 +17,7 @@ import static uk.gov.hmcts.darts.utilities.assetions.CustomAssertions.verifyThat
 class GetCourtLogsMapperTest {
 
     private final OffsetDateTime today = OffsetDateTime.now();
-    private final GetCourtLogsMapper courtLogsMapper = new GetCourtLogsMapper();
+    private final GetCourtLogsMapper courtLogsMapper= new GetCourtLogsMapper(new DateConverters());
 
     @Test
     void mapsEmptyCourtLogsToLegacyApi() {
