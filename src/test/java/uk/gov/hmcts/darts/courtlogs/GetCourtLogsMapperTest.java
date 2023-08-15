@@ -17,7 +17,7 @@ import static uk.gov.hmcts.darts.utilities.assetions.CustomAssertions.verifyThat
 class GetCourtLogsMapperTest {
 
     private final OffsetDateTime today = OffsetDateTime.now();
-    private final GetCourtLogsMapper courtLogsMapper= new GetCourtLogsMapper(new DateConverters());
+    private final GetCourtLogsMapper courtLogsMapper = new GetCourtLogsMapper(new DateConverters());
 
     @Test
     void mapsEmptyCourtLogsToLegacyApi() {
