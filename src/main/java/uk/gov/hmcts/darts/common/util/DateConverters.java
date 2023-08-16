@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component
@@ -21,8 +22,8 @@ public class DateConverters {
               .toOffsetDateTime();
     }
 
-    public LocalDateTime offsetDateTimeToLegacyDateTime(final OffsetDateTime offsetDateTime) {
-        return offsetDateTime.atZoneSameInstant(ASSUMED_SOURCE_ZONE_ID).toLocalDateTime();
+    public ZonedDateTime offsetDateTimeToLegacyDateTime(final OffsetDateTime offsetDateTime) {
+        return offsetDateTime.atZoneSameInstant(ASSUMED_SOURCE_ZONE_ID);
     }
 
 }
