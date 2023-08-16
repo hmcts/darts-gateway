@@ -2,15 +2,20 @@ package uk.gov.hmcts.darts.courtlogs;
 
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.synapps.moj.dfs.response.CourtLogEntry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @SuppressWarnings("PMD.LawOfDemeter")
 public class GetCourtLogsMapper {
+
+    private final DateConverters dateConverters;
 
     public GetCourtLogResponse toLegacyApi(List<CourtLog> courtLogs) {
         if (courtLogs.isEmpty()) {
@@ -33,7 +38,9 @@ public class GetCourtLogsMapper {
     }
 
     private CourtLogEntry toLegacyApi(CourtLog courtLog) {
-        var logDateTime = courtLog.getTimestamp();
+        var logDateTime =
+            dateConverters.offsetDateTimeToLegacyDateTime(courtLog.getTimestamp());
+
         var legacyCourtLogEntry = new CourtLogEntry();
 
         legacyCourtLogEntry.setY(String.valueOf(logDateTime.getYear()));
