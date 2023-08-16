@@ -3,14 +3,14 @@ package uk.gov.hmcts.darts.utilities;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.experimental.UtilityClass;
-
-import schemas.uk.gov.hmcts.darts.addlogentry.LogEntry;
+import uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 
 import java.time.LocalDateTime;
 import java.time.Month;
 
 @UtilityClass
+@SuppressWarnings({"PMD.HideUtilityClassConstructor"})
 public class MapperUtility {
 
     public static LocalDateTime toLocalDateTime(LogEntry dartsEvent) {
@@ -34,7 +34,5 @@ public class MapperUtility {
 
         return addLogEntryResponse;
     }
-
-
 
 }

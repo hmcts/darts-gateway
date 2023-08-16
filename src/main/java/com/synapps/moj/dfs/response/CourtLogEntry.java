@@ -16,7 +16,7 @@ public class CourtLogEntry {
     @XmlValue
     protected String value;
     @XmlAttribute(name = "Y")
-    protected String y;
+    protected String year;
     @XmlAttribute(name = "M")
     protected String m;
     @XmlAttribute(name = "D")
@@ -37,11 +37,11 @@ public class CourtLogEntry {
     }
 
     public String getY() {
-        return y;
+        return year;
     }
 
     public void setY(String value) {
-        this.y = value;
+        this.year = value;
     }
 
     public String getM() {

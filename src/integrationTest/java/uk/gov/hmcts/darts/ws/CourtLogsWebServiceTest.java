@@ -23,7 +23,8 @@ import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 class CourtLogsWebServiceTest extends IntegrationBase {
 
     private static final String VALID_GET_COURTLOGS_XML = "classpath:payloads/courtlogs/valid-get-courtlogs.xml";
-    private static final String INVALID_GET_COURTLOGS_XML = "classpath:payloads/events/invalid-soap-message.xml";
+    private static final String INVALID_COURTLOGS_XML = "classpath:payloads/events/invalid-soap-message.xml";
+    private static final String VALID_POST_COURTLOGS_XML = "classpath:payloads/courtlogs/valid-post-courtlogs.xml";
     private static final String SOME_CASE_NUMBER = "some-case-number";
     private static final String SOME_COURTHOUSE = "some-courthouse";
 
@@ -36,32 +37,53 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
         wsClient.sendRequest(withPayload(getCourtLogs))
-              .andExpect(noFault())
-              .andExpect(xpath("//code").evaluatesTo("200"))
-              .andExpect(xpath("//message").evaluatesTo("OK"))
-              .andExpect(xpath("//court_log/@courthouse").evaluatesTo(SOME_COURTHOUSE))
-              .andExpect(xpath("//court_log/@case_number").evaluatesTo(SOME_CASE_NUMBER))
-              .andExpect(xpath("//court_log/entry[1]").evaluatesTo("some-log-text-1"))
-              .andExpect(xpath("//court_log/entry[2]").evaluatesTo("some-log-text-2"))
-              .andExpect(xpath("//court_log/entry[3]").evaluatesTo("some-log-text-3"));
+            .andExpect(noFault())
+            .andExpect(xpath("//code").evaluatesTo("200"))
+            .andExpect(xpath("//message").evaluatesTo("OK"))
+            .andExpect(xpath("//court_log/@courthouse").evaluatesTo(SOME_COURTHOUSE))
+            .andExpect(xpath("//court_log/@case_number").evaluatesTo(SOME_CASE_NUMBER))
+            .andExpect(xpath("//court_log/entry[1]").evaluatesTo("some-log-text-1"))
+            .andExpect(xpath("//court_log/entry[2]").evaluatesTo("some-log-text-2"))
+            .andExpect(xpath("//court_log/entry[3]").evaluatesTo("some-log-text-3"));
 
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
     }
 
     @Test
-    void rejectsInvalidSoapMessage(@Value(INVALID_GET_COURTLOGS_XML) Resource invalidSoapMessage) throws IOException {
+    void rejectsInvalidSoapMessage(@Value(INVALID_COURTLOGS_XML) Resource invalidSoapMessage) throws IOException {
         courtLogsApi.returnsCourtLogs(someListOfCourtLog(1));
 
         wsClient.sendRequest(withPayload(invalidSoapMessage))
-              .andExpect(clientOrSenderFault());
+            .andExpect(clientOrSenderFault());
 
         courtLogsApi.verifyDoesntReceiveRequest();
     }
 
+    @Test
+    void postCourtLogsRoute(@Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs) throws Exception {
+        postCourtLogsApi.returnsEventResponse();
+
+        wsClient.sendRequest(withPayload(postCourtLogs)).andExpect(noFault())
+            .andExpect(xpath("//code").evaluatesTo("200"))
+            .andExpect(xpath("//message").evaluatesTo("OK"));
+
+    }
+
+    @Test
+    void postCourtLogsRejectsInvalidSoapMessage(@Value(INVALID_COURTLOGS_XML) Resource invalidSoapMessage) throws IOException {
+        postCourtLogsApi.returnsEventResponse();
+
+        wsClient.sendRequest(withPayload(invalidSoapMessage))
+            .andExpect(clientOrSenderFault());
+
+        postCourtLogsApi.verifyDoesntReceiveRequest();
+    }
+
+
     private static List<CourtLog> someListOfCourtLog(int numberOfEntries) {
         return IntStream.rangeClosed(1, numberOfEntries)
-              .mapToObj((index) -> courtLog(index))
-              .collect(toList());
+            .mapToObj((index) -> courtLog(index))
+            .collect(toList());
     }
 
     private static CourtLog courtLog(int index) {

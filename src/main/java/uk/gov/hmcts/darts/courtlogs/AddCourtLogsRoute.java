@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import schemas.uk.gov.hmcts.darts.addlogentry.LogEntry;
+import uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.common.client.DartsFeignClient;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
@@ -23,7 +23,7 @@ public class AddCourtLogsRoute {
 
     public AddLogEntryResponse route(String document) {
 
-        EventResponse response = null;
+        EventResponse response;
 
         LogEntry logEntry = xmlParser.unmarshal(document, LogEntry.class);
         CourtLogsPostRequestBody postRequestBody = mapper.mapToApi(logEntry);

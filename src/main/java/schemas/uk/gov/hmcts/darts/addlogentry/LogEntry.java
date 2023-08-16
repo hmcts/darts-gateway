@@ -4,8 +4,7 @@
 // Any modifications to this file will be lost upon recompilation of the source schema.
 //
 
-
-package schemas.uk.gov.hmcts.darts.addlogentry;
+package uk.gov.hmcts.darts.addlogentry;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -18,69 +17,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * <p>Java class for anonymous complex type.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>{@code
- * <complexType>
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="courthouse">
- *           <simpleType>
- *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               <maxLength value="255"/>
- *             </restriction>
- *           </simpleType>
- *         </element>
- *         <element name="courtroom" minOccurs="0">
- *           <simpleType>
- *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               <maxLength value="64"/>
- *             </restriction>
- *           </simpleType>
- *         </element>
- *         <element name="case_numbers">
- *           <complexType>
- *             <complexContent>
- *               <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 <sequence>
- *                   <element name="case_number" maxOccurs="unbounded">
- *                     <simpleType>
- *                       <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *                         <maxLength value="32"/>
- *                       </restriction>
- *                     </simpleType>
- *                   </element>
- *                 </sequence>
- *               </restriction>
- *             </complexContent>
- *           </complexType>
- *         </element>
- *         <element name="text" minOccurs="0">
- *           <simpleType>
- *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               <maxLength value="256"/>
- *             </restriction>
- *           </simpleType>
- *         </element>
- *       </sequence>
- *       <attribute name="Y" use="required" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *       <attribute name="M" use="required" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *       <attribute name="D" use="required" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *       <attribute name="H" use="required" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *       <attribute name="MIN" use="required" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *       <attribute name="S" use="required" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * }</pre>
- *
- *
- */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "courthouse",
@@ -89,6 +25,7 @@ import java.util.List;
     "text"
 })
 @XmlRootElement(name = "log_entry")
+@SuppressWarnings({"PMD.MemberName", "PMD.AbbreviationAsWordInName", "PMD.ShortVariable"})
 public class LogEntry {
 
     @XmlElement(required = true)
@@ -350,32 +287,6 @@ public class LogEntry {
         this.s = value;
     }
 
-
-    /**
-     * <p>Java class for anonymous complex type.
-     *
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     *
-     * <pre>{@code
-     * <complexType>
-     *   <complexContent>
-     *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       <sequence>
-     *         <element name="case_number" maxOccurs="unbounded">
-     *           <simpleType>
-     *             <restriction base="{http://www.w3.org/2001/XMLSchema}string">
-     *               <maxLength value="32"/>
-     *             </restriction>
-     *           </simpleType>
-     *         </element>
-     *       </sequence>
-     *     </restriction>
-     *   </complexContent>
-     * </complexType>
-     * }</pre>
-     *
-     *
-     */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "caseNumber"
@@ -385,30 +296,6 @@ public class LogEntry {
         @XmlElement(name = "case_number", required = true)
         protected List<String> caseNumber;
 
-        /**
-         * Gets the value of the caseNumber property.
-         *
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the Jakarta XML Binding object.
-         * This is why there is not a {@code set} method for the caseNumber property.
-         *
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getCaseNumber().add(newItem);
-         * </pre>
-         *
-         *
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
-         *
-         *
-         * @return
-         *     The value of the caseNumber property.
-         */
         public List<String> getCaseNumber() {
             if (caseNumber == null) {
                 caseNumber = new ArrayList<>();

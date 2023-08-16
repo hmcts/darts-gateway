@@ -19,6 +19,8 @@ public class IntegrationBase {
     protected EventApiStub theEventApi = new EventApiStub();
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
 
+    protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
+
     @BeforeEach
     void clearStubs() {
         WireMock.reset();

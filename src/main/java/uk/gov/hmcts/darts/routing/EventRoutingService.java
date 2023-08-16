@@ -4,7 +4,6 @@ import com.service.mojdarts.synapps.com.AddDocument;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.dailylist.DailyListRoute;
 import uk.gov.hmcts.darts.event.service.impl.EventRoute;
 
