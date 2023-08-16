@@ -13,11 +13,11 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.darts.utilities.assetions.CustomAssertions.verifyThat;
+import static uk.gov.hmcts.darts.utilities.assertions.CustomAssertions.verifyThat;
 
 class GetCourtLogsMapperTest {
 
-    private final OffsetDateTime todayInUtc = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
+    private final OffsetDateTime todayInUtc = OffsetDateTime.now(ZoneOffset.UTC);
     private final GetCourtLogsMapper courtLogsMapper = new GetCourtLogsMapper(new DateConverters());
 
     @Test

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utilities.assetions;
+package uk.gov.hmcts.darts.utilities.assertions;
 
 import com.synapps.moj.dfs.response.CourtLog;
 import lombok.experimental.UtilityClass;
