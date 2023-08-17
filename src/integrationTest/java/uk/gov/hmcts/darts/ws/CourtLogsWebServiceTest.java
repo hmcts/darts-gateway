@@ -67,6 +67,8 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             .andExpect(xpath("//code").evaluatesTo("200"))
             .andExpect(xpath("//message").evaluatesTo("OK"));
 
+
+        postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
     }
 
     @Test

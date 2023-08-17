@@ -150,7 +150,7 @@ def sonarExclusions = [
   '**/com/viqsoultions/**',
   '**/uk/gov/courtservice/**',
   '**/uk/gov/addcase/**',
-  'src/main/java/schemas/**',
+  'src/main/java/generated/**',
   '**/uk/gov/hmcts/darts/**/model/**',
   '**/uk/gov/hmcts/darts/**/config/**'
 ]
@@ -359,7 +359,7 @@ sourceSets {
     java {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
-      srcDir('src/main/java/schemas')
+      srcDir('src/main/java/generated')
     }
   }
 }
