@@ -4,15 +4,19 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.darts.config.FeignConfig;
 import uk.gov.hmcts.darts.event.model.EventRequest;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
-import uk.gov.hmcts.darts.model.courtLogs.CourtLog;
+import uk.gov.hmcts.darts.model.events.CourtLog;
+import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
 
 import java.util.List;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @FeignClient(value = "dartsFeignClient", url = "${darts-gateway.darts-api.base-url}", configuration = FeignConfig.class)
 @SuppressWarnings("PMD.UseObjectForClearerAPI")
@@ -35,5 +39,8 @@ public interface DartsFeignClient {
                                 @RequestParam("case_number") String caseNumber,
                                 @RequestParam("start_date_time") String startDateTime,
                                 @RequestParam("end_date_time") String endDateTime);
+
+    @RequestMapping(method = POST, value = "/courtlogs", headers = "accept=application/json")
+    EventResponse postCourtLogs(@RequestBody CourtLogsPostRequestBody requestBody);
 
 }

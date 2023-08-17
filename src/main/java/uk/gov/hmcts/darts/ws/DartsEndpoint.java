@@ -4,6 +4,8 @@ import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocument;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
+import com.service.mojdarts.synapps.com.AddLogEntry;
+import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.service.mojdarts.synapps.com.GetCases;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLog;
@@ -15,6 +17,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import uk.gov.hmcts.darts.cases.CasesRoute;
+import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
 import uk.gov.hmcts.darts.routing.EventRoutingService;
 
@@ -26,6 +29,7 @@ public class DartsEndpoint {
     private final EventRoutingService eventRoutingService;
     private final CasesRoute casesRoute;
     private final GetCourtLogRoute getCourtLogRoute;
+    private final AddCourtLogsRoute addCourtLogsRoute;
     private final DartsResponseUtils utils;
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addDocument")
@@ -72,6 +76,23 @@ public class DartsEndpoint {
         }
 
         return getCourtLogResponse;
+    }
+
+    @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addLogEntry")
+    @ResponsePayload
+    public AddLogEntryResponse addLogEntry(@RequestPayload AddLogEntry addLogEntry) {
+        var addLogEntryResponse = new AddLogEntryResponse();
+
+        try {
+            addLogEntryResponse = addCourtLogsRoute.route(addLogEntry.getDocument());
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            addLogEntryResponse.setReturn(utils.createCourtLogResponse(e));
+            return addLogEntryResponse;
+        }
+
+        return addLogEntryResponse;
     }
 
 

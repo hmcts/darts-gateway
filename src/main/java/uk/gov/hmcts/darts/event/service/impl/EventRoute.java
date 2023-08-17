@@ -21,7 +21,7 @@ public class EventRoute {
     private final XmlValidator xmlValidator;
     private final DartsFeignClient dartsFeignClient;
     private final XmlParser xmlParser;
-    private final LegacyDartsToNewApiMapper dartsXmlMapper;
+    private final EventRequestMapper dartsXmlMapper;
 
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     public AddDocumentResponse handle(String document, String messageId, String type, String subType) {

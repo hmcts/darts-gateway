@@ -9,9 +9,9 @@ import static java.math.BigInteger.ONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.list;
 
-class LegacyDartsToNewApiMapperTest {
+class EventRequestMapperTest {
 
-    private final LegacyDartsToNewApiMapper mapper = new LegacyDartsToNewApiMapper();
+    private final EventRequestMapper mapper = new EventRequestMapper();
 
     @Test
     void mapsEvents() {

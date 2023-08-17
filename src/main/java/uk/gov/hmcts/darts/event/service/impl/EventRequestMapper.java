@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 
 @Service
-public class LegacyDartsToNewApiMapper {
+public class EventRequestMapper {
 
     public EventRequest toNewApi(DartsEvent dartsEvent, String messageId, String type, String subType) {
         return new EventRequest(
