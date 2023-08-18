@@ -37,7 +37,7 @@
           "sitting_priority": "T",
           "judiciary": [
             {
-              "citizen_name_forename": [],
+              "citizen_name_forename": "",
               "citizen_name_surname": "N/A",
               "citizen_name_requested_name": "N/A"
             }
@@ -53,23 +53,21 @@
               "time_marking_note": "10:00 AM",
               "case_number": "T20107001",
               "prosecution": {
-                "prosecuting_authority": "CROWN_PROSECUTION_SERVICE",
+                "prosecuting_authority": "Crown Prosecution Service",
                 "prosecuting_reference": "CPS",
                 "prosecuting_organisation": {
                   "organisation_name": "Crown Prosecution Service"
                 },
-                "advocate": []
+                "advocates": []
               },
               "defendants": [
                 {
                   "personal_details": {
                     "name": {
-                      "citizen_name_forename": [
-                        "Franz"
-                      ],
+                      "citizen_name_forename": "Franz",
                       "citizen_name_surname": "KAFKA"
                     },
-                    "is_masked": "NO"
+                    "is_masked": false
                   },
                   "counsel": []
                 }
