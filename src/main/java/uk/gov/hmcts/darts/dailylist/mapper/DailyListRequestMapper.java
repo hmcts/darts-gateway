@@ -1,19 +1,26 @@
 package uk.gov.hmcts.darts.dailylist.mapper;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
+import uk.gov.courtservice.schemas.courtservice.AdvocateStructure;
 import uk.gov.courtservice.schemas.courtservice.ChargeStructure;
 import uk.gov.courtservice.schemas.courtservice.CourtHouseStructure;
 import uk.gov.courtservice.schemas.courtservice.DailyCourtListStructure;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
+import uk.gov.courtservice.schemas.courtservice.DefenceStructure;
 import uk.gov.courtservice.schemas.courtservice.DefendantStructure;
 import uk.gov.courtservice.schemas.courtservice.HearingStructure;
 import uk.gov.courtservice.schemas.courtservice.JudiciaryStructure;
+import uk.gov.courtservice.schemas.courtservice.PersonStructure;
+import uk.gov.courtservice.schemas.courtservice.PersonalDetailsStructure;
+import uk.gov.courtservice.schemas.courtservice.ProsecutingAuthorityType;
 import uk.gov.courtservice.schemas.courtservice.SittingStructure;
+import uk.gov.govtalk.people.addressandpersonaldetails.CitizenNameStructure;
 import uk.gov.hmcts.darts.model.dailyList.Charge;
 import uk.gov.hmcts.darts.model.dailyList.CitizenName;
 import uk.gov.hmcts.darts.model.dailyList.CourtHouse;
@@ -21,11 +28,13 @@ import uk.gov.hmcts.darts.model.dailyList.CourtList;
 import uk.gov.hmcts.darts.model.dailyList.DailyList;
 import uk.gov.hmcts.darts.model.dailyList.Defendant;
 import uk.gov.hmcts.darts.model.dailyList.Hearing;
+import uk.gov.hmcts.darts.model.dailyList.PersonalDetails;
 import uk.gov.hmcts.darts.model.dailyList.Sitting;
 import uk.gov.hmcts.darts.utilities.DateUtil;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
@@ -67,6 +76,9 @@ public interface DailyListRequestMapper {
         return List.of(map(value.getJudge()));
     }
 
+    @Mappings({
+        @Mapping(source = "citizenNameForename", target = "citizenNameForename", qualifiedByName = "nameMapper")
+    })
     CitizenName map(JudiciaryStructure.Judge judge);
 
     default List<Hearing> map(SittingStructure.Hearings hearings){
@@ -77,7 +89,34 @@ public interface DailyListRequestMapper {
     }
 
 
+    @Mappings({
+        @Mapping(source = "prosecution.advocate", target = "prosecution.advocates")
+    })
     Hearing map(HearingStructure hearing);
+
+    default String map(ProsecutingAuthorityType prosecutingAuthorityType){
+        if(prosecutingAuthorityType==null){
+            return null;
+        }
+        return prosecutingAuthorityType.value();
+    }
+
+    default PersonalDetails map(AdvocateStructure advocate){
+        return map(advocate.getPersonalDetails());
+    }
+
+    default PersonalDetails map(PersonalDetailsStructure personalDetailsStructure){
+        PersonalDetails personalDetails = new PersonalDetails();
+        personalDetails.setIsMasked(BooleanUtils.toBoolean(personalDetailsStructure.getIsMasked().toString()));
+        personalDetails.name(map(personalDetailsStructure.getName()));
+        return personalDetails;
+    }
+
+    @Mappings({
+        @Mapping(source = "citizenNameForename", target = "citizenNameForename", qualifiedByName = "nameMapper")
+    })
+    CitizenName map(CitizenNameStructure citizenNameStructure);
+    PersonalDetails map(PersonStructure personStructure);
 
     default List<Defendant> map(HearingStructure.Defendants defendants){
         if(defendants==null){
@@ -102,6 +141,15 @@ public interface DailyListRequestMapper {
     }
 
     Charge map(ChargeStructure defendant);
+
+    default List<PersonalDetails> map(List<DefenceStructure> defenceStructureList){
+        List<PersonalDetails> list = new ArrayList<>();
+        for(DefenceStructure defenceStructure : defenceStructureList){
+            list.addAll(defenceStructure.getAdvocate().stream().map(this::map).toList());
+            list.addAll(defenceStructure.getSolicitor().stream().map(solicitor -> map(solicitor.getParty().getPerson())).toList());
+        }
+        return list;
+    }
 
 
     @Mappings({

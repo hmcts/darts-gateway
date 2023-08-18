@@ -35,6 +35,10 @@ paths:
 
         '500':
           description: Internal Server Error
+          content:
+            application/json+problem:
+              schema:
+                $ref: './problem.yaml'
 
   /dailylists/getCases:
     get:
@@ -75,7 +79,28 @@ paths:
 
         '500':
           description: Internal Server Error
+          content:
+            application/json+problem:
+              schema:
+                $ref: './problem.yaml'
 
+  /dailylists/housekeeping:
+    post:
+      tags:
+        - DailyLists
+      summary: Deletes old DailyLists from the database
+      description: |-
+        Deletes old DailyLists from the database. It will keep x number of days, as defined by application properties.
+      responses:
+        '200':
+          description: OK
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json+problem:
+              schema:
+                $ref: './problem.yaml'
 
 components:
   examples:
@@ -244,9 +269,7 @@ components:
       type: object
       properties:
         citizen_name_forename:
-          type: array
-          items:
-            type: string
+          type: string
           example: "Susan Katherine"
           description: ""
         citizen_name_surname:
@@ -314,24 +337,19 @@ components:
               type: string
               example: "Crown Prosecution Service"
               description: ""
-        advocate:
+        advocates:
           type: array
           items:
-            $ref: '#/components/schemas/Advocate'
+            $ref: '#/components/schemas/PersonalDetails'
     Defendant:
       type: object
       properties:
         personal_details:
-          type: object
-          properties:
-            name:
-              $ref: '#/components/schemas/CitizenName'
-            is_masked:
-              type: string
-              example: "no"
-              description: ""
+          $ref: '#/components/schemas/PersonalDetails'
         counsel:
-          $ref: '#/components/schemas/Counsel'
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonalDetails'
         urn:
           type: string
           example: "42GD2391421"
@@ -355,23 +373,11 @@ components:
           type: string
           example: "Fail    / refuse give assistance to person executing Communications Act search warrant"
           description: ""
-    Counsel:
-      type: array
-      items:
-        $ref: '#/components/schemas/Advocate'
-    Advocate:
+    PersonalDetails:
       type: object
       properties:
-        personal_details:
-          type: object
-          properties:
-            name:
-              $ref: '#/components/schemas/CitizenName'
-            is_masked:
-              type: string
-              example: "no"
-              description: ""
-
-
-
-
+        name:
+          $ref: '#/components/schemas/CitizenName'
+        is_masked:
+          type: boolean
+          example: false
