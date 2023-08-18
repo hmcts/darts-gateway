@@ -32,12 +32,13 @@ import uk.gov.hmcts.darts.model.dailyList.PersonalDetails;
 import uk.gov.hmcts.darts.model.dailyList.Sitting;
 import uk.gov.hmcts.darts.utilities.DateUtil;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
+@SuppressWarnings({"PMD.OverloadMethodsDeclarationOrder", "PMD.ExcessiveImports", "PMD.TooManyMethods"})
 public interface DailyListRequestMapper {
 
     @Mappings({
@@ -55,7 +56,7 @@ public interface DailyListRequestMapper {
     }
 
     default List<CourtList> map(DailyListStructure.CourtLists courtlists) {
-        if(courtlists==null){
+        if (courtlists == null) {
             return null;
         }
         return CollectionUtils.emptyIfNull(courtlists.getCourtList()).stream().map(this::map).toList();
@@ -64,7 +65,7 @@ public interface DailyListRequestMapper {
     CourtList map(DailyCourtListStructure dailyCourtListStructure);
 
     default List<Sitting> map(DailyCourtListStructure.Sittings sittings) {
-        if(sittings==null){
+        if (sittings == null) {
             return null;
         }
         return CollectionUtils.emptyIfNull(sittings.getSitting()).stream().map(this::map).toList();
@@ -72,7 +73,7 @@ public interface DailyListRequestMapper {
 
     Sitting map(SittingStructure dailyCourtListStructure);
 
-    default List<CitizenName> map(JudiciaryStructure value){
+    default List<CitizenName> map(JudiciaryStructure value) {
         return List.of(map(value.getJudge()));
     }
 
@@ -81,8 +82,8 @@ public interface DailyListRequestMapper {
     })
     CitizenName map(JudiciaryStructure.Judge judge);
 
-    default List<Hearing> map(SittingStructure.Hearings hearings){
-        if(hearings==null){
+    default List<Hearing> map(SittingStructure.Hearings hearings) {
+        if (hearings == null) {
             return null;
         }
         return CollectionUtils.emptyIfNull(hearings.getHearing()).stream().map(this::map).toList();
@@ -94,18 +95,18 @@ public interface DailyListRequestMapper {
     })
     Hearing map(HearingStructure hearing);
 
-    default String map(ProsecutingAuthorityType prosecutingAuthorityType){
-        if(prosecutingAuthorityType==null){
+    default String map(ProsecutingAuthorityType prosecutingAuthorityType) {
+        if (prosecutingAuthorityType == null) {
             return null;
         }
         return prosecutingAuthorityType.value();
     }
 
-    default PersonalDetails map(AdvocateStructure advocate){
+    default PersonalDetails map(AdvocateStructure advocate) {
         return map(advocate.getPersonalDetails());
     }
 
-    default PersonalDetails map(PersonalDetailsStructure personalDetailsStructure){
+    default PersonalDetails map(PersonalDetailsStructure personalDetailsStructure) {
         PersonalDetails personalDetails = new PersonalDetails();
         personalDetails.setIsMasked(BooleanUtils.toBoolean(personalDetailsStructure.getIsMasked().toString()));
         personalDetails.name(map(personalDetailsStructure.getName()));
@@ -116,10 +117,11 @@ public interface DailyListRequestMapper {
         @Mapping(source = "citizenNameForename", target = "citizenNameForename", qualifiedByName = "nameMapper")
     })
     CitizenName map(CitizenNameStructure citizenNameStructure);
+
     PersonalDetails map(PersonStructure personStructure);
 
-    default List<Defendant> map(HearingStructure.Defendants defendants){
-        if(defendants==null){
+    default List<Defendant> map(HearingStructure.Defendants defendants) {
+        if (defendants == null) {
             return null;
         }
         return CollectionUtils.emptyIfNull(defendants.getDefendant()).stream().map(this::map).toList();
@@ -128,13 +130,13 @@ public interface DailyListRequestMapper {
     Defendant map(DefendantStructure defendant);
 
     @Named("nameMapper")
-    default String mapName(List<String> names){
+    default String mapName(List<String> names) {
         return String.join(" ", names);
     }
 
 
-    default List<Charge> map(DefendantStructure.Charges charges){
-        if(charges==null){
+    default List<Charge> map(DefendantStructure.Charges charges) {
+        if (charges == null) {
             return null;
         }
         return CollectionUtils.emptyIfNull(charges.getCharge()).stream().map(this::map).toList();
@@ -142,9 +144,9 @@ public interface DailyListRequestMapper {
 
     Charge map(ChargeStructure defendant);
 
-    default List<PersonalDetails> map(List<DefenceStructure> defenceStructureList){
+    default List<PersonalDetails> map(List<DefenceStructure> defenceStructureList) {
         List<PersonalDetails> list = new ArrayList<>();
-        for(DefenceStructure defenceStructure : defenceStructureList){
+        for (DefenceStructure defenceStructure : defenceStructureList) {
             list.addAll(defenceStructure.getAdvocate().stream().map(this::map).toList());
             list.addAll(defenceStructure.getSolicitor().stream().map(solicitor -> map(solicitor.getParty().getPerson())).toList());
         }

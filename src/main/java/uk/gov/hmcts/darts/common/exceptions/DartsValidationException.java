@@ -5,6 +5,7 @@ public class DartsValidationException extends RuntimeException {
     public DartsValidationException(Throwable throwable) {
         super(throwable);
     }
+
     public DartsValidationException(String errorMessage) {
         super(errorMessage);
     }

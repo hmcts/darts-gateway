@@ -11,10 +11,9 @@ import uk.gov.hmcts.darts.event.model.EventRequest;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
+import uk.gov.hmcts.darts.model.dailyList.DailyList;
 import uk.gov.hmcts.darts.model.events.CourtLog;
-import uk.gov.hmcts.darts.model.dailyList.DailyList;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
-import uk.gov.hmcts.darts.model.dailyList.DailyList;
 
 import java.util.List;
 
@@ -33,10 +32,10 @@ public interface DartsFeignClient {
     @PostMapping(value = "/cases", headers = {"accept=application/json", "Content-Type=application/json"})
     void addCase(@RequestBody AddCaseRequest addCaseRequest);
 
-    @PostMapping(value = "/events", headers =  {"accept=application/json", "Content-Type=application/json"})
+    @PostMapping(value = "/events", headers = {"accept=application/json", "Content-Type=application/json"})
     EventResponse sendEvent(@RequestBody EventRequest eventRequest);
 
-    @GetMapping(value = "/courtlogs", headers =  "accept=application/json")
+    @GetMapping(value = "/courtlogs", headers = "accept=application/json")
     List<CourtLog> getCourtLogs(@RequestParam("courthouse") String courthouse,
                                 @RequestParam("case_number") String caseNumber,
                                 @RequestParam("start_date_time") String startDateTime,
@@ -44,7 +43,7 @@ public interface DartsFeignClient {
 
     @RequestMapping(method = POST, value = "/dailylists", headers = "accept=application/json")
     void postDailyLists(@RequestParam("source_system") String sourceSystem,
-                                @RequestParam("DailyList") DailyList dailyList);
+                        @RequestParam("DailyList") DailyList dailyList);
 
     @RequestMapping(method = POST, value = "/courtlogs", headers = "accept=application/json")
     EventResponse postCourtLogs(@RequestBody CourtLogsPostRequestBody requestBody);
