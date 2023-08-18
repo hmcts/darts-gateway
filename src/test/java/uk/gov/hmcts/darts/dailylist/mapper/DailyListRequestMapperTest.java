@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @SpringBootTest
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert"})
 class DailyListRequestMapperTest {
 
     final XmlParser xmlParser = new XmlParser();
@@ -29,9 +30,9 @@ class DailyListRequestMapperTest {
 
     @Test
     void test1() throws IOException, JSONException {
-        String requestXML = TestUtils.getContentsFromFile(
+        String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test1/request.xml");
-        DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXML, DailyListStructure.class);
+        DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
         DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
         Gson gson = new GsonBuilder()
@@ -48,9 +49,9 @@ class DailyListRequestMapperTest {
 
     @Test
     void test2() throws IOException, JSONException {
-        String requestXML = TestUtils.getContentsFromFile(
+        String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test2/request.xml");
-        DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXML, DailyListStructure.class);
+        DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
         DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
         Gson gson = new GsonBuilder()

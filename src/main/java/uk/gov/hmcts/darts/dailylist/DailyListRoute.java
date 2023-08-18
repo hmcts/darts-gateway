@@ -22,8 +22,8 @@ public class DailyListRoute {
 
     public AddDocumentResponse handle(String document, String messageId, String type) {
         Optional<SystemType> systemType = SystemType.getByType(type);
-        if(systemType.isEmpty()){
-            throw new DartsValidationException("SystemType is not valid " + type );
+        if (systemType.isEmpty()) {
+            throw new DartsValidationException("SystemType is not valid " + type);
         }
         DailyListStructure legacyDailyList = xmlParser.unmarshal(document, DailyListStructure.class);
         DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
