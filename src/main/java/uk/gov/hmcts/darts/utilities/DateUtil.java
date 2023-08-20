@@ -27,4 +27,13 @@ public class DateUtil {
         return zonedDateTime.toOffsetDateTime();
 
     }
+
+
+    public OffsetDateTime toOffsetDateTime3(XMLGregorianCalendar date) {
+        GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
+        ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
+        Instant instant = zonedDateTime.toInstant();
+        return instant.atOffset(ZoneOffset.UTC);
+    }
+
 }
