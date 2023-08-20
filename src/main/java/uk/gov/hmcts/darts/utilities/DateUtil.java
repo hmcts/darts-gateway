@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
@@ -15,6 +16,9 @@ public class DateUtil {
         GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
         ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
         Instant instant = zonedDateTime.toInstant();
-        return instant.atOffset(ZoneOffset.UTC);
+        ZoneId zone = ZoneId.of("Europe/London");
+        ZoneOffset zoneOffSet = zone.getRules().getOffset(instant);
+        return instant.atOffset(zoneOffSet);
+
     }
 }
