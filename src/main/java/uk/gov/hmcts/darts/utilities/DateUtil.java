@@ -2,10 +2,7 @@ package uk.gov.hmcts.darts.utilities;
 
 import lombok.experimental.UtilityClass;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -15,10 +12,7 @@ public class DateUtil {
     public OffsetDateTime toOffsetDateTime(XMLGregorianCalendar date) {
         GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
         ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
-        Instant instant = zonedDateTime.toInstant();
-        ZoneId zone = ZoneId.of("Europe/London");
-        ZoneOffset zoneOffSet = zone.getRules().getOffset(instant);
-        return instant.atOffset(zoneOffSet);
+        return zonedDateTime.toOffsetDateTime();
 
     }
 }
