@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DateUtilTest {
 
     @Test
-    public void GMT() throws DatatypeConfigurationException {
+    void gmt() throws DatatypeConfigurationException {
         GregorianCalendar gcal = new GregorianCalendar(2020, 2, 21, 15, 23, 39);
         XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime(xcal);
@@ -21,7 +21,7 @@ class DateUtilTest {
     }
 
     @Test
-    public void BST() throws DatatypeConfigurationException {
+    void bst() throws DatatypeConfigurationException {
         GregorianCalendar gcal = new GregorianCalendar(2020, 6, 21, 15, 23, 39);
         XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime(xcal);
@@ -29,7 +29,7 @@ class DateUtilTest {
     }
 
     @Test
-    public void GMT2() throws DatatypeConfigurationException {
+    void gmt2() throws DatatypeConfigurationException {
         GregorianCalendar gcal = new GregorianCalendar(2020, 2, 21, 15, 23, 39);
         XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime2(xcal);
@@ -37,7 +37,7 @@ class DateUtilTest {
     }
 
     @Test
-    public void BST2() throws DatatypeConfigurationException {
+    void bst2() throws DatatypeConfigurationException {
         GregorianCalendar gcal = new GregorianCalendar(2020, 6, 21, 15, 23, 39);
         XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime2(xcal);
