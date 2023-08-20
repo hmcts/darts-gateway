@@ -44,4 +44,20 @@ class DateUtilTest {
         assertEquals("2020-07-21T15:23:39+01:00", offsetDateTime.toString());
     }
 
+    @Test
+    void gmt3() throws DatatypeConfigurationException {
+        GregorianCalendar gcal = new GregorianCalendar(2020, 2, 21, 15, 23, 39);
+        XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+        OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime3(xcal);
+        assertEquals("2020-03-21T15:23:39Z", offsetDateTime.toString());
+    }
+
+    @Test
+    void bst3() throws DatatypeConfigurationException {
+        GregorianCalendar gcal = new GregorianCalendar(2020, 6, 21, 15, 23, 39);
+        XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+        OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime3(xcal);
+        assertEquals("2020-07-21T15:23:39+01:00", offsetDateTime.toString());
+    }
+
 }
