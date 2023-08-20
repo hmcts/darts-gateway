@@ -13,6 +13,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SuppressWarnings("PMD.LineLength")
 class DateUtilTest {
 
     @Test
