@@ -8,32 +8,28 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 @UtilityClass
 public class DateUtil {
+
+    public static final ZoneId UTC = ZoneId.of("UTC");
+    public static final ZoneId LONDON_ZONE_ID = ZoneId.of("Europe/London");
+
     public OffsetDateTime toOffsetDateTime(XMLGregorianCalendar date) {
         GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
+
+        //server always converts time as UTC, so this will make local testing perform the same.
+        gregorianCalendar.setTimeZone(TimeZone.getTimeZone(UTC));
+
         ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
         Instant instant = zonedDateTime.toInstant();
-        ZoneId zone = ZoneId.of("Europe/London");
-        ZoneOffset zoneOffSet = zone.getRules().getOffset(instant);
+        //find out what timezone it should be in.
+        ZoneOffset zoneOffSet = LONDON_ZONE_ID.getRules().getOffset(instant);
+        //adjust to correct timezone
+        instant = instant.minusSeconds(zoneOffSet.getTotalSeconds());
         return instant.atOffset(zoneOffSet);
-    }
-
-    public OffsetDateTime toOffsetDateTime2(XMLGregorianCalendar date) {
-        GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
-        ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
-        return zonedDateTime.toOffsetDateTime();
-
-    }
-
-
-    public OffsetDateTime toOffsetDateTime3(XMLGregorianCalendar date) {
-        GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
-        ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
-        Instant instant = zonedDateTime.toInstant();
-        return instant.atOffset(ZoneOffset.UTC);
     }
 
 }
