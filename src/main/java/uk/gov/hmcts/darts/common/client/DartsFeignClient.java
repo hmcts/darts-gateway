@@ -40,7 +40,7 @@ public interface DartsFeignClient {
                                 @RequestParam("start_date_time") String startDateTime,
                                 @RequestParam("end_date_time") String endDateTime);
 
-    @RequestMapping(method = POST, value = "/courtlogs", headers = "accept=application/json")
+    @RequestMapping(method = POST, value = "/courtlogs", headers = {"accept=application/json", "Content-Type=application/json"})
     EventResponse postCourtLogs(@RequestBody CourtLogsPostRequestBody requestBody);
 
 }
