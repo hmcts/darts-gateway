@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.common.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +46,7 @@ public interface DartsFeignClient {
     EventResponse postCourtLogs(@RequestBody CourtLogsPostRequestBody requestBody);
 
     @RequestMapping(method = POST, value = "/dailylists", headers = "accept=application/json")
-    void postDailyLists(@RequestParam("source_system") String sourceSystem,
-                        @RequestParam("DailyList") DailyList dailyList);
+    ResponseEntity<Void> postDailyLists(@RequestParam("source_system") String sourceSystem,
+                                        @RequestBody DailyList dailyList);
 
 }

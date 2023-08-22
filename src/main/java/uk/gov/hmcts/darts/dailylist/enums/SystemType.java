@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.dailylist;
+package uk.gov.hmcts.darts.dailylist.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

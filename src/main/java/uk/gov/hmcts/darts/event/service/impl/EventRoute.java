@@ -34,6 +34,6 @@ public class EventRoute {
 
         EventResponse eventResponse = dartsFeignClient.sendEvent(eventRequest);
 
-        return dartsXmlMapper.toLegacyApi(eventResponse);
+        return dartsXmlMapper.toLegacyAddDocumentResponse(eventResponse);
     }
 }

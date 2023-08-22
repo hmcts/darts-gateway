@@ -25,9 +25,9 @@ public class DateUtil {
 
         ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
         Instant instant = zonedDateTime.toInstant();
-        //find out what timezone it should be in.
+        //find out what offset it should be in.
         ZoneOffset zoneOffSet = LONDON_ZONE_ID.getRules().getOffset(instant);
-        //adjust to correct timezone
+        //adjust to correct offset
         instant = instant.minusSeconds(zoneOffSet.getTotalSeconds());
         return instant.atOffset(zoneOffSet);
     }

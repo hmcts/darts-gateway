@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class IntegrationBase {
 
     protected EventApiStub theEventApi = new EventApiStub();
+    protected DailyListApiStub dailyListApiStub = new DailyListApiStub();
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
 
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();

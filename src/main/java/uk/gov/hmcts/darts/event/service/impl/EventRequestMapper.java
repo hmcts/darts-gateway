@@ -37,7 +37,7 @@ public class EventRequestMapper {
         );
     }
 
-    public AddDocumentResponse toLegacyApi(EventResponse eventResponse) {
+    public AddDocumentResponse toLegacyAddDocumentResponse(EventResponse eventResponse) {
         var dartsResponse = new DARTSResponse();
         dartsResponse.setMessage(eventResponse.message());
         dartsResponse.setCode(eventResponse.code());
