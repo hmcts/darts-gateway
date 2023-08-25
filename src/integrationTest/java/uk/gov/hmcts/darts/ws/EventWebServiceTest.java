@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.test.server.MockWebServiceClient;
+import org.springframework.ws.test.server.ResponseActions;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 
 import java.io.IOException;
@@ -43,4 +44,31 @@ class EventWebServiceTest extends IntegrationBase {
 
         theEventApi.verifyDoesntReceiveEvent();
     }
+
+    @Test
+    void routesValidDailyListPayload(
+        @Value("classpath:payloads/events/valid-dailyList.xml") Resource validEvent,
+        @Value("classpath:payloads/events/valid-event-response.xml") Resource validEventResponse
+    ) throws IOException {
+        dailyListApiStub.willRespondSuccessfully();
+
+        ResponseActions responseActions = wsClient.sendRequest(withPayload(validEvent))
+            .andExpect(noFault());
+        responseActions.andExpect(payload(validEventResponse));
+
+        dailyListApiStub.verifySentRequest();
+    }
+
+    @Test
+    void routesInvalidDailyListPayload(
+        @Value("classpath:payloads/events/invalid-dailyList.xml") Resource invalidDailyListRequest,
+        @Value("classpath:payloads/events/invalid-dailyList-response.xml") Resource expectedResponse
+    ) throws IOException {
+        dailyListApiStub.willRespondSuccessfully();
+
+        wsClient.sendRequest(withPayload(invalidDailyListRequest))
+            .andExpect(payload(expectedResponse));
+    }
+
+
 }

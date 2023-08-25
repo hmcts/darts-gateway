@@ -7,11 +7,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 public class EventApiStub extends DartsApiStub {
 
     private static final String EVENT_API_PATH = "/events";
+    private static final String DAILY_LIST_API_PATH = "/dailylists";
 
     private static final String EVENTS_API_SUCCESS_BODY = """
           {
@@ -28,6 +30,11 @@ public class EventApiStub extends DartsApiStub {
               .willReturn(aResponse()
                     .withHeader("Content-Type", "application/json")
                     .withBody(EVENTS_API_SUCCESS_BODY)));
+
+        stubFor(post(urlPathEqualTo(DAILY_LIST_API_PATH))
+                    .willReturn(aResponse()
+                                    .withHeader("Content-Type", "application/json")
+                                    .withBody(EVENTS_API_SUCCESS_BODY)));
     }
 
     public void verifyDoesntReceiveEvent() {

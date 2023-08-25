@@ -23,7 +23,7 @@ public class EventRoutingService {
 
     public AddDocumentResponse route(AddDocument request) {
         if (DAILY_LIST_TYPES.contains(request.getType())) {
-            return dailyListRoute.handle(request.getDocument(), request.getMessageId());
+            return dailyListRoute.handle(request.getDocument(), request.getType());
         } else {
             return eventRoute.handle(
                 request.getDocument(),
