@@ -10,3 +10,5 @@ darts-gateway:
   ws:
     request-validation: true
     response-validation: false
+  daily-list:
+    validate: true

@@ -41,6 +41,9 @@ darts-gateway:
   addcase:
     schema: "darts-addcase.xsd"
     validate: false
+  daily-list:
+    schema: "src/main/resources/schemas/xhibit/DailyList.xsd"
+    validate: false
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 

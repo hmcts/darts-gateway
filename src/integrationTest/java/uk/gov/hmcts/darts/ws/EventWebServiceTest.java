@@ -59,5 +59,16 @@ class EventWebServiceTest extends IntegrationBase {
         dailyListApiStub.verifySentRequest();
     }
 
+    @Test
+    void routesInvalidDailyListPayload(
+        @Value("classpath:payloads/events/invalid-dailyList.xml") Resource invalidDailyListRequest,
+        @Value("classpath:payloads/events/invalid-dailyList-response.xml") Resource expectedResponse
+    ) throws IOException {
+        dailyListApiStub.willRespondSuccessfully();
+
+        wsClient.sendRequest(withPayload(invalidDailyListRequest))
+            .andExpect(payload(expectedResponse));
+    }
+
 
 }
