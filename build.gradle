@@ -12,6 +12,7 @@ plugins {
   id 'org.sonarqube' version '4.3.0.3225'
   id 'java-library'
   id "org.openapi.generator" version "6.6.0"
+  id("com.github.bjornvester.wsdl2java") version "2.0.2"
 }
 
 group = 'uk.gov.hmcts'
@@ -32,6 +33,7 @@ configurations.all {
 
 configurations {
   jaxb
+  jaxbAddCase
 }
 
 sourceSets {
@@ -365,6 +367,7 @@ sourceSets {
     java {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
+      srcDir 'build/generated-sources/jaxbAddCase'
       srcDir('src/main/java/generated')
     }
   }
@@ -400,12 +403,22 @@ task genJaxbAddCase {
       taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
       mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, schema: schema) {
+      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addcase",  schema: schema) {
         arg(value: "-wsdl")
+
         produces(dir: sourcesDir, includes: "**/*.java")
       }
     }
   }
 }
 
+
+wsdl2java {
+    wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
+    includes = [
+        "**/*.wsdl"
+      ]
+}
+
 compileJava.dependsOn genJaxb
+compileJava.dependsOn genJaxbAddCase

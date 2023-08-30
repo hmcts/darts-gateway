@@ -47,12 +47,42 @@ public class GetCasesMapper {
 
     private Case mapToCase(ScheduledCase scheduledCase) {
         Case newCase = new Case();
+
+        new Defendants().getDefendant().addAll(scheduledCase.getDefendants());
         newCase.setCaseNumber(scheduledCase.getCaseNumber());
-        newCase.setDefendants(new Defendants(scheduledCase.getDefendants()));
-        newCase.setDefenders(new Defenders(scheduledCase.getDefenders()));
-        newCase.setJudges(new Judges(scheduledCase.getJudges()));
-        newCase.setProsecutors(new Prosecutors(scheduledCase.getProsecutors()));
+        newCase.setDefendants(getDefendants(scheduledCase.getDefendants()));
+        newCase.setDefenders(getDefenders(scheduledCase.getDefenders()));
+        newCase.setJudges(getJudges(scheduledCase.getJudges()));
+        newCase.setProsecutors(getProsecutors(scheduledCase.getProsecutors()));
         newCase.setScheduledStart(scheduledCase.getScheduledStart());
         return newCase;
+    }
+
+    private Defendants getDefendants(List<String> defendants)
+    {
+        Defendants defendant = new Defendants();
+        defendant.getDefendant().addAll(defendants);
+        return defendant;
+    }
+
+    private Prosecutors getProsecutors(List<String> prosecutor)
+    {
+        Prosecutors prosecutors = new Prosecutors();
+        prosecutors.getProsecutor().addAll(prosecutor);
+        return prosecutors;
+    }
+
+    private Judges getJudges(List<String> judge)
+    {
+        Judges judges = new Judges();
+        judges.getJudge().addAll(judge);
+        return judges;
+    }
+
+    private Defenders getDefenders(List<String> defendant)
+    {
+        Defenders defenders = new Defenders();
+        defenders.getDefender().addAll(defendant);
+        return defenders;
     }
 }
