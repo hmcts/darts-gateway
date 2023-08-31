@@ -5,9 +5,6 @@ import uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
 import uk.gov.hmcts.darts.utilities.MapperUtility;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-
 @Service
 public class AddCourtLogsMapper {
 
@@ -19,7 +16,8 @@ public class AddCourtLogsMapper {
         requestBody.setCourtroom(logEntry.getCourtroom());
         requestBody.setText(logEntry.getText());
         requestBody.setCaseNumbers(logEntry.getCaseNumbers().getCaseNumber());
-        requestBody.setLogEntryDateTime(OffsetDateTime.of(MapperUtility.toLocalDateTime(logEntry), ZoneOffset.of("+00:00")));
+
+        requestBody.setLogEntryDateTime(MapperUtility.toOffsetDateTime(logEntry));
 
         return requestBody;
     }
