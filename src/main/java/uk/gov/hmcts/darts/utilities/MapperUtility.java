@@ -8,6 +8,10 @@ import uk.gov.hmcts.darts.event.model.EventResponse;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
+import static uk.gov.hmcts.darts.utilities.DateUtil.LONDON_ZONE_ID;
 
 @UtilityClass
 @SuppressWarnings({"PMD.HideUtilityClassConstructor"})
@@ -22,6 +26,13 @@ public class MapperUtility {
             dartsEvent.getMIN().intValue(),
             dartsEvent.getS().intValue()
         );
+    }
+
+    public static OffsetDateTime toOffsetDateTime(LogEntry logEntry) {
+        LocalDateTime localDateTime = toLocalDateTime(logEntry);
+        ZoneOffset zoneOffSet = LONDON_ZONE_ID.getRules().getOffset(localDateTime);
+        return OffsetDateTime.of(localDateTime, zoneOffSet);
+
     }
 
     public static AddLogEntryResponse mapResponse(EventResponse eventResponse) {
