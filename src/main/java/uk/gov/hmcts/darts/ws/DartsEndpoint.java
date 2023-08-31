@@ -1,6 +1,16 @@
 package uk.gov.hmcts.darts.ws;
 
-import com.service.mojdarts.synapps.com.*;
+import com.service.mojdarts.synapps.com.AddCase;
+import com.service.mojdarts.synapps.com.AddCaseResponse;
+import com.service.mojdarts.synapps.com.AddDocument;
+import com.service.mojdarts.synapps.com.AddDocumentResponse;
+import com.service.mojdarts.synapps.com.AddLogEntry;
+import com.service.mojdarts.synapps.com.AddLogEntryResponse;
+import com.service.mojdarts.synapps.com.GetCases;
+import com.service.mojdarts.synapps.com.GetCasesResponse;
+import com.service.mojdarts.synapps.com.GetCourtLog;
+import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import com.service.mojdarts.synapps.com.ObjectFactory;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +22,6 @@ import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
 import uk.gov.hmcts.darts.routing.EventRoutingService;
-
-import java.lang.Exception;
 
 @Endpoint
 @RequiredArgsConstructor
@@ -28,61 +36,64 @@ public class DartsEndpoint {
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addDocument")
     @ResponsePayload
-    public AddDocumentResponse addDocument(@RequestPayload JAXBElement<AddDocument> addDocument) {
+    public JAXBElement<AddDocumentResponse> addDocument(@RequestPayload JAXBElement<AddDocument> addDocument) {
+        ObjectFactory factory = new ObjectFactory();
         var addDocumentResponse = new AddDocumentResponse();
         try {
             addDocumentResponse = eventRoutingService.route(addDocument.getValue());
         } catch (Exception e) {
             addDocumentResponse.setReturn(utils.createDartsResponseMessage(e));
-            return addDocumentResponse;
+            return factory.createAddDocumentResponse(addDocumentResponse);
         }
 
-        return addDocumentResponse;
+        return factory.createAddDocumentResponse(addDocumentResponse);
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCases")
     @ResponsePayload
-    public GetCasesResponse getCases(@RequestPayload JAXBElement<GetCases> getCases) {
-        return casesRoute.route(getCases.getValue());
+    public JAXBElement<GetCasesResponse> getCases(@RequestPayload JAXBElement<GetCases> getCases) {
+
+        ObjectFactory factory = new ObjectFactory();
+
+        return factory.createGetCasesResponse(casesRoute.route(getCases.getValue()));
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addCase")
     @ResponsePayload
-    public AddCaseResponse addCase( @RequestPayload AddCase addCase) {
+    public JAXBElement<AddCaseResponse> addCase(@RequestPayload JAXBElement<AddCase> addCase) {
+        ObjectFactory factory = new ObjectFactory();
 
-        System.out.println("");
-        /*
         try {
-            casesRoute.route(addCase);
-            return utils.createSuccessfulAddCaseResponse();
+            casesRoute.route(addCase.getValue());
+
+            return factory.createAddCaseResponse(utils.createSuccessfulAddCaseResponse());
         } catch (Exception e) {
-            return utils.createErrorAddCaseResponse(e);
+            return factory.createAddCaseResponse(utils.createErrorAddCaseResponse(e));
         }
-
-         */
-
-        return null;
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCourtLog")
     @ResponsePayload
-    public GetCourtLogResponse getCourtLogResponse(@RequestPayload JAXBElement<GetCourtLog> getCourtLog) {
+    public JAXBElement<GetCourtLogResponse> getCourtLogResponse(@RequestPayload JAXBElement<GetCourtLog> getCourtLog) {
         var getCourtLogResponse = new GetCourtLogResponse();
+        ObjectFactory factory = new ObjectFactory();
+
         try {
             getCourtLogResponse = getCourtLogRoute.route(getCourtLog.getValue());
 
         } catch (Exception e) {
             getCourtLogResponse.setReturn(utils.createCourtLogResponse(e));
-            return getCourtLogResponse;
+            return factory.createGetCourtLogResponse(getCourtLogResponse);
         }
 
-        return getCourtLogResponse;
+        return factory.createGetCourtLogResponse(getCourtLogResponse);
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addLogEntry")
     @ResponsePayload
-    public AddLogEntryResponse addLogEntry(@RequestPayload JAXBElement<AddLogEntry> addLogEntry) {
+    public JAXBElement<AddLogEntryResponse> addLogEntry(@RequestPayload JAXBElement<AddLogEntry> addLogEntry) {
         var addLogEntryResponse = new AddLogEntryResponse();
+        ObjectFactory factory = new ObjectFactory();
 
         try {
             addLogEntryResponse = addCourtLogsRoute.route(addLogEntry.getValue().getDocument());
@@ -90,10 +101,10 @@ public class DartsEndpoint {
         } catch (Exception e) {
             log.error(e.getMessage());
             addLogEntryResponse.setReturn(utils.createCourtLogResponse(e));
-            return addLogEntryResponse;
+            return factory.createAddLogEntryResponse(addLogEntryResponse);
         }
 
-        return addLogEntryResponse;
+        return factory.createAddLogEntryResponse(addLogEntryResponse);
     }
 
 

@@ -58,29 +58,25 @@ public class GetCasesMapper {
         return newCase;
     }
 
-    private Defendants getDefendants(List<String> defendants)
-    {
+    private Defendants getDefendants(List<String> defendants) {
         Defendants defendant = new Defendants();
         defendant.getDefendant().addAll(defendants);
         return defendant;
     }
 
-    private Prosecutors getProsecutors(List<String> prosecutor)
-    {
+    private Prosecutors getProsecutors(List<String> prosecutor) {
         Prosecutors prosecutors = new Prosecutors();
         prosecutors.getProsecutor().addAll(prosecutor);
         return prosecutors;
     }
 
-    private Judges getJudges(List<String> judge)
-    {
+    private Judges getJudges(List<String> judge) {
         Judges judges = new Judges();
         judges.getJudge().addAll(judge);
         return judges;
     }
 
-    private Defenders getDefenders(List<String> defendant)
-    {
+    private Defenders getDefenders(List<String> defendant) {
         Defenders defenders = new Defenders();
         defenders.getDefender().addAll(defendant);
         return defenders;

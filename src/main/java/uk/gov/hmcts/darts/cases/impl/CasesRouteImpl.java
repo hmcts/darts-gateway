@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.cases.impl;
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.GetCases;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
+import com.service.mojdarts.synapps.com.addcase.Case;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import uk.gov.hmcts.darts.common.client.DartsFeignClient;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
-import com.service.mojdarts.synapps.com.addcase.Case;
+
 import java.util.List;
 
 @Service
