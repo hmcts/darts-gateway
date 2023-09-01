@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
-import uk.gov.hmcts.darts.common.client.DartsFeignClient;
+import uk.gov.hmcts.darts.common.client.DailyListsClient;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DailyListRoute {
 
-    private final DartsFeignClient dartsFeignClient;
+    private final DailyListsClient dartsFeignClient;
     private final XmlParser xmlParser;
     private final DailyListRequestMapper dailyListRequestMapper;
     private final XmlValidator xmlValidator;
@@ -40,7 +40,7 @@ public class DailyListRoute {
         }
         DailyListStructure legacyDailyList = xmlParser.unmarshal(document, DailyListStructure.class);
         DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
-        dartsFeignClient.postDailyLists(
+        dartsFeignClient.dailylistsPost(
             systemType.get().getModernisedSystemType(),
             modernisedDailyList
         );

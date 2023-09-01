@@ -62,7 +62,7 @@ class CasesWebServiceTest extends IntegrationBase {
 
 
         stubFor(post(urlPathEqualTo("/cases"))
-                    .willReturn(ok(dartsApiResponseStr)));
+                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
         String expectedResponseStr = TestUtils.getContentsFromFile(
             "payloads/addCase/expectedResponse.xml");
         StringSource expectedResponse = new StringSource(expectedResponseStr);

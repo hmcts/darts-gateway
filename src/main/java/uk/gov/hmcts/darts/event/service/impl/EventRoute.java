@@ -3,10 +3,11 @@ package uk.gov.hmcts.darts.event.service.impl;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
-import uk.gov.hmcts.darts.common.client.DartsFeignClient;
-import uk.gov.hmcts.darts.event.model.EventResponse;
+import uk.gov.hmcts.darts.common.client.EventsClient;
+import uk.gov.hmcts.darts.model.events.EventsResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 
@@ -19,7 +20,7 @@ public class EventRoute {
     @Value("${darts-gateway.events.validate}")
     private boolean validateEvent;
     private final XmlValidator xmlValidator;
-    private final DartsFeignClient dartsFeignClient;
+    private final EventsClient dartsFeignClient;
     private final XmlParser xmlParser;
     private final EventRequestMapper dartsXmlMapper;
 
@@ -32,8 +33,8 @@ public class EventRoute {
         var dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
         var eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
 
-        EventResponse eventResponse = dartsFeignClient.sendEvent(eventRequest);
+        ResponseEntity<EventsResponse> eventResponse = dartsFeignClient.eventsPost(eventRequest);
 
-        return dartsXmlMapper.toLegacyAddDocumentResponse(eventResponse);
+        return dartsXmlMapper.toLegacyAddDocumentResponse(eventResponse.getBody());
     }
 }

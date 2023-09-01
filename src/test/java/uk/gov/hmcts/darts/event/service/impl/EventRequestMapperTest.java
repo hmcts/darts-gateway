@@ -3,7 +3,6 @@ package uk.gov.hmcts.darts.event.service.impl;
 import org.junit.jupiter.api.Test;
 import uk.gov.courtservice.events.DartsEvent;
 import uk.gov.courtservice.events.DartsEvent.CaseNumbers;
-import uk.gov.hmcts.darts.event.model.EventRequest;
 
 import static java.math.BigInteger.ONE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,13 +29,13 @@ class EventRequestMapperTest {
         legacyDartsEvent.setCourtHouse("some-court-house");
         legacyDartsEvent.setCourtRoom("some-court-room");
 
-        EventRequest eventRequest = mapper.toNewApi(
+        uk.gov.hmcts.darts.model.events.DartsEvent eventRequest = mapper.toNewApi(
             legacyDartsEvent, "some-message-id", "some-type", "some-sub-type");
 
-        assertThat(eventRequest.caseNumbers()).containsExactly("1", "2", "3");
-        assertThat(eventRequest.eventText()).isEqualTo("some-event-text");
-        assertThat(eventRequest.courtHouse()).isEqualTo("some-court-house");
-        assertThat(eventRequest.courtRoom()).isEqualTo("some-court-room");
-        assertThat(eventRequest.dateTime()).isEqualTo("0001-01-01T01:01:01");
+        assertThat(eventRequest.getCaseNumbers()).containsExactly("1", "2", "3");
+        assertThat(eventRequest.getEventText()).isEqualTo("some-event-text");
+        assertThat(eventRequest.getCourthouse()).isEqualTo("some-court-house");
+        assertThat(eventRequest.getCourtroom()).isEqualTo("some-court-room");
+        assertThat(eventRequest.getDateTime()).isEqualTo("0001-01-01T01:01:01Z");
     }
 }

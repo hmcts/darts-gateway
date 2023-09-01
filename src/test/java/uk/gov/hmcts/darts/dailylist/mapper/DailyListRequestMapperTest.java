@@ -1,18 +1,22 @@
 package uk.gov.hmcts.darts.dailylist.mapper;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
 import uk.gov.hmcts.darts.model.dailyList.DailyList;
-import uk.gov.hmcts.darts.utilities.LocalDateTimeTypeAdapter;
-import uk.gov.hmcts.darts.utilities.LocalDateTypeAdapter;
-import uk.gov.hmcts.darts.utilities.OffsetDateTimeTypeAdapter;
 import uk.gov.hmcts.darts.utilities.TestUtils;
 import uk.gov.hmcts.darts.utilities.XmlParser;
+import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTimeTypeDeserializer;
+import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
+import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
+import uk.gov.hmcts.darts.utilities.serializer.LocalDateTimeTypeSerializer;
+import uk.gov.hmcts.darts.utilities.serializer.LocalDateTypeSerializer;
+import uk.gov.hmcts.darts.utilities.serializer.OffsetDateTimeTypeSerializer;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -35,12 +39,18 @@ class DailyListRequestMapperTest {
         DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
         DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
-        Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
-            .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter())
-            .create();
-        String actualResponse = gson.toJson(modernisedDailyList);
+        JavaTimeModule module = new JavaTimeModule();
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeTypeSerializer())
+            .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
+            .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
+            .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
+            .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
+            .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
+        ObjectMapper mapper =  new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .registerModule(module);
+
+        String actualResponse = mapper.writeValueAsString(modernisedDailyList);
         String expectedResponse = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test1/expectedResponse.json");
 
@@ -54,12 +64,18 @@ class DailyListRequestMapperTest {
         DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
         DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
-        Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
-            .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter())
-            .create();
-        String actualResponse = gson.toJson(modernisedDailyList);
+        JavaTimeModule module = new JavaTimeModule();
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeTypeSerializer())
+            .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
+            .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
+            .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
+            .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
+            .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
+        ObjectMapper mapper =  new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .registerModule(module);
+
+        String actualResponse = mapper.writeValueAsString(modernisedDailyList);
         String expectedResponse = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test2/expectedResponse.json");
 
