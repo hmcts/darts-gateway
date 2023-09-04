@@ -54,9 +54,9 @@ public class DailyListRoute {
         if (validate) {
             try {
                 xmlValidator.validate(document, schemaPath);
-            } catch (DartsValidationException dve){
+            } catch (DartsValidationException dve) {
                 log.error("Exception occurred during validation od XML", dve);
-                throw new DartsException( dve, CodeAndMessage.INVALID_XML);
+                throw new DartsException(dve, CodeAndMessage.INVALID_XML);
             }
         }
         DailyListStructure legacyDailyListObject = xmlParser.unmarshal(document, DailyListStructure.class);
