@@ -6,14 +6,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseActions;
+import org.xmlunit.matchers.CompareMatcher;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
+import uk.gov.hmcts.darts.utils.TestUtils;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
 import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
 import static org.springframework.ws.test.server.ResponseMatchers.noFault;
-import static org.springframework.ws.test.server.ResponseMatchers.payload;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class EventWebServiceTest extends IntegrationBase {
@@ -28,9 +31,10 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws IOException {
         theEventApi.willRespondSuccessfully();
 
-        wsClient.sendRequest(withPayload(validEvent))
-            .andExpect(noFault())
-            .andExpect(payload(validEventResponse));
+        ResponseActions responseActions = wsClient.sendRequest(withPayload(validEvent))
+            .andExpect(noFault());
+        String actualResponse = TestUtils.getResponse(responseActions);
+        assertThat(actualResponse, CompareMatcher.isSimilarTo(validEventResponse.getContentAsString(Charset.defaultCharset())).ignoreWhitespace());
 
         theEventApi.verifyReceivedEventWithMessageId("12345");
     }
@@ -54,7 +58,9 @@ class EventWebServiceTest extends IntegrationBase {
 
         ResponseActions responseActions = wsClient.sendRequest(withPayload(validEvent))
             .andExpect(noFault());
-        responseActions.andExpect(payload(validEventResponse));
+        String actualResponse = TestUtils.getResponse(responseActions);
+        String expectedResponse = validEventResponse.getContentAsString(Charset.defaultCharset());
+        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponse).ignoreWhitespace());
 
         dailyListApiStub.verifySentRequest();
     }
@@ -66,8 +72,12 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws IOException {
         dailyListApiStub.willRespondSuccessfully();
 
-        wsClient.sendRequest(withPayload(invalidDailyListRequest))
-            .andExpect(payload(expectedResponse));
+        ResponseActions responseActions = wsClient.sendRequest(withPayload(invalidDailyListRequest));
+
+        String actualResponse = TestUtils.getResponse(responseActions);
+        String expectedResponseStr = expectedResponse.getContentAsString(Charset.defaultCharset());
+        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponseStr).ignoreWhitespace());
+
     }
 
 
