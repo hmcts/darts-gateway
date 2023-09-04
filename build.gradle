@@ -311,6 +311,8 @@ dependencies {
   testImplementation group: 'commons-io', name: 'commons-io', version: '2.13.0'// CVE-2021-29425
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.4'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
+  testImplementation 'org.xmlunit:xmlunit-core:2.9.1'
+  testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
 
   compileJava.dependsOn = openApiGenerateTaskList
 }
