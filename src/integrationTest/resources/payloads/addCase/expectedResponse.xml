@@ -1,6 +1,11 @@
-<ns3:addCaseResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
-  <return>
-    <code>200</code>
-    <message>OK</message>
-  </return>
-</ns3:addCaseResponse>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+    <ns3:addCaseResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
+      <return>
+        <code>200</code>
+        <message>OK</message>
+      </return>
+    </ns3:addCaseResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
