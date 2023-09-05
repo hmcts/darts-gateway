@@ -1,10 +1,11 @@
 package uk.gov.hmcts.darts.common.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.darts.config.FeignConfig;
@@ -12,7 +13,7 @@ import uk.gov.hmcts.darts.event.model.EventRequest;
 import uk.gov.hmcts.darts.event.model.EventResponse;
 import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
-import uk.gov.hmcts.darts.model.dailyList.DailyList;
+import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
 import uk.gov.hmcts.darts.model.events.CourtLog;
 import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
 
@@ -45,8 +46,16 @@ public interface DartsFeignClient {
     @RequestMapping(method = POST, value = "/courtlogs", headers = {"accept=application/json", "Content-Type=application/json"})
     EventResponse postCourtLogs(@RequestBody CourtLogsPostRequestBody requestBody);
 
-    @RequestMapping(method = POST, value = "/dailylists", headers = "accept=application/json")
-    ResponseEntity<Void> postDailyLists(@RequestParam("source_system") String sourceSystem,
-                                        @RequestBody DailyList dailyList);
+    @PostMapping(value = "/dailylists", headers = "accept=application/json")
+    PostDailyListResponse postDailyLists(@RequestParam("source_system") String sourceSystem,
+                                                                                            @RequestParam("courthouse") String courthouse,
+                                                                                            @RequestParam("hearing_date") String hearingDate,
+                                                                                            @RequestParam("unique_id") String uniqueId,
+                                                                                            @RequestParam("published_ts") String publishedTs,
+                                                                                            @RequestHeader("xml_document") String dailyListXml);
+
+    @PatchMapping(value = "/dailylists", headers = "accept=application/json")
+    PostDailyListResponse patchDailyLists(@RequestParam("dal_id") Integer dalId,
+                                        @RequestHeader("json_document") String jsonDocument);
 
 }

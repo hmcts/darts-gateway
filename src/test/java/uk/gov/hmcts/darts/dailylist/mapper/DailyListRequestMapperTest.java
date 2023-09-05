@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
-import uk.gov.hmcts.darts.model.dailyList.DailyList;
+import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
 import uk.gov.hmcts.darts.utilities.LocalDateTimeTypeAdapter;
 import uk.gov.hmcts.darts.utilities.LocalDateTypeAdapter;
 import uk.gov.hmcts.darts.utilities.OffsetDateTimeTypeAdapter;
@@ -33,7 +33,7 @@ class DailyListRequestMapperTest {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test1/request.xml");
         DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
-        DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
+        DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
@@ -52,7 +52,7 @@ class DailyListRequestMapperTest {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test2/request.xml");
         DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
-        DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
+        DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())

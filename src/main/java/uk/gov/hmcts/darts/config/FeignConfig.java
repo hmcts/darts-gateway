@@ -44,6 +44,7 @@ public class FeignConfig {
     @Value("${azure-ad-ropc.client-id}")
     private String clientId;
 
+
     @Bean
     public Encoder encoder(Gson gson) {
         return new GsonEncoder(gson);

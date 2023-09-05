@@ -10,6 +10,7 @@ import com.service.mojdarts.synapps.com.GetCases;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -38,8 +39,13 @@ public class DartsEndpoint {
         var addDocumentResponse = new AddDocumentResponse();
         try {
             addDocumentResponse = eventRoutingService.route(addDocument);
-        } catch (Exception e) {
+        } catch (FeignException e) {
+            log.error("Error sending addDocument. {}", e.contentUTF8(), e);
             addDocumentResponse.setReturn(utils.createDartsResponseMessage(e));
+            return addDocumentResponse;
+        } catch (DartsException de) {
+            log.error("Error sending addDocument. {}", de);
+            addDocumentResponse.setReturn(utils.createDartsResponseMessage(de.getCodeAndMessage()));
             return addDocumentResponse;
         }
 
