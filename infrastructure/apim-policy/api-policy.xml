@@ -1,144 +1,295 @@
 <!--
-    Use 4 spaces for indentation to avoid formatting issues when the file is deployed.
-    APIM will remove any blank lines between policy elements.
+ A script that deals with making a SOAP call to the APIM gateway and passing
+ that through to the darts API as a restful call. This script relies on a number of configured named valuse:-
+ - aaddevurl - The base AAD
+ - clientid - The AAD client id
+   clientsecret - The AAD secret
+ *
 -->
 <policies>
-    <inbound>
-        <base />
-        <!-- Store original request so it can be output as part of error processing -->
-        <set-variable name="origRequest" value="@(context.Request.Body.As<string>(preserveContent: true))" />
+  <inbound>
+    <base/>
+
+    <!-- Sets the variable to be the token from the request -->
+    <set-variable name="authToken" value="@(context.Request.Headers.GetValueOrDefault(" Authorization", ""))" />
+
+    <choose>
+      <when condition="@(!context.Variables.ContainsKey(" authToken"))">
+
+
+      <!-- Get the credntials from the SOAP payload -->
+      <set-variable name="userNameAndPassword" value="@{
+          XmlDocument root = context.Request.Body.As<XmlDocument>());
+          string securityNamespace = " http://schemas.xmlsoap.org/ws/2003/06/secext";
+
+      IEnumerable
+      <XElement>
+      password = from el in root.Root.Descendants() where el.Name.LocalName.Equals("Password") &
+      el.Name.Namespace.NamespaceName.Equals(securityNamespace) select el; ;
+      IEnumerable
+      <XElement>
+      username = from el in root.Root.Descendants() where el.Name.LocalName.Equals("Username") &
+      el.Name.NamespaceName.Equals(securityNamespace) select el;
+
+      List
+      <XElement>
+      passwordList = new List<XElement>();
+      List
+      <XElement>userNameLst = new List
+        <XElement>();
+
+          foreach (XElement p in password)
+          {
+          passwordList.Add(p);
+          }
+
+
+          foreach (XElement u in username)
+          {
+
+          userNameLst.Add(u);
+          }
+
+          string[] result = { };
+          if (passwordList.Count==1 && userNameLst.Count==1)
+          {
+          result = new string[2] { userNameLst.First().Value, passwordList.First().Value };
+          return result;
+          }
+
+          return result;
+          }">
+
+        </set-variable>
+
         <!--
-            Check if the request contains a certificate.  If it does search the entries in the subject field for the part that
-            specifies the system id (CN=X#######_## where X is 'C' or 'P' and # is a digit) and extract the system id from it.
-
-            A regular expression is used to identify the part that specifies the system id.
-
-            Note: GetNameInfo() can also be used to get system id - see following email address extraction section.
+            Get the authentication token for the hard coded user. These values would be replaced with nameed values
         -->
-        <!-- <choose>
-            <when condition="@(context.Request.Certificate == null)">
-                <set-variable name="hasCert" value="No certificate" />
-            </when>
-            <when condition="@(context.Request.Certificate != null)">
-                <set-variable name="hasCert" value="Certificate present" />
-                <set-variable name="certSubject" value="@(context.Request.Certificate.Subject)" />
-                <set-variable name="certSystemId" value="@{
-                    string certSubject = context.Request.Certificate.Subject;
-                    string[] subjectItems = certSubject.Split(',');
-                    string sysId = "";
-                    string regexSysId = @"(CN=)([CP][\d]{7}_[\d]{2})";
-                    foreach (string item in subjectItems)
-                    {
-                        foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(item, regexSysId))
-                        {
-                            sysId = sysId + m.Groups[2].Value;
-                        }
-                    }
-                    return sysId;
-                }" />
-            </when>
-        </choose> -->
+        <send-request mode="new" response-variable-name="authToken" timeout="10" ignore-error="false">
+          <set-url>{{aaddevurl}}</set-url>
+          <set-method>POST</set-method>
+          <set-header name="Content-Type" exists-action="override">
+            <value>application/x-www-form-urlencoded</value>
+          </set-header>
+          <set-body>@{
+            var request =
+            "scope:https://hmctsdartsb2csbox.onmicrosoft.com/053d44f9-cd27-463e-a995-bcf835233cf8/Functional.Test&
+            grant_type=password" +
+            "&client_id={{clientid}}&client_secret={{clientsecret}}&username=" +
+            context.Variables['userNameAndPassword'][0] + "&password=" + context.Variables['userNameAndPassword'][1];
+            return request.ToString();
+            }
+          </set-body>
+        </send-request>
+      </when>
+      <otherwise>
+
+        <!-- Validate using AAD -->
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401"
+                      failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+          <openid-config url="{{aaddevurl}}/.well-known/openid-configuration"/>
+        </validate-jwt>
+      </otherwise>
+    </choose>
+
+
+    <set-header name="Authorization" exists-action="override">
+      <value>@{return context.Variables("authToken")}</value>
+    </set-header>
+
+    <!-- Convert the body into json so we can easily walk it -->
+    <xml-to-json kind="javascript-friendly" apply="always" consider-accept-header="false"/>
+
+
+    <!-- We should ideally scope these sections per operation but terraform
+   has problems targeting an APIM operation, this is thought a workaround
+    -->
+
+    <choose>
+      <when condition="@(return context.Request.Headers['SOAPAction').Equals('getCases')'">
+
+        <!-- rewrite the url with the parameters from the soap body -->
+        <rewrite-uri copy-unmatched-params="false">
+
+          @{
+          var request = context.Request.Body.As<JObject>();
+          return "/cases?courthouse=" + request.courthouse + "&courtroom=" + request.courtroom + "&date=" + request.date
+          }
+        </rewrite-uri>
+      </when>
+
+      <!-- clear soap body of request -->
+      <set-body></set-body>
+      <set-method>GET</set-method>
+    </choose>
+
+    <choose>
+      <when condition="@(return context.Request.Headers['SOAPAction').Equals('addCase')'">
+
+        <!-- We need to validate against a schema (as the current gateway does) but by default this policy tag validates against the request body
+        which is not correct. We need to validate the embedded xml against a schema -->
         <!--
-            Check if the request contains a certificate.  If it does then extract the email address from the certificate.
-            GetNameInfo() will extract the email address from either the subject or subjectAltName fields - whichever one
-            it appears in.
-
-            GetNameInfo(System.Security.Cryptography.X509Certificates.X509NameType.SimpleName, false) returns the CN (Common Name)
-            part of the certificate DN (Distinguished Name).  As this is where the SDT System Id is stored it could be used as an
-            alternative way to get it rather than parsing the whole subject string.
-
-            References:
-            https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509certificate2.getnameinfo?view=net-7.0
-            https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509nametype?view=net-7.0
+        <validate-content unspecified-content-type-action="prevent " max-size="102400" size-exceeded-action="ignore" errors-variable-name="addCasesValidation">
+          <content-type-map any-content-type-value="application/xml" >
+          </content-type-map>
+          <content type="content type string" validate-as="xml" schema-id="addCaseSchema" action="prevent " allow-additional-properties="false" />
+        </validate-content>
         -->
-        <!-- <choose>
-            <when condition="@(context.Request.Certificate != null)">
-                <set-variable name="certEmail" value="@(context.Request.Certificate.GetNameInfo(System.Security.Cryptography.X509Certificates.X509NameType.EmailName, false))" />
-            </when>
-        </choose> -->
-        <!--
-            The validate-client-certificate policy is used to validate the certificate presented by a client.  This prototype
-            uses certificates signed by a custom CA, so the custom root and intermediate CA certificates for it need to be
-            added to the Azure API Management instance under the Trusted Root and Intermediate stores respectively.
 
-            The validate-revocation attribute is set to false as the revocation list for the certificates is not available.
-            This prevents the validation failing with 'The revocation function was unable to check revocation for the
-            certificate" error.  This setting will not be used in the actual system.
+        <!-- rewrite the body of the request to be restful -->
+        <set-body template="liquid">
 
-            References:
-            https://learn.microsoft.com/en-gb/azure/api-management/api-management-access-restriction-policies#validate-client-certificate
-            https://learn.microsoft.com/en-gb/azure/api-management/api-management-howto-ca-certificates
-            https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_gateway_certificate_authority (possibly)
-        -->
-        <!-- <validate-client-certificate validate-not-before="true" validate-not-after="true" validate-revocation="false" /> -->
-        <!--
-            Check if the request contains a certificate.  If it does then check if it exists within those uploaded to Azure API Management.
-            The certificate thumbprint is used to search for a match.
+          {%
+          assign courthouse = context.Request.Envelope.Body.addCase.document.courthouse
+          assign caseNumber = context.Request.Envelope.Body.addCase.document.id
+          %}
 
-            This could be extended to incorporate at least some of the validation carried out by validate-client-certificate policy, e.g.
-            through use of context.Request.Certificate.Verify().
+          {
+          "courthouse": {{courthouse}},
+          "case_number": {{caseNumber}}",
+          "defendants": [
+          {
+            % for defendant in context.Request.Envelope.Body.addCase.Document.defendants %}
+              "{{defendant}}"
+            {% endfor %}
+          ],
+          "judges": [
+            % for judge in context.Request.Envelope.Body.addCase.Document.judges %}
+            "{{judge}}"
+            {% endfor %}
+          ],
+          "prosecutors": [
+          % for prosecutor in context.Request.Envelope.Body.addCase.Document.prosecutors %}
+          "{{prosecutor}}"
+          {% endfor %}
+          ],
+          "defenders": [
+          % for defender in context.Request.Envelope.Body.addCase.Document.defenders %}
+          "{{defender}}"
+          {% endfor %}
+          ]
+          }
 
-            References:
-            https://learn.microsoft.com/en-gb/azure/api-management/api-management-howto-mutual-certificates-for-clients
-            https://learn.microsoft.com/en-gb/azure/api-management/api-management-howto-mutual-certificates (for backend but applies here as well)
-            https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_certificate
-        -->
-        <!-- <choose>
-            <when condition="@(context.Request.Certificate != null)">
-                <set-variable name="certThumbprint" value="@(context.Request.Certificate.Thumbprint)" />
-                <set-variable name="certExists" value="@{
-                    string exists = "Cert does not exist in APIM";
-                    if (context.Deployment.Certificates.Any(c => c.Value.Thumbprint == context.Request.Certificate.Thumbprint))
-                    {
-                        exists = "Cert exists in APIM";
-                    }
-                    return exists;
-                }" />
-            </when>
-        </choose> -->
-        <!--
-            The validate-content policy is used to validate the content of the request.  Here it is being used to validate the
-            content against an XSD that has been added to the Azure API Management instance with the name 'darts-gateway-schema'.
-            The "action" attributes describe what should happen if the validation fails - "prevent" blocks the request and returns
-            an error.
+        </set-body>
+        <set-method>POST</set-method>
+      </when>
+    </choose>
 
-            Note: Maximum max size is 100KB.  This can only be increased by contacting Azure support.
+    <set-header name="Content-Type" exists-action="override">
+      <value>application/json</value>
+    </set-header>
+  </inbound>
+  <backend>
+    <base/>
+  </backend>
+  <outbound>
+    <base/>
 
-            References:
-            https://learn.microsoft.com/en-us/azure/api-management/validation-policies#validate-content
-            https://learn.microsoft.com/en-us/azure/api-management/validation-policies#schemas-for-content-validation
-            https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_schema
-        -->
-        <!-- <validate-content unspecified-content-type-action="prevent" max-size="102400" size-exceeded-action="prevent" errors-variable-name="validateContentErrors">
-            <content-type-map any-content-type-value="text/xml" />
-            <content type="text/xml" validate-as="soap" action="prevent" schema-id="darts-gateway-schema" />
-        </validate-content> -->
-    </inbound>
-    <backend>
-        <base />
-    </backend>
-    <outbound>
-        <base />
-    </outbound>
-    <on-error>
-        <base />
-        <!--
-            Set body of response returned when an error occurs.  As the endpoint doesn't exist at the moment this always happens.
-            Conveniently, this allows values to be output that check the APIM functionality in the inbound section.
+    <!-- Deal with the get cases response -->
+    <choose>
+      <when condition="@(return context.Request.Headers['SOAPAction').Equals('getCases')'">
+        <set-header name="Content-Type" exists-action="override">
+          <value>text/xml</value>
+        </set-header>
 
-            To aid debugging it's useful to output the built-in context.LastError.Message value.
-        -->
-        <set-body template="none">@{
-            string response;
-            response = "Original request body: [" + context.Variables.GetValueOrDefault<string>("origRequest", "default body") + "]\r\n";
-            response = response + "Request has cert: [" + context.Variables.GetValueOrDefault<string>("hasCert", "default hasCert") + "]\r\n";
-            response = response + "Cert subject: [" + context.Variables.GetValueOrDefault<string>("certSubject", "no cert subject") + "]\r\n";
-            response = response + "Cert system id: [" + context.Variables.GetValueOrDefault<string>("certSystemId", "no cert system id") + "]\r\n";
-            response = response + "Cert email: [" + context.Variables.GetValueOrDefault<string>("certEmail", "no cert email") + "]\r\n";
-            response = response + "Cert thumbprint: [" + context.Variables.GetValueOrDefault<string>("certThumbprint", "no cert thumbprint") + "]\r\n";
-            response = response + "Cert exists: [" + context.Variables.GetValueOrDefault<string>("certExists", "no cert exists") + "]\r\n";
-            response = response + "Last error: [" + context.LastError.Message + "]";
-            return response;
-        }</set-body>
-    </on-error>
+        <!-- A liquid templating fragment in order to substitute values into the response xml-->
+        <set-body template="liquid">
+          {%
+          assign dates = context.Request.Envelope.Body.getCases.date | split: "-";
+
+          if dates.size == 3)
+          {
+          assign year = dates[0] | Split: "-";
+          assign month = dates[1] | Split: "-";
+          assign day = dates[2] | Split: "-";
+          }
+
+          assign year = "";
+          assign month = "";
+          assign day = "".
+          assign courthouse = context.Request.Envelope.Body.getCases.courthouse
+          assign courtroom = context.Request.Envelope.Body.getCases.courtroom
+          %}
+
+          <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body>
+              <ns3:getCasesResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
+                <return>
+                  <cases D="{{day}}" M="{{month}}" Y="{{day}}" courthouse="{{courthouse}}" courtroom="{{courtroom}}">
+                    {% for case in body.cases %}
+                    <case>
+                      <case_number>{{ case.caseNumber }}</case_number>
+                      <scheduled_start>{{ case.scheduledStart }}</scheduled_start>
+                      <defendants>
+                        {% for defendant in case.defendants %}
+                        <defendant>{{defendant}}</defendant>
+                        {% endfor %}
+                      </defendants>
+                      <judges>
+                        {% for judge in case.judges %}
+                        <judge>{{judge}}</judge>
+                        {% endfor %}
+                      </judges>
+                      <prosecutors>
+                        {% for prosecutor in case.prosecutors %}
+                        <prosecutor>{{prosecutor}}</prosecutor>
+                        {% endfor %}
+                      </prosecutors>
+                      <defenders>
+                        {% for defender in case.defenders %}
+                        <defender>{{defender}}</defender>
+                        {% endfor %}
+                      </defenders>
+                    </case>
+                    {% endfor %}
+                  </cases>
+                </return>
+              </ns3:getCasesResponse>
+            </SOAP-ENV:Body>
+          </SOAP-ENV:Envelope>
+        </set-body>
+      </when>
+    </choose>
+
+    <!-- Deal with the add cases SOAP response -->
+    <choose>
+      <when condition="@(return context.Request.Headers['SOAPAction').Equals('addCase')'">
+        <set-body template="liquid">
+          <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body>
+              <ns3:addCaseResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
+                <return>
+                  <code>{{body.code}}</code>
+                  <message>{{body.message}}</message>
+                </return>
+              </ns3:addCaseResponse>
+            </SOAP-ENV:Body>
+          </SOAP-ENV:Envelope>
+        </set-body>
+      </when>
+    </choose>
+  </outbound>
+  <on-error>
+    <!-- A liquid templating fragment in order to substitute values into the error response xml-->
+
+    <base/>
+    <set-body template="liquid">
+      <SOAP-ENV:Envelope
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"
+        xmlns:xsd="http://www.w3.org/1999/XMLSchema">
+
+        <SOAP-ENV:Body>
+          <SOAP-ENV:Fault>
+            <faultcode xsi:type="xsd:string">SOAP-ENV:Client</faultcode>
+            <faultstring xsi:type="xsd:string">
+              {{body.detail}}
+            </faultstring>
+          </SOAP-ENV:Fault>
+        </SOAP-ENV:Body>
+      </SOAP-ENV:Envelope>
+    </set-body>
+  </on-error>
 </policies>
