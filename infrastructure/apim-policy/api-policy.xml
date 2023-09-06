@@ -1,295 +1,259 @@
 <!--
- A script that deals with making a SOAP call to the APIM gateway and passing
- that through to the darts API as a restful call. This script relies on a number of configured named valuse:-
- - aaddevurl - The base AAD
+ A Spike script that deals with translating the SOAP calls:-
+
+ * AddCase
+ * GetCase
+
+so that the APIM gateway translates and passes a Restful request downstream to the darts API. Response from the Rest
+service are converted back to SOAP
+
+This script relies on a number of pre-configured APIM named values:-
+
+ - aadurl - The AAD token end point
  - clientid - The AAD client id
-   clientsecret - The AAD secret
- *
+ - clientsecret - The AAD secret
+ - aadkeys - The AAD endpoint to validate tokens
 -->
 <policies>
   <inbound>
-    <base/>
-
+    <base />
     <!-- Sets the variable to be the token from the request -->
     <set-variable name="authToken" value="@(context.Request.Headers.GetValueOrDefault(" Authorization", ""))" />
-
     <choose>
       <when condition="@(!context.Variables.ContainsKey(" authToken"))">
+      <!-- Get the username from the SOAP payload -->
+      <set-variable name="userName" value="@{
+                XDocument root = context.Request.Body.As<XDocument>();
+                string securityNamespace = "http://schemas.xmlsoap.org/ws/2003/06/secext";
 
+      IEnumerable<XElement> username = from el in root.Root.Descendants() where el.Name.LocalName.Equals("Username") & el.Name.NamespaceName.Equals(securityNamespace) select el;
 
-      <!-- Get the credntials from the SOAP payload -->
-      <set-variable name="userNameAndPassword" value="@{
-          XmlDocument root = context.Request.Body.As<XmlDocument>());
-          string securityNamespace = " http://schemas.xmlsoap.org/ws/2003/06/secext";
+      List<XElement> userNameLst = new List<XElement>();
 
-      IEnumerable
-      <XElement>
-      password = from el in root.Root.Descendants() where el.Name.LocalName.Equals("Password") &
-      el.Name.Namespace.NamespaceName.Equals(securityNamespace) select el; ;
-      IEnumerable
-      <XElement>
-      username = from el in root.Root.Descendants() where el.Name.LocalName.Equals("Username") &
-      el.Name.NamespaceName.Equals(securityNamespace) select el;
+      string usernameStr = "";
+      foreach (XElement p in userNameLst)
+      {
+      usernameStr = p.Value;
+      }
 
-      List
-      <XElement>
-      passwordList = new List<XElement>();
-      List
-      <XElement>userNameLst = new List
-        <XElement>();
+      return usernameStr;
+      }" />
+      <!-- get the password -->
+      <set-variable name="password" value="@{
+                XDocument root = context.Request.Body.As<XDocument>();
+                string securityNamespace = "http://schemas.xmlsoap.org/ws/2003/06/secext";
 
-          foreach (XElement p in password)
-          {
-          passwordList.Add(p);
-          }
+      IEnumerable<XElement> password = from el in root.Root.Descendants() where el.Name.LocalName.Equals("Password") & el.Name.Namespace.NamespaceName.Equals(securityNamespace) select el; ;
 
+      string passwwordstr = "";
 
-          foreach (XElement u in username)
-          {
+      foreach (XElement u  in password)
+      {
+      passwwordstr = u.Value;
+      }
+      return passwwordstr;
+      }" />
+      <!-- If the creds are not in the soap payload get them from the authentication header -->
+      <choose>
+        <when condition="@(((string)context.Variables["username"]).Length==0)">
+        <set-variable name="username" value="@{
+                        byte[] encodedString = Convert.FromBase64String(context.Request.Headers.GetValueOrDefault("Authorization",":"));
 
-          userNameLst.Add(u);
-          }
+                        string decodedString = System.Text.Encoding.UTF8.GetString(encodedString);
 
-          string[] result = { };
-          if (passwordList.Count==1 && userNameLst.Count==1)
-          {
-          result = new string[2] { userNameLst.First().Value, passwordList.First().Value };
-          return result;
-          }
+                        int index = decodedString.IndexOf(":");
 
-          return result;
-          }">
+                        return decodedString.Substring(0,index);
+                    }" />
+        <set-variable name="password" value="@{
+                        byte[] encodedString = Convert.FromBase64String(context.Request.Headers.GetValueOrDefault("Authorization",":"));
 
-        </set-variable>
+                        string decodedString = System.Text.Encoding.UTF8.GetString(encodedString);
+                        int index = decodedString.IndexOf(":");
 
-        <!--
-            Get the authentication token for the hard coded user. These values would be replaced with nameed values
-        -->
-        <send-request mode="new" response-variable-name="authToken" timeout="10" ignore-error="false">
-          <set-url>{{aaddevurl}}</set-url>
-          <set-method>POST</set-method>
-          <set-header name="Content-Type" exists-action="override">
-            <value>application/x-www-form-urlencoded</value>
-          </set-header>
-          <set-body>@{
-            var request =
-            "scope:https://hmctsdartsb2csbox.onmicrosoft.com/053d44f9-cd27-463e-a995-bcf835233cf8/Functional.Test&
-            grant_type=password" +
-            "&client_id={{clientid}}&client_secret={{clientsecret}}&username=" +
-            context.Variables['userNameAndPassword'][0] + "&password=" + context.Variables['userNameAndPassword'][1];
-            return request.ToString();
-            }
-          </set-body>
-        </send-request>
+                        return decodedString.Substring(index + 1, (decodedString.Length - index) - 1);
+                    }" />
       </when>
-      <otherwise>
-
-        <!-- Validate using AAD -->
-        <validate-jwt header-name="Authorization" failed-validation-httpcode="401"
-                      failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
-          <openid-config url="{{aaddevurl}}/.well-known/openid-configuration"/>
-        </validate-jwt>
-      </otherwise>
     </choose>
+    <!--
+Get the authentication token for the user
+-->
+    <send-request mode="new" response-variable-name="authToken" timeout="10" ignore-error="false">
+      <set-url>{{aadurl}}</set-url>
+      <set-method>POST</set-method>
+      <set-header name="Content-Type" exists-action="override">
+        <value>application/x-www-form-urlencoded</value>
+      </set-header>
+      <set-body>@{
+        var request =
+        "scope:https://hmctsdartsb2csbox.onmicrosoft.com/053d44f9-cd27-463e-a995-bcf835233cf8/Functional.Test&grant_type=password" +
+        "&client_id={{clientid}}&client_secret={{clientsecret}}&username=" + context.Variables["userName"] + "&password=" + context.Variables["password"];
 
-
-    <set-header name="Authorization" exists-action="override">
-      <value>@{return context.Variables("authToken")}</value>
-    </set-header>
-
-    <!-- Convert the body into json so we can easily walk it -->
-    <xml-to-json kind="javascript-friendly" apply="always" consider-accept-header="false"/>
-
-
-    <!-- We should ideally scope these sections per operation but terraform
-   has problems targeting an APIM operation, this is thought a workaround
-    -->
-
-    <choose>
-      <when condition="@(return context.Request.Headers['SOAPAction').Equals('getCases')'">
-
-        <!-- rewrite the url with the parameters from the soap body -->
-        <rewrite-uri copy-unmatched-params="false">
-
-          @{
+        return request.ToString();
+        }</set-body>
+    </send-request>
+  </when>
+  <otherwise>
+    <!-- Validate using AAD -->
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+      <openid-config url="{{aadkeys}}" />
+    </validate-jwt>
+  </otherwise>
+</choose>
+  <!-- set the authorisation token -->
+<set-header name="Authorization" exists-action="override">
+<value>@{
+  return "Bearer : " + (string)context.Variables["authToken"];
+  }</value>
+</set-header>
+  <!-- Convert the body into json so we can easily walk it -->
+<xml-to-json kind="javascript-friendly" apply="always" consider-accept-header="false" />
+  <!-- IMPORTANT: We should ideally scope the following sections per operation. Howebert terraform
+      has problems targeting a specific APIM operation, the conditional blocks are thought a workaround to this problem
+      in the short term=
+  -->
+  <!-- Rewrite the url to contain the parameers -->
+<choose>
+<when condition="@( context.Request.Headers.GetValueOrDefault("SOAPAction","").Equals("getCases"))">
+<!-- rewrite the url with the parameters from the soap body -->
+<rewrite-uri template="@{
           var request = context.Request.Body.As<JObject>();
-          return "/cases?courthouse=" + request.courthouse + "&courtroom=" + request.courtroom + "&date=" + request.date
-          }
-        </rewrite-uri>
-      </when>
+          return "/cases?courthouse=" + request["courthouse"] + "&courtroom=" + request["courtroom"] + "&date=" + request["date"];
+}" copy-unmatched-params="false" />
+<!-- clear soap body of request -->
+<set-body />
+<set-method>GET</set-method>
+</when>
+  </choose>
+<choose>
+<!-- Adapt the SOAP request to the required Resfful payload for adding a case -->
+<when condition="@( context.Request.Headers.GetValueOrDefault("SOAPAction", "").Equals("addCase"))">
+<!-- IMPORTANT: We need to validate against a schema (as the current gateway implementation does) but by default this policy tag validates against the request body
+which is not correct. We need to validate the embedded xml against a schema
+<validate-content unspecified-content-type-action="prevent " max-size="102400" size-exceeded-action="ignore" errors-variable-name="addCasesValidation">
+<content-type-map any-content-type-value="application/xml" >
+</content-type-map>
+<content type="content type string" validate-as="xml" schema-id="addCaseSchema" action="prevent " allow-additional-properties="false" />
+</validate-content>
+-->
+<!-- rewrite the body of the request to be restful using liquid templatng-->
+<set-body template="liquid">
+  {
+  "courthouse": "{{context.Request.Envelope.Body.addCase.document.courthouse}}",
+  "case_number": "{{context.Request.Envelope.Body.addCase.document.id}}",
+  "defendants": [
+  {% for defendant in context.Request.Envelope.Body.addCase.Document.defendants %}
+  {%- if forloop.length &gt; 0 -%}
+  "{{defendant}}"{% unless forloop.last %},{% endunless -%}
+  {%- endif -%}
+  {% endfor %}
+  ],
+  "judges": [
+  {% for judge in context.Request.Envelope.Body.addCase.Document.judges %}
+  {%- if forloop.length &gt; 0 -%}
+  "{{judge}}"{% unless forloop.last %},{% endunless -%}
+  {%- endif -%}
+  {% endfor %}
+  ],
+  "prosecutors": [
+  {% for prosecutor in context.Request.Envelope.Body.addCase.Document.prosecutors %}
+  {%- if forloop.length &gt; 0 -%}
+  "{{prosecutor}}"{% unless forloop.last %},{% endunless -%}
+  {%- endif -%}
+  {% endfor %}
+  ],
+  "defenders": [
+  {% for defender in context.Request.Envelope.Body.addCase.Document.defenders %}
+  {%- if forloop.length &gt; 0 -%}
+  "{{defender}}"{% unless forloop.last %},{% endunless -%}
+  {%- endif -%}
+  {% endfor %}
+  ]
+  }
 
-      <!-- clear soap body of request -->
-      <set-body></set-body>
-      <set-method>GET</set-method>
-    </choose>
-
-    <choose>
-      <when condition="@(return context.Request.Headers['SOAPAction').Equals('addCase')'">
-
-        <!-- We need to validate against a schema (as the current gateway does) but by default this policy tag validates against the request body
-        which is not correct. We need to validate the embedded xml against a schema -->
-        <!--
-        <validate-content unspecified-content-type-action="prevent " max-size="102400" size-exceeded-action="ignore" errors-variable-name="addCasesValidation">
-          <content-type-map any-content-type-value="application/xml" >
-          </content-type-map>
-          <content type="content type string" validate-as="xml" schema-id="addCaseSchema" action="prevent " allow-additional-properties="false" />
-        </validate-content>
-        -->
-
-        <!-- rewrite the body of the request to be restful -->
-        <set-body template="liquid">
-
-          {%
-          assign courthouse = context.Request.Envelope.Body.addCase.document.courthouse
-          assign caseNumber = context.Request.Envelope.Body.addCase.document.id
-          %}
-
-          {
-          "courthouse": {{courthouse}},
-          "case_number": {{caseNumber}}",
-          "defendants": [
-          {
-            % for defendant in context.Request.Envelope.Body.addCase.Document.defendants %}
-              "{{defendant}}"
-            {% endfor %}
-          ],
-          "judges": [
-            % for judge in context.Request.Envelope.Body.addCase.Document.judges %}
-            "{{judge}}"
-            {% endfor %}
-          ],
-          "prosecutors": [
-          % for prosecutor in context.Request.Envelope.Body.addCase.Document.prosecutors %}
-          "{{prosecutor}}"
-          {% endfor %}
-          ],
-          "defenders": [
-          % for defender in context.Request.Envelope.Body.addCase.Document.defenders %}
-          "{{defender}}"
-          {% endfor %}
-          ]
-          }
-
-        </set-body>
-        <set-method>POST</set-method>
-      </when>
-    </choose>
-
-    <set-header name="Content-Type" exists-action="override">
-      <value>application/json</value>
-    </set-header>
+</set-body>
+<set-method>POST</set-method>
+<rewrite-uri template="/cases" />
+</when>
+  </choose>
+<set-header name="Content-Type" exists-action="override">
+<value>application/json</value>
+</set-header>
   </inbound>
-  <backend>
-    <base/>
-  </backend>
-  <outbound>
-    <base/>
+<backend>
+<base />
+</backend>
+<outbound>
+<base />
+<!-- Deal with the get cases response -->
+<choose>
+  <when condition="@( context.Request.Headers.GetValueOrDefault("SOAPAction").Equals("getCases"))">
+  <set-header name="Content-Type" exists-action="override">
+    <value>text/xml</value>
+  </set-header>
+  <!-- A liquid templating fragment in order to substitute values into the response xml-->
+  <set-body template="liquid">
+    {%     assign dates = context.Request.Envelope.Body.getCases.date | Split: "-"          %}
+    {%     assign courthouse = context.Request.Envelope.Body.getCases.courthouse        %}
+    {%     assign courtroom = context.Request.Envelope.Body.getCases.courtroom        %}
 
-    <!-- Deal with the get cases response -->
-    <choose>
-      <when condition="@(return context.Request.Headers['SOAPAction').Equals('getCases')'">
-        <set-header name="Content-Type" exists-action="override">
-          <value>text/xml</value>
-        </set-header>
 
-        <!-- A liquid templating fragment in order to substitute values into the response xml-->
-        <set-body template="liquid">
-          {%
-          assign dates = context.Request.Envelope.Body.getCases.date | split: "-";
-
-          if dates.size == 3)
-          {
-          assign year = dates[0] | Split: "-";
-          assign month = dates[1] | Split: "-";
-          assign day = dates[2] | Split: "-";
-          }
-
-          assign year = "";
-          assign month = "";
-          assign day = "".
-          assign courthouse = context.Request.Envelope.Body.getCases.courthouse
-          assign courtroom = context.Request.Envelope.Body.getCases.courtroom
-          %}
-
-          <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-            <SOAP-ENV:Header/>
-            <SOAP-ENV:Body>
-              <ns3:getCasesResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
-                <return>
-                  <cases D="{{day}}" M="{{month}}" Y="{{day}}" courthouse="{{courthouse}}" courtroom="{{courtroom}}">
-                    {% for case in body.cases %}
-                    <case>
-                      <case_number>{{ case.caseNumber }}</case_number>
-                      <scheduled_start>{{ case.scheduledStart }}</scheduled_start>
-                      <defendants>
-                        {% for defendant in case.defendants %}
-                        <defendant>{{defendant}}</defendant>
-                        {% endfor %}
-                      </defendants>
-                      <judges>
-                        {% for judge in case.judges %}
-                        <judge>{{judge}}</judge>
-                        {% endfor %}
-                      </judges>
-                      <prosecutors>
-                        {% for prosecutor in case.prosecutors %}
-                        <prosecutor>{{prosecutor}}</prosecutor>
-                        {% endfor %}
-                      </prosecutors>
-                      <defenders>
-                        {% for defender in case.defenders %}
-                        <defender>{{defender}}</defender>
-                        {% endfor %}
-                      </defenders>
-                    </case>
-                    {% endfor %}
-                  </cases>
-                </return>
-              </ns3:getCasesResponse>
-            </SOAP-ENV:Body>
-          </SOAP-ENV:Envelope>
-        </set-body>
-      </when>
-    </choose>
-
-    <!-- Deal with the add cases SOAP response -->
-    <choose>
-      <when condition="@(return context.Request.Headers['SOAPAction').Equals('addCase')'">
-        <set-body template="liquid">
-          <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-            <SOAP-ENV:Header/>
-            <SOAP-ENV:Body>
-              <ns3:addCaseResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
-                <return>
-                  <code>{{body.code}}</code>
-                  <message>{{body.message}}</message>
-                </return>
-              </ns3:addCaseResponse>
-            </SOAP-ENV:Body>
-          </SOAP-ENV:Envelope>
-        </set-body>
-      </when>
-    </choose>
+    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header /><SOAP-ENV:Body><ns3:getCasesResponse xmlns:ns3="http://com.synapps.mojdarts.service.com"><return><cases D="{{dates[0]}}" M="{{dates[1]}}" Y="{{dates[2]}}" courthouse="{{courthouse}}" courtroom="{{courtroom}}">
+      {% for case in body.cases %}
+      <case><case_number>{{ case.caseNumber }}</case_number><scheduled_start>{{ case.scheduledStart }}</scheduled_start><defendants>
+        {% for defendant in case.defendants %}
+        <defendant>{{defendant}}</defendant>
+        {% endfor %}
+      </defendants><judges>
+        {% for judge in case.judges %}
+        <judge>{{judge}}</judge>
+        {% endfor %}
+      </judges><prosecutors>
+        {% for prosecutor in case.prosecutors %}
+        <prosecutor>{{prosecutor}}</prosecutor>
+        {% endfor %}
+      </prosecutors><defenders>
+        {% for defender in case.defenders %}
+        <defender>{{defender}}</defender>
+        {% endfor %}
+      </defenders></case>
+      {% endfor %}
+    </cases></return></ns3:getCasesResponse></SOAP-ENV:Body></SOAP-ENV:Envelope></set-body>
+</when>
+</choose>
+  <!-- Deal with the add cases SOAP response -->
+<choose>
+<when condition="@(context.Request.Headers.GetValueOrDefault("SOAPAction").Equals("addCase"))">
+<set-body template="liquid">
+  <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header />
+    <SOAP-ENV:Body>
+      <ns3:addCaseResponse xmlns:ns3="http://com.synapps.mojdarts.service.com">
+        <return>
+          <code>{{body.code}}</code>
+          <message>{{body.message}}</message>
+        </return>
+      </ns3:addCaseResponse>
+    </SOAP-ENV:Body>
+  </SOAP-ENV:Envelope>
+</set-body>
+</when>
+  </choose>
   </outbound>
-  <on-error>
-    <!-- A liquid templating fragment in order to substitute values into the error response xml-->
-
-    <base/>
-    <set-body template="liquid">
-      <SOAP-ENV:Envelope
-        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-        xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"
-        xmlns:xsd="http://www.w3.org/1999/XMLSchema">
-
-        <SOAP-ENV:Body>
-          <SOAP-ENV:Fault>
-            <faultcode xsi:type="xsd:string">SOAP-ENV:Client</faultcode>
-            <faultstring xsi:type="xsd:string">
-              {{body.detail}}
-            </faultstring>
-          </SOAP-ENV:Fault>
-        </SOAP-ENV:Body>
-      </SOAP-ENV:Envelope>
-    </set-body>
-  </on-error>
-</policies>
+<on-error>
+<!-- A general error response coming from the darts api-->
+<base />
+<set-body template="liquid">
+  <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance" xmlns:xsd="http://www.w3.org/1999/XMLSchema">
+    <SOAP-ENV:Body>
+      <SOAP-ENV:Fault>
+        <faultcode xsi:type="xsd:string">{{body.status}}</faultcode>
+        <faultstring xsi:type="xsd:string">
+          {{body.detail}}
+        </faultstring>
+      </SOAP-ENV:Fault>
+    </SOAP-ENV:Body>
+  </SOAP-ENV:Envelope>
+</set-body>
+</on-error>
+  </policies>
