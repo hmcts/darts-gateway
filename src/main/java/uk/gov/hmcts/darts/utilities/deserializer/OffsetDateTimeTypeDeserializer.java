@@ -11,9 +11,13 @@ import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings("PMD.LawOfDemeter")
 public class OffsetDateTimeTypeDeserializer extends JsonDeserializer<OffsetDateTime> {
+    public static OffsetDateTime getLOffsetDate(String offsetDate) {
+        return OffsetDateTime.parse(offsetDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+
     @Override
     public OffsetDateTime deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JacksonException {
-        return OffsetDateTime.parse(parser.getText(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        return getLOffsetDate(parser.getText());
     }
 }
 

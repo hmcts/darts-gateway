@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Client;
@@ -62,14 +61,16 @@ public class ServiceConfig {
     @Primary
     public ObjectMapper objectMapper() {
         JavaTimeModule module = new JavaTimeModule();
+
         module.addSerializer(LocalDateTime.class, new LocalDateTimeTypeSerializer())
             .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
             .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
             .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
             .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
             .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
+
         return new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            //.setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(module);
     }
 

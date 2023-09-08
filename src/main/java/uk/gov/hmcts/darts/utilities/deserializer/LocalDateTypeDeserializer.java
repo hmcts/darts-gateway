@@ -13,9 +13,13 @@ public class LocalDateTypeDeserializer extends JsonDeserializer<LocalDate> {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
+    public static LocalDate getLocalDate(String localDate) {
+        return LocalDate.parse(localDate, FORMATTER);
+    }
+
     @Override
     public LocalDate deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JacksonException {
-        return LocalDate.parse(parser.getText(), FORMATTER);
+        return getLocalDate(parser.getText());
     }
 }
 

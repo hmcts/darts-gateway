@@ -3,21 +3,31 @@ package uk.gov.hmcts.darts.dailylist;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
 import uk.gov.hmcts.darts.common.client.DailyListsClient;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
-import uk.gov.hmcts.darts.model.dailyList.DailyList;
+import uk.gov.hmcts.darts.dailylist.mapper.DailyListXmlRequestMapper;
+import uk.gov.hmcts.darts.dailylist.model.PostDailyListRequest;
+import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
+import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
+import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
+import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
+import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DailyListRoute {
 
     private final DailyListsClient dartsFeignClient;
@@ -35,13 +45,37 @@ public class DailyListRoute {
         if (systemType.isEmpty()) {
             throw new DartsValidationException("SystemType is not valid " + type);
         }
+
         if (validate) {
-            xmlValidator.validate(document, schemaPath);
+            try {
+                xmlValidator.validate(document, schemaPath);
+            } catch (DartsValidationException dve) {
+                log.error("Exception occurred during validation od XML", dve);
+                throw new DartsException(dve, CodeAndMessage.INVALID_XML);
+            }
         }
-        DailyListStructure legacyDailyList = xmlParser.unmarshal(document, DailyListStructure.class);
-        DailyList modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
-        dartsFeignClient.dailylistsPost(
+
+        DailyListStructure legacyDailyListObject = xmlParser.unmarshal(document.trim(), DailyListStructure.class);
+        PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
+            legacyDailyListObject,
+            document
+        );
+
+        DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyListObject);
+
+        ResponseEntity<PostDailyListResponse> postDailyListResponse = dartsFeignClient.dailylistsPost(
             systemType.get().getModernisedSystemType(),
+            postDailyListRequest.getCourthouse(),
+            LocalDateTypeDeserializer.getLocalDate(postDailyListRequest.getHearingDate()),
+            postDailyListRequest.getUniqueId(),
+            OffsetDateTimeTypeDeserializer.getLOffsetDate(postDailyListRequest.getPublishedTs()),
+            postDailyListRequest.getDailyListXml(),
+            null
+        );
+
+        Integer dalId = postDailyListResponse.getBody().getDalId();
+        dartsFeignClient.dailylistsPatch(
+            dalId,
             modernisedDailyList
         );
         return successResponse();
