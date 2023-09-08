@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseActions;
 import org.springframework.xml.transform.StringSource;
+import org.xmlunit.matchers.CompareMatcher;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 
@@ -16,10 +17,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
 import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
 import static org.springframework.ws.test.server.ResponseMatchers.noFault;
-import static org.springframework.ws.test.server.ResponseMatchers.payload;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class CasesWebServiceTest extends IntegrationBase {
@@ -43,11 +44,10 @@ class CasesWebServiceTest extends IntegrationBase {
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
             "payloads/getCases/expectedResponse.xml");
-        StringSource expectedResponse = new StringSource(expectedResponseStr);
-
         ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
             .andExpect(noFault());
-        responseActions.andExpect(payload(expectedResponse));
+        String actualResponse = TestUtils.getResponse(responseActions);
+        assertThat(actualResponse, CompareMatcher.isIdenticalTo(expectedResponseStr));
     }
 
     @Test
@@ -65,11 +65,11 @@ class CasesWebServiceTest extends IntegrationBase {
                     .willReturn(ok(dartsApiResponseStr)));
         String expectedResponseStr = TestUtils.getContentsFromFile(
             "payloads/addCase/expectedResponse.xml");
-        StringSource expectedResponse = new StringSource(expectedResponseStr);
 
         ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
             .andExpect(noFault());
-        responseActions.andExpect(payload(expectedResponse));
+        String actualResponse = TestUtils.getResponse(responseActions);
+        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponseStr).ignoreWhitespace());
     }
 
     @Test

@@ -32,5 +32,13 @@
     <vulnerabilityName>CVE-2023-3782</vulnerabilityName>
   </suppress>
 
+  <suppress until="2023-11-14">
+    <notes>URL Redirection to Untrusted Site ('Open Redirect') vulnerability in FORM authentication feature Apache Tomcat.</notes>
+    <vulnerabilityName>CVE-2023-41080</vulnerabilityName>
+  </suppress>
+
+
+
+
   <!--End of temporary suppression section -->
 </suppressions>

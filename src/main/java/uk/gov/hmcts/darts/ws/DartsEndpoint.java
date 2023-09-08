@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocument;
@@ -11,6 +12,7 @@ import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
+import feign.FeignException;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +43,12 @@ public class DartsEndpoint {
         var addDocumentResponse = new AddDocumentResponse();
         try {
             addDocumentResponse = eventRoutingService.route(addDocument.getValue());
-        } catch (Exception e) {
+        } catch (FeignException e) {
+            log.error("Error sending addDocument. {}", e.contentUTF8(), e);
             addDocumentResponse.setReturn(utils.createDartsResponseMessage(e));
-            return factory.createAddDocumentResponse(addDocumentResponse);
+        } catch (DartsException de) {
+            log.error("Error sending addDocument. {}", de);
+            addDocumentResponse.setReturn(utils.createDartsResponseMessage(de.getCodeAndMessage()));
         }
 
         return factory.createAddDocumentResponse(addDocumentResponse);
@@ -67,7 +72,7 @@ public class DartsEndpoint {
             casesRoute.route(addCase.getValue());
 
             return factory.createAddCaseResponse(utils.createSuccessfulAddCaseResponse());
-        } catch (Exception e) {
+        } catch (DartsException e) {
             return factory.createAddCaseResponse(utils.createErrorAddCaseResponse(e));
         }
     }
@@ -81,7 +86,7 @@ public class DartsEndpoint {
         try {
             getCourtLogResponse = getCourtLogRoute.route(getCourtLog.getValue());
 
-        } catch (Exception e) {
+        } catch (DartsException e) {
             getCourtLogResponse.setReturn(utils.createCourtLogResponse(e));
             return factory.createGetCourtLogResponse(getCourtLogResponse);
         }
@@ -98,7 +103,7 @@ public class DartsEndpoint {
         try {
             addLogEntryResponse = addCourtLogsRoute.route(addLogEntry.getValue().getDocument());
 
-        } catch (Exception e) {
+        } catch (DartsException e) {
             log.error(e.getMessage());
             addLogEntryResponse.setReturn(utils.createCourtLogResponse(e));
             return factory.createAddLogEntryResponse(addLogEntryResponse);

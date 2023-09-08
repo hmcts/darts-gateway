@@ -21,15 +21,15 @@ import uk.gov.courtservice.schemas.courtservice.PersonalDetailsStructure;
 import uk.gov.courtservice.schemas.courtservice.ProsecutingAuthorityType;
 import uk.gov.courtservice.schemas.courtservice.SittingStructure;
 import uk.gov.govtalk.people.addressandpersonaldetails.CitizenNameStructure;
-import uk.gov.hmcts.darts.model.dailyList.Charge;
-import uk.gov.hmcts.darts.model.dailyList.CitizenName;
-import uk.gov.hmcts.darts.model.dailyList.CourtHouse;
-import uk.gov.hmcts.darts.model.dailyList.CourtList;
-import uk.gov.hmcts.darts.model.dailyList.DailyList;
-import uk.gov.hmcts.darts.model.dailyList.Defendant;
-import uk.gov.hmcts.darts.model.dailyList.Hearing;
-import uk.gov.hmcts.darts.model.dailyList.PersonalDetails;
-import uk.gov.hmcts.darts.model.dailyList.Sitting;
+import uk.gov.hmcts.darts.model.dailylist.Charge;
+import uk.gov.hmcts.darts.model.dailylist.CitizenName;
+import uk.gov.hmcts.darts.model.dailylist.CourtHouse;
+import uk.gov.hmcts.darts.model.dailylist.CourtList;
+import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
+import uk.gov.hmcts.darts.model.dailylist.Defendant;
+import uk.gov.hmcts.darts.model.dailylist.Hearing;
+import uk.gov.hmcts.darts.model.dailylist.PersonalDetails;
+import uk.gov.hmcts.darts.model.dailylist.Sitting;
 import uk.gov.hmcts.darts.utilities.DateUtil;
 
 import java.time.OffsetDateTime;
@@ -48,7 +48,7 @@ public interface DailyListRequestMapper {
         @Mapping(source = "documentID.timeStamp", target = "documentId.timeStamp", qualifiedByName = "XMLGregorianCalendarToOffsetDateTime"),
         @Mapping(source = "crownCourt.courtHouseCode.value", target = "crownCourt.courtHouseCode.code")
     })
-    DailyList mapToEntity(DailyListStructure dailyListStructure);
+    DailyListJsonObject mapToEntity(DailyListStructure dailyListStructure);
 
     @Named("XMLGregorianCalendarToOffsetDateTime")
     default OffsetDateTime toOffsetDateTime(XMLGregorianCalendar date) {
