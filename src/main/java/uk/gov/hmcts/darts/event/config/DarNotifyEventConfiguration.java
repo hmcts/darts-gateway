@@ -21,19 +21,20 @@ public class DarNotifyEventConfiguration {
 
     @Bean
     public WebServiceTemplate darNotifyEventWebServiceTemplate(
-          DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties,
-          Jaxb2Marshaller marshaller,
-          Wss4jSecurityInterceptor securityInterceptor) {
+        DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties,
+        Jaxb2Marshaller marshaller,
+        Wss4jSecurityInterceptor securityInterceptor) {
         var webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setDefaultUri(darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toString());
         webServiceTemplate.setMarshaller(marshaller);
+        webServiceTemplate.setUnmarshaller(marshaller);
         webServiceTemplate.setInterceptors(new ClientInterceptor[]{securityInterceptor});
         return webServiceTemplate;
     }
 
     @Bean
     public Wss4jSecurityInterceptor securityInterceptor(
-          DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties) {
+        DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties) {
         var securityInterceptor = new Wss4jSecurityInterceptor();
         securityInterceptor.setSecurementActions(darNotifyEventConfigurationProperties.getSecurementActions());
         securityInterceptor.setSecurementUsername(darNotifyEventConfigurationProperties.getSecurementUsername());

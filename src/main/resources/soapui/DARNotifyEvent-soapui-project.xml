@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="66c612fc-13bf-4dd6-94d1-b4018fc450f7" activeEnvironment="Default" name="DARNotifyEvent" resourceRoot="" soapui-version="5.7.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="ff928ea6-1d5c-4125-8b78-43a1f399b165" wsaVersion="NONE" name="DARNotifyEventPortBinding" type="wsdl" bindingName="{http://www.VIQSoultions.com}DARNotifyEventPortBinding" soapVersion="1_1" anonymous="optional" definition="file:/Users/richardbull/Projects/com.viqsolutions/DARNotifyEvent.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/Users/richardbull/Projects/com.viqsolutions/DARNotifyEvent.wsdl"><con:part><con:url>file:/Users/richardbull/Projects/com.viqsolutions/DARNotifyEvent.wsdl</con:url><con:content><![CDATA[<definitions name="DARNotifyEvent" targetNamespace="http://www.VIQSoultions.com" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.VIQSoultions.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://www.VIQSoultions.com" schemaLocation="dar-notify-event.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="DARNotifyEvent">
+    <part element="tns:DARNotifyEvent" name="parameters"/>
+  </message>
+  <message name="DARNotifyEventResponse">
+    <part element="tns:DARNotifyEventResponse" name="parameters"/>
+  </message>
+  <portType name="DARNotifyEventPort">
+    <operation name="DARNotifyEvent">
+      <input message="tns:DARNotifyEvent"/>
+      <output message="tns:DARNotifyEventResponse"/>
+    </operation>
+  </portType>
+  <binding name="DARNotifyEventPortBinding" type="tns:DARNotifyEventPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="DARNotifyEvent">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="DARNotifyEvent">
+    <port binding="tns:DARNotifyEventPortBinding" name="DARNotifyEventPort">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+    </port>
+  </service>
+</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/Users/richardbull/Projects/com.viqsolutions/dar-notify-event.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="http://www.VIQSoultions.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.VIQSoultions.com">
+  <xs:element name="DARNotifyEvent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="XMLEventDocument" type="tns:XMLEventDocument"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="XMLEventDocument">
+    <xs:sequence>
+      <xs:element name="event" type="tns:event"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="event">
+    <xs:sequence>
+      <xs:element name="courthouse" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="courtroom" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="case_numbers" minOccurs="1" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="case_number" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="type" form="unqualified" type="tns:notify_type" use="required"/>
+    <xs:attribute name="Y" form="unqualified" type="xs:string" use="required"/>
+    <xs:attribute name="M" form="unqualified" type="xs:string" use="required"/>
+    <xs:attribute name="D" form="unqualified" type="xs:string" use="required"/>
+    <xs:attribute name="H" form="unqualified" type="xs:string" use="required"/>
+    <xs:attribute name="MIN" form="unqualified" type="xs:string" use="required"/>
+    <xs:attribute name="S" form="unqualified" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:simpleType name="notify_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+      <xs:enumeration value="3"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="DARNotifyEventResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="DARNotifyEventResult" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>REPLACE_WITH_ACTUAL_URL</con:endpoint><con:endpoint>http://UK-N576GGV2Q5.broadband:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint></con:endpoints><con:operation id="358ab07b-67da-4cb2-8166-df178f226e8d" isOneWay="false" action="" name="DARNotifyEvent" bindingOperationName="DARNotifyEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="829f3638-13d1-4a2d-bf88-b7e5197d724c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://UK-N576GGV2Q5.broadband:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:viq="http://www.VIQSoultions.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <viq:DARNotifyEvent>
+            <XMLEventDocument>
+                <event type="1" Y="2023" M="5" D="12" H="16" MIN="10" S="35">
+                    <courthouse>Courthouse</courthouse>
+                    <courtroom>Courtroom</courtroom>
+                    <case_numbers>
+                        <case_number>123</case_number>
+                    </case_numbers>
+                </event>
+            </XMLEventDocument>
+      </viq:DARNotifyEvent>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:mockService id="88a76a90-3f4a-424e-b6a4-be0fea26b2bb" port="8080" path="/VIQDARNotifyEvent/DARNotifyEvent.asmx" host="localhost" name="DARNotifyEventPortBinding MockService" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="DARNotifyEvent" id="1c3e1ee3-155d-400c-b499-a3010c9d0003" interface="DARNotifyEventPortBinding" operation="DARNotifyEvent"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="77b2da05-aac3-4dc7-acda-13df4e9f022a" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:viq="http://www.VIQSoultions.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <viq:DARNotifyEventResponse>
+         <DARNotifyEventResult>0</DARNotifyEventResult>
+      </viq:DARNotifyEventResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
