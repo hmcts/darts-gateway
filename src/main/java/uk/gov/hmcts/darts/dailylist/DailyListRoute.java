@@ -5,7 +5,6 @@ import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -59,11 +58,6 @@ public class DailyListRoute {
         }
 
         DailyListStructure legacyDailyListObject = xmlParser.unmarshal(document.trim(), DailyListStructure.class);
-        PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
-            legacyDailyListObject,
-            document
-        );
-
         DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyListObject);
 
         String modernisedDailyListJson;
@@ -76,6 +70,10 @@ public class DailyListRoute {
             throw new DartsException(ex, CodeAndMessage.INVALID_XML);
         }
 
+        PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
+                legacyDailyListObject,
+                document
+        );
         ResponseEntity<PostDailyListResponse> postDailyListResponse = dartsFeignClient.dailylistsPost(
             systemType.get().getModernisedSystemType(),
             postDailyListRequest.getCourthouse(),

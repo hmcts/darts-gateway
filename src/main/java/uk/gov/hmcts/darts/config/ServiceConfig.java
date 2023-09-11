@@ -2,20 +2,20 @@ package uk.gov.hmcts.darts.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Client;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
-import feign.jackson.JacksonDecoder;
-import lombok.Getter;
+import feign.okhttp.OkHttpClient;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
+import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -34,18 +35,20 @@ import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.serializer.LocalDateTimeTypeSerializer;
 import uk.gov.hmcts.darts.utilities.serializer.LocalDateTypeSerializer;
 import uk.gov.hmcts.darts.utilities.serializer.OffsetDateTimeTypeSerializer;
-import feign.okhttp.OkHttpClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
-import org.springframework.cloud.openfeign.support.SpringDecoder;
 
-import  org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-
+/**
+ * DO NOT ANNOTATE THIS CLASS WITH @Configuration. This class works alongside the
+ * {@link org.springframework.cloud.openfeign.FeignClient} annotation. In this way configurations can be specific API
+ * feign interaction and not applied globally
+ */
+@SuppressWarnings("PMD.ExcessiveImports")
 public class ServiceConfig {
 
     @Value("${azure-ad-ropc.token-uri}")
@@ -76,36 +79,33 @@ public class ServiceConfig {
     }
 
 
-
-    public static ObjectMapper getServiceObjectMapper()
-    {
+    public static ObjectMapper getServiceObjectMapper() {
         JavaTimeModule module = new JavaTimeModule();
 
         module.addSerializer(LocalDateTime.class, new LocalDateTimeTypeSerializer())
-        .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
-        .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
-        .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
-        .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
-        .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
+            .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
+            .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
+            .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
+            .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
+            .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
 
-        return  new ObjectMapper()
+        return new ObjectMapper()
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .registerModule(module);
     }
 
     @Bean
     public Decoder feignDecoder() {
-        HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(getServiceObjectMapper());
+        MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(getServiceObjectMapper());
 
         HttpMessageConverters httpMessageConverters = new HttpMessageConverters(jacksonConverter);
         ObjectFactory<HttpMessageConverters> objectFactory = () -> httpMessageConverters;
-
-        return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
+        return new ResponseEntityDecoder(new SpringDecoder(objectFactory, new EmptyObjectProvider<>()));
     }
 
     @Bean
     public Encoder feignEncoder() {
-        HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(getServiceObjectMapper());
+        MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(getServiceObjectMapper());
 
         HttpMessageConverters httpMessageConverters = new HttpMessageConverters(jacksonConverter);
         ObjectFactory<HttpMessageConverters> objectFactory = () -> httpMessageConverters;
@@ -151,5 +151,33 @@ public class ServiceConfig {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         return new HttpEntity<>(formValues, headers);
+    }
+
+    class EmptyObjectProvider<T> implements ObjectProvider<T> {
+
+        @Override
+        public T getObject(Object... args)  {
+            return null;
+        }
+
+        @Override
+        public T getObject() {
+            return null;
+        }
+
+        @Override
+        public void forEach(Consumer action) {
+            // do nothing
+        }
+
+        @Override
+        public T getIfAvailable() {
+            return null;
+        }
+
+        @Override
+        public T getIfUnique() {
+            return null;
+        }
     }
 }

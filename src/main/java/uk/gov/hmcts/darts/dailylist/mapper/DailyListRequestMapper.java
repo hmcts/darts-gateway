@@ -2,16 +2,40 @@ package uk.gov.hmcts.darts.dailylist.mapper;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.mapstruct.*;
-import uk.gov.courtservice.schemas.courtservice.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
+import uk.gov.courtservice.schemas.courtservice.AdvocateStructure;
+import uk.gov.courtservice.schemas.courtservice.ChargeStructure;
+import uk.gov.courtservice.schemas.courtservice.CourtHouseStructure;
+import uk.gov.courtservice.schemas.courtservice.DailyCourtListStructure;
+import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
+import uk.gov.courtservice.schemas.courtservice.DefenceStructure;
+import uk.gov.courtservice.schemas.courtservice.DefendantStructure;
+import uk.gov.courtservice.schemas.courtservice.HearingStructure;
+import uk.gov.courtservice.schemas.courtservice.JudiciaryStructure;
+import uk.gov.courtservice.schemas.courtservice.PersonStructure;
+import uk.gov.courtservice.schemas.courtservice.PersonalDetailsStructure;
+import uk.gov.courtservice.schemas.courtservice.ProsecutingAuthorityType;
+import uk.gov.courtservice.schemas.courtservice.SittingStructure;
 import uk.gov.govtalk.people.addressandpersonaldetails.CitizenNameStructure;
-import uk.gov.hmcts.darts.model.dailylist.*;
+import uk.gov.hmcts.darts.model.dailylist.Charge;
+import uk.gov.hmcts.darts.model.dailylist.CitizenName;
+import uk.gov.hmcts.darts.model.dailylist.CourtHouse;
+import uk.gov.hmcts.darts.model.dailylist.CourtList;
+import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
+import uk.gov.hmcts.darts.model.dailylist.Defendant;
+import uk.gov.hmcts.darts.model.dailylist.Hearing;
+import uk.gov.hmcts.darts.model.dailylist.PersonalDetails;
+import uk.gov.hmcts.darts.model.dailylist.Sitting;
 import uk.gov.hmcts.darts.utilities.DateUtil;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 @SuppressWarnings({"PMD.OverloadMethodsDeclarationOrder", "PMD.ExcessiveImports", "PMD.TooManyMethods"})
@@ -134,6 +158,4 @@ public interface DailyListRequestMapper {
         @Mapping(source = "courtHouseCode.value", target = "courtHouseCode.code")
     })
     CourtHouse map(CourtHouseStructure courtHouseStructure);
-
-
 }
