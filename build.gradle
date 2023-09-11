@@ -33,7 +33,6 @@ configurations.all {
 
 configurations {
   jaxb
-  jaxbAddCase
 }
 
 sourceSets {
@@ -257,14 +256,7 @@ swaggerList.each {
 sourceSets {
   main {
     java {
-      srcDir("$buildDir/generated/openapi/src/gen/java")
       srcDir("$buildDir/generated/openapi/src/main/java")
-    }
-  }
-  test {
-    java {
-      srcDir("$buildDir/generated/openapi/src/gen/test")
-      srcDir("$buildDir/generated/openapi/src/test/java")
     }
   }
 }
@@ -375,6 +367,7 @@ sourceSets {
     java {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
+      srcDir 'src/main/java/generated'
       srcDir 'build/generated-sources/jaxbAddCase'
     }
   }
