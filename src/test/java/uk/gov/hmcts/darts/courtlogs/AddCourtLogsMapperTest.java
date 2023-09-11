@@ -2,7 +2,7 @@ package uk.gov.hmcts.darts.courtlogs;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
-import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
+import uk.gov.hmcts.darts.model.event.CourtLogsPostRequestBody;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
