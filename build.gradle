@@ -11,7 +11,8 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.48.0'
   id 'org.sonarqube' version '4.3.1.3277'
   id 'java-library'
-  id "org.openapi.generator" version "7.0.0"
+  id "org.openapi.generator" version "6.6.0"
+  id("com.github.bjornvester.wsdl2java") version "2.0.2"
 }
 
 group = 'uk.gov.hmcts'
@@ -255,7 +256,6 @@ swaggerList.each {
 sourceSets {
   main {
     java {
-      srcDir("$buildDir/generated/openapi/src/gen/java")
       srcDir("$buildDir/generated/openapi/src/main/java")
     }
   }
@@ -367,7 +367,8 @@ sourceSets {
     java {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
-      srcDir('src/main/java/generated')
+      srcDir 'src/main/java/generated'
+      srcDir 'build/generated-sources/jaxbAddCase'
     }
   }
 }
@@ -402,12 +403,22 @@ task genJaxbAddCase {
       taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
       mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, schema: schema) {
+      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addcase",  schema: schema) {
         arg(value: "-wsdl")
+
         produces(dir: sourcesDir, includes: "**/*.java")
       }
     }
   }
 }
 
+
+wsdl2java {
+    wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
+    includes = [
+        "**/*.wsdl"
+      ]
+}
+
 compileJava.dependsOn genJaxb
+compileJava.dependsOn genJaxbAddCase
