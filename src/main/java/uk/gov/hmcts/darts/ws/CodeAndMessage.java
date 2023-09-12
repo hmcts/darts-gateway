@@ -9,7 +9,6 @@ public enum CodeAndMessage {
 
     ERROR("500", null),
     INVALID_XML("400", "Invalid XML Document"),
-    INVALID_JSON("400", "Invalid JSON Document"),
     NOT_FOUND_COURTHOUSE("404", "Courthouse Not Found"),
     NOT_FOUND_HANLDER("404", "Handler Not Found"),
     AUDIO_TOO_LARGE("404", "Audio Too Large"),

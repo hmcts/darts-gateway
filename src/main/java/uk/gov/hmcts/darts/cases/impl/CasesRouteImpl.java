@@ -31,12 +31,12 @@ public class CasesRouteImpl implements CasesRoute {
     private final XmlParser xmlParser;
     private final AddCaseMapper addCaseMapper;
 
-    private final CasesClient dartsFeignClient;
+    private final CasesClient casesClient;
 
     @Override
     public GetCasesResponse route(GetCases getCasesRequest) {
 
-        ResponseEntity<List<ScheduledCase>> modernisedDartsResponse = dartsFeignClient.casesGet(
+        ResponseEntity<List<ScheduledCase>> modernisedDartsResponse = casesClient.casesGet(
             getCasesRequest.getCourthouse(),
             getCasesRequest.getCourtroom(),
             LocalDate.parse(getCasesRequest.getDate())
@@ -54,6 +54,6 @@ public class CasesRouteImpl implements CasesRoute {
         var caseDocument = xmlParser.unmarshal(caseDocumentXmlStr, Case.class);
         var addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
 
-        dartsFeignClient.casesPost(addCaseRequest);
+        casesClient.casesPost(addCaseRequest);
     }
 }

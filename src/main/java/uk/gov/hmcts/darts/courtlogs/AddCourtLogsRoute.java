@@ -20,7 +20,7 @@ public class AddCourtLogsRoute {
 
     private final XmlParser xmlParser;
     private final AddCourtLogsMapper mapper;
-    private final CourtLogsClient dartsFeignClient;
+    private final CourtLogsClient courtLogsClient;
 
     public AddLogEntryResponse route(String document) {
 
@@ -30,7 +30,7 @@ public class AddCourtLogsRoute {
         CourtLogsPostRequestBody postRequestBody = mapper.mapToApi(logEntry);
 
         try {
-            response = dartsFeignClient.courtlogsPost(postRequestBody);
+            response = courtLogsClient.courtlogsPost(postRequestBody);
         } catch (HttpClientErrorException ce) {
             log.error("Failure calling Darts API", ce);
             throw ce;

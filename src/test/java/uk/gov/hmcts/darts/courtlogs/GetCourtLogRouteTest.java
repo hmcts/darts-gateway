@@ -27,7 +27,7 @@ class GetCourtLogRouteTest {
     private final OffsetDateTime offsetEndTime = OffsetDateTime.now();
 
     @Mock
-    private CourtLogsClient dartsFeignClient;
+    private CourtLogsClient courtLogsClient;
     @Mock
     private GetCourtLogsMapper getCourtLogsMapper;
     @Mock
@@ -37,7 +37,7 @@ class GetCourtLogRouteTest {
 
     @BeforeEach
     void setUp() {
-        getCourtLogRoute = new GetCourtLogRoute(dartsFeignClient, getCourtLogsMapper, dateConverters);
+        getCourtLogRoute = new GetCourtLogRoute(courtLogsClient, getCourtLogsMapper, dateConverters);
 
         GetCourtLog legacyCourtLogRequest = someLegacyGetCourtLogRequest();
 
@@ -57,7 +57,7 @@ class GetCourtLogRouteTest {
 
         getCourtLogRoute.route(legacyGetCourtLog);
 
-        verify(dartsFeignClient).courtlogsGet(
+        verify(courtLogsClient).courtlogsGet(
               "some-court-house",
               "some-court-house",
               offsetStartTime,

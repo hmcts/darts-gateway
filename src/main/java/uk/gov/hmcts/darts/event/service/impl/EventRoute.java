@@ -20,7 +20,7 @@ public class EventRoute {
     @Value("${darts-gateway.events.validate}")
     private boolean validateEvent;
     private final XmlValidator xmlValidator;
-    private final EventsClient dartsFeignClient;
+    private final EventsClient eventsClient;
     private final XmlParser xmlParser;
     private final EventRequestMapper dartsXmlMapper;
 
@@ -33,7 +33,7 @@ public class EventRoute {
         var dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
         var eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
 
-        ResponseEntity<EventsResponse> eventResponse = dartsFeignClient.eventsPost(eventRequest);
+        ResponseEntity<EventsResponse> eventResponse = eventsClient.eventsPost(eventRequest);
 
         return dartsXmlMapper.toLegacyAddDocumentResponse(eventResponse.getBody());
     }

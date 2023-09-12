@@ -32,7 +32,7 @@ import java.util.Optional;
 @Slf4j
 public class DailyListRoute {
 
-    private final DailyListsClient dartsFeignClient;
+    private final DailyListsClient dailyListsClient;
     private final XmlParser xmlParser;
     private final DailyListRequestMapper dailyListRequestMapper;
     private final XmlValidator xmlValidator;
@@ -74,7 +74,7 @@ public class DailyListRoute {
                 legacyDailyListObject,
                 document
         );
-        ResponseEntity<PostDailyListResponse> postDailyListResponse = dartsFeignClient.dailylistsPost(
+        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsPost(
             systemType.get().getModernisedSystemType(),
             postDailyListRequest.getCourthouse(),
             LocalDateTypeDeserializer.getLocalDate(postDailyListRequest.getHearingDate()),
@@ -85,7 +85,7 @@ public class DailyListRoute {
         );
 
         Integer dalId = postDailyListResponse.getBody().getDalId();
-        dartsFeignClient.dailylistsPatch(
+        dailyListsClient.dailylistsPatch(
             dalId,
             modernisedDailyListJson
         );

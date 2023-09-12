@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Service
 public class GetCourtLogRoute {
 
-    private final CourtLogsClient dartsFeignClient;
+    private final CourtLogsClient courtLogsClient;
     private final GetCourtLogsMapper getCourtLogsMapper;
     private final DateConverters dateConverters;
 
@@ -23,7 +23,7 @@ public class GetCourtLogRoute {
         var startDateTime = dateConverters.offsetDateTimeFrom(legacyGetCourtLog.getStartTime());
         var endDateTime = dateConverters.offsetDateTimeFrom(legacyGetCourtLog.getEndTime());
 
-        var dartsApiCourtLogs = dartsFeignClient.courtlogsGet(
+        var dartsApiCourtLogs = courtLogsClient.courtlogsGet(
             courthouse,
             caseNumber,
             OffsetDateTime.parse(startDateTime.toString()),
