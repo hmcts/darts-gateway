@@ -81,10 +81,40 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>REPLACE_WITH_ACTUAL_URL</con:endpoint><con:endpoint>http://UK-N576GGV2Q5.broadband:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint></con:endpoints><con:operation id="358ab07b-67da-4cb2-8166-df178f226e8d" isOneWay="false" action="" name="DARNotifyEvent" bindingOperationName="DARNotifyEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="829f3638-13d1-4a2d-bf88-b7e5197d724c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://UK-N576GGV2Q5.broadband:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:viq="http://www.VIQSoultions.com">
-   <soapenv:Header/>
-   <soapenv:Body>
-      <viq:DARNotifyEvent>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>REPLACE_WITH_ACTUAL_URL</con:endpoint><con:endpoint>http://UK-N576GGV2Q5.broadband:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint></con:endpoints><con:operation id="358ab07b-67da-4cb2-8166-df178f226e8d" isOneWay="false" action="" name="DARNotifyEvent" bindingOperationName="DARNotifyEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="829f3638-13d1-4a2d-bf88-b7e5197d724c" name="Bristol - OK"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:viq="http://www.VIQSoultions.com">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <viq:DARNotifyEvent>
+      <XMLEventDocument>
+        <event type="1" Y="2023" M="9" D="8" H="14" MIN="15" S="54">
+          <courthouse>Bristol</courthouse>
+          <courtroom>Court 1</courtroom>
+          <case_numbers>
+            <case_number>T20230907-1</case_number>
+          </case_numbers>
+        </event>
+      </XMLEventDocument>
+    </viq:DARNotifyEvent>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:testSuite id="82ac78cb-9df1-4410-b44d-ad159c9c6fc0" name="DARNotifyEventPortBinding TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="9b1d49cf-a320-4e52-be8d-41722dfb93f8" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="DARNotifyEvent TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="4aefa662-25b4-4252-8b6a-009bffe23154" name="START RECORDING - OK"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DARNotifyEventPortBinding</con:interface><con:operation>DARNotifyEvent</con:operation><con:request name="START RECORDING - OK" id="b0566364-208c-4bb0-8a13-5b35caaae0fd"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:viq="http://www.VIQSoultions.com">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <viq:DARNotifyEvent>
+      <XMLEventDocument>
+        <event type="1" Y="2023" M="9" D="8" H="14" MIN="15" S="54">
+          <courthouse>Bristol</courthouse>
+          <courtroom>Court 1</courtroom>
+          <case_numbers>
+            <case_number>T20230907-1</case_number>
+          </case_numbers>
+        </event>
+      </XMLEventDocument>
+    </viq:DARNotifyEvent>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="START RECORDING - Other Error" id="ef6aca2e-0e0f-40fb-9a00-fb4ae8dc3647"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DARNotifyEventPortBinding</con:interface><con:operation>DARNotifyEvent</con:operation><con:request name="START RECORDING - Other Error" id="c49146f6-053c-40f1-b41b-7ba7216e28b2"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <DARNotifyEvent xmlns="http://www.VIQSoultions.com">
             <XMLEventDocument>
                 <event type="1" Y="2023" M="5" D="12" H="16" MIN="10" S="35">
                     <courthouse>Courthouse</courthouse>
@@ -94,13 +124,21 @@
                     </case_numbers>
                 </event>
             </XMLEventDocument>
-      </viq:DARNotifyEvent>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:mockService id="88a76a90-3f4a-424e-b6a4-be0fea26b2bb" port="8080" path="/VIQDARNotifyEvent/DARNotifyEvent.asmx" host="localhost" name="DARNotifyEventPortBinding MockService" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="DARNotifyEvent" id="1c3e1ee3-155d-400c-b499-a3010c9d0003" interface="DARNotifyEventPortBinding" operation="DARNotifyEvent"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="77b2da05-aac3-4dc7-acda-13df4e9f022a" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:viq="http://www.VIQSoultions.com">
+        </DARNotifyEvent>
+    </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="69f9b8dd-740c-4d06-9250-f2837c04e086"/><con:assertion type="Simple Contains" id="2f605c40-c7e8-4b60-a4cf-558009da27de" name="Contains"><con:configuration><token>DARNotifyEventResult</token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:mockService id="88a76a90-3f4a-424e-b6a4-be0fea26b2bb" port="8080" path="/VIQDARNotifyEvent/DARNotifyEvent.asmx" host="localhost" name="DARNotifyEventPortBinding MockService" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="DARNotifyEvent" id="1c3e1ee3-155d-400c-b499-a3010c9d0003" interface="DARNotifyEventPortBinding" operation="DARNotifyEvent"><con:settings/><con:defaultResponse>Other Error</con:defaultResponse><con:dispatchStyle>QUERY_MATCH</con:dispatchStyle><con:dispatchPath>/soapenv:Envelope/soapenv:Body/viq:DARNotifyEvent/XMLEventDocument/event/courthouse/=='Bristol'</con:dispatchPath><con:response name="OK" id="77b2da05-aac3-4dc7-acda-13df4e9f022a" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:viq="http://www.VIQSoultions.com">
    <soapenv:Header/>
    <soapenv:Body>
       <viq:DARNotifyEventResponse>
          <DARNotifyEventResult>0</DARNotifyEventResult>
       </viq:DARNotifyEventResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventResponse"/></con:response><con:response name="Other Error" id="979a2974-e142-4cc5-9ad5-6d7828fb9ce1" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <DARNotifyEventResponse xmlns="http://www.VIQSoultions.com">
+            <DARNotifyEventResult>5</DARNotifyEventResult>
+        </DARNotifyEventResponse>
+    </soap:Body>
+</soap:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.VIQSoultions.com/DARNotifyEventPort/DARNotifyEventResponse"/></con:response><con:dispatchConfig xsi:type="con:MockOperationQueryMatchDispatch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:query><con:name>OK - Bristol</con:name><con:query>declare namespace viq='http://www.VIQSoultions.com'
+//viq:DARNotifyEvent/XMLEventDocument/event/courthouse</con:query><con:match>Bristol</con:match><con:response>OK</con:response></con:query></con:dispatchConfig></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
