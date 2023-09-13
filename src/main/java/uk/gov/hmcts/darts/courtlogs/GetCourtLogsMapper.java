@@ -24,7 +24,7 @@ public class GetCourtLogsMapper {
         var legacyCourtLog = createLegacyCourtLog();
         legacyCourtLog.setCourthouse(courtLogs.get(0).getCourthouse());
         legacyCourtLog.setCaseNumber(courtLogs.get(0).getCaseNumber());
-        courtLogs.forEach((courtLog) -> legacyCourtLog.addCourtLogEntry(toLegacyApi(courtLog)));
+        courtLogs.forEach((courtLog) -> legacyCourtLog.getEntry().add(toLegacyApi(courtLog)));
 
         var innerResponse = createInnerResponse();
         innerResponse.setCourtLog(legacyCourtLog);
