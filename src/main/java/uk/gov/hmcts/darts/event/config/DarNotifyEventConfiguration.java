@@ -27,6 +27,7 @@ public class DarNotifyEventConfiguration {
         var webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setDefaultUri(darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toString());
         webServiceTemplate.setMarshaller(marshaller);
+        webServiceTemplate.setUnmarshaller(marshaller);
         webServiceTemplate.setInterceptors(new ClientInterceptor[]{securityInterceptor});
         return webServiceTemplate;
     }
