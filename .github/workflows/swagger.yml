@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.6.0
       - name: Set up Cache
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v3.3.2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
