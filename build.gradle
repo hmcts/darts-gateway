@@ -11,7 +11,8 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.48.0'
   id 'org.sonarqube' version '4.3.1.3277'
   id 'java-library'
-  id "org.openapi.generator" version "7.0.0"
+  id "org.openapi.generator" version "6.6.0"
+  id("com.github.bjornvester.wsdl2java") version "2.0.2"
 }
 
 group = 'uk.gov.hmcts'
@@ -256,7 +257,6 @@ swaggerList.each {
 sourceSets {
   main {
     java {
-      srcDir("$buildDir/generated/openapi/src/gen/java")
       srcDir("$buildDir/generated/openapi/src/main/java")
     }
   }
@@ -296,7 +296,14 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
-  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '12.5'
+
+  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.5'
+  constraints {
+    implementation('com.squareup.okio:okio:3.4.0') {
+      because 'version 3.0.0 has vulnerability CVE-2023-3635'
+    }
+  }
+
   implementation group: 'io.rest-assured', name: 'rest-assured'
   implementation 'org.zalando:problem-spring-web-starter:0.29.1'
   implementation 'org.apache.commons:commons-collections4:4.4'
@@ -371,7 +378,8 @@ sourceSets {
     java {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
-      srcDir('src/main/java/generated')
+      srcDir 'src/main/java/generated'
+      srcDir 'build/generated-sources/jaxbAddCase'
     }
   }
 }
@@ -406,12 +414,22 @@ task genJaxbAddCase {
       taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
       mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, schema: schema) {
+      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addcase",  schema: schema) {
         arg(value: "-wsdl")
+
         produces(dir: sourcesDir, includes: "**/*.java")
       }
     }
   }
 }
 
+
+wsdl2java {
+    wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
+    includes = [
+        "**/*.wsdl"
+      ]
+}
+
 compileJava.dependsOn genJaxb
+compileJava.dependsOn genJaxbAddCase

@@ -94,7 +94,7 @@ class DarNotifyControllerTest {
 
         assertThat(response.getResponse().getContentAsString()).isEqualTo("");
         Mockito.verify(mockWebServiceTemplate).marshalSendAndReceive(
-            eq("http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx"),
+            eq("http://localhost:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx"),
             any(DARNotifyEvent.class),
             any(SoapActionCallback.class)
         );
