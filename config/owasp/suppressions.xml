@@ -13,32 +13,18 @@
   <!--End of false positives section -->
 
   <!--Please add all the temporary suppression under the below section-->
-  <suppress until="2023-06-14">
-    <notes>Waiting for spring boot version to pull in Spring Framework v6.0.7</notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-expression@.*$</packageUrl>
-    <vulnerabilityName>CVE-2023-20863</vulnerabilityName>
-  </suppress>
 
   <!-- Brought in from feign-okhttp -->
-  <suppress until="2023-09-14">
+  <suppress until="2023-10-14">
     <notes>Waiting for feign-okhttp update transitive dependency on okio-vm to >= 3.4.0</notes>
     <packageUrl>pkg:maven/com.squareup.okio/okio-jvm@3.0.0</packageUrl>
     <vulnerabilityName>CVE-2023-3635</vulnerabilityName>
-  </suppress>
-
-  <suppress until="2023-09-14">
-    <notes>Waiting for feign-okhttp update transitive dependency on okio-vm to >= 3.4.0</notes>
-    <packageUrl>pkg:maven/com.squareup.okhttp3/okhttp@4.10.0</packageUrl>
-    <vulnerabilityName>CVE-2023-3782</vulnerabilityName>
   </suppress>
 
   <suppress until="2023-11-14">
     <notes>URL Redirection to Untrusted Site ('Open Redirect') vulnerability in FORM authentication feature Apache Tomcat.</notes>
     <vulnerabilityName>CVE-2023-41080</vulnerabilityName>
   </suppress>
-
-
-
-
+  
   <!--End of temporary suppression section -->
 </suppressions>
