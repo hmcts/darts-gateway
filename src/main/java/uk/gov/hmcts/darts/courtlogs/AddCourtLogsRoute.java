@@ -8,7 +8,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.common.client.DartsFeignClient;
 import uk.gov.hmcts.darts.event.model.EventResponse;
-import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
+import uk.gov.hmcts.darts.model.event.CourtLogsPostRequestBody;
 import uk.gov.hmcts.darts.utilities.MapperUtility;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 

@@ -17,6 +17,14 @@ The project uses [Gradle](https://gradle.org) as a build tool. It already contai
 
 To build the project execute the following command:
 
+### Prerequisites
+
+For this project to build successfully you need the darts open api artifact in the local
+maven repository. To do this then follow these steps:-
+
+1) Checkout https://github.com/hmcts/darts-api
+2) Run publishToMavenLocal to install the openapi artifact into the local maven repository
+
 ```bash
   ./gradlew build
 ```
@@ -100,4 +108,3 @@ Here are some other functionalities it provides:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
