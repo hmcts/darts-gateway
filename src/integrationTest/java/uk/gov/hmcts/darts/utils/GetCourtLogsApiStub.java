@@ -26,7 +26,7 @@ public class GetCourtLogsApiStub extends DartsApiStub {
         stubFor(get(urlPathEqualTo(GET_COURT_LOGS_API_PATH))
               .willReturn(aResponse()
                     .withHeader("Content-Type", "application/json")
-                    .withBody(objectMapper.writeValueAsString(courtLogs))));
+                              .withBody(objectMapper.writeValueAsString(courtLogs))));
     }
 
     public void verifyReceivedGetCourtLogsRequestFor(String courthouse, String caseNumber) {

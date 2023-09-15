@@ -6,15 +6,17 @@ import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.addcase.Case;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.cases.mapper.AddCaseMapper;
 import uk.gov.hmcts.darts.cases.mapper.GetCasesMapper;
-import uk.gov.hmcts.darts.common.client.DartsFeignClient;
+import uk.gov.hmcts.darts.common.client.CasesClient;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,19 +28,20 @@ public class CasesRouteImpl implements CasesRoute {
     @Value("${darts-gateway.addcase.validate}")
     private boolean validateAddCase;
     private final XmlValidator xmlValidator;
-    private final DartsFeignClient dartsFeignClient;
     private final XmlParser xmlParser;
     private final AddCaseMapper addCaseMapper;
+
+    private final CasesClient casesClient;
 
     @Override
     public GetCasesResponse route(GetCases getCasesRequest) {
 
-        List<ScheduledCase> modernisedDartsResponse = dartsFeignClient.getCases(
+        ResponseEntity<List<ScheduledCase>> modernisedDartsResponse = casesClient.casesGet(
             getCasesRequest.getCourthouse(),
             getCasesRequest.getCourtroom(),
-            getCasesRequest.getDate()
+            LocalDate.parse(getCasesRequest.getDate())
         );
-        return GetCasesMapper.mapToMojDartsResponse(getCasesRequest, modernisedDartsResponse);
+        return GetCasesMapper.mapToMojDartsResponse(getCasesRequest, modernisedDartsResponse.getBody());
     }
 
     @Override
@@ -51,6 +54,6 @@ public class CasesRouteImpl implements CasesRoute {
         var caseDocument = xmlParser.unmarshal(caseDocumentXmlStr, Case.class);
         var addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
 
-        dartsFeignClient.addCase(addCaseRequest);
+        casesClient.casesPost(addCaseRequest);
     }
 }

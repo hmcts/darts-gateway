@@ -1,7 +1,7 @@
 {
-  "_return": {
+  "return": {
     "cases": {
-      "_case": [
+      "case": [
         {
           "caseNumber": "Case0000001",
           "scheduledStart": "09:00",

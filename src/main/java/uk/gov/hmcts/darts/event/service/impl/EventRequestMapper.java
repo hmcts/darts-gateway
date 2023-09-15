@@ -4,43 +4,45 @@ import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
-import uk.gov.hmcts.darts.event.model.EventRequest;
-import uk.gov.hmcts.darts.event.model.EventResponse;
+import uk.gov.hmcts.darts.model.event.EventsResponse;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 @Service
 public class EventRequestMapper {
 
-    public EventRequest toNewApi(DartsEvent dartsEvent, String messageId, String type, String subType) {
-        return new EventRequest(
-            messageId,
-            type,
-            subType,
-            dartsEvent.getCourtHouse(),
-            dartsEvent.getCourtRoom(),
-            dartsEvent.getCaseNumbers().getCaseNumber(),
-            dartsEvent.getEventText(),
-            toLocalDateTime(dartsEvent)
-        );
+    public uk.gov.hmcts.darts.model.event.DartsEvent toNewApi(DartsEvent dartsEvent, String messageId, String type, String subType) {
+        uk.gov.hmcts.darts.model.event.DartsEvent event = new uk.gov.hmcts.darts.model.event.DartsEvent();
+        event.setMessageId(messageId);
+        event.setType(type);
+        event.setSubType(subType);
+        event.setCourthouse(dartsEvent.getCourtHouse());
+        event.setCourtroom(dartsEvent.getCourtRoom());
+        event.setCourtroom(dartsEvent.getCourtRoom());
+        event.setCaseNumbers(dartsEvent.getCaseNumbers().getCaseNumber());
+        event.setEventText(dartsEvent.getEventText());
+        event.setDateTime(toLocalDateTime(dartsEvent));
+
+        return event;
     }
 
-    private static LocalDateTime toLocalDateTime(DartsEvent dartsEvent) {
-        return LocalDateTime.of(
+    private static OffsetDateTime toLocalDateTime(DartsEvent dartsEvent) {
+        return OffsetDateTime.of(LocalDateTime.of(
             dartsEvent.getY().intValue(),
             Month.of(dartsEvent.getM().intValue()),
             dartsEvent.getD().intValue(),
             dartsEvent.getH().intValue(),
             dartsEvent.getMIN().intValue(),
-            dartsEvent.getS().intValue()
-        );
+            dartsEvent.getS().intValue()), ZoneOffset.UTC);
     }
 
-    public AddDocumentResponse toLegacyAddDocumentResponse(EventResponse eventResponse) {
+    public AddDocumentResponse toLegacyAddDocumentResponse(EventsResponse eventResponse) {
         var dartsResponse = new DARTSResponse();
-        dartsResponse.setMessage(eventResponse.message());
-        dartsResponse.setCode(eventResponse.code());
+        dartsResponse.setMessage(eventResponse.getMessage());
+        dartsResponse.setCode(eventResponse.getCode());
 
         var addDocumentResponse = new AddDocumentResponse();
         addDocumentResponse.setReturn(dartsResponse);

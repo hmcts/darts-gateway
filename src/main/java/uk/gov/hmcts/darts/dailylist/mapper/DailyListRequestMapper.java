@@ -158,6 +158,4 @@ public interface DailyListRequestMapper {
         @Mapping(source = "courtHouseCode.value", target = "courtHouseCode.code")
     })
     CourtHouse map(CourtHouseStructure courtHouseStructure);
-
-
 }

@@ -6,11 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.darts.common.client.DartsFeignClient;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.darts.common.client.CourtLogsClient;
 import uk.gov.hmcts.darts.common.util.DateConverters;
+import uk.gov.hmcts.darts.model.event.CourtLog;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +27,7 @@ class GetCourtLogRouteTest {
     private final OffsetDateTime offsetEndTime = OffsetDateTime.now();
 
     @Mock
-    private DartsFeignClient dartsFeignClient;
+    private CourtLogsClient courtLogsClient;
     @Mock
     private GetCourtLogsMapper getCourtLogsMapper;
     @Mock
@@ -31,7 +37,7 @@ class GetCourtLogRouteTest {
 
     @BeforeEach
     void setUp() {
-        getCourtLogRoute = new GetCourtLogRoute(dartsFeignClient, getCourtLogsMapper, dateConverters);
+        getCourtLogRoute = new GetCourtLogRoute(courtLogsClient, getCourtLogsMapper, dateConverters);
 
         GetCourtLog legacyCourtLogRequest = someLegacyGetCourtLogRequest();
 
@@ -45,14 +51,17 @@ class GetCourtLogRouteTest {
     void callsGetLogApiClientWithCorrectParameters() {
         var legacyGetCourtLog = someLegacyGetCourtLogRequest();
 
+        ArrayList<CourtLog> courtLogs = new ArrayList<>();
+        ResponseEntity<List<CourtLog>> entity = new ResponseEntity<>(courtLogs, HttpStatusCode.valueOf(200));
+        when(courtLogsClient.courtlogsGet(notNull(), notNull(), notNull(), notNull())).thenReturn(entity);
+
         getCourtLogRoute.route(legacyGetCourtLog);
 
-        verify(dartsFeignClient).getCourtLogs(
+        verify(courtLogsClient).courtlogsGet(
               "some-court-house",
               "some-court-house",
-              offsetStartTime.toString(),
-              offsetEndTime.toString()
-        );
+              offsetStartTime,
+              offsetEndTime);
     }
 
     private GetCourtLog someLegacyGetCourtLogRequest() {

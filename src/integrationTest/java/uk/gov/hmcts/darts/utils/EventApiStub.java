@@ -42,7 +42,7 @@ public class EventApiStub extends DartsApiStub {
     }
 
     public void verifyReceivedEventWithMessageId(String messageId) {
-        var messageIdField = "\"messageId\":\"" + messageId + "\"";
+        var messageIdField = "\"message_id\":\"" + messageId + "\"";
         verify(exactly(1), postRequestedFor(urlEqualTo(EVENT_API_PATH))
               .withRequestBody(containing(messageIdField)));
     }

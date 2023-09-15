@@ -4,7 +4,7 @@ import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
-import uk.gov.hmcts.darts.event.model.EventResponse;
+import uk.gov.hmcts.darts.model.event.EventsResponse;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -35,10 +35,10 @@ public class MapperUtility {
 
     }
 
-    public static AddLogEntryResponse mapResponse(EventResponse eventResponse) {
+    public static AddLogEntryResponse mapResponse(EventsResponse eventResponse) {
         var dartsResponse = new DARTSResponse();
-        dartsResponse.setMessage(eventResponse.message());
-        dartsResponse.setCode(eventResponse.code());
+        dartsResponse.setMessage(eventResponse.getMessage());
+        dartsResponse.setCode(eventResponse.getCode());
 
         var addLogEntryResponse = new AddLogEntryResponse();
         addLogEntryResponse.setReturn(dartsResponse);

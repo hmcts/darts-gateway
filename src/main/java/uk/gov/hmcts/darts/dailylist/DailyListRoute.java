@@ -1,33 +1,27 @@
 package uk.gov.hmcts.darts.dailylist;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
-import uk.gov.hmcts.darts.common.client.DartsFeignClient;
+import uk.gov.hmcts.darts.common.client.DailyListsClient;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListXmlRequestMapper;
 import uk.gov.hmcts.darts.dailylist.model.PostDailyListRequest;
-import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
-import uk.gov.hmcts.darts.utilities.LocalDateTimeTypeAdapter;
-import uk.gov.hmcts.darts.utilities.LocalDateTypeAdapter;
-import uk.gov.hmcts.darts.utilities.OffsetDateTimeTypeAdapter;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
+import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
+import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.DartsException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Service
@@ -35,7 +29,7 @@ import java.util.Optional;
 @Slf4j
 public class DailyListRoute {
 
-    private final DartsFeignClient dartsFeignClient;
+    private final DailyListsClient dailyListsClient;
     private final XmlParser xmlParser;
     private final DailyListRequestMapper dailyListRequestMapper;
     private final XmlValidator xmlValidator;
@@ -59,31 +53,47 @@ public class DailyListRoute {
                 throw new DartsException(dve, CodeAndMessage.INVALID_XML);
             }
         }
-        DailyListStructure legacyDailyListObject = xmlParser.unmarshal(document, DailyListStructure.class);
-        PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
-            legacyDailyListObject,
-            document
-        );
-        PostDailyListResponse postDailyListResponse = dartsFeignClient.postDailyLists(
-            systemType.get().getModernisedSystemType(),
-            postDailyListRequest.getCourthouse(),
-            postDailyListRequest.getHearingDate(),
-            postDailyListRequest.getUniqueId(),
-            postDailyListRequest.getPublishedTs(),
-            postDailyListRequest.getDailyListXml()
-        );
 
-        Integer dalId = postDailyListResponse.getDalId();
+        DailyListStructure legacyDailyListObject = xmlParser.unmarshal(document.trim(), DailyListStructure.class);
+
+        //TODO: Need to change the specification to take a string and then uncomment this section
+        /*
         DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyListObject);
 
-        Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
-            .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter())
-            .create();
-        dartsFeignClient.patchDailyLists(
+        String modernisedDailyListJson;
+        try {
+            modernisedDailyListJson = ServiceConfig.getServiceObjectMapper().writeValueAsString(modernisedDailyList);
+
+            //TODO: Need to validate against the Json schema here when it is split from the
+            // openapispec
+        } catch (JsonProcessingException ex) {
+            throw new DartsException(ex, CodeAndMessage.INVALID_XML);
+        }
+        */
+
+        PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
+                legacyDailyListObject,
+                document
+        );
+        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsPost(
+            systemType.get().getModernisedSystemType(),
+            postDailyListRequest.getCourthouse(),
+            LocalDateTypeDeserializer.getLocalDate(postDailyListRequest.getHearingDate()),
+            postDailyListRequest.getUniqueId(),
+            OffsetDateTimeTypeDeserializer.getLOffsetDate(postDailyListRequest.getPublishedTs()),
+            postDailyListRequest.getDailyListXml(),
+
+            //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
+            // not work with objects passed as headers
+            null
+        );
+
+        Integer dalId = postDailyListResponse.getBody().getDalId();
+        dailyListsClient.dailylistsPatch(
             dalId,
-            gson.toJson(modernisedDailyList)
+            //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
+            // not work with objects passed as headers
+            null
         );
         return successResponse();
     }
