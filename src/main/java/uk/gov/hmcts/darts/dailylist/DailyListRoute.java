@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.dailylist;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +10,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
 import uk.gov.hmcts.darts.common.client.DailyListsClient;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
-import uk.gov.hmcts.darts.config.ServiceConfig;
 import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListXmlRequestMapper;
 import uk.gov.hmcts.darts.dailylist.model.PostDailyListRequest;
-import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
@@ -58,6 +55,9 @@ public class DailyListRoute {
         }
 
         DailyListStructure legacyDailyListObject = xmlParser.unmarshal(document.trim(), DailyListStructure.class);
+
+        //TODO: Need to change the specification to take a string and then uncomment this section
+        /*
         DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyListObject);
 
         String modernisedDailyListJson;
@@ -69,6 +69,7 @@ public class DailyListRoute {
         } catch (JsonProcessingException ex) {
             throw new DartsException(ex, CodeAndMessage.INVALID_XML);
         }
+        */
 
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
                 legacyDailyListObject,
@@ -81,13 +82,18 @@ public class DailyListRoute {
             postDailyListRequest.getUniqueId(),
             OffsetDateTimeTypeDeserializer.getLOffsetDate(postDailyListRequest.getPublishedTs()),
             postDailyListRequest.getDailyListXml(),
-            modernisedDailyListJson
+
+            //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
+            // not work with objects passed as headers
+            null
         );
 
         Integer dalId = postDailyListResponse.getBody().getDalId();
         dailyListsClient.dailylistsPatch(
             dalId,
-            modernisedDailyListJson
+            //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
+            // not work with objects passed as headers
+            null
         );
         return successResponse();
     }

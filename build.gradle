@@ -11,9 +11,11 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.48.0'
   id 'org.sonarqube' version '4.3.1.3277'
   id 'java-library'
-  id "org.openapi.generator" version "6.6.0"
+  id "org.openapi.generator" version "7.0.0"
   id("com.github.bjornvester.wsdl2java") version "2.0.2"
 }
+
+import static groovy.io.FileType.FILES
 
 group = 'uk.gov.hmcts'
 version = '0.0.1'
@@ -24,7 +26,6 @@ java {
   }
 }
 
-
 configurations.all {
   exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
   exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on' // bcprov-jdk15on-1.69.jar CVE-2023-33201
@@ -33,6 +34,7 @@ configurations.all {
 
 configurations {
   jaxb
+  openapispec
 }
 
 sourceSets {
@@ -213,45 +215,56 @@ ext {
 
 ext['snakeyaml.version'] = '2.0'
 
-//here we are going to store swagger files
-def swaggerList = []
 
-//iteration by swagger file root folder and save into swaggerList variable
-def dir = new File("$rootDir/src/main/resources/openapi/".toString())
-import static groovy.io.FileType.FILES
+task generateCodeFromSpecification() {
+  doFirst {
 
-dir.eachFileRecurse(FILES) {file ->
-  if (file.getName().endsWith(".yaml") && !file.getName().contains("problem"))
-    swaggerList << file
-}
+    def openApiGenerateTaskList = []
 
-def openApiGenerateTaskList = []
+    //here we are going to store swagger files
+    def swaggerList = []
 
-// Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
-swaggerList.each {
-  def apiName = it.getName().replace(".yaml", "");
-  def taskName = "openApiGenerate" + apiName.capitalize()
-  openApiGenerateTaskList << taskName
-  tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
-    generatorName = "spring"
-    inputSpec = "$rootDir/src/main/resources/openapi/".toString() + "${apiName}.yaml"
-    outputDir = "$buildDir/generated/openapi"
-    apiPackage = "uk.gov.hmcts.darts.api.${apiName}"
-    modelPackage = "uk.gov.hmcts.darts.model.${apiName}"
-    invokerPackage = "uk.gov.hmcts.darts.invoker.${apiName}"
-    library="spring-cloud"
+    //iteration by swagger file root folder and save into swaggerList variable
+    def dir = new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath)
 
-    //    https://openapi-generator.tech/docs/generators/java/#config-options
-    skipOperationExample = true
-    skipValidateSpec = true
-    configOptions = [
-      dateLibrary   : "java8",
-      serializationLibrary       : "jackson",
-      useJakartaEe :"true",
-      library : "spring-cloud",
-      interfaceOnly : "true"
-    ]
-  })
+    dir.eachFileRecurse(FILES) { file ->
+      if (file.getName().endsWith(".yaml") && !file.getName().contains("problem"))
+        swaggerList << file
+    }
+
+    // Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
+    swaggerList.each {
+        def apiName = it.getName().replace(".yaml", "");
+        def apiLocation = it.getAbsolutePath();
+
+        def taskName = "openApiGenerate" + apiName.capitalize()
+        openApiGenerateTaskList << taskName
+
+        Task task = tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
+          generatorName = "spring"
+          inputSpec = "${apiLocation}"
+          outputDir = "$buildDir/generated/openapi".toString()
+          modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
+          outputDir = "$buildDir/generated/openapi"
+          apiPackage = "uk.gov.hmcts.darts.api.${apiName}"
+          modelPackage = "uk.gov.hmcts.darts.model.${apiName}"
+          invokerPackage = "uk.gov.hmcts.darts.invoker.${apiName}"
+          library="spring-cloud"
+          //    https://openapi-generator.tech/docs/generators/java/#config-options
+          skipOperationExample = true
+          skipValidateSpec = true
+          configOptions = [
+            dateLibrary   : "java8",
+            serializationLibrary       : "jackson",
+            useJakartaEe :"true",
+            library : "spring-cloud",
+            interfaceOnly : "true"
+          ]
+        })
+
+        task.actions.each { it.execute(task) }
+      }
+    }
 }
 
 sourceSets {
@@ -309,6 +322,7 @@ dependencies {
   implementation 'org.apache.commons:commons-collections4:4.4'
 
   implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+  implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
@@ -325,7 +339,8 @@ dependencies {
   testImplementation 'org.xmlunit:xmlunit-core:2.9.1'
   testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
 
-  compileJava.dependsOn = openApiGenerateTaskList
+  // we can use a dynamic variable to target 0.x at this moment
+  openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
@@ -423,7 +438,6 @@ task genJaxbAddCase {
   }
 }
 
-
 wsdl2java {
     wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
     includes = [
@@ -432,4 +446,33 @@ wsdl2java {
 }
 
 compileJava.dependsOn genJaxb
+
+task extractOpenSpecification() {
+  doFirst {
+    configurations.openapispec.getFiles()
+      .each {
+        def zip = new java.util.zip.ZipFile(it)
+        for (def entry : zip.entries()) {
+          if (entry == null) return
+
+          String contents = zip.getInputStream(entry).text
+
+          String name = entry.name
+
+          if (name.endsWith(".yaml")) {
+            //  Finally, we write the contents to a file
+            new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath).mkdirs()
+            String newFileName = "${layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath}/$name"
+
+            def newFile = new File(newFileName)
+            newFile.createNewFile()
+            newFile.text = contents
+          }
+        }
+      }
+  }
+}
+
+compileJava.dependsOn generateCodeFromSpecification
+generateCodeFromSpecification.dependsOn extractOpenSpecification
 compileJava.dependsOn genJaxbAddCase

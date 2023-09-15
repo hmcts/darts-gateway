@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.darts.common.client.CourtLogsClient;
 import uk.gov.hmcts.darts.common.util.DateConverters;
-import uk.gov.hmcts.darts.model.events.CourtLog;
+import uk.gov.hmcts.darts.model.event.CourtLog;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ class GetCourtLogRouteTest {
 
         ArrayList<CourtLog> courtLogs = new ArrayList<>();
         ResponseEntity<List<CourtLog>> entity = new ResponseEntity<>(courtLogs, HttpStatusCode.valueOf(200));
-        when(dartsFeignClient.courtlogsGet(notNull(), notNull(), notNull(), notNull())).thenReturn(entity);
+        when(courtLogsClient.courtlogsGet(notNull(), notNull(), notNull(), notNull())).thenReturn(entity);
 
         getCourtLogRoute.route(legacyGetCourtLog);
 

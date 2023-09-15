@@ -4,7 +4,7 @@ import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
-import uk.gov.hmcts.darts.model.events.EventsResponse;
+import uk.gov.hmcts.darts.model.event.EventsResponse;
 
 import java.time.LocalDateTime;
 import java.time.Month;

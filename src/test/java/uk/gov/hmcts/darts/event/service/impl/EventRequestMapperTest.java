@@ -29,7 +29,7 @@ class EventRequestMapperTest {
         legacyDartsEvent.setCourtHouse("some-court-house");
         legacyDartsEvent.setCourtRoom("some-court-room");
 
-        uk.gov.hmcts.darts.model.events.DartsEvent eventRequest = mapper.toNewApi(
+        uk.gov.hmcts.darts.model.event.DartsEvent eventRequest = mapper.toNewApi(
             legacyDartsEvent, "some-message-id", "some-type", "some-sub-type");
 
         assertThat(eventRequest.getCaseNumbers()).containsExactly("1", "2", "3");

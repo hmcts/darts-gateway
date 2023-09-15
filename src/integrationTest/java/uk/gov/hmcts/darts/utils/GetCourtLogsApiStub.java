@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import uk.gov.hmcts.darts.model.events.CourtLog;
+import uk.gov.hmcts.darts.model.event.CourtLog;
 
 import java.util.List;
 

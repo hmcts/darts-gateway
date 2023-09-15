@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.common.client.CourtLogsClient;
-import uk.gov.hmcts.darts.model.events.CourtLogsPostRequestBody;
-import uk.gov.hmcts.darts.model.events.EventsResponse;
+import uk.gov.hmcts.darts.model.event.CourtLogsPostRequestBody;
+import uk.gov.hmcts.darts.model.event.EventsResponse;
 import uk.gov.hmcts.darts.utilities.MapperUtility;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 

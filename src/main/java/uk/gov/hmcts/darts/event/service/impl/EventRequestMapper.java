@@ -4,7 +4,7 @@ import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
-import uk.gov.hmcts.darts.model.events.EventsResponse;
+import uk.gov.hmcts.darts.model.event.EventsResponse;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -14,8 +14,8 @@ import java.time.ZoneOffset;
 @Service
 public class EventRequestMapper {
 
-    public uk.gov.hmcts.darts.model.events.DartsEvent toNewApi(DartsEvent dartsEvent, String messageId, String type, String subType) {
-        uk.gov.hmcts.darts.model.events.DartsEvent event = new uk.gov.hmcts.darts.model.events.DartsEvent();
+    public uk.gov.hmcts.darts.model.event.DartsEvent toNewApi(DartsEvent dartsEvent, String messageId, String type, String subType) {
+        uk.gov.hmcts.darts.model.event.DartsEvent event = new uk.gov.hmcts.darts.model.event.DartsEvent();
         event.setMessageId(messageId);
         event.setType(type);
         event.setSubType(subType);

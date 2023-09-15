@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.utilities.assertions;
 import com.synapps.moj.dfs.response.CourtLogEntry;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import uk.gov.hmcts.darts.model.events.CourtLog;
+import uk.gov.hmcts.darts.model.event.CourtLog;
 
 import java.time.OffsetDateTime;
 import java.util.Calendar;
@@ -77,5 +77,3 @@ public class CourtLogAssert extends AbstractAssert<CourtLogAssert, com.synapps.m
         return legacyCourtLog.getEntry();
     }
 }
-
-

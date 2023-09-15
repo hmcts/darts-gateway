@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.common.util.DateConverters;
-import uk.gov.hmcts.darts.model.events.CourtLog;
+import uk.gov.hmcts.darts.model.event.CourtLog;
 
 import java.util.List;
 
