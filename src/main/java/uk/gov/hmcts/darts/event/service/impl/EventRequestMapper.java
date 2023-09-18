@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.event.service.impl;
 
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
@@ -39,14 +38,11 @@ public class EventRequestMapper {
             dartsEvent.getS().intValue()), ZoneOffset.UTC);
     }
 
-    public AddDocumentResponse toLegacyAddDocumentResponse(EventsResponse eventResponse) {
+    public DARTSResponse toLegacyAddDocumentResponse(EventsResponse eventResponse) {
         var dartsResponse = new DARTSResponse();
         dartsResponse.setMessage(eventResponse.getMessage());
         dartsResponse.setCode(eventResponse.getCode());
 
-        var addDocumentResponse = new AddDocumentResponse();
-        addDocumentResponse.setReturn(dartsResponse);
-
-        return addDocumentResponse;
+        return dartsResponse;
     }
 }

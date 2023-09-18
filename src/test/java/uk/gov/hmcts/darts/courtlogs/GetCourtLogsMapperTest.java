@@ -27,14 +27,14 @@ class GetCourtLogsMapperTest {
         var legacyCourtLog = courtLogsMapper.toLegacyApi(emptyCourtLogs);
 
         assertThat(legacyCourtLog).isInstanceOf(GetCourtLogResponse.class);
-        assertThat(legacyCourtLog.getReturn().getCourtLog()).isNull();
+        assertThat(legacyCourtLog.getCourtLog()).isNull();
     }
 
     @Test
     void mapsToLegacyApi() {
         var dartsApiCourtLogs = someCourtLogs(2);
 
-        var legacyCourtLog = courtLogsMapper.toLegacyApi(dartsApiCourtLogs).getReturn().getCourtLog();
+        var legacyCourtLog = courtLogsMapper.toLegacyApi(dartsApiCourtLogs).getCourtLog();
 
         verifyThat(legacyCourtLog).isCorrectlyMappedFrom(dartsApiCourtLogs);
     }

@@ -35,15 +35,12 @@ public class MapperUtility {
 
     }
 
-    public static AddLogEntryResponse mapResponse(EventsResponse eventResponse) {
+    public static DARTSResponse mapResponse(EventsResponse eventResponse) {
         var dartsResponse = new DARTSResponse();
         dartsResponse.setMessage(eventResponse.getMessage());
         dartsResponse.setCode(eventResponse.getCode());
 
-        var addLogEntryResponse = new AddLogEntryResponse();
-        addLogEntryResponse.setReturn(dartsResponse);
-
-        return addLogEntryResponse;
+        return dartsResponse;
     }
 
 }

@@ -19,8 +19,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
-import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
-import static org.springframework.ws.test.server.ResponseMatchers.noFault;
+import static org.springframework.ws.test.server.ResponseMatchers.*;
+import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class CasesWebServiceTest extends IntegrationBase {
@@ -30,24 +30,41 @@ class CasesWebServiceTest extends IntegrationBase {
     @Test
     void handlesGetCases() throws IOException {
         String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/soapRequest.xml");
+                "payloads/getCases/soapRequest.xml");
 
         StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/dartsApiResponse.json");
+                "payloads/getCases/dartsApiResponse.json");
 
 
         stubFor(get(urlPathEqualTo("/cases"))
-                    .willReturn(aResponse()
-                                    .withHeader("Content-Type", "application/json")
-                                    .withBody(dartsApiResponseStr)));
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(dartsApiResponseStr)));
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/expectedResponse.xml");
+                "payloads/getCases/expectedResponse.xml");
         ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
-            .andExpect(noFault());
+                .andExpect(noFault());
         String actualResponse = TestUtils.getResponse(responseActions);
         assertThat(actualResponse, CompareMatcher.isIdenticalTo(expectedResponseStr));
+    }
+
+    @Test
+    void handlesGetCasesServiceFailure() throws IOException {
+        getCasesApiStub.returnsFailureWhenGettingCases();;
+
+        String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/soapRequest.xml");
+
+        StringSource soapRequest = new StringSource(soapRequestStr);
+        String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/dartsApiResponse.json");
+
+        wsClient.sendRequest(withPayload(soapRequest))
+                .andExpect(noFault()).andExpect(noFault())
+                .andExpect(xpath("//code").evaluatesTo("404"))
+                .andExpect(xpath("//message").evaluatesTo("Courthouse Not Found"));
     }
 
     @Test
@@ -86,5 +103,27 @@ class CasesWebServiceTest extends IntegrationBase {
 
         wsClient.sendRequest(withPayload(soapRequest))
             .andExpect(clientOrSenderFault());
+    }
+
+    @Test
+    void handlesAddCaseWithInvalidServiceResponse() throws IOException {
+
+        String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addCase/soapRequest.xml");
+
+        StringSource soapRequest = new StringSource(soapRequestStr);
+        String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addCase/dartsApiResponse.json");
+
+
+        stubFor(post(urlPathEqualTo("/cases"))
+                .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+        String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addCase/expectedResponse.xml");
+
+        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
+                .andExpect(noFault());
+        String actualResponse = TestUtils.getResponse(responseActions);
+        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponseStr).ignoreWhitespace());
     }
 }

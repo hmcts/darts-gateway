@@ -39,7 +39,7 @@ public class DailyListRoute {
     @Value("${darts-gateway.daily-list.validate}")
     private boolean validate;
 
-    public AddDocumentResponse handle(String document, String type) {
+    public DARTSResponse handle(String document, String type) {
         Optional<SystemType> systemType = SystemType.getByType(type);
         if (systemType.isEmpty()) {
             throw new DartsValidationException("SystemType is not valid " + type);
@@ -98,12 +98,10 @@ public class DailyListRoute {
         return successResponse();
     }
 
-    private AddDocumentResponse successResponse() {
+    private DARTSResponse successResponse() {
         DARTSResponse dartsResponse = new DARTSResponse();
         dartsResponse.setCode("200");
         dartsResponse.setMessage("OK");
-        AddDocumentResponse response = new AddDocumentResponse();
-        response.setReturn(dartsResponse);
-        return response;
+        return dartsResponse;
     }
 }

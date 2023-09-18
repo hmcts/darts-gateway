@@ -49,6 +49,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
     }
 
+
     @Test
     void rejectsInvalidSoapMessage(@Value(INVALID_COURTLOGS_XML) Resource invalidSoapMessage) throws IOException {
         courtLogsApi.returnsCourtLogs(someListOfCourtLog(1));
@@ -66,6 +67,18 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         wsClient.sendRequest(withPayload(postCourtLogs)).andExpect(noFault())
             .andExpect(xpath("//code").evaluatesTo("200"))
             .andExpect(xpath("//message").evaluatesTo("OK"));
+
+
+        postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
+    }
+
+    @Test
+    void postCourtLogsRouteFailOnInvalidServiceResponse(@Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs) throws Exception {
+        postCourtLogsApi.returnsFailureWhenAddingCourtLogs();
+
+        wsClient.sendRequest(withPayload(postCourtLogs)).andExpect(noFault())
+            .andExpect(xpath("//code").evaluatesTo("404"))
+            .andExpect(xpath("//message").evaluatesTo("Courthouse Not Found"));
 
 
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");

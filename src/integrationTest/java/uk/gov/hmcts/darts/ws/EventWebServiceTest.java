@@ -15,8 +15,8 @@ import java.nio.charset.Charset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
-import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
-import static org.springframework.ws.test.server.ResponseMatchers.noFault;
+import static org.springframework.ws.test.server.ResponseMatchers.*;
+import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class EventWebServiceTest extends IntegrationBase {
@@ -63,6 +63,18 @@ class EventWebServiceTest extends IntegrationBase {
         assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponse).ignoreWhitespace());
 
         dailyListApiStub.verifySentRequest();
+    }
+
+    @Test
+    void routesValidDailyListPayloadButInvalidServiceResponse(
+            @Value("classpath:payloads/events/valid-dailyList.xml") Resource validEvent,
+            @Value("classpath:payloads/events/valid-event-response.xml") Resource validEventResponse
+    ) throws IOException {
+        dailyListApiStub.returnsFailureWhenPostingDailyList();
+
+        wsClient.sendRequest(withPayload(validEvent))
+                .andExpect(noFault()).andExpect(xpath("//code").evaluatesTo("404"))
+                .andExpect(xpath("//message").evaluatesTo("Handler Not Found"));
     }
 
     @Test

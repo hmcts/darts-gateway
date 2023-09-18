@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.courtlogs;
 
-import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import com.synapps.moj.dfs.response.CourtLogEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,10 +31,7 @@ public class GetCourtLogsMapper {
         innerResponse.setCode(String.valueOf(HttpStatus.OK.value()));
         innerResponse.setMessage(HttpStatus.OK.name());
 
-        var outerResponse = new GetCourtLogResponse();
-        outerResponse.setReturn(innerResponse);
-
-        return outerResponse;
+        return innerResponse;
     }
 
     private CourtLogEntry toLegacyApi(CourtLog courtLog) {
@@ -57,9 +54,8 @@ public class GetCourtLogsMapper {
     private GetCourtLogResponse emptyResponse() {
         var innerResponse = createInnerResponse();
         var outerResponse = new GetCourtLogResponse();
-        outerResponse.setReturn(innerResponse);
 
-        return outerResponse;
+        return innerResponse;
     }
 
     private com.synapps.moj.dfs.response.CourtLog createLegacyCourtLog() {

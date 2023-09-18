@@ -1,5 +1,9 @@
 package uk.gov.hmcts.darts.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.io.IOException;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -32,5 +36,16 @@ public class DailyListApiStub extends DartsApiStub {
     public void verifySentRequest() {
         verify(exactly(1), postRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
               .withQueryParam("source_system", equalTo("XHB")));
+    }
+
+    public void returnsFailureWhenPostingDailyList() throws JsonProcessingException, IOException {
+        String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/events/problemDailyListResponse.json");
+
+        stubFor(post(urlPathEqualTo(DAILY_LIST_API_PATH))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(404)
+                        .withBody(dartsApiResponseStr)));
     }
 }

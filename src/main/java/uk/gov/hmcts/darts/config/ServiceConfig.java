@@ -8,6 +8,7 @@ import feign.Logger;
 import feign.RequestInterceptor;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import feign.codec.ErrorDecoder;
 import feign.okhttp.OkHttpClient;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -29,16 +30,22 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.mapper.CaseAPIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.EventAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.serializer.LocalDateTimeTypeSerializer;
 import uk.gov.hmcts.darts.utilities.serializer.LocalDateTypeSerializer;
 import uk.gov.hmcts.darts.utilities.serializer.OffsetDateTimeTypeSerializer;
-
+import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -101,6 +108,18 @@ public class ServiceConfig {
         HttpMessageConverters httpMessageConverters = new HttpMessageConverters(jacksonConverter);
         ObjectFactory<HttpMessageConverters> objectFactory = () -> httpMessageConverters;
         return new ResponseEntityDecoder(new SpringDecoder(objectFactory, new EmptyObjectProvider<>()));
+    }
+
+    @Bean
+    public ErrorDecoder feignErrorDecoder (List<APIProblemResponseMapper> mappers) {
+        return new JacksonClientProblemDecoder(mappers);
+    }
+
+    @Bean
+    public List<APIProblemResponseMapper> getResponseMappers() {
+        return Arrays.asList(new APIProblemResponseMapper[] { new CaseAPIProblemResponseMapper(),
+        new DailyListAPIProblemResponseMapper(),
+        new EventAPIProblemResponseMapper()});
     }
 
     @Bean

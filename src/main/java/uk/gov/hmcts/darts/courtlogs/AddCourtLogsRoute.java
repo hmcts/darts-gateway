@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.courtlogs;
 
-import com.service.mojdarts.synapps.com.AddLogEntryResponse;
+import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class AddCourtLogsRoute {
     private final AddCourtLogsMapper mapper;
     private final CourtLogsClient courtLogsClient;
 
-    public AddLogEntryResponse route(String document) {
+    public DARTSResponse route(String document) {
 
         ResponseEntity<EventsResponse> response;
 
