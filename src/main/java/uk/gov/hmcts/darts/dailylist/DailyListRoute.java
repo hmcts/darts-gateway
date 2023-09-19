@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.dailylist;
 
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

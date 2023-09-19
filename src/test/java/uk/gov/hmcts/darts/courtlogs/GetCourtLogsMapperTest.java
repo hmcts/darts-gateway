@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.courtlogs;
 
-import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.event.CourtLog;

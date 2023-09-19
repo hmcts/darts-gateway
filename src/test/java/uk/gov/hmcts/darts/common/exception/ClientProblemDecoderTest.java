@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ClientProblemDecoderTest {
+class ClientProblemDecoderTest {
 
     private Response response;
 
@@ -35,7 +35,7 @@ public class ClientProblemDecoderTest {
     }
 
     @Test
-    public void testDecoderNoProblemMapperFound() throws Exception {
+    void testDecoderNoProblemMapperFound() throws Exception {
         setupSuccessResponse();
 
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
@@ -52,7 +52,7 @@ public class ClientProblemDecoderTest {
     }
 
     @Test
-    public void testDecoderErrorsException() throws Exception {
+    void testDecoderErrorsException() throws Exception {
         setupSuccessResponse();
 
         ClientProblemException exceptionToReturn = new ClientProblemException(null);
@@ -68,7 +68,7 @@ public class ClientProblemDecoderTest {
     }
 
     @Test
-    public void testDecoderProblemParsingException() throws Exception {
+    void testDecoderProblemParsingException() throws Exception {
         response = Mockito.mock(Response.class);
         Response.Body body = Mockito.mock(Response.Body.class);
 
@@ -87,7 +87,7 @@ public class ClientProblemDecoderTest {
         responseMappers.add(mapper);
 
         Exception exception = new JacksonClientProblemDecoder(responseMappers).decode("", response);
-        Assertions.assertTrue(exception.getClass().equals(DartsException.class));
+        Assertions.assertEquals(DartsException.class, exception.getClass());
         Assertions.assertEquals(CodeAndMessage.ERROR, ((DartsException) exception).getCodeAndMessage());
     }
 }

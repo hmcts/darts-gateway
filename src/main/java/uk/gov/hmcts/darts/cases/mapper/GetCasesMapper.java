@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.cases.mapper;
 
 import com.service.mojdarts.synapps.com.GetCases;
-import com.synapps.moj.dfs.response.GetCasesResponse;
 import com.synapps.moj.dfs.response.Case;
 import com.synapps.moj.dfs.response.Cases;
 import com.synapps.moj.dfs.response.Defendants;
@@ -16,7 +15,7 @@ import java.util.List;
 
 @UtilityClass
 public class GetCasesMapper {
-    
+
     public com.synapps.moj.dfs.response.GetCasesResponse mapToDfsResponse(GetCases getCasesRequest, List<ScheduledCase> modernisedDartsResponse) {
         Cases cases = new Cases();
         setCasesAttributes(getCasesRequest, cases);

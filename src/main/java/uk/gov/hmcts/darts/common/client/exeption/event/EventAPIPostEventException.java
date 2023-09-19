@@ -7,7 +7,7 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.event.EventErrorCode;
 
 @Getter
-public class EventAPIPostEventException  extends ClientProblemException {
+public class EventAPIPostEventException extends ClientProblemException {
     ProblemResponseMapping<EventErrorCode> mapping;
 
     public EventAPIPostEventException(Throwable cause, ProblemResponseMapping<EventErrorCode> mapping, Problem problem) {

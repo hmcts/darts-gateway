@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.routing;
 
 import com.service.mojdarts.synapps.com.AddDocument;
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

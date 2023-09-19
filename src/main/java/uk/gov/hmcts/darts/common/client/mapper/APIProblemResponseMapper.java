@@ -10,7 +10,7 @@ public interface APIProblemResponseMapper {
 
     <T> void addMapper(Class<T> operation, ProblemResponseMapping<T> mapping);
 
-    Optional<CodeAndMessage> getCodeAndMessage(Problem p);
+    Optional<CodeAndMessage> getCodeAndMessage(Problem problem);
 
-    Optional<ClientProblemException> getExceptionForProblem(Problem p);
+    Optional<ClientProblemException> getExceptionForProblem(Problem problem);
 }

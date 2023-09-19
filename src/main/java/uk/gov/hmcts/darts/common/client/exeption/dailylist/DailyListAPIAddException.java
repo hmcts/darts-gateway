@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.common.client.exeption.dailylist;
 
-
 import lombok.Getter;
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;

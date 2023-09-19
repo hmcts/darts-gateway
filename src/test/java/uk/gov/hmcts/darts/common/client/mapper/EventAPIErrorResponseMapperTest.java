@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.common.client.mapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.darts.common.client.exeption.*;
+import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.common.client.exeption.event.EventAPIGetCourtLogExeption;
 import uk.gov.hmcts.darts.common.client.exeption.event.EventAPIPostCourtLogException;
 import uk.gov.hmcts.darts.common.client.exeption.event.EventAPIPostEventException;
@@ -16,7 +16,7 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import java.net.URI;
 import java.util.Optional;
 
-public class EventAPIErrorResponseMapperTest {
+class EventAPIErrorResponseMapperTest {
 
     private EventAPIProblemResponseMapper responseMapper;
 
@@ -29,9 +29,10 @@ public class EventAPIErrorResponseMapperTest {
     }
 
     @Test
-    public void testProcessorNotFoundForNewEvent() {
-        Problem problem = new Problem();
-        problem.setType(URI.create(EventErrorCode.PROCESSOR_NOT_FOUND.getValue()));
+    void testProcessorNotFoundForNewEvent() {
+        EventErrorCode problemCode = EventErrorCode.PROCESSOR_NOT_FOUND;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
         Assertions.assertTrue(exception.get() instanceof EventAPIPostEventException);
@@ -47,9 +48,10 @@ public class EventAPIErrorResponseMapperTest {
     }
 
     @Test
-    public void testCourtNotFoundForNewEvent() {
-        Problem problem = new Problem();
-        problem.setType(URI.create(EventErrorCode.EVENT_COURT_HOUSE_NOT_FOUND.getValue()));
+    void testCourtNotFoundForNewEvent() {
+        EventErrorCode problemCode = EventErrorCode.EVENT_COURT_HOUSE_NOT_FOUND;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
         Assertions.assertTrue(exception.get() instanceof EventAPIPostEventException);
@@ -65,9 +67,10 @@ public class EventAPIErrorResponseMapperTest {
     }
 
     @Test
-    public void testCourtDocumentCantBeParsedForNewEvent() {
-        Problem problem = new Problem();
-        problem.setType(URI.create(EventErrorCode.EVENT_DOCUMENT_CANT_PARSED.getValue()));
+    void testCourtDocumentCantBeParsedForNewEvent() {
+        EventErrorCode problemCode = EventErrorCode.EVENT_DOCUMENT_CANT_PARSED;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
         Assertions.assertTrue(exception.get() instanceof EventAPIPostEventException);
@@ -83,9 +86,10 @@ public class EventAPIErrorResponseMapperTest {
     }
 
     @Test
-    public void testGetCourtLogs() {
-        Problem problem = new Problem();
-        problem.setType(URI.create(GetCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND.getValue()));
+    void testGetCourtLogs() {
+        GetCourtLogsErrorCode problemCode = GetCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
         Assertions.assertTrue(exception.get() instanceof EventAPIGetCourtLogExeption);
@@ -101,12 +105,13 @@ public class EventAPIErrorResponseMapperTest {
     }
 
     @Test
-    public void testDocumentCantBeParsedWhenAddingCourtLogs() {
-        Problem problem = new Problem();
-        problem.setType(URI.create(PostCourtLogsErrorCode.COURTLOG_DOCUMENT_CANT_BE_PARSED.getValue()));
+    void testDocumentCantBeParsedWhenAddingCourtLogs() {
+        PostCourtLogsErrorCode problemCode = PostCourtLogsErrorCode.COURTLOG_DOCUMENT_CANT_BE_PARSED;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
-        Assertions.assertTrue(exception.get() instanceof EventAPIGetCourtLogExeption);
+        Assertions.assertTrue(exception.get() instanceof EventAPIPostCourtLogException);
         Assertions.assertEquals(problem, ((EventAPIPostCourtLogException) exception.get()).getProblem());
         Assertions.assertEquals(
             CodeAndMessage.INVALID_XML,
@@ -119,12 +124,13 @@ public class EventAPIErrorResponseMapperTest {
     }
 
     @Test
-    public void testCourtHouseNotFoundWhenAddingCourtLogs() {
-        Problem problem = new Problem();
-        problem.setType(URI.create(PostCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND.getValue()));
+    void testCourtHouseNotFoundWhenAddingCourtLogs() {
+        PostCourtLogsErrorCode problemCode = PostCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
-        Assertions.assertTrue(exception.get() instanceof EventAPIGetCourtLogExeption);
+        Assertions.assertTrue(exception.get() instanceof EventAPIPostCourtLogException);
         Assertions.assertEquals(problem, ((EventAPIPostCourtLogException) exception.get()).getProblem());
         Assertions.assertEquals(
             CodeAndMessage.NOT_FOUND_COURTHOUSE,

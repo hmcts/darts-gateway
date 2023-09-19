@@ -14,11 +14,11 @@ public class DailyListAPIProblemResponseMapper extends AbstractAPIProblemRespons
                 PostDailyListErrorCode.DAILYLIST_DOCUMENT_CANT_BE_PARSED)
             .message(CodeAndMessage.INVALID_XML).build());
 
-        addMapper(PostDailyListErrorCode.class, getBuilder().
-            problem(PostDailyListErrorCode.DAILYLIST_PROCESSOR_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_HANLDER).build());
+        addMapper(PostDailyListErrorCode.class, getBuilder()
+            .problem(PostDailyListErrorCode.DAILYLIST_PROCESSOR_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_HANLDER).build());
 
-        addMapper(PostDailyListErrorCode.class, getBuilder().
-            problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+        addMapper(PostDailyListErrorCode.class, getBuilder()
+            .problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
     }
 
     private ProblemResponseMapping.ProblemResponseMappingBuilder<PostDailyListErrorCode> getBuilder() {
@@ -26,9 +26,9 @@ public class DailyListAPIProblemResponseMapper extends AbstractAPIProblemRespons
     }
 
     @Override
-    public Optional<ClientProblemException> getExceptionForProblem(Problem p) {
-        return getProblemValueForProblem(PostDailyListErrorCode.class, p,
-                                         (mapping) -> new DailyListAPIAddException(mapping, p)
+    public Optional<ClientProblemException> getExceptionForProblem(Problem problem) {
+        return getProblemValueForProblem(PostDailyListErrorCode.class, problem,
+                                         (mapping) -> new DailyListAPIAddException(mapping, problem)
         );
     }
 }

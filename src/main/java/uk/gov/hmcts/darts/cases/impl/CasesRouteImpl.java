@@ -2,9 +2,9 @@ package uk.gov.hmcts.darts.cases.impl;
 
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.GetCases;
-import com.synapps.moj.dfs.response.GetCasesResponse;
 import com.service.mojdarts.synapps.com.addcase.Case;
 import com.synapps.moj.dfs.response.DARTSResponse;
+import com.synapps.moj.dfs.response.GetCasesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +58,7 @@ public class CasesRouteImpl implements CasesRoute {
 
         casesClient.casesPost(addCaseRequest);
 
-        return CodeAndMessage.OK.getResponse();
+        CodeAndMessage okResponse = CodeAndMessage.OK;
+        return okResponse.getResponse();
     }
 }

@@ -44,8 +44,7 @@ public abstract class AbstractClientProblemDecoder implements ErrorDecoder {
             if (exception.isPresent()) {
                 returnEx = exception.get();
             }
-        }
-        else {
+        } else {
             returnEx = new ClientProblemException(problem);
         }
 

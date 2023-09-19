@@ -4,12 +4,17 @@ import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public abstract class AbstractAPIProblemResponseMapper implements APIProblemResponseMapper {
-    private final Map<Class<?>, List<ProblemResponseMapping<?>>> operationErrorResponseMappingList = new HashMap<>();
+    private final Map<Class<?>, List<ProblemResponseMapping<?>>> operationErrorResponseMappingList = new ConcurrentHashMap<>();
 
+    @Override
     public <T> void addMapper(Class<T> operation, ProblemResponseMapping<T> mapping) {
         if (!operationErrorResponseMappingList.containsKey(operation)) {
             List<ProblemResponseMapping<?>> mappingsLst = new ArrayList<>();
@@ -19,12 +24,12 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
     }
 
     @Override
-    public Optional<CodeAndMessage> getCodeAndMessage(Problem p) {
+    public Optional<CodeAndMessage> getCodeAndMessage(Problem problem) {
 
         for (Class<?> operation : operationErrorResponseMappingList.keySet()) {
             Optional<ProblemResponseMapping<?>> mapping = operationErrorResponseMappingList.get(operation).stream().filter(
                 m -> m.match(
-                    p)).findFirst();
+                    problem)).findFirst();
 
             return mapping.isPresent() ? mapping.map(ProblemResponseMapping::getMessage) : Optional.empty();
         }
@@ -32,23 +37,23 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
         return Optional.empty();
     }
 
-    public Optional<ProblemResponseMapping<?>> getMapping(Problem p) {
+    public Optional<ProblemResponseMapping<?>> getMapping(Problem problem) {
         for (Class<?> operation : operationErrorResponseMappingList.keySet()) {
             List<ProblemResponseMapping<?>> mappingList = operationErrorResponseMappingList.get(operation);
-            return mappingList.stream().filter(m -> m.match(p)).findFirst();
+            return mappingList.stream().filter(m -> m.match(problem)).findFirst();
         }
 
         return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> Optional<ClientProblemException> getProblemValueForProblem(Class<T> operation, Problem p,
+    protected <T> Optional<ClientProblemException> getProblemValueForProblem(Class<T> operation, Problem problem,
                                                                              Function<ProblemResponseMapping<T>,
                                                                                  ClientProblemException> exceptionSupplier) {
         List<ProblemResponseMapping<?>> mappingList = operationErrorResponseMappingList.get(operation);
 
         if (!mappingList.isEmpty()) {
-            Optional<ProblemResponseMapping<?>> mapping = mappingList.stream().filter(m -> m.match(p)).findFirst();
+            Optional<ProblemResponseMapping<?>> mapping = mappingList.stream().filter(m -> m.match(problem)).findFirst();
 
             if (mapping.isPresent()) {
                 ProblemResponseMapping<T> errMapping = (ProblemResponseMapping<T>) mapping.get();
@@ -56,7 +61,6 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
                 return Optional.of(exceptionSupplier.apply(errMapping));
             }
         }
-        ;
 
         return Optional.empty();
     }

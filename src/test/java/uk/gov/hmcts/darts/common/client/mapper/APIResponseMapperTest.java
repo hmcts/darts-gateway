@@ -3,7 +3,6 @@ package uk.gov.hmcts.darts.common.client.mapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
-
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
@@ -11,29 +10,35 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import java.net.URI;
 import java.util.Optional;
 
-public class APIResponseMapperTest {
+class APIResponseMapperTest {
 
     @Test
-    public void testProblemNoCourtHouse() {
+    void testProblemNoCourtHouse() {
         Problem problem = new Problem();
-        problem.setType(URI.create(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND.getValue()));
+        PostDailyListErrorCode problemCode = PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<CodeAndMessage> message = new DummyAPIResponseMapper().getCodeAndMessage(problem);
         Assertions.assertTrue(message.isPresent());
         Assertions.assertEquals(CodeAndMessage.NOT_FOUND_COURTHOUSE, message.get());
     }
 
     @Test
-    public void testNoProblemFound() {
+    void testNoProblemFound() {
         Problem problem = new Problem();
-        problem.setType(URI.create(PostDailyListErrorCode.DAILYLIST_DOCUMENT_CANT_BE_PARSED.getValue()));
+        PostDailyListErrorCode problemCode = PostDailyListErrorCode.DAILYLIST_DOCUMENT_CANT_BE_PARSED;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<CodeAndMessage> message = new DummyAPIResponseMapper().getCodeAndMessage(problem);
         Assertions.assertTrue(message.isEmpty());
     }
 
     @Test
-    public void testProblemNoCourtHouseException() {
+    void testProblemNoCourtHouseException() {
         Problem problem = new Problem();
-        problem.setType(URI.create(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND.getValue()));
+        PostDailyListErrorCode problemCode = PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
         Optional<ClientProblemException> exception = new DummyAPIResponseMapper().getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
         Assertions.assertEquals(CodeAndMessage.NOT_FOUND_COURTHOUSE, exception.get().getCodeAndMessage());
@@ -42,9 +47,10 @@ public class APIResponseMapperTest {
 
     class DummyAPIResponseMapper extends AbstractAPIProblemResponseMapper {
         {
-            addMapper(PostDailyListErrorCode.class,
-                      getBuilder().problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND).message(
-                          CodeAndMessage.NOT_FOUND_COURTHOUSE).build()
+            addMapper(
+                PostDailyListErrorCode.class,
+                getBuilder().problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND).message(
+                    CodeAndMessage.NOT_FOUND_COURTHOUSE).build()
             );
         }
 
@@ -53,11 +59,11 @@ public class APIResponseMapperTest {
         }
 
         @Override
-        public Optional<ClientProblemException> getExceptionForProblem(Problem p) {
+        public Optional<ClientProblemException> getExceptionForProblem(Problem problem) {
             return getProblemValueForProblem(
                 PostDailyListErrorCode.class,
-                p,
-                (mapping) -> new ClientProblemException(mapping.getMessage(), p)
+                problem,
+                (mapping) -> new ClientProblemException(mapping.getMessage(), problem)
             );
         }
     }

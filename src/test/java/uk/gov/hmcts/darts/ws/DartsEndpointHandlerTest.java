@@ -4,12 +4,12 @@ import com.synapps.moj.dfs.response.DARTSResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class DartsEndpointHandlerTest {
+class DartsEndpointHandlerTest {
 
-    private CodeAndMessage assertMessage = CodeAndMessage.NOT_FOUND_COURTHOUSE;
+    private final CodeAndMessage assertMessage = CodeAndMessage.NOT_FOUND_COURTHOUSE;
 
     @Test
-    public void testEndpointExecution() {
+    void testEndpointExecution() {
         DARTSResponse response = new DartsEndpointHandler().makeAPICall(
             "",
             this::executeWithCourtHouseError,

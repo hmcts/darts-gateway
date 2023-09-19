@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.utilities;
 
-import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;

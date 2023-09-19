@@ -10,11 +10,10 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 @Builder
 @Getter
 public class ProblemResponseMapping<T> {
-     T problem;
-     CodeAndMessage message;
+    T problem;
+    CodeAndMessage message;
 
-    public boolean match(Problem problemToMatch)
-    {
+    public boolean match(Problem problemToMatch) {
         return problemToMatch.getType().toString().equals(problem.toString());
     }
 }

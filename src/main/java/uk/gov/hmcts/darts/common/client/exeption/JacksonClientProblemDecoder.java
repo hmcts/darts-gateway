@@ -18,6 +18,6 @@ public class JacksonClientProblemDecoder extends AbstractClientProblemDecoder {
     @Override
     protected Problem getProblem(Response response) throws IOException {
         ObjectMapper mapper = ServiceConfig.getServiceObjectMapper();
-        return  mapper.readValue(response.body().asInputStream(), Problem.class);
+        return mapper.readValue(response.body().asInputStream(), Problem.class);
     }
 }

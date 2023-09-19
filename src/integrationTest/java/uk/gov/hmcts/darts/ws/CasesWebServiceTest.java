@@ -19,7 +19,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
-import static org.springframework.ws.test.server.ResponseMatchers.*;
+import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
+import static org.springframework.ws.test.server.ResponseMatchers.noFault;
 import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
@@ -52,14 +53,12 @@ class CasesWebServiceTest extends IntegrationBase {
 
     @Test
     void handlesGetCasesServiceFailure() throws IOException {
-        getCasesApiStub.returnsFailureWhenGettingCases();;
+        getCasesApiStub.returnsFailureWhenGettingCases();
 
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
         StringSource soapRequest = new StringSource(soapRequestStr);
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
-                "payloads/getCases/dartsApiResponse.json");
 
         wsClient.sendRequest(withPayload(soapRequest))
                 .andExpect(noFault()).andExpect(noFault())

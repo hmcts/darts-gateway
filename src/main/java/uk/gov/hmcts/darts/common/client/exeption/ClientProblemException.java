@@ -19,6 +19,7 @@ public class ClientProblemException extends DartsException {
     public ClientProblemException(CodeAndMessage codeAndMessage, Problem problem) {
         this(null, codeAndMessage, problem);
     }
+
     public ClientProblemException(Problem problem) {
         this(CodeAndMessage.ERROR, problem);
     }
