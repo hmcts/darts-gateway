@@ -1,72 +1,67 @@
 package uk.gov.hmcts.darts.common.client.mapper;
 
-import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.common.client.exeption.event.EventAPIGetCourtLogExeption;
 import uk.gov.hmcts.darts.common.client.exeption.event.EventAPIPostCourtLogException;
 import uk.gov.hmcts.darts.common.client.exeption.event.EventAPIPostEventException;
-import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.event.EventErrorCode;
 import uk.gov.hmcts.darts.model.event.GetCourtLogsErrorCode;
 import uk.gov.hmcts.darts.model.event.PostCourtLogsErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import java.util.Optional;
-
-
+@SuppressWarnings("unchecked")
 public class EventAPIProblemResponseMapper extends AbstractAPIProblemResponseMapper {
 
     {
-        addMapper(EventErrorCode.class, getSendErrorCodeBuilder().problem(EventErrorCode.EVENT_DOCUMENT_CANT_PARSED)
-            .message(CodeAndMessage.INVALID_XML).build());
+        // configure mappers for post event
+        var postEventOp = new ProblemResponseMappingOperation
+                .ProblemResponseMappingOperationBuilder<EventErrorCode>()
+            .operation(EventErrorCode.class)
+            .exception((mapping) -> new EventAPIPostEventException(
+                (ProblemResponseMapping<EventErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
 
-        addMapper(EventErrorCode.class, getSendErrorCodeBuilder()
-            .problem(EventErrorCode.PROCESSOR_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_HANLDER).build());
+        // create mappings
+        postEventOp.addMapping(postEventOp.createProblemResponseMapping()
+                                   .problem(EventErrorCode.EVENT_DOCUMENT_CANT_PARSED)
+                                   .message(CodeAndMessage.INVALID_XML).build());
 
-        addMapper(EventErrorCode.class, getSendErrorCodeBuilder()
-            .problem(EventErrorCode.EVENT_COURT_HOUSE_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+        postEventOp.addMapping(postEventOp.createProblemResponseMapping()
+                                   .problem(EventErrorCode.PROCESSOR_NOT_FOUND)
+                                   .message(CodeAndMessage.NOT_FOUND_HANLDER).build());
 
-        addMapper(GetCourtLogsErrorCode.class, getCourtLogsBuilder()
-            .problem(GetCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+        postEventOp.addMapping(postEventOp.createProblemResponseMapping()
+                                   .problem(EventErrorCode.EVENT_COURT_HOUSE_NOT_FOUND)
+                                   .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
-        addMapper(PostCourtLogsErrorCode.class, getPostCourtLogsBuilder()
-            .problem(PostCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+        addOperationMappings(postEventOp);
 
-        addMapper(PostCourtLogsErrorCode.class, getPostCourtLogsBuilder()
-            .problem(PostCourtLogsErrorCode.COURTLOG_DOCUMENT_CANT_BE_PARSED).message(CodeAndMessage.INVALID_XML).build());
-    }
+        // configure mappers for get court logs
+        var getCourtLog = new ProblemResponseMappingOperation
+                .ProblemResponseMappingOperationBuilder<GetCourtLogsErrorCode>()
+            .operation(GetCourtLogsErrorCode.class)
+            .exception((mapping) -> new EventAPIGetCourtLogExeption(
+                (ProblemResponseMapping<GetCourtLogsErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
 
-    private ProblemResponseMapping.ProblemResponseMappingBuilder<EventErrorCode> getSendErrorCodeBuilder() {
-        return new ProblemResponseMapping.ProblemResponseMappingBuilder<>();
-    }
+        getCourtLog.addMapping(getCourtLog.createProblemResponseMapping()
+                                   .problem(GetCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND)
+                                   .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
-    private ProblemResponseMapping.ProblemResponseMappingBuilder<GetCourtLogsErrorCode> getCourtLogsBuilder() {
-        return new ProblemResponseMapping.ProblemResponseMappingBuilder<>();
-    }
+        addOperationMappings(getCourtLog);
 
-    private ProblemResponseMapping.ProblemResponseMappingBuilder<PostCourtLogsErrorCode> getPostCourtLogsBuilder() {
-        return new ProblemResponseMapping.ProblemResponseMappingBuilder<>();
-    }
+        // configure mappers for post court logs
+        var postCourtLog = new ProblemResponseMappingOperation
+                .ProblemResponseMappingOperationBuilder<PostCourtLogsErrorCode>()
+            .operation(PostCourtLogsErrorCode.class)
+            .exception((mapping) -> new EventAPIPostCourtLogException(
+                (ProblemResponseMapping<PostCourtLogsErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
 
-    @Override
-    public Optional<ClientProblemException> getExceptionForProblem(Problem problem) {
-        Optional<ClientProblemException> exception;
+        postCourtLog.addMapping(postCourtLog.createProblemResponseMapping()
+                                    .problem(PostCourtLogsErrorCode.COURTLOG_COURT_HOUSE_NOT_FOUND)
+                                    .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
-        exception = getProblemValueForProblem(
-            EventErrorCode.class,
-            problem,
-            (mapping) -> new EventAPIPostEventException(mapping, problem)
-        )
-            .or(() -> getProblemValueForProblem(
-                GetCourtLogsErrorCode.class,
-                problem,
-                (mapping) -> new EventAPIGetCourtLogExeption(mapping, problem)
-            ))
-            .or(() -> getProblemValueForProblem(
-                PostCourtLogsErrorCode.class,
-                problem,
-                (mapping) -> new EventAPIPostCourtLogException(mapping, problem)
-            ));
+        postCourtLog.addMapping(postCourtLog.createProblemResponseMapping()
+                                    .problem(PostCourtLogsErrorCode.COURTLOG_DOCUMENT_CANT_BE_PARSED)
+                                    .message(CodeAndMessage.INVALID_XML).build());
 
-        return exception;
+        addOperationMappings(postCourtLog);
     }
 }

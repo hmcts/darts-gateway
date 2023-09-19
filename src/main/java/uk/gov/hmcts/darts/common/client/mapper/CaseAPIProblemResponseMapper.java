@@ -1,44 +1,43 @@
 package uk.gov.hmcts.darts.common.client.mapper;
 
-import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.common.client.exeption.cases.CasesAPIGetCasesException;
 import uk.gov.hmcts.darts.common.client.exeption.cases.CasesAPIPostCaseException;
-import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.cases.GetCasesErrorCode;
 import uk.gov.hmcts.darts.model.cases.PostCasesErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import java.util.Optional;
-
+@SuppressWarnings("unchecked")
 public class CaseAPIProblemResponseMapper extends AbstractAPIProblemResponseMapper {
 
     {
-        addMapper(PostCasesErrorCode.class, getBuilderAddCase()
-            .problem(PostCasesErrorCode.CASE_DOCUMENT_CANT_BE_PARSED).message(CodeAndMessage.INVALID_XML).build());
+        // create the operation and mappings for the post case
+        var opmapping = new ProblemResponseMappingOperation
+            .ProblemResponseMappingOperationBuilder<PostCasesErrorCode>()
+            .operation(PostCasesErrorCode.class)
+            .exception((mapping) -> new CasesAPIPostCaseException(
+                (ProblemResponseMapping<PostCasesErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
 
-        addMapper(PostCasesErrorCode.class, getBuilderAddCase()
-            .problem(PostCasesErrorCode.CASE_COURT_HOUSE_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+        // create mappings
+        opmapping.addMapping(opmapping.createProblemResponseMapping()
+                                 .problem(PostCasesErrorCode.CASE_DOCUMENT_CANT_BE_PARSED)
+                                 .message(CodeAndMessage.INVALID_XML).build());
 
-        addMapper(GetCasesErrorCode.class, getBuilderGetCases()
-            .problem(GetCasesErrorCode.CASE_COURT_HOUSE_NOT_FOUND).message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
-    }
+        opmapping.addMapping(opmapping.createProblemResponseMapping()
+                                 .problem(PostCasesErrorCode.CASE_COURT_HOUSE_NOT_FOUND)
+                                 .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+        addOperationMappings(opmapping);
 
-    private ProblemResponseMapping.ProblemResponseMappingBuilder<PostCasesErrorCode> getBuilderAddCase() {
-        return new ProblemResponseMapping.ProblemResponseMappingBuilder<>();
-    }
+        var getCaseOp = new ProblemResponseMappingOperation
+            .ProblemResponseMappingOperationBuilder<GetCasesErrorCode>()
+            .operation(GetCasesErrorCode.class)
+            .exception((mapping) -> new CasesAPIGetCasesException(
+                (ProblemResponseMapping<GetCasesErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
 
-    private ProblemResponseMapping.ProblemResponseMappingBuilder<GetCasesErrorCode> getBuilderGetCases() {
-        return new ProblemResponseMapping.ProblemResponseMappingBuilder<>();
-    }
 
-    @Override
-    public Optional<ClientProblemException> getExceptionForProblem(Problem problem) {
+        getCaseOp.addMapping(getCaseOp.createProblemResponseMapping()
+                                 .problem(GetCasesErrorCode.CASE_COURT_HOUSE_NOT_FOUND)
+                                 .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
-        return getProblemValueForProblem(PostCasesErrorCode.class, problem,
-                                         (mapping) -> new CasesAPIPostCaseException(mapping, problem)
-        )
-            .or(() -> getProblemValueForProblem(GetCasesErrorCode.class, problem,
-                                                (mapping) -> new CasesAPIGetCasesException(mapping, problem)
-            ));
+        addOperationMappings(getCaseOp);
     }
 }

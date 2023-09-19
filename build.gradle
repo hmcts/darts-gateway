@@ -340,7 +340,7 @@ dependencies {
   testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
 
   // we can use a dynamic variable to target 0.x at this moment
-  openapispec 'uk.gov.hmcts:darts-api:0.0.1:openapi'
+  openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'

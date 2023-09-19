@@ -2,66 +2,66 @@ package uk.gov.hmcts.darts.common.client.mapper;
 
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.model.audio.Problem;
-import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 public abstract class AbstractAPIProblemResponseMapper implements APIProblemResponseMapper {
-    private final Map<Class<?>, List<ProblemResponseMapping<?>>> operationErrorResponseMappingList = new ConcurrentHashMap<>();
+    private final List<ProblemResponseMappingOperation<?>> operationErrorResponseMappingList = Collections.synchronizedList(
+        new ArrayList<>());
 
     @Override
-    public <T> void addMapper(Class<T> operation, ProblemResponseMapping<T> mapping) {
-        if (!operationErrorResponseMappingList.containsKey(operation)) {
-            List<ProblemResponseMapping<?>> mappingsLst = new ArrayList<>();
-            operationErrorResponseMappingList.put(operation, mappingsLst);
-        }
-        operationErrorResponseMappingList.get(operation).add(mapping);
+    public <T> void addOperationMappings(ProblemResponseMappingOperation<T> operation) {
+        operationErrorResponseMappingList.add(operation);
     }
 
     @Override
-    public Optional<CodeAndMessage> getCodeAndMessage(Problem problem) {
+    public Optional<? extends ProblemResponseMapping<?>> getMapping(Problem problem) {
+        for (ProblemResponseMappingOperation<?> operation : operationErrorResponseMappingList) {
+            List<? extends ProblemResponseMapping<?>> mappingList = operation.getProblemResponseMappingList();
+            Optional<? extends ProblemResponseMapping<?>> fnd = mappingList.stream().filter(m -> m.match(problem)).findFirst();
 
-        for (Class<?> operation : operationErrorResponseMappingList.keySet()) {
-            Optional<ProblemResponseMapping<?>> mapping = operationErrorResponseMappingList.get(operation).stream().filter(
-                m -> m.match(
-                    problem)).findFirst();
-
-            return mapping.isPresent() ? mapping.map(ProblemResponseMapping::getMessage) : Optional.empty();
+            if (fnd.isPresent()) {
+                return fnd;
+            }
         }
 
         return Optional.empty();
     }
 
-    public Optional<ProblemResponseMapping<?>> getMapping(Problem problem) {
-        for (Class<?> operation : operationErrorResponseMappingList.keySet()) {
-            List<ProblemResponseMapping<?>> mappingList = operationErrorResponseMappingList.get(operation);
-            return mappingList.stream().filter(m -> m.match(problem)).findFirst();
+    private Optional<? extends ProblemResponseMapping<?>> getMapping(ProblemResponseMappingOperation<?> operation, Problem problem) {
+        List<? extends ProblemResponseMapping<?>> mappingList = operation.getProblemResponseMappingList();
+        return mappingList.stream().filter(m -> m.match(problem)).findFirst();
+    }
+
+    private Optional<ProblemResponseMappingOperation<?>> getOperationForProblem(Problem problem) {
+        for (ProblemResponseMappingOperation<?> operation : operationErrorResponseMappingList) {
+            List<? extends ProblemResponseMapping<?>> mappingList = operation.getProblemResponseMappingList();
+            Optional<? extends ProblemResponseMapping<?>> fnd = mappingList.stream().filter(m -> m.match(problem)).findFirst();
+            if (fnd.isPresent()) {
+                return Optional.of(operation);
+            }
         }
 
         return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> Optional<ClientProblemException> getProblemValueForProblem(Class<T> operation, Problem problem,
-                                                                             Function<ProblemResponseMapping<T>,
-                                                                                 ClientProblemException> exceptionSupplier) {
-        List<ProblemResponseMapping<?>> mappingList = operationErrorResponseMappingList.get(operation);
-
-        if (!mappingList.isEmpty()) {
-            Optional<ProblemResponseMapping<?>> mapping = mappingList.stream().filter(m -> m.match(problem)).findFirst();
+    @Override
+    public Optional<ClientProblemException> getExceptionForProblem(Problem problem) {
+        Optional<ProblemResponseMappingOperation<?>> operation = getOperationForProblem(problem);
+        if (operation.isPresent()) {
+            Optional<? extends ProblemResponseMapping<?>> mapping = getMapping(operation.get(), problem);
+            ClientProblemException returnEx;
 
             if (mapping.isPresent()) {
-                ProblemResponseMapping<T> errMapping = (ProblemResponseMapping<T>) mapping.get();
-
-                return Optional.of(exceptionSupplier.apply(errMapping));
+                returnEx = operation.get().getException()
+                        .apply(new ProblemAndMapping(problem, mapping.get()));
+                return Optional.of(returnEx);
             }
         }
-
         return Optional.empty();
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.common.client.mapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
+import uk.gov.hmcts.darts.common.client.exeption.dailylist.DailyListAPIAddException;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
@@ -18,9 +19,10 @@ class APIResponseMapperTest {
         PostDailyListErrorCode problemCode = PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND;
         URI uriType = URI.create(problemCode.getValue());
         problem.setType(uriType);
-        Optional<CodeAndMessage> message = new DummyAPIResponseMapper().getCodeAndMessage(problem);
-        Assertions.assertTrue(message.isPresent());
-        Assertions.assertEquals(CodeAndMessage.NOT_FOUND_COURTHOUSE, message.get());
+        Optional<? extends ProblemResponseMapping<?>> mapping = new DummyAPIResponseMapper().getMapping(problem);
+        Assertions.assertTrue(mapping.isPresent());
+        CodeAndMessage message = mapping.get().getMessage();
+        Assertions.assertEquals(CodeAndMessage.NOT_FOUND_COURTHOUSE, message);
     }
 
     @Test
@@ -29,8 +31,8 @@ class APIResponseMapperTest {
         PostDailyListErrorCode problemCode = PostDailyListErrorCode.DAILYLIST_DOCUMENT_CANT_BE_PARSED;
         URI uriType = URI.create(problemCode.getValue());
         problem.setType(uriType);
-        Optional<CodeAndMessage> message = new DummyAPIResponseMapper().getCodeAndMessage(problem);
-        Assertions.assertTrue(message.isEmpty());
+        Optional<? extends ProblemResponseMapping<?>> mapping = new DummyAPIResponseMapper().getMapping(problem);
+        Assertions.assertFalse(mapping.isPresent());
     }
 
     @Test
@@ -45,26 +47,20 @@ class APIResponseMapperTest {
         Assertions.assertEquals(problem, exception.get().getProblem());
     }
 
+    @SuppressWarnings("unchecked")
     class DummyAPIResponseMapper extends AbstractAPIProblemResponseMapper {
         {
-            addMapper(
-                PostDailyListErrorCode.class,
-                getBuilder().problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND).message(
-                    CodeAndMessage.NOT_FOUND_COURTHOUSE).build()
-            );
-        }
+            var opmapping = new ProblemResponseMappingOperation
+                    . ProblemResponseMappingOperationBuilder<PostDailyListErrorCode>()
+                    .operation(PostDailyListErrorCode.class)
+                    .exception((mapping) -> new DailyListAPIAddException(
+                            (ProblemResponseMapping<PostDailyListErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
 
-        private ProblemResponseMapping.ProblemResponseMappingBuilder<PostDailyListErrorCode> getBuilder() {
-            return new ProblemResponseMapping.ProblemResponseMappingBuilder<>();
-        }
+            opmapping.addMapping(opmapping.createProblemResponseMapping()
+                    .problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND)
+                    .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
-        @Override
-        public Optional<ClientProblemException> getExceptionForProblem(Problem problem) {
-            return getProblemValueForProblem(
-                PostDailyListErrorCode.class,
-                problem,
-                (mapping) -> new ClientProblemException(mapping.getMessage(), problem)
-            );
+            addOperationMappings(opmapping);
         }
     }
 }
