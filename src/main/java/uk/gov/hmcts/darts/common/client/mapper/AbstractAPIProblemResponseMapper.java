@@ -18,6 +18,7 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Optional<ProblemResponseMapping<?>> getMapping(Problem problem) {
         for (ProblemResponseMappingOperation<?> operation : operationErrorResponseMappingList) {
             List<? extends ProblemResponseMapping<?>> mappingList = operation.getProblemResponseMappingList();
