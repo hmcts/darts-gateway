@@ -7,8 +7,9 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.event.EventErrorCode;
 
 @Getter
+@SuppressWarnings("java:S110")
 public class EventAPIPostEventException extends ClientProblemException {
-    ProblemResponseMapping<EventErrorCode> mapping;
+    private final transient ProblemResponseMapping<EventErrorCode> mapping;
 
     public EventAPIPostEventException(Throwable cause, ProblemResponseMapping<EventErrorCode> mapping, Problem problem) {
         super(cause, mapping.getMessage(), problem);

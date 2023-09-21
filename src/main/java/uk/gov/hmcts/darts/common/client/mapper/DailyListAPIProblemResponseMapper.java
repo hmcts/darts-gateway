@@ -1,6 +1,8 @@
 package uk.gov.hmcts.darts.common.client.mapper;
 
+import uk.gov.hmcts.darts.common.client.exeption.cases.CasesAPIGetCasesException;
 import uk.gov.hmcts.darts.common.client.exeption.dailylist.DailyListAPIAddException;
+import uk.gov.hmcts.darts.model.cases.GetCasesErrorCode;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
@@ -10,8 +12,7 @@ public class DailyListAPIProblemResponseMapper extends AbstractAPIProblemRespons
         var opmapping = new ProblemResponseMappingOperation
             . ProblemResponseMappingOperationBuilder<PostDailyListErrorCode>()
             .operation(PostDailyListErrorCode.class)
-            .exception((mapping) -> new DailyListAPIAddException(
-                (ProblemResponseMapping<PostDailyListErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
+            .exception(this::createPostDailyListException).build();
 
         opmapping.addMapping(opmapping.createProblemResponseMapping()
                        .problem(PostDailyListErrorCode.DAILYLIST_DOCUMENT_CANT_BE_PARSED)
@@ -26,5 +27,10 @@ public class DailyListAPIProblemResponseMapper extends AbstractAPIProblemRespons
                                  .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
         addOperationMappings(opmapping);
+    }
+
+    private DailyListAPIAddException createPostDailyListException(ProblemAndMapping problemAndMapping) {
+        return new DailyListAPIAddException(
+            (ProblemResponseMapping<PostDailyListErrorCode>) problemAndMapping.getMapping(), problemAndMapping.getProblem());
     }
 }

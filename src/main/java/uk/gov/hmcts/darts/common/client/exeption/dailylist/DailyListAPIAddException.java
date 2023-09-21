@@ -7,8 +7,9 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 
 @Getter
+@SuppressWarnings("java:S110")
 public class DailyListAPIAddException extends ClientProblemException {
-    private ProblemResponseMapping<PostDailyListErrorCode> mapping;
+    private final transient  ProblemResponseMapping<PostDailyListErrorCode> mapping;
 
     public DailyListAPIAddException(Throwable cause, ProblemResponseMapping<PostDailyListErrorCode> mapping, Problem problem) {
         super(cause, mapping.getMessage(), problem);

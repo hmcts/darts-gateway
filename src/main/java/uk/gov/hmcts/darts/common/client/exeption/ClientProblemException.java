@@ -8,8 +8,9 @@ import uk.gov.hmcts.darts.ws.DartsException;
 @Getter
 public class ClientProblemException extends DartsException {
 
+    @SuppressWarnings("java:S1135")
     //TODO: Work out why we cant have a central problem type when generating the API spec
-    private Problem problem;
+    private transient final Problem problem;
 
     public ClientProblemException(Throwable cause, CodeAndMessage codeAndMessage, Problem problem) {
         super(cause, codeAndMessage);

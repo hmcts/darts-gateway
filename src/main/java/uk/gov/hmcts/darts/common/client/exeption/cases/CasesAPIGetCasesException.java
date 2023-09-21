@@ -7,8 +7,9 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.cases.GetCasesErrorCode;
 
 @Getter
+@SuppressWarnings("java:S110")
 public class CasesAPIGetCasesException extends ClientProblemException {
-    private ProblemResponseMapping<GetCasesErrorCode> mapping;
+    private final transient ProblemResponseMapping<GetCasesErrorCode> mapping;
 
     public CasesAPIGetCasesException(Throwable cause, ProblemResponseMapping<GetCasesErrorCode> addCases, Problem problem) {
         super(cause, addCases.getMessage(), problem);

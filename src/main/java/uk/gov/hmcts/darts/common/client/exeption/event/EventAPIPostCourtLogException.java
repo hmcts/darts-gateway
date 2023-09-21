@@ -7,8 +7,9 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.event.PostCourtLogsErrorCode;
 
 @Getter
+@SuppressWarnings("java:S110")
 public class EventAPIPostCourtLogException extends ClientProblemException {
-    ProblemResponseMapping<PostCourtLogsErrorCode> mapping;
+    private final transient ProblemResponseMapping<PostCourtLogsErrorCode> mapping;
 
     public EventAPIPostCourtLogException(Throwable cause, ProblemResponseMapping<PostCourtLogsErrorCode> mapping, Problem problem) {
         super(cause, mapping.getMessage(), problem);

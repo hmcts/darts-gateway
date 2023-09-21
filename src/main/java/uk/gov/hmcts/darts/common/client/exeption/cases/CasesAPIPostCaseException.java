@@ -8,8 +8,9 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.cases.PostCasesErrorCode;
 
 @Getter
+@SuppressWarnings("java:S110")
 public class CasesAPIPostCaseException extends ClientProblemException {
-    private ProblemResponseMapping<PostCasesErrorCode> mapping;
+    private final transient ProblemResponseMapping<PostCasesErrorCode> mapping;
 
     public CasesAPIPostCaseException(Throwable cause, ProblemResponseMapping<PostCasesErrorCode> mapping, Problem problem) {
         super(cause, mapping.getMessage(), problem);

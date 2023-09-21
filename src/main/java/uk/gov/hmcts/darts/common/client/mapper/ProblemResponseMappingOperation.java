@@ -26,6 +26,6 @@ public class ProblemResponseMappingOperation<T> {
     }
 
     public ProblemResponseMapping.ProblemResponseMappingBuilder<T>  createProblemResponseMapping() {
-        return new ProblemResponseMapping.ProblemResponseMappingBuilder<T>();
+        return new ProblemResponseMapping.ProblemResponseMappingBuilder<>();
     }
 }

@@ -7,8 +7,9 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.model.event.GetCourtLogsErrorCode;
 
 @Getter
+@SuppressWarnings("java:S110")
 public class EventAPIGetCourtLogExeption extends ClientProblemException {
-    ProblemResponseMapping<GetCourtLogsErrorCode> mapping;
+    private final transient ProblemResponseMapping<GetCourtLogsErrorCode> mapping;
 
     public EventAPIGetCourtLogExeption(Throwable cause, ProblemResponseMapping<GetCourtLogsErrorCode> mapping, Problem problem) {
         super(cause, mapping.getMessage(), problem);

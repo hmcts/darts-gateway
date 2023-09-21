@@ -11,5 +11,5 @@ public interface APIProblemResponseMapper {
 
     Optional<ClientProblemException> getExceptionForProblem(Problem problem);
 
-    Optional<? extends ProblemResponseMapping<?>> getMapping(Problem problem);
+    Optional<ProblemResponseMapping<?>> getMapping(Problem problem);
 }

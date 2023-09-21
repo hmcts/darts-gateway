@@ -60,7 +60,7 @@ public class DartsEndpoint {
     public JAXBElement<AddCaseResponse> addCase(@RequestPayload JAXBElement<AddCase> addCase) {
         AddCaseResponse addCaseResponse = ResponseFactory.getAddCaseResponse();
 
-        addCaseResponse.setReturn(endpointHandler.makeAPICall("getCases", () -> casesRoute.route(addCase.getValue()),
+        addCaseResponse.setReturn(endpointHandler.makeAPICall("addCases", () -> casesRoute.route(addCase.getValue()),
                                                             addCaseResponse::getReturn));
 
         return new ObjectFactory().createAddCaseResponse(addCaseResponse);
@@ -72,7 +72,7 @@ public class DartsEndpoint {
 
         GetCourtLogResponse addCaseResponseLog = ResponseFactory.getCourtLogResponse();
 
-        addCaseResponseLog.setReturn(endpointHandler.makeAPICall("getCases", () -> getCourtLogRoute.route(getCourtLog.getValue()),
+        addCaseResponseLog.setReturn(endpointHandler.makeAPICall("getCourtLogResponse", () -> getCourtLogRoute.route(getCourtLog.getValue()),
                                     addCaseResponseLog::getReturn));
 
         return new ObjectFactory().createGetCourtLogResponse(addCaseResponseLog);
@@ -84,7 +84,7 @@ public class DartsEndpoint {
 
         AddLogEntryResponse addLogEntryResponse = ResponseFactory.getAddLogEntryResponse();
 
-        addLogEntryResponse.setReturn(endpointHandler.makeAPICall("getCases", () -> addCourtLogsRoute.route(addLogEntry.getValue().getDocument()),
+        addLogEntryResponse.setReturn(endpointHandler.makeAPICall("addLogEntry", () -> addCourtLogsRoute.route(addLogEntry.getValue().getDocument()),
                                    addLogEntryResponse::getReturn));
 
         return new ObjectFactory().createAddLogEntryResponse(addLogEntryResponse);

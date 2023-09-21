@@ -14,8 +14,7 @@ public class CaseAPIProblemResponseMapper extends AbstractAPIProblemResponseMapp
         var opmapping = new ProblemResponseMappingOperation
             .ProblemResponseMappingOperationBuilder<PostCasesErrorCode>()
             .operation(PostCasesErrorCode.class)
-            .exception((mapping) -> new CasesAPIPostCaseException(
-                (ProblemResponseMapping<PostCasesErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
+            .exception(this::createPostCaseException).build();
 
         // create mappings
         opmapping.addMapping(opmapping.createProblemResponseMapping()
@@ -30,8 +29,7 @@ public class CaseAPIProblemResponseMapper extends AbstractAPIProblemResponseMapp
         var getCaseOp = new ProblemResponseMappingOperation
             .ProblemResponseMappingOperationBuilder<GetCasesErrorCode>()
             .operation(GetCasesErrorCode.class)
-            .exception((mapping) -> new CasesAPIGetCasesException(
-                (ProblemResponseMapping<GetCasesErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
+            .exception(this::createAPIGetCasesException).build();
 
 
         getCaseOp.addMapping(getCaseOp.createProblemResponseMapping()
@@ -39,5 +37,16 @@ public class CaseAPIProblemResponseMapper extends AbstractAPIProblemResponseMapp
                                  .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
         addOperationMappings(getCaseOp);
+    }
+
+    private CasesAPIPostCaseException createPostCaseException(ProblemAndMapping problemAndMapping)
+    {
+        return new CasesAPIPostCaseException(
+            (ProblemResponseMapping<PostCasesErrorCode>) problemAndMapping.getMapping(), problemAndMapping.getProblem());
+    }
+
+    private CasesAPIGetCasesException createAPIGetCasesException(ProblemAndMapping problemAndMapping) {
+        return new CasesAPIGetCasesException(
+            (ProblemResponseMapping<GetCasesErrorCode>) problemAndMapping.getMapping(), problemAndMapping.getProblem());
     }
 }

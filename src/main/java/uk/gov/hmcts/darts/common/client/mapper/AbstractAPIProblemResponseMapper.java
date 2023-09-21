@@ -18,13 +18,13 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
     }
 
     @Override
-    public Optional<? extends ProblemResponseMapping<?>> getMapping(Problem problem) {
+    public Optional<ProblemResponseMapping<?>> getMapping(Problem problem) {
         for (ProblemResponseMappingOperation<?> operation : operationErrorResponseMappingList) {
             List<? extends ProblemResponseMapping<?>> mappingList = operation.getProblemResponseMappingList();
             Optional<? extends ProblemResponseMapping<?>> fnd = mappingList.stream().filter(m -> m.match(problem)).findFirst();
 
             if (fnd.isPresent()) {
-                return fnd;
+                return (Optional<ProblemResponseMapping<?>>)fnd;
             }
         }
 
