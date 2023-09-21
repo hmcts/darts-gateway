@@ -39,8 +39,7 @@ public class CaseAPIProblemResponseMapper extends AbstractAPIProblemResponseMapp
         addOperationMappings(getCaseOp);
     }
 
-    private CasesAPIPostCaseException createPostCaseException(ProblemAndMapping problemAndMapping)
-    {
+    private CasesAPIPostCaseException createPostCaseException(ProblemAndMapping problemAndMapping) {
         return new CasesAPIPostCaseException(
             (ProblemResponseMapping<PostCasesErrorCode>) problemAndMapping.getMapping(), problemAndMapping.getProblem());
     }

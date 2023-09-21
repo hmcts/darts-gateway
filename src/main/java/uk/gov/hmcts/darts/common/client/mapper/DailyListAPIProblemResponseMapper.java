@@ -1,8 +1,6 @@
 package uk.gov.hmcts.darts.common.client.mapper;
 
-import uk.gov.hmcts.darts.common.client.exeption.cases.CasesAPIGetCasesException;
 import uk.gov.hmcts.darts.common.client.exeption.dailylist.DailyListAPIAddException;
-import uk.gov.hmcts.darts.model.cases.GetCasesErrorCode;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
