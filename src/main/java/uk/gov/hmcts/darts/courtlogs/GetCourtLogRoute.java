@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.courtlogs;
 
 import com.service.mojdarts.synapps.com.GetCourtLog;
-import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.common.client.CourtLogsClient;

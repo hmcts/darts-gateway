@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.utilities;
 
-import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
@@ -35,15 +34,12 @@ public class MapperUtility {
 
     }
 
-    public static AddLogEntryResponse mapResponse(EventsResponse eventResponse) {
+    public static DARTSResponse mapResponse(EventsResponse eventResponse) {
         var dartsResponse = new DARTSResponse();
         dartsResponse.setMessage(eventResponse.getMessage());
         dartsResponse.setCode(eventResponse.getCode());
 
-        var addLogEntryResponse = new AddLogEntryResponse();
-        addLogEntryResponse.setReturn(dartsResponse);
-
-        return addLogEntryResponse;
+        return dartsResponse;
     }
 
 }

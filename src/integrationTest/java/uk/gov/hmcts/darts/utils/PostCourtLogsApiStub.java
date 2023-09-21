@@ -2,6 +2,8 @@ package uk.gov.hmcts.darts.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.io.IOException;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -39,4 +41,13 @@ public class PostCourtLogsApiStub extends DartsApiStub {
             .withRequestBody(containing(caseNumber)));
     }
 
+    public void returnsFailureWhenAddingCourtLogs() throws JsonProcessingException, IOException {
+        String dartsApiResponseStr = TestUtils.getContentsFromFile(
+            "payloads/courtlogs/problemResponse.json");
+
+        stubFor(post(urlPathEqualTo(POST_COURT_LOGS_API_PATH)).willReturn(aResponse().withHeader(
+            "Content-Type",
+            "application/json"
+        ).withStatus(404).withBody(dartsApiResponseStr)));
+    }
 }

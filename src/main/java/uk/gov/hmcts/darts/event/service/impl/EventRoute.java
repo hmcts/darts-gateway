@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.event.service.impl;
 
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
+import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class EventRoute {
     private final EventRequestMapper dartsXmlMapper;
 
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
-    public AddDocumentResponse handle(String document, String messageId, String type, String subType) {
+    public DARTSResponse handle(String document, String messageId, String type, String subType) {
         if (validateEvent) {
             xmlValidator.validate(document, schemaPath);
         }

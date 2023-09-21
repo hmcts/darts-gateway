@@ -20,6 +20,8 @@ public class IntegrationBase {
     protected DailyListApiStub dailyListApiStub = new DailyListApiStub();
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
+    protected AddCasesApiStub addCasesApiStub = new AddCasesApiStub();
+    protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
 
     @BeforeEach
     void clearStubs() {

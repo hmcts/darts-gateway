@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,4 +18,21 @@ public enum CodeAndMessage {
     private final String code;
     private final String message;
 
+    public DARTSResponse getResponse() {
+        return getResponse(code, message);
+    }
+
+    public static DARTSResponse getResponse(String code, String message) {
+        DARTSResponse response = new DARTSResponse();
+        response.setCode(code);
+        response.setMessage(message);
+        return response;
+    }
+
+    public static DARTSResponse getResponse(CodeAndMessage codeAndMessage) {
+        DARTSResponse response = new DARTSResponse();
+        response.setCode(codeAndMessage.getCode());
+        response.setMessage(codeAndMessage.getMessage());
+        return response;
+    }
 }

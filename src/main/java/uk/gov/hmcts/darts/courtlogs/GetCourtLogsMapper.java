@@ -1,7 +1,8 @@
 package uk.gov.hmcts.darts.courtlogs;
 
-import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+
 import com.synapps.moj.dfs.response.CourtLogEntry;
+import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,17 +32,13 @@ public class GetCourtLogsMapper {
         innerResponse.setCode(String.valueOf(HttpStatus.OK.value()));
         innerResponse.setMessage(HttpStatus.OK.name());
 
-        var outerResponse = new GetCourtLogResponse();
-        outerResponse.setReturn(innerResponse);
-
-        return outerResponse;
+        return innerResponse;
     }
 
     private CourtLogEntry toLegacyApi(CourtLog courtLog) {
+        var legacyCourtLogEntry = new CourtLogEntry();
         var logDateTime =
             dateConverters.offsetDateTimeToLegacyDateTime(courtLog.getTimestamp());
-
-        var legacyCourtLogEntry = new CourtLogEntry();
 
         legacyCourtLogEntry.setY(String.valueOf(logDateTime.getYear()));
         legacyCourtLogEntry.setM(String.valueOf(logDateTime.getMonthValue()));
@@ -55,18 +52,14 @@ public class GetCourtLogsMapper {
     }
 
     private GetCourtLogResponse emptyResponse() {
-        var innerResponse = createInnerResponse();
-        var outerResponse = new GetCourtLogResponse();
-        outerResponse.setReturn(innerResponse);
-
-        return outerResponse;
+        return createInnerResponse();
     }
 
     private com.synapps.moj.dfs.response.CourtLog createLegacyCourtLog() {
         return new com.synapps.moj.dfs.response.CourtLog();
     }
 
-    private com.synapps.moj.dfs.response.GetCourtLogResponse createInnerResponse() {
-        return new com.synapps.moj.dfs.response.GetCourtLogResponse();
+    private GetCourtLogResponse createInnerResponse() {
+        return new GetCourtLogResponse();
     }
 }

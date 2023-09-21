@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.routing;
 
 import com.service.mojdarts.synapps.com.AddDocument;
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
+import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.dailylist.DailyListRoute;
@@ -21,7 +21,7 @@ public class EventRoutingService {
     private final DailyListRoute dailyListRoute;
     private final EventRoute eventRoute;
 
-    public AddDocumentResponse route(AddDocument request) {
+    public DARTSResponse route(AddDocument request) {
         if (DAILY_LIST_TYPES.contains(request.getType())) {
             return dailyListRoute.handle(request.getDocument(), request.getType());
         } else {

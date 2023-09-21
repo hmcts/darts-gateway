@@ -2,8 +2,9 @@ package uk.gov.hmcts.darts.cases.impl;
 
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.GetCases;
-import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.addcase.Case;
+import com.synapps.moj.dfs.response.DARTSResponse;
+import com.synapps.moj.dfs.response.GetCasesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.darts.common.client.CasesClient;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,11 +43,11 @@ public class CasesRouteImpl implements CasesRoute {
             getCasesRequest.getCourtroom(),
             LocalDate.parse(getCasesRequest.getDate())
         );
-        return GetCasesMapper.mapToMojDartsResponse(getCasesRequest, modernisedDartsResponse.getBody());
+        return GetCasesMapper.mapToDfsResponse(getCasesRequest, modernisedDartsResponse.getBody());
     }
 
     @Override
-    public void route(AddCase addCase) {
+    public DARTSResponse route(AddCase addCase) {
         var caseDocumentXmlStr = addCase.getDocument();
         if (validateAddCase) {
             xmlValidator.validate(caseDocumentXmlStr, addCaseSchemaPath);
@@ -55,5 +57,8 @@ public class CasesRouteImpl implements CasesRoute {
         var addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
 
         casesClient.casesPost(addCaseRequest);
+
+        CodeAndMessage okResponse = CodeAndMessage.OK;
+        return okResponse.getResponse();
     }
 }

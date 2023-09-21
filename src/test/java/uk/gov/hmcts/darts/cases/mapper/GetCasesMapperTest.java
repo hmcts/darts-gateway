@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.service.mojdarts.synapps.com.GetCases;
-import com.service.mojdarts.synapps.com.GetCasesResponse;
+import com.synapps.moj.dfs.response.GetCasesResponse;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -50,7 +50,7 @@ class GetCasesMapperTest {
             .registerModule(module);
         List<ScheduledCase> modernisedDartsResponse = mapper.readValue(dartsApiResponseStr, new TypeReference<ArrayList<ScheduledCase>>() {});
 
-        GetCasesResponse getCasesResponse = GetCasesMapper.mapToMojDartsResponse(
+        GetCasesResponse getCasesResponse = GetCasesMapper.mapToDfsResponse(
             getCasesRequest,
             modernisedDartsResponse
         );

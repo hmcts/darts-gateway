@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.courtlogs;
 
-import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.event.CourtLog;
@@ -27,14 +27,14 @@ class GetCourtLogsMapperTest {
         var legacyCourtLog = courtLogsMapper.toLegacyApi(emptyCourtLogs);
 
         assertThat(legacyCourtLog).isInstanceOf(GetCourtLogResponse.class);
-        assertThat(legacyCourtLog.getReturn().getCourtLog()).isNull();
+        assertThat(legacyCourtLog.getCourtLog()).isNull();
     }
 
     @Test
     void mapsToLegacyApi() {
         var dartsApiCourtLogs = someCourtLogs(2);
 
-        var legacyCourtLog = courtLogsMapper.toLegacyApi(dartsApiCourtLogs).getReturn().getCourtLog();
+        var legacyCourtLog = courtLogsMapper.toLegacyApi(dartsApiCourtLogs).getCourtLog();
 
         verifyThat(legacyCourtLog).isCorrectlyMappedFrom(dartsApiCourtLogs);
     }
