@@ -13,7 +13,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 public class GetCasesApiStub {
     public void returnsFailureWhenGettingCases() throws JsonProcessingException, IOException {
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-                "payloads/getcases/problemResponse.json");
+                "payloads/getCases/problemResponse.json");
 
         stubFor(get(urlPathEqualTo("/cases"))
                 .willReturn(aResponse()
