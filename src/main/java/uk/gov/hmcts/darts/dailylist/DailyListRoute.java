@@ -13,6 +13,9 @@ import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListXmlRequestMapper;
 import uk.gov.hmcts.darts.dailylist.model.PostDailyListRequest;
+import uk.gov.hmcts.darts.model.dailylist.CourtHouse;
+import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
+import uk.gov.hmcts.darts.model.dailylist.DocumentID;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
@@ -87,13 +90,22 @@ public class DailyListRoute {
             null
         );
 
+        DailyListJsonObject dailyListJsonObject = new DailyListJsonObject();
+        CourtHouse courtHouse = new CourtHouse();
+        courtHouse.setCourtHouseType("");
+        courtHouse.setCourtHouseName("");
+
+        dailyListJsonObject.setCrownCourt(courtHouse);
+        dailyListJsonObject.setDocumentId(new DocumentID());
+
         Integer dalId = postDailyListResponse.getBody().getDalId();
-        dailyListsClient.dailylistsPatch(
-            dalId,
+        // TODO: We need to ensure we pass a string for the json as for the reasons below
+        //dailyListsClient.dailylistsPatch(
+        //    dalId,
             //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
             // not work with objects passed as headers
-            null
-        );
+        //    dailyListJsonObject
+        //);
         return successResponse();
     }
 

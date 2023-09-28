@@ -2,6 +2,10 @@
 server:
   port: 8070
 
+logging:
+  level:
+    root: DEBUG
+
 darts-gateway:
   darts-api:
     base-url: http://localhost:8090
@@ -10,4 +14,5 @@ darts-gateway:
     response-validation: false
   daily-list:
     validate: true
-
+  events:
+    validate: true

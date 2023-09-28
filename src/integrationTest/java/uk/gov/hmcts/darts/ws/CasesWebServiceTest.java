@@ -1,13 +1,19 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.service.mojdarts.synapps.com.AddCaseResponse;
+import com.service.mojdarts.synapps.com.GetCasesResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseActions;
 import org.springframework.xml.transform.StringSource;
 import org.xmlunit.matchers.CompareMatcher;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
+import uk.gov.hmcts.darts.utils.motm.DartsGatewayAssertionUtil;
+import uk.gov.hmcts.darts.utils.motm.DartsGatewayMTOMClient;
 
 import java.io.IOException;
 
@@ -26,10 +32,10 @@ import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class CasesWebServiceTest extends IntegrationBase {
     @Autowired
-    private MockWebServiceClient wsClient;
+    private DartsGatewayMTOMClient motmClient;
 
     @Test
-    void handlesGetCases() throws IOException {
+    void handlesGetCases() throws Exception {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
@@ -45,29 +51,24 @@ class CasesWebServiceTest extends IntegrationBase {
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/expectedResponse.xml");
-        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
-                .andExpect(noFault());
-        String actualResponse = TestUtils.getResponse(responseActions);
-        assertThat(actualResponse, CompareMatcher.isIdenticalTo(expectedResponseStr));
+
+        DartsGatewayAssertionUtil<GetCasesResponse> response = motmClient.getCases(getGatewayURI(), soapRequestStr);
+        response.assertIdenticalResponse(motmClient.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
     }
 
     @Test
-    void handlesGetCasesServiceFailure() throws IOException {
+    void handlesGetCasesServiceFailure() throws Exception {
         getCasesApiStub.returnsFailureWhenGettingCases();
 
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
-        StringSource soapRequest = new StringSource(soapRequestStr);
-
-        wsClient.sendRequest(withPayload(soapRequest))
-                .andExpect(noFault()).andExpect(noFault())
-                .andExpect(xpath("//code").evaluatesTo("404"))
-                .andExpect(xpath("//message").evaluatesTo("Courthouse Not Found"));
+        DartsGatewayAssertionUtil<GetCasesResponse> response = motmClient.getCases(getGatewayURI(), soapRequestStr);
+        DartsGatewayAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
     }
 
     @Test
-    void handlesAddCase() throws IOException {
+    void handlesAddCase() throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/addCase/soapRequest.xml");
@@ -82,14 +83,13 @@ class CasesWebServiceTest extends IntegrationBase {
         String expectedResponseStr = TestUtils.getContentsFromFile(
             "payloads/addCase/expectedResponse.xml");
 
-        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
-            .andExpect(noFault());
-        String actualResponse = TestUtils.getResponse(responseActions);
-        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponseStr).ignoreWhitespace());
+
+        DartsGatewayAssertionUtil<AddCaseResponse> response = motmClient.addCases(getGatewayURI(), soapRequestStr);
+        response.assertIdenticalResponse(motmClient.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 
     @Test
-    void handlesAddCaseError() throws IOException {
+    void handlesAddCaseError() throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/addCase/invalidSoapRequest.xml");
@@ -100,12 +100,15 @@ class CasesWebServiceTest extends IntegrationBase {
 
         stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
 
-        wsClient.sendRequest(withPayload(soapRequest))
-            .andExpect(clientOrSenderFault());
+        Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(()->
+        {
+            DartsGatewayAssertionUtil<AddCaseResponse> response = motmClient.addCases(getGatewayURI(), soapRequestStr);
+        });
+
     }
 
     @Test
-    void handlesAddCaseWithInvalidServiceResponse() throws IOException {
+    void handlesAddCaseWithInvalidServiceResponse() throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/soapRequest.xml");
@@ -120,9 +123,7 @@ class CasesWebServiceTest extends IntegrationBase {
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/expectedResponse.xml");
 
-        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
-                .andExpect(noFault());
-        String actualResponse = TestUtils.getResponse(responseActions);
-        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponseStr).ignoreWhitespace());
+        DartsGatewayAssertionUtil<AddCaseResponse> response = motmClient.addCases(getGatewayURI(), soapRequestStr);
+        response.assertIdenticalResponse(motmClient.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 }
