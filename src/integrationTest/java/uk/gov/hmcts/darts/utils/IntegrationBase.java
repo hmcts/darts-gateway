@@ -2,6 +2,10 @@ package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest;
@@ -21,7 +25,6 @@ import java.net.URL;
 @AutoConfigureWireMock(port = 8090)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class IntegrationBase {
-
 
     protected EventApiStub theEventApi = new EventApiStub();
     protected DailyListApiStub dailyListApiStub = new DailyListApiStub();

@@ -3,17 +3,19 @@ package uk.gov.hmcts.darts.ws;
 import com.service.mojdarts.synapps.com.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.soap.client.SoapFaultClientException;
-import org.springframework.ws.test.server.MockWebServiceClient;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
-import uk.gov.hmcts.darts.utils.motm.DartsGatewayAssertionUtil;
-import uk.gov.hmcts.darts.utils.motm.DartsGatewayMTOMClient;
+import uk.gov.hmcts.darts.utils.client.ClientProvider;
+import uk.gov.hmcts.darts.utils.client.DartsGatewayAssertionUtil;
+import uk.gov.hmcts.darts.utils.client.DartsGatewayClientable;
+import uk.gov.hmcts.darts.utils.client.DartsGatewayMTOMClient;
 
-import java.io.IOException;
 import java.lang.Exception;
 import java.nio.charset.Charset;
 import java.time.OffsetDateTime;
@@ -23,7 +25,6 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
 import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
-import static org.springframework.ws.test.server.ResponseMatchers.noFault;
 import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
@@ -35,15 +36,19 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     private static final String SOME_CASE_NUMBER = "some-case-number";
     private static final String SOME_COURTHOUSE = "some-courthouse";
 
-    @Autowired
-    private DartsGatewayMTOMClient motmClient;
+    private @Value(VALID_GET_COURTLOGS_XML) Resource getCourtLogs;
 
-    @Test
-    void routesGetCourtLogRequest(@Value(VALID_GET_COURTLOGS_XML) Resource getCourtLogs) throws Exception {
+    private @Value(INVALID_COURTLOGS_XML) Resource invalidSoapMessage;
+
+    private @Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs;
+
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void routesGetCourtLogRequest(DartsGatewayClientable client) throws Exception {
         var dartsApiCourtLogsResponse = someListOfCourtLog(3);
         courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
-        DartsGatewayAssertionUtil<GetCourtLogResponse> response = motmClient.getCourtLogs(getGatewayURI(), getCourtLogs.getContentAsString(Charset.defaultCharset()));
+        DartsGatewayAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(getGatewayURI(), getCourtLogs.getContentAsString(Charset.defaultCharset()));
 
         com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
 
@@ -58,41 +63,45 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
     }
 
-    @Test
-    void rejectsInvalidSoapMessage(@Value(INVALID_COURTLOGS_XML) Resource invalidSoapMessage) throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void rejectsInvalidSoapMessage(DartsGatewayClientable client) throws Exception {
         courtLogsApi.returnsCourtLogs(someListOfCourtLog(1));
 
         org.assertj.core.api.Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(()->
         {
-            motmClient.getCourtLogs(getGatewayURI(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
+            client.getCourtLogs(getGatewayURI(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
         });
 
         courtLogsApi.verifyDoesntReceiveRequest();
     }
 
-    @Test
-    void postCourtLogsRoute(@Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs) throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void postCourtLogsRoute(DartsGatewayClientable client) throws Exception {
         postCourtLogsApi.returnsEventResponse();
-        motmClient.postCourtLogs(getGatewayURI(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
+        client.postCourtLogs(getGatewayURI(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
 
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
     }
 
-    @Test
-    void postCourtLogsRouteFailOnInvalidServiceResponse(@Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs) throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void postCourtLogsRouteFailOnInvalidServiceResponse(DartsGatewayClientable client) throws Exception {
         postCourtLogsApi.returnsFailureWhenAddingCourtLogs();
 
-        DartsGatewayAssertionUtil<AddLogEntryResponse> response = motmClient.postCourtLogs(getGatewayURI(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
+        DartsGatewayAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(getGatewayURI(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
         DartsGatewayAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
 
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
     }
 
-    @Test
-    void postCourtLogsRejectsInvalidSoapMessage(@Value(INVALID_COURTLOGS_XML) Resource invalidSoapMessage) throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void postCourtLogsRejectsInvalidSoapMessage(DartsGatewayClientable client) throws Exception {
         postCourtLogsApi.returnsEventResponse();
 
-        DartsGatewayAssertionUtil<AddLogEntryResponse> response = motmClient.postCourtLogs(getGatewayURI(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
+        DartsGatewayAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(getGatewayURI(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
         DartsGatewayAssertionUtil.assertErrorResponse("400", "Invalid XML Document", response.getResponse().getValue().getReturn());
 
         postCourtLogsApi.verifyDoesntReceiveRequest();

@@ -1,21 +1,10 @@
-package uk.gov.hmcts.darts.utils.motm;
+package uk.gov.hmcts.darts.utils.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
 import lombok.Getter;
-import org.bouncycastle.cert.ocsp.Req;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.oxm.Marshaller;
-import org.xmlunit.matchers.CompareMatcher;
-import uk.gov.hmcts.darts.utils.TestUtils;
-
-import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
 
 @Getter
 public class DartsGatewayAssertionUtil<RESPONSE> {

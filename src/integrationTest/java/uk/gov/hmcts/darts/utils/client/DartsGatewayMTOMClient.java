@@ -1,10 +1,11 @@
-package uk.gov.hmcts.darts.utils.motm;
+package uk.gov.hmcts.darts.utils.client;
 
 import com.service.mojdarts.synapps.com.*;
-import com.synapps.moj.dfs.response.CourtLog;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Unmarshaller;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.Unmarshaller;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.xml.transform.StringSource;
@@ -17,17 +18,33 @@ import java.util.function.Function;
  * Simple client that demonstrates MTOM by invoking
  */
 @SuppressWarnings("unchecked")
-public class DartsGatewayMTOMClient extends WebServiceGatewaySupport {
+public class DartsGatewayMTOMClient extends WebServiceGatewaySupport implements DartsGatewayClientable{
 
     public DartsGatewayMTOMClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);
+    }
+
+    /**
+     * sets the mode of this client
+     */
+    public void setEnableMTOMMode(boolean enabled) {
+        Marshaller marshaller = getWebServiceTemplate().getMarshaller();
+        Unmarshaller unmarshaller = this.getWebServiceTemplate().getUnmarshaller();
+
+        if (marshaller instanceof Jaxb2Marshaller){
+            ((Jaxb2Marshaller)marshaller).setMtomEnabled(enabled);
+        }
+
+        if (unmarshaller instanceof Jaxb2Marshaller){
+            ((Jaxb2Marshaller) unmarshaller).setMtomEnabled(enabled);
+        }
     }
 
     public <REQUEST, RESPONSE> DartsGatewayAssertionUtil<RESPONSE> sendMessage(URL uri, String payload, Function<REQUEST,JAXBElement<REQUEST>> supplier, Class<REQUEST> requestClass, Function<Object, JAXBElement<RESPONSE>>responseSupplier)
             throws Exception
     {
         JAXBContext jaxbContext = JAXBContext.newInstance(requestClass);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        jakarta.xml.bind.Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         JAXBElement<REQUEST> unmarshalResponse = jaxbUnmarshaller.unmarshal(new StringSource(payload), requestClass);
         JAXBElement<REQUEST> requestjaxbElement = supplier.apply(unmarshalResponse.getValue());
         return new DartsGatewayAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(uri.toString(), requestjaxbElement)));
@@ -36,7 +53,7 @@ public class DartsGatewayMTOMClient extends WebServiceGatewaySupport {
     public <CONVERSION_DATA> JAXBElement<CONVERSION_DATA> convertData(String payload, Class<CONVERSION_DATA> requestClass) throws Exception
     {
         JAXBContext jaxbContext = JAXBContext.newInstance(requestClass);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        jakarta.xml.bind.Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         return jaxbUnmarshaller.unmarshal(new StringSource(payload), requestClass);
     }
 
