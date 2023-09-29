@@ -58,6 +58,20 @@ public class DartsGatewayMTOMClient extends WebServiceGatewaySupport {
         );
     }
 
+    public void send(URL uri, String payload) throws Exception {
+        getWebServiceTemplate().sendSourceAndReceiveToResult(uri.toString(),new StringSource(payload), new javax.xml.transform.Result(){
+            @Override
+            public void setSystemId(String systemId) {
+
+            }
+
+            @Override
+            public String getSystemId() {
+                return null;
+            }
+        });
+    }
+
     public DartsGatewayAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws Exception
     {
         return sendMessage(uri, payload,

@@ -90,22 +90,14 @@ public class DailyListRoute {
             null
         );
 
-        DailyListJsonObject dailyListJsonObject = new DailyListJsonObject();
-        CourtHouse courtHouse = new CourtHouse();
-        courtHouse.setCourtHouseType("");
-        courtHouse.setCourtHouseName("");
-
-        dailyListJsonObject.setCrownCourt(courtHouse);
-        dailyListJsonObject.setDocumentId(new DocumentID());
-
         Integer dalId = postDailyListResponse.getBody().getDalId();
         // TODO: We need to ensure we pass a string for the json as for the reasons below
-        //dailyListsClient.dailylistsPatch(
-        //    dalId,
+        dailyListsClient.dailylistsPatch(
+           dalId,
             //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
             // not work with objects passed as headers
-        //    dailyListJsonObject
-        //);
+            null
+        );
         return successResponse();
     }
 

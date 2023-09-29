@@ -46,13 +46,13 @@ class EventWebServiceTest extends IntegrationBase {
         theEventApi.verifyReceivedEventWithMessageId("12345");
     }
 
-    //@Test
-    void rejectsInvalidSoapMessage(@Value("classpath:payloads/events/invalid-soap-message.xml") Resource invalidSoapMessage) throws Exception {
+    @Test
+    void reactsInvalidSoapMessage(@Value("classpath:payloads/events/invalid-soap-message.xml") Resource invalidSoapMessage) throws Exception {
         theEventApi.willRespondSuccessfully();
 
-        DartsGatewayAssertionUtil<AddDocumentResponse> response = motmClient.addDocument(getGatewayURI(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
-        DartsGatewayAssertionUtil.assertErrorResponse("200", "OK", response.getResponse().getValue().getReturn());
-
+        Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(()-> {
+            motmClient.send(getGatewayURI(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
+        });
         theEventApi.verifyDoesntReceiveEvent();
     }
 
