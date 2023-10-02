@@ -2,13 +2,8 @@ package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
@@ -16,7 +11,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
@@ -30,7 +24,6 @@ public class IntegrationBase {
     protected DailyListApiStub dailyListApiStub = new DailyListApiStub();
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
-    protected AddCasesApiStub addCasesApiStub = new AddCasesApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
 
     @Value("${server.port}")
@@ -41,12 +34,11 @@ public class IntegrationBase {
         WireMock.reset();
     }
 
-    public URL getGatewayURI() throws MalformedURLException {
-        String url =  System.getenv("TEST_URL");
-        if (System.getenv("TEST_URL")==null) {
+    public URL getGatewayUri() throws MalformedURLException {
+        String url = System.getenv("TEST_URL");
+        if (System.getenv("TEST_URL") == null) {
             return new URL("http://localhost:" + serverPort + "/ws");
-        }
-        else {
+        } else {
             return new URL(url);
         }
     }

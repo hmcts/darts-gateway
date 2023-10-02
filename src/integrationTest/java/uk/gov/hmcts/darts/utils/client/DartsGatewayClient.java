@@ -1,21 +1,37 @@
 package uk.gov.hmcts.darts.utils.client;
 
-import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import com.service.mojdarts.synapps.com.AddCaseResponse;
+import com.service.mojdarts.synapps.com.AddDocumentResponse;
+import com.service.mojdarts.synapps.com.AddLogEntryResponse;
+import com.service.mojdarts.synapps.com.GetCasesResponse;
+import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import jakarta.xml.bind.JAXBElement;
 
-import javax.annotation.PostConstruct;
-import java.lang.Exception;
+import java.net.URL;
+import java.util.function.Function;
 
-/**
- * Simple client that demonstrates standard web services flow using non MTOM format
- */
-public class DartsGatewayClient extends DartsGatewayMTOMClient {
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
+public interface DartsGatewayClient {
+    /**
+     * sets the mode of this client.
+     */
+    void setEnableMtomMode(boolean enabled);
 
-    public DartsGatewayClient(SaajSoapMessageFactory messageFactory) {
-        super(messageFactory);
-    }
+    <I, O> DartsGatewayAssertionUtil<O> sendMessage(URL uri, String payload, Function<I, JAXBElement<I>> supplier,
+                                                    Class<I> clazz, Function<Object, JAXBElement<O>> responseSupplier)
+            throws Exception;
 
-    @PostConstruct
-    public void init() throws Exception {
-        setEnableMTOMMode(false);
-    }
+    <C> JAXBElement<C> convertData(String payload, Class<C> clazz) throws Exception;
+
+    DartsGatewayAssertionUtil<GetCasesResponse> getCases(URL uri, String payload) throws Exception;
+
+    DartsGatewayAssertionUtil<AddDocumentResponse> addDocument(URL uri, String payload) throws Exception;
+
+    void send(URL uri, String payload) throws Exception;
+
+    DartsGatewayAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws Exception;
+
+    DartsGatewayAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload) throws Exception;
+
+    DartsGatewayAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws Exception;
 }

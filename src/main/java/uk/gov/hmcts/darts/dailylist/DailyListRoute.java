@@ -13,9 +13,6 @@ import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListXmlRequestMapper;
 import uk.gov.hmcts.darts.dailylist.model.PostDailyListRequest;
-import uk.gov.hmcts.darts.model.dailylist.CourtHouse;
-import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
-import uk.gov.hmcts.darts.model.dailylist.DocumentID;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
@@ -93,10 +90,10 @@ public class DailyListRoute {
         Integer dalId = postDailyListResponse.getBody().getDalId();
         // TODO: We need to ensure we pass a string for the json as for the reasons below
         dailyListsClient.dailylistsPatch(
-           dalId,
-            //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
-            // not work with objects passed as headers
-            null
+                dalId,
+                //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
+                // not work with objects passed as headers
+                null
         );
         return successResponse();
     }
