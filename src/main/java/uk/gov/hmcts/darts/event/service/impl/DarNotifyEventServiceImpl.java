@@ -10,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
 import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
-import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.event.service.DarNotifyEventService;
+import uk.gov.hmcts.dartsgateway.notification.model.NotificationDetails;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -27,12 +27,12 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
     private final DarNotifyEventClient darNotifyEventClient;
 
     @Override
-    public void darNotify(DarNotifyEvent darNotifyEvent) {
+    public void darNotify(NotificationDetails darNotifyEvent) {
         DARNotifyEvent xmlDarNotifyEvent = convertToXmlDarNotifyEvent(darNotifyEvent);
         darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), xmlDarNotifyEvent);
     }
 
-    private DARNotifyEvent convertToXmlDarNotifyEvent(DarNotifyEvent darNotifyEvent) {
+    private DARNotifyEvent convertToXmlDarNotifyEvent(NotificationDetails darNotifyEvent) {
         ObjectFactory factory = new ObjectFactory();
 
         Event event = factory.createEvent();

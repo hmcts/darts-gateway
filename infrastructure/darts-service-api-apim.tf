@@ -2,10 +2,10 @@ locals {
   api_mgmt_name           = "sds-api-mgmt-${var.env}"
   api_mgmt_resource_group = "ss-${var.env}-network-rg"
   api_mgmt_product_name   = "${var.product}-${var.component}"
-  api_mgmt_api_name       = "${var.product}-${var.component}-api"
+  api_mgmt_api_name       = "${var.product}-${var.component}-api-darts"
   api_base_path           = var.product
   url_darts_api_hostname  = "https://${var.api_hostname}"
-  url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/dartsService.wsdl"
+  url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/ws/dartsService.wsdl"
 }
 
 provider "azurerm" {
@@ -56,7 +56,7 @@ module "api-mgmt-api-policy" {
   api_mgmt_name          = local.api_mgmt_name
   api_mgmt_rg            = local.api_mgmt_resource_group
   api_name               = module.api_mgmt_api.name
-  api_policy_xml_content = file("${path.module}/apim-policy/api-policy.xml")
+  api_policy_xml_content = file("${path.module}/apim-policy/darts-service-api-policy.xml")
   providers = {
     azurerm = azurerm.aks-sdsapps
   }

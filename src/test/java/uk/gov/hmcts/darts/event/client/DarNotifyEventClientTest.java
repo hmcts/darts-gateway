@@ -14,7 +14,7 @@ import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
-import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
+import uk.gov.hmcts.dartsgateway.notification.model.NotificationDetails;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,7 +41,7 @@ class DarNotifyEventClientTest {
 
     private static final String EVENT_DATE_TIME_ATTRIBUTE = "%d";
 
-    private DarNotifyEvent darNotifyEvent;
+    private NotificationDetails darNotifyEvent;
     private DARNotifyEvent request;
     private DARNotifyEventResponse response;
 
@@ -59,14 +59,13 @@ class DarNotifyEventClientTest {
         darNotifyEventConfigurationProperties.setSecurementUsername("secure_user");
         darNotifyEventConfigurationProperties.setSecurementPassword("secure_password");
 
-        darNotifyEvent = DarNotifyEvent.builder()
-            .notificationUrl("http://192.168.0.1:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx")
-            .notificationType("3")
-            .timestamp(OffsetDateTime.parse("2023-06-19T14:52:40.637Z"))
-            .courthouse("Test Court")
-            .courtroom("1")
-            .caseNumbers(List.of("A123456"))
-            .build();
+        darNotifyEvent = new NotificationDetails();
+        darNotifyEvent.setNotificationUrl("http://192.168.0.1:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx");
+        darNotifyEvent.setNotificationType("3");
+        darNotifyEvent.timestamp(OffsetDateTime.parse("2023-06-19T14:52:40.637Z"));
+        darNotifyEvent.courthouse("Test Court");
+        darNotifyEvent.courtroom("1");
+        darNotifyEvent.caseNumbers(List.of("A123456"));
 
         ObjectFactory factory = new ObjectFactory();
         request = convertToXmlDarNotifyEvent(darNotifyEvent);
@@ -197,7 +196,7 @@ class DarNotifyEventClientTest {
         assertFalse(darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), request));
     }
 
-    private static DARNotifyEvent convertToXmlDarNotifyEvent(DarNotifyEvent darNotifyEvent) {
+    private static DARNotifyEvent convertToXmlDarNotifyEvent(NotificationDetails darNotifyEvent) {
         ObjectFactory factory = new ObjectFactory();
 
         Event event = factory.createEvent();

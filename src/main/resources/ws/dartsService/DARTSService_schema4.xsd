@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema elementFormDefault="qualified"
-           version="1.0"
-           targetNamespace="http://core.datamodel.fs.documentum.emc.com/"
-           xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/"
-           xmlns:tns="http://core.datamodel.fs.documentum.emc.com/"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/"
-           xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/">
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/">
 
-  <xs:import namespace="http://properties.core.datamodel.fs.documentum.emc.com/" schemaLocation="darts-ws-schema3.xsd"/>
+  <xs:import namespace="http://properties.core.datamodel.fs.documentum.emc.com/" schemaLocation="DARTSService_schema3.xsd"/>
 
-  <xs:import namespace="http://content.core.datamodel.fs.documentum.emc.com/" schemaLocation="darts-ws-schema5.xsd"/>
+  <xs:import namespace="http://content.core.datamodel.fs.documentum.emc.com/" schemaLocation="DARTSService_schema5.xsd"/>
 
   <xs:complexType name="DataPackage">
     <xs:sequence>

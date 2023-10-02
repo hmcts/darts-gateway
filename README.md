@@ -2,109 +2,51 @@
 
 [![Build Status](https://travis-ci.org/hmcts/darts-gateway.svg?branch=master)](https://travis-ci.org/hmcts/darts-gateway)
 
-## Notes
+This project contains the APIM interfaces for:-
 
-Since Spring Boot 2.1 bean overriding is disabled. If you want to enable it you will need to set `spring.main.allow-bean-definition-overriding` to `true`.
+1) DAR Notification Restful Endpoint
+2) DAR Notification SOAP Endpoint
+3) DARTS Legacy SOAP Endpoint
+4) Documentum Context Registry SOAP Endpoint
 
-JUnit 5 is now enabled by default in the project. Please refrain from using JUnit4 and use the next generation
+The jenkins pipeline installs these interfaces into APIM (via terraform) as well as the associated apim policies
 
-## Building and deploying the application
+## API/Terraform/APIM Policies
 
-### Building the application
+| API Name | API                                                         | Terraform                                            | Policy                                                           |
+|----------|-------------------------------------------------------------|------------------------------------------------------|------------------------------------------------------------------|
+| Documentum Context Registry SOAP Endpoint | [here](./src/main/resources/ws/ContextRegistryService.wsdl) | [here](./infrastructure/context-regisry-apim.tf)     | [here](./infrastructure/apim-policy/context-registry-policy.xml) |
+| DARTS Legacy SOAP Endpoint | [here](./src/main/resources/ws/dartsService.wsdl)           | [here](./infrastructure/darts-service-api-apim.tf)        | [here](./infrastructure/apim-policy/darts-service-api-policy.xml)            |
+| DAR Notification REST Endpoint | [here](./src/main/resources/openapi/gatewayNotify.yaml)     | [here](./infrastructure/dar-notification-openapi-apim.tf) | [here](./infrastructure/apim-policy/dar-notification-openapi-policy.xml)     |
+| DAR Notification SOAP Endpoint | TBC                                                         | TBC                                                  | TBC                                                              |
 
-The project uses [Gradle](https://gradle.org) as a build tool. It already contains
-`./gradlew` wrapper script, so there's no need to install gradle.
+## Configuring the WSDL APIs
 
-To build the project execute the following command:
+### Updating the DARTS Legacy SOAP API
 
-### Prerequisites
+If there are updated to the legacy darts API please add all supporting files into the directory [here](/src/main/ws/dartsService)
 
-For this project to build successfully you need the darts open api artifact in the local
-maven repository. To do this then follow these steps:-
+### Updating the DAR Notification SOAP API
 
-1) Checkout https://github.com/hmcts/darts-api
-2) Run publishToMavenLocal to install the openapi artifact into the local maven repository
+//TODO: Need to find the wsdl file for this
 
-```bash
-  ./gradlew build
-```
+### Updating the Documentum Context Registry Restful API
 
-### Running the application
+If there are updated to the documentum context registry please ad all supporting files into the directory [here](/src/main/ws/contextRegistry)
 
-Create the image of the application by executing the following command:
+## Building the new configuration
 
-```bash
-  ./gradlew assemble
-```
+This project can be build by the gradle command :-
 
-Create docker image:
+gradle clean build
 
-```bash
-  docker-compose build
-```
+Post build will find that the wsdl files directly under [here](/src/main/ws) will have updated and are ready for git commit. If you
+are happy i.e. you have sanity tested by importing into APIM, then commit them so that terraform can install them into the relevant environments
 
-Run the distribution (created in `build/install/darts-gateway` directory)
-by executing the following command:
+### Building the new darts context registry wsdl
 
-```bash
-  docker-compose up
-```
+gradle clean processContextRegistryWSDL
 
-This will start the API container exposing the application's port
-(set to `8070` in this template app).
+### Building the new legacy darts wsdl
 
-In order to test if the application is up, you can call its health endpoint:
-
-```bash
-  curl http://localhost:8070/health
-```
-
-You should get a response similar to this:
-
-```
-  {"status":"UP","diskSpace":{"status":"UP","total":249644974080,"free":137188298752,"threshold":10485760}}
-```
-
-### Alternative script to run application
-
-To skip all the setting up and building, just execute the following command:
-
-```bash
-./bin/run-in-docker.sh
-```
-
-For more information:
-
-```bash
-./bin/run-in-docker.sh -h
-```
-
-Script includes bare minimum environment variables necessary to start api instance. Whenever any variable is changed or any other script regarding docker image/container build, the suggested way to ensure all is cleaned up properly is by this command:
-
-```bash
-docker-compose rm
-```
-
-It clears stopped containers correctly. Might consider removing clutter of images too, especially the ones fiddled with:
-
-```bash
-docker images
-
-docker image rm <image-id>
-```
-
-There is no need to remove postgres and java or similar core images.
-
-### Other
-
-Hystrix offers much more than Circuit Breaker pattern implementation or command monitoring.
-Here are some other functionalities it provides:
- * [Separate, per-dependency thread pools](https://github.com/Netflix/Hystrix/wiki/How-it-Works#isolation)
- * [Semaphores](https://github.com/Netflix/Hystrix/wiki/How-it-Works#semaphores), which you can use to limit
- the number of concurrent calls to any given dependency
- * [Request caching](https://github.com/Netflix/Hystrix/wiki/How-it-Works#request-caching), allowing
- different code paths to execute Hystrix Commands without worrying about duplicating work
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+gradle clean processDartsServiceWSDL

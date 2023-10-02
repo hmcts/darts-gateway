@@ -1,0 +1,68 @@
+openapi: 3.0.1
+
+servers:
+  - url: http://localhost:4550/
+
+info:
+  description: Modernised DARTS Gateway Notification
+  version: ${version}
+  title: Modernised DARTS
+
+paths:
+  /events/dar-notify:
+    post:
+      tags:
+        - Notify DAR
+      summary: Notify DAR
+      operationId: notifyDAR
+      description: Adds an operation to notify DAR
+      responses:
+        200:
+          description: OK
+        '400':
+          description: A required parameter is missing or an invalid.
+          content:
+            application/json+problem:
+              schema:
+                $ref: './problem.yaml'
+        '500':
+          description: A general error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationDetails'
+        description: Notify DAR
+
+components:
+  schemas:
+    NotificationDetails:
+      type: object
+      required:
+        - hearing_id
+        - notification_type
+        - timestamp
+        - courthouse
+        - courtroom
+        - case_numbers
+      properties:
+        hearing_id:
+          type: integer
+          example: 12345
+        notification_url:
+          type: string
+        notification_type:
+          type: string
+          example: DAR
+        timestamp:
+          type: string
+          format: date-time
+          example: '2023-05-31T09:00:00Z'
+        courthouse:
+          type: string
+        courtroom:
+          type: string
+        case_numbers:
+          type: array
+          items:
+            type: string

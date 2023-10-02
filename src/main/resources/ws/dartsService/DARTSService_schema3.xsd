@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema elementFormDefault="qualified" version="1.0"
-           targetNamespace="http://properties.core.datamodel.fs.documentum.emc.com/"
-           xmlns:tns="http://properties.core.datamodel.fs.documentum.emc.com/"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/">
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/">
 
-  <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="darts-ws-schema4.xsd"/>
+  <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="DARTSService_schema4.xsd"/>
 
   <xs:complexType name="PropertySet">
     <xs:sequence>

@@ -81,11 +81,13 @@ class DarNotifyControllerTest {
               "timestamp": "2023-06-19T14:52:40.637Z",
               "courthouse": "Test Court",
               "courtroom": "1",
+              "hearing_id" : "2",
               "case_numbers": [
                 "A123456"
               ]
             }
             """;
+
         MockHttpServletRequestBuilder requestBuilder = post("/events/dar-notify")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(requestBody);

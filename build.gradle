@@ -13,9 +13,12 @@ plugins {
   id 'java-library'
   id "org.openapi.generator" version "7.0.1"
   id("com.github.bjornvester.wsdl2java") version "2.0.2"
+  id 'maven-publish'
+  id "com.dorongold.task-tree" version "2.1.1"
 }
 
 import static groovy.io.FileType.FILES
+import java.nio.file.Files
 
 group = 'uk.gov.hmcts'
 version = '0.0.1'
@@ -234,37 +237,37 @@ task generateCodeFromSpecification() {
 
     // Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
     swaggerList.each {
-        def apiName = it.getName().replace(".yaml", "");
-        def apiLocation = it.getAbsolutePath();
+      def apiName = it.getName().replace(".yaml", "");
+      def apiLocation = it.getAbsolutePath();
 
-        def taskName = "openApiGenerate" + apiName.capitalize()
-        openApiGenerateTaskList << taskName
+      def taskName = "openApiGenerate" + apiName.capitalize()
+      openApiGenerateTaskList << taskName
 
-        Task task = tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
-          generatorName = "spring"
-          inputSpec = "${apiLocation}"
-          outputDir = "$buildDir/generated/openapi".toString()
-          modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
-          outputDir = "$buildDir/generated/openapi"
-          apiPackage = "uk.gov.hmcts.darts.api.${apiName}"
-          modelPackage = "uk.gov.hmcts.darts.model.${apiName}"
-          invokerPackage = "uk.gov.hmcts.darts.invoker.${apiName}"
-          library="spring-cloud"
-          //    https://openapi-generator.tech/docs/generators/java/#config-options
-          skipOperationExample = true
-          skipValidateSpec = true
-          configOptions = [
-            dateLibrary   : "java8",
-            serializationLibrary       : "jackson",
-            useJakartaEe :"true",
-            library : "spring-cloud",
-            interfaceOnly : "true"
-          ]
-        })
+      Task task = tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
+        generatorName = "spring"
+        inputSpec = "${apiLocation}"
+        outputDir = "$buildDir/generated/openapi".toString()
+        modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
+        outputDir = "$buildDir/generated/openapi"
+        apiPackage = "uk.gov.hmcts.darts.api.${apiName}"
+        modelPackage = "uk.gov.hmcts.darts.model.${apiName}"
+        invokerPackage = "uk.gov.hmcts.darts.invoker.${apiName}"
+        library="spring-cloud"
+        //    https://openapi-generator.tech/docs/generators/java/#config-options
+        skipOperationExample = true
+        skipValidateSpec = true
+        configOptions = [
+          dateLibrary   : "java8",
+          serializationLibrary       : "jackson",
+          useJakartaEe :"true",
+          library : "spring-cloud",
+          interfaceOnly : "true"
+        ]
+      })
 
-        task.actions.each { it.execute(task) }
-      }
+      task.actions.each { it.execute(task) }
     }
+  }
 }
 
 sourceSets {
@@ -438,13 +441,13 @@ task genJaxbAddCase {
   }
 }
 
-wsdl2java {
-    wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
-    includes = [
-        "**/*.wsdl"
-      ]
-}
 
+wsdl2java {
+  wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
+  includes = [
+    "**/*.wsdl"
+  ]
+}
 compileJava.dependsOn genJaxb
 
 task extractOpenSpecification() {
@@ -473,6 +476,276 @@ task extractOpenSpecification() {
   }
 }
 
-compileJava.dependsOn generateCodeFromSpecification
+task openapiJar(type: Jar) {
+  archiveClassifier = 'openapi'
+  from layout.buildDirectory.dir("processedSpecs").get().asFile
+}
+
+configurations {
+  openapispecifications
+}
+
+artifacts.add('openapispecifications', openapiJar)
+
+publishing {
+  publications {
+    maven(MavenPublication) {
+      artifact openapiJar
+    }
+  }
+}
+
+task updateOpenSpecificationsWithVersion() {
+
+  doLast {
+    def fileDir = "$projectDir/src/main/resources/openapi/"
+
+    File openFile = new File(fileDir)
+
+    for (File file : openFile.listFiles()) {
+      def fileName = file.getName()
+      def contents = Files.readString(file.toPath())
+
+      def response = contents.replace("\044{version}", version)
+      File newOASFile = layout.buildDirectory.dir("processedSpecs").get().asFile;
+
+      newOASFile.mkdirs();
+
+      def newFile = new File(newOASFile.absolutePath + File.separator + fileName)
+      if (!newFile.exists()) {
+        newFile.createNewFile();
+      }
+
+      newFile.withWriter('utf-8') {
+        writer -> writer.writeLine response
+      }
+    }
+  }
+}
+
+/**
+ *  Take a WSDL file with imported xsd files that are at the same location as the wsdl (needs to be a flat structure)
+ */
+import groovy.xml.XmlSlurper;
+import groovy.xml.XmlUtil;
+import groovy.xml.slurpersupport.GPathResult;
+class CreateAPIMWSDLFile extends DefaultTask {
+
+  /** The WSDL location */
+  @InputFile
+  File wsdlFile = new File("src/main/resources/ws/contextRegistry/ContextRegistryService.wsdl")
+
+  /** The WSDL url to use*/
+  @Input
+  String urlToReplace = "http://test"
+
+  /** The output file where the compatible APIM file will be spat out*/
+  @OutputFile
+  File outputFile = new File("src/main/resources/ws/ContextRegistryService.wsdl")
+
+  @TaskAction
+  void join() {
+    File f =  wsdlFile;
+    XmlSlurper parser = createSlurper();
+    def doc = parser.parse(new StringReader(f.getText()));
+    def node = process(doc);
+
+    // serialize the xml to a string
+    def xmlOutput = XmlUtil.serialize(node);
+    outputFile.write(xmlOutput);
+  }
+
+  // setup the slarper with the relevant feature enabled that preserves xml namespaces
+  static XmlSlurper createSlurper()
+  {
+    XmlSlurper parser = new XmlSlurper(false, true);
+    parser.setFeature("http://xml.org/sax/features/validation", false)
+    parser.setFeature('http://xml.org/sax/features/namespaces', true)
+    parser.setFeature('http://xml.org/sax/features/namespace-prefixes', true)
+    return parser;
+  }
+
+  /**
+   * sets up some name spaces so we can search for name space targetted items
+   */
+  static void setupWithNamespace(var xsd)
+  {
+    xsd.declareNamespace(
+      xsd: 'http://www.w3.org/2001/XMLSchema');
+
+    xsd.declareNamespace(
+      wsdl: 'http://schemas.xmlsoap.org/wsdl/');
+
+    xsd.declareNamespace(
+      soap: 'http://schemas.xmlsoap.org/wsdl/soap/');
+  }
+
+  GPathResult process(GPathResult xsd)
+  {
+    setupWithNamespace(xsd);
+
+    def types = xsd.'wsdl:types';
+
+    // we we a wsdl structure and do we have a types block
+    if (types.size() > 0) {
+
+      // replace the placeholder with the specified url
+      replaceWithUrl(xsd)
+
+      var schemas = types.'xsd:schema';
+      var schemaToAdd = new ArrayList()
+      for (def schema : schemas) {
+        var xsdFile = schema.'xsd:import'.@schemaLocation;
+
+        if (xsdFile.size() > 0) {
+
+          // if we have an import file referenced then recurse and process the xsd
+          var doc = createSlurper().parse(new File(wsdlFile.getParent().toString() + "/" + xsdFile[0]));
+          doc = process(doc)
+          schemaToAdd.add(doc)
+        }
+
+        // remove all processed files
+        schema.replaceNode({})
+      }
+
+      // now add the new schema content to the wsdl
+      for (def schema : schemaToAdd) {
+        types.appendNode(schema)
+      }
+    }
+    else
+    {
+      // remove any imports as these are assumed to be referenced from the top level wsdl
+      def xsdImports = xsd.'xsd:import';
+      for (def xsdImport : xsdImports) {
+        xsdImport.replaceNode({ })
+      }
+
+      // We remove any name spaces around an individual element as this was causing problems. May need to
+      // revisit this
+      removeElementNamespace(xsd)
+    }
+
+    return xsd;
+  }
+
+  /**
+   * replace the placeholder string with the url
+   */
+  void replaceWithUrl(var doc)
+  {
+    var node = doc.'wsdl:service'.'wsdl:port'.'soap:address';
+    var locationAttribute = node.@location
+    if (locationAttribute.equals('REPLACE_WITH_ACTUAL_URL'))
+    {
+      // set the location attribute
+      node.@location = urlToReplace
+    }
+  }
+
+  static void removeElementNamespace(var doc)
+  {
+    // clear down any namespace around an element
+    doc.'**'.findAll { node ->
+      {
+        if (node.name().endsWith("element")) {
+          var key;
+
+          node.attributes().find {
+            if (it.key!=null && it.key.toString().startsWith("xmlns")) {
+              key = it
+            }
+          }
+
+          if (key!=null) {
+            var name = node.attributes().name
+
+            // clear all elements from the node
+            node.attributes().removeAll{return true}
+
+            // reapply the name to the element as this is mandatory
+            node.attributes().put("name", name)
+          }
+        }
+      }
+    }
+  }
+}
+
+task generateServerFromOpenAPISpecification() {
+  doLast {
+    def swaggerList = []
+    def dir = new File("$rootDir/src/main/resources/openapi/".toString())
+    dir.eachFileRecurse(FILES) { file ->
+      if (file.getName().endsWith(".yaml") && file.getName() != "problem.yaml")
+        swaggerList << file
+    }
+
+    def openApiGenerateTaskList = []
+
+    // Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
+    swaggerList.each {
+      def apiName = it.getName().replace(".yaml", "");
+      def taskName = "openApiGenerate" + apiName.capitalize()
+      openApiGenerateTaskList << taskName
+      System.out.println("CLIENT ${buildDir}")
+
+      Task task = tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
+        generatorName = "spring"
+        inputSpec = "$rootDir/src/main/resources/openapi/".toString() + "${apiName}.yaml"
+        outputDir = "$buildDir/generated/openapi".toString()
+        apiPackage = "uk.gov.hmcts.dartsgateway.".toString() + "${apiName}" + ".api"
+        modelPackage = "uk.gov.hmcts.dartsgateway.".toString() + "${apiName}" + ".model"
+        //    https://openapi-generator.tech/docs/generators/java/#config-options
+        skipOperationExample = true
+        configOptions = [
+          dateLibrary   : "java8",
+          interfaceOnly : "true",
+          useTags       : "true",
+          useSpringBoot3: "true"
+        ]
+      })
+
+      System.out.println("Running")
+      task.actions.each { it.execute(task) }
+    }
+  }
+}
+
+/**
+ * Run the custom task with the defaults to process the context registry
+ */
+tasks.register('processContextRegistryWSDL', CreateAPIMWSDLFile)
+  {
+    wsdlFile = new File("src/main/resources/ws/contextRegistry/ContextRegistryService.wsdl")
+    urlToReplace = "http://test"
+    outputFile = new File("src/main/resources/ws/ContextRegistryService.wsdl")
+  }
+
+/**
+ * Run the custom task with the defaults to process the legacy darts service
+ */
+tasks.register('processDartsServiceWSDL', CreateAPIMWSDLFile)
+  {
+    wsdlFile = new File("src/main/resources/ws/dartsService/DARTSService.wsdl")
+    urlToReplace = "http://test"
+    outputFile = new File("src/main/resources/ws/dartsService.wsdl")
+  }
+
+project.tasks.processResources.dependsOn processContextRegistryWSDL
+project.tasks.processResources.dependsOn processDartsServiceWSDL
+
+project.tasks.wsdl2java.dependsOn processContextRegistryWSDL
+project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
+
+compileJava.dependsOn processContextRegistryWSDL
+compileJava.dependsOn processDartsServiceWSDL
+
+compileJava.dependsOn updateOpenSpecificationsWithVersion
+assemble.dependsOn openapiJar
+
 generateCodeFromSpecification.dependsOn extractOpenSpecification
+compileJava.dependsOn generateCodeFromSpecification
+compileJava.dependsOn generateServerFromOpenAPISpecification
 compileJava.dependsOn genJaxbAddCase

@@ -28,7 +28,7 @@ import java.util.List;
 @Configuration
 public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
-    public static final String SCHEMAS_DARTS_WS_SCHEMA_6_XSD = "schemas/darts-ws-schema6.xsd";
+    public static final String SCHEMAS_DARTS_WS_SCHEMA_6_XSD = "ws/dartsService/DARTSService_schema6.xsd";
     public static final String SCHEMAS_DARTS_ADD_CASE_XSD = "schemas/darts-add-case.xsd";
     @Value("${darts-gateway.ws.request-validation}")
     private boolean requestValidation;
