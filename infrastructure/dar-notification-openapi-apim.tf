@@ -23,7 +23,7 @@ module "not_api_mgmt_product" {
   api_mgmt_name         = local.not-api_mgmt_name
   api_mgmt_rg           = local.not-api_mgmt_resource_group
   providers = {
-    azurerm = azurerm.aks-sdsapps
+    azurerm = notazurerm.aks-sdsapps
   }
 }
 
@@ -44,7 +44,7 @@ module "not_api_mgmt_api" {
   content_format = "openapi-link"
   revision       = "1"
   providers = {
-    azurerm = azurerm.aks-sdsapps
+    azurerm = notazurerm.aks-sdsapps
   }
 }
 
@@ -55,6 +55,6 @@ module "not_api-mgmt-api-policy" {
   api_name               = module.api_mgmt_api.name
   api_policy_xml_content = file("${path.module}/apim-policy/dar-notification-openapi-policy.xml")
   providers = {
-    azurerm = azurerm.aks-sdsapps
+    azurerm = notazurerm.aks-sdsapps
   }
 }

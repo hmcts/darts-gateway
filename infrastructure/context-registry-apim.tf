@@ -23,7 +23,7 @@ module "ctx_api_mgmt_product" {
   api_mgmt_name         = local.ctx-api_mgmt_name
   api_mgmt_rg           = local.ctx-api_mgmt_resource_group
   providers = {
-    azurerm = azurerm.aks-sdsapps
+    azurerm = ctxazurerm.aks-sdsapps
   }
 }
 
@@ -45,7 +45,7 @@ module "ctx_api_mgmt_api" {
   content_format = "wsdl-link"
   revision       = "1"
   providers = {
-    azurerm = azurerm.aks-sdsapps
+    azurerm = ctxazurerm.aks-sdsapps
   }
 }
 
@@ -58,6 +58,6 @@ module "ctx_api-mgmt-api-policy" {
   api_name               = module.ctx-api_mgmt_api.name
   api_policy_xml_content = file("${path.module}/apim-policy/context-registry-policy.xml")
   providers = {
-    azurerm = azurerm.aks-sdsapps
+    azurerm = ctxazurerm.aks-sdsapps
   }
 }
