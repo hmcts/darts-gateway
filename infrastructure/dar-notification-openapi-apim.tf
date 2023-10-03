@@ -1,7 +1,7 @@
 locals {
   not-api_mgmt_name           = "sds-api-mgmt-${var.env}"
   not-api_mgmt_resource_group = "ss-${var.env}-network-rg"
-  not-api_mgmt_product_name   = "${var.product}-${var.component}"
+  not-api_mgmt_product_name   = "${var.product}-${var.component}-not"
   not-api_mgmt_api_name       = "${var.product}-${var.component}-api-notify"
   not-api_base_path           = var.product
   not-url_darts_api_hostname  = "https://${var.api_hostname}"
