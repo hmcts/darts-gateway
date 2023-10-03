@@ -1,15 +1,16 @@
 package uk.gov.hmcts.darts.ws;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.test.server.MockWebServiceClient;
-import org.springframework.ws.test.server.ResponseActions;
-import org.springframework.xml.transform.StringSource;
-import org.xmlunit.matchers.CompareMatcher;
+import com.service.mojdarts.synapps.com.AddCaseResponse;
+import com.service.mojdarts.synapps.com.GetCasesResponse;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
-
-import java.io.IOException;
+import uk.gov.hmcts.darts.utils.client.ClientProvider;
+import uk.gov.hmcts.darts.utils.client.DartsGatewayAssertionUtil;
+import uk.gov.hmcts.darts.utils.client.DartsGatewayClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -17,23 +18,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.springframework.ws.test.server.RequestCreators.withPayload;
-import static org.springframework.ws.test.server.ResponseMatchers.clientOrSenderFault;
-import static org.springframework.ws.test.server.ResponseMatchers.noFault;
-import static org.springframework.ws.test.server.ResponseMatchers.xpath;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class CasesWebServiceTest extends IntegrationBase {
-    @Autowired
-    private MockWebServiceClient wsClient;
 
-    @Test
-    void handlesGetCases() throws IOException {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void handlesGetCases(DartsGatewayClient client) throws Exception {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
-        StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/dartsApiResponse.json");
 
@@ -45,72 +39,67 @@ class CasesWebServiceTest extends IntegrationBase {
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/expectedResponse.xml");
-        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
-                .andExpect(noFault());
-        String actualResponse = TestUtils.getResponse(responseActions);
-        assertThat(actualResponse, CompareMatcher.isIdenticalTo(expectedResponseStr));
+
+        DartsGatewayAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+        response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
     }
 
-    @Test
-    void handlesGetCasesServiceFailure() throws IOException {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void handlesGetCasesServiceFailure(DartsGatewayClient client) throws Exception {
         getCasesApiStub.returnsFailureWhenGettingCases();
 
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
-        StringSource soapRequest = new StringSource(soapRequestStr);
-
-        wsClient.sendRequest(withPayload(soapRequest))
-                .andExpect(noFault()).andExpect(noFault())
-                .andExpect(xpath("//code").evaluatesTo("404"))
-                .andExpect(xpath("//message").evaluatesTo("Courthouse Not Found"));
+        DartsGatewayAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+        DartsGatewayAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
     }
 
-    @Test
-    void handlesAddCase() throws IOException {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void handlesAddCase(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/addCase/soapRequest.xml");
 
-        StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
             "payloads/addCase/dartsApiResponse.json");
-
 
         stubFor(post(urlPathEqualTo("/cases"))
                     .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
         String expectedResponseStr = TestUtils.getContentsFromFile(
             "payloads/addCase/expectedResponse.xml");
 
-        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
-            .andExpect(noFault());
-        String actualResponse = TestUtils.getResponse(responseActions);
-        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponseStr).ignoreWhitespace());
+
+        DartsGatewayAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
+        response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 
-    @Test
-    void handlesAddCaseError() throws IOException {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void handlesAddCaseError(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/addCase/invalidSoapRequest.xml");
 
-        StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
             "payloads/addCase/dartsApiResponse.json");
 
         stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
 
-        wsClient.sendRequest(withPayload(soapRequest))
-            .andExpect(clientOrSenderFault());
+        Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
+            client.addCases(getGatewayUri(), soapRequestStr);
+        });
     }
 
-    @Test
-    void handlesAddCaseWithInvalidServiceResponse() throws IOException {
+    @ParameterizedTest
+    @ArgumentsSource(ClientProvider.class)
+    void handlesAddCaseWithInvalidServiceResponse(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/soapRequest.xml");
 
-        StringSource soapRequest = new StringSource(soapRequestStr);
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/dartsApiResponse.json");
 
@@ -120,9 +109,7 @@ class CasesWebServiceTest extends IntegrationBase {
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/expectedResponse.xml");
 
-        ResponseActions responseActions = wsClient.sendRequest(withPayload(soapRequest))
-                .andExpect(noFault());
-        String actualResponse = TestUtils.getResponse(responseActions);
-        assertThat(actualResponse, CompareMatcher.isSimilarTo(expectedResponseStr).ignoreWhitespace());
+        DartsGatewayAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
+        response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 }

@@ -88,11 +88,12 @@ public class DailyListRoute {
         );
 
         Integer dalId = postDailyListResponse.getBody().getDalId();
+        // TODO: We need to ensure we pass a string for the json as for the reasons below
         dailyListsClient.dailylistsPatch(
-            dalId,
-            //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
-            // not work with objects passed as headers
-            null
+                dalId,
+                //TODO: Need to change the specification to take a string and then pass modernisedDailyListJson. Feign will
+                // not work with objects passed as headers
+                null
         );
         return successResponse();
     }
