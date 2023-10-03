@@ -1,11 +1,11 @@
 locals {
-  api_mgmt_name           = "sds-api-mgmt-${var.env}"
-  api_mgmt_resource_group = "ss-${var.env}-network-rg"
-  api_mgmt_product_name   = "${var.product}-${var.component}"
-  api_mgmt_api_name       = "${var.product}-${var.component}-api-ctxt"
-  api_base_path           = var.product
-  url_darts_api_hostname  = "https://${var.api_hostname}"
-  url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/ws/ContextRegistryService.wsdl"
+  ctx-api_mgmt_name           = "sds-api-mgmt-${var.env}"
+  ctx-api_mgmt_resource_group = "ss-${var.env}-network-rg"
+  ctx-api_mgmt_product_name   = "${var.product}-${var.component}"
+  ctx-api_mgmt_api_name       = "${var.product}-${var.component}-api-ctxt"
+  ctx-api_base_path           = var.product
+  ctx-url_darts_api_hostname  = "https://${var.api_hostname}"
+  ctx-url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/ws/ContextRegistryService.wsdl"
 }
 
 provider "azurerm" {
@@ -17,11 +17,11 @@ provider "azurerm" {
 # Include CNP module for setting up an APIM product
 module "api_mgmt_product" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-product?ref=master"
-  name                  = local.api_mgmt_product_name
+  name                  = local.ctx-api_mgmt_product_name
   approval_required     = "false"
   subscription_required = "false"
-  api_mgmt_name         = local.api_mgmt_name
-  api_mgmt_rg           = local.api_mgmt_resource_group
+  api_mgmt_name         = local.ctx-api_mgmt_name
+  api_mgmt_rg           = local.ctx-api_mgmt_resource_group
   providers = {
     azurerm = azurerm.aks-sdsapps
   }
@@ -32,16 +32,16 @@ module "api_mgmt_product" {
 # content_format needs to be set to wsdl-link as specs are in WSDL format
 module "api_mgmt_api" {
   source         = "git@github.com:hmcts/cnp-module-api-mgmt-api?ref=master"
-  name           = local.api_mgmt_api_name
+  name           = local.ctx-api_mgmt_api_name
   display_name   = "Darts Gateway Context Registry API"
-  api_mgmt_name  = local.api_mgmt_name
-  api_mgmt_rg    = local.api_mgmt_resource_group
+  api_mgmt_name  = local.ctx-api_mgmt_name
+  api_mgmt_rg    = local.ctx-api_mgmt_resource_group
   product_id     = module.api_mgmt_product.product_id
-  path           = local.api_base_path
-  service_url    = local.url_darts_api_hostname
+  path           = local.ctx-api_base_path
+  service_url    = local.ctx-url_darts_api_hostname
   protocols      = ["http", "https"]
   api_type       = "soap"
-  swagger_url    = local.url_swagger
+  swagger_url    = local.ctx-url_swagger
   content_format = "wsdl-link"
   revision       = "1"
   providers = {
@@ -53,9 +53,9 @@ module "api_mgmt_api" {
 # Uses output variable from api_mgmt_api to set api_name
 module "api-mgmt-api-policy" {
   source                 = "git@github.com:hmcts/cnp-module-api-mgmt-api-policy?ref=master"
-  api_mgmt_name          = local.api_mgmt_name
-  api_mgmt_rg            = local.api_mgmt_resource_group
-  api_name               = module.api_mgmt_api.name
+  api_mgmt_name          = local.ctx-api_mgmt_name
+  api_mgmt_rg            = local.ctx-api_mgmt_resource_group
+  api_name               = module.ctx-api_mgmt_api.name
   api_policy_xml_content = file("${path.module}/apim-policy/context-registry-policy.xml")
   providers = {
     azurerm = azurerm.aks-sdsapps
