@@ -312,7 +312,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.5'
   constraints {
-    implementation('com.squareup.okio:okio:3.5.0') {
+    implementation('com.squareup.okio:okio:3.6.0') {
       because 'version 3.0.0 has vulnerability CVE-2023-3635'
     }
   }
@@ -333,7 +333,7 @@ dependencies {
   }
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.0.6'
-  testImplementation group: 'commons-io', name: 'commons-io', version: '2.13.0'// CVE-2021-29425
+  testImplementation group: 'commons-io', name: 'commons-io', version: '2.14.0'// CVE-2021-29425
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.0.4'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
   testImplementation 'org.xmlunit:xmlunit-core:2.9.1'
