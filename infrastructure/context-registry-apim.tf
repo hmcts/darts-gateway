@@ -15,7 +15,7 @@ provider "azurerm" {
 }
 
 # Include CNP module for setting up an APIM product
-module "api_mgmt_product" {
+module "ctx_api_mgmt_product" {
   source                = "git@github.com:hmcts/cnp-module-api-mgmt-product?ref=master"
   name                  = local.ctx-api_mgmt_product_name
   approval_required     = "false"
@@ -30,7 +30,7 @@ module "api_mgmt_product" {
 # Include CNP module for setting up an API on an APIM product
 # Uses output variable from api_mgmt_product to set product_id
 # content_format needs to be set to wsdl-link as specs are in WSDL format
-module "api_mgmt_api" {
+module "ctx_api_mgmt_api" {
   source         = "git@github.com:hmcts/cnp-module-api-mgmt-api?ref=master"
   name           = local.ctx-api_mgmt_api_name
   display_name   = "Darts Gateway Context Registry API"
@@ -51,7 +51,7 @@ module "api_mgmt_api" {
 
 # Include CNP module for setting up a policy on an API
 # Uses output variable from api_mgmt_api to set api_name
-module "api-mgmt-api-policy" {
+module "ctx_api-mgmt-api-policy" {
   source                 = "git@github.com:hmcts/cnp-module-api-mgmt-api-policy?ref=master"
   api_mgmt_name          = local.ctx-api_mgmt_name
   api_mgmt_rg            = local.ctx-api_mgmt_resource_group
