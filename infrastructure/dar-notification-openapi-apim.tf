@@ -8,8 +8,8 @@ locals {
   not-url_swagger     = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/openapi/notification.yaml"
 }
 
-provider "notazurerm" {
-  alias           = "aks-sdsapps"
+provider "azurerm" {
+  alias           = "not-aks-sdsapps"
   subscription_id = var.aks_subscription_id
   features {}
 }
@@ -23,7 +23,7 @@ module "not_api_mgmt_product" {
   api_mgmt_name         = local.not-api_mgmt_name
   api_mgmt_rg           = local.not-api_mgmt_resource_group
   providers = {
-    azurerm = notazurerm.aks-sdsapps
+    azurerm = azurerm.not-aks-sdsapps
   }
 }
 
@@ -44,7 +44,7 @@ module "not_api_mgmt_api" {
   content_format = "openapi-link"
   revision       = "1"
   providers = {
-    azurerm = notazurerm.aks-sdsapps
+    azurerm = azurerm.not-aks-sdsapps
   }
 }
 
@@ -55,6 +55,6 @@ module "not_api-mgmt-api-policy" {
   api_name               = module.api_mgmt_api.name
   api_policy_xml_content = file("${path.module}/apim-policy/dar-notification-openapi-policy.xml")
   providers = {
-    azurerm = notazurerm.aks-sdsapps
+    azurerm = azurerm.not-aks-sdsapps
   }
 }
