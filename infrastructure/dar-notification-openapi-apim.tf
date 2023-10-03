@@ -36,7 +36,7 @@ module "not_api_mgmt_api" {
   display_name   = "Darts Gateway Notification API"
   api_mgmt_name  = local.not-api_mgmt_name
   api_mgmt_rg    = local.not-api_mgmt_resource_group
-  product_id     = module.api_mgmt_product.product_id
+  product_id     = module.not_api_mgmt_product.product_id
   path           = local.not-api_base_path
   service_url    = local.not-url_darts_api_hostname
   protocols      = ["http", "https"]
@@ -52,7 +52,7 @@ module "not_api-mgmt-api-policy" {
   source                 = "git@github.com:hmcts/cnp-module-api-mgmt-api-policy?ref=master"
   api_mgmt_name          = local.not-api_mgmt_name
   api_mgmt_rg            = local.not-api_mgmt_resource_group
-  api_name               = module.api_mgmt_api.name
+  api_name               = module.not_api_mgmt_product.name
   api_policy_xml_content = file("${path.module}/apim-policy/dar-notification-openapi-policy.xml")
   providers = {
     azurerm = azurerm.not-aks-sdsapps

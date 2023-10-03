@@ -36,7 +36,7 @@ module "ctx_api_mgmt_api" {
   display_name   = "Darts Gateway Context Registry API"
   api_mgmt_name  = local.ctx-api_mgmt_name
   api_mgmt_rg    = local.ctx-api_mgmt_resource_group
-  product_id     = module.api_mgmt_product.product_id
+  product_id     = module.ctx_api_mgmt_api.product_id
   path           = local.ctx-api_base_path
   service_url    = local.ctx-url_darts_api_hostname
   protocols      = ["http", "https"]
@@ -55,7 +55,7 @@ module "ctx_api-mgmt-api-policy" {
   source                 = "git@github.com:hmcts/cnp-module-api-mgmt-api-policy?ref=master"
   api_mgmt_name          = local.ctx-api_mgmt_name
   api_mgmt_rg            = local.ctx-api_mgmt_resource_group
-  api_name               = module.ctx-api_mgmt_api.name
+  api_name               = module.ctx_api_mgmt_api.name
   api_policy_xml_content = file("${path.module}/apim-policy/context-registry-policy.xml")
   providers = {
     azurerm = azurerm.ctx-aks-sdsapps
