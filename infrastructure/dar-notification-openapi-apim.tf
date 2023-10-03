@@ -8,7 +8,7 @@ locals {
   not-url_swagger     = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/openapi/notification.yaml"
 }
 
-provider "azurerm" {
+provider "not_azurerm" {
   alias           = "aks-sdsapps"
   subscription_id = var.aks_subscription_id
   features {}

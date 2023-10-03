@@ -8,7 +8,7 @@ locals {
   ctx-url_swagger             = "https://raw.githubusercontent.com/hmcts/darts-gateway/master/src/main/resources/ws/ContextRegistryService.wsdl"
 }
 
-provider "azurerm" {
+provider "ctx_azurerm" {
   alias           = "aks-sdsapps"
   subscription_id = var.aks_subscription_id
   features {}
