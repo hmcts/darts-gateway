@@ -6,6 +6,7 @@ import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
+import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 
 public final class ResponseFactory {
@@ -45,5 +46,11 @@ public final class ResponseFactory {
         addLogEntryResponse.setReturn(new DARTSResponse());
 
         return addLogEntryResponse;
+    }
+
+    public static RegisterNodeResponse getRegisterNodeResponse() {
+        RegisterNodeResponse registerNodeResponse = new ObjectFactory().createRegisterNodeResponse();
+        registerNodeResponse.setReturn(new com.synapps.moj.dfs.response.RegisterNodeResponse());
+        return registerNodeResponse;
     }
 }

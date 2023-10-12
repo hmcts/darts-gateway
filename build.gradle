@@ -339,8 +339,7 @@ dependencies {
   testImplementation 'org.xmlunit:xmlunit-core:2.9.1'
   testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
 
-  // we can use a dynamic variable to target 0.x at this moment
-  openapispec 'com.github.hmcts:darts-api:DMP-985-Add-Known-Legacy-Errors-To-OpenAPI-SNAPSHOT:openapi'
+  openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
@@ -394,6 +393,7 @@ sourceSets {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
       srcDir 'src/main/java/generated'
+      srcDir 'build/generated-sources/jaxbRegisterNode'
       srcDir 'build/generated-sources/jaxbAddCase'
     }
   }
@@ -412,6 +412,26 @@ task genJaxb {
 
       xjc(destdir: sourcesDir, schema: schema) {
         arg(value: "-wsdl")
+        produces(dir: sourcesDir, includes: "**/*.java")
+      }
+    }
+  }
+}
+
+task genJaxbRegisterNode {
+  ext.sourcesDir = "${buildDir}/generated-sources/jaxbRegisterNode"
+  ext.schema = "src/main/resources/schemas/darts-register-node.xsd"
+
+  outputs.dir sourcesDir
+
+  doLast() {
+    project.ant {
+      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+      mkdir(dir: sourcesDir)
+
+      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.registernode",  schema: schema) {
+        arg(value: "-wsdl")
+
         produces(dir: sourcesDir, includes: "**/*.java")
       }
     }
@@ -437,6 +457,7 @@ task genJaxbAddCase {
     }
   }
 }
+
 
 wsdl2java {
     wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
@@ -475,4 +496,5 @@ task extractOpenSpecification() {
 
 compileJava.dependsOn generateCodeFromSpecification
 generateCodeFromSpecification.dependsOn extractOpenSpecification
-compileJava.dependsOn genJaxbAddCase
+compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode
+

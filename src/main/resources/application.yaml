@@ -44,6 +44,9 @@ darts-gateway:
   daily-list:
     schema: "src/main/resources/schemas/xhibit/DailyList.xsd"
     validate: false
+  register-node:
+    schema: "src/main/resources/schemas/darts-register-node.xsd"
+    validate: false
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 
