@@ -22,7 +22,6 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.xml.transform.StringSource;
 
-import java.lang.Exception;
 import java.net.URL;
 import java.util.function.Function;
 
