@@ -2,21 +2,16 @@ package uk.gov.hmcts.darts.noderegistration;
 
 import com.service.mojdarts.synapps.com.RegisterNode;
 import com.service.mojdarts.synapps.com.registernode.Node;
-import com.synapps.moj.dfs.response.DARTSResponse;
 import com.synapps.moj.dfs.response.RegisterNodeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.cases.CasesRoute;
-import uk.gov.hmcts.darts.cases.mapper.GetCasesMapper;
-import uk.gov.hmcts.darts.common.client.CasesClient;
 import uk.gov.hmcts.darts.common.client.RegisterNodeClient;
 import uk.gov.hmcts.darts.model.noderegistration.PostNodeRegistrationResponse;
 import uk.gov.hmcts.darts.noderegistration.mapper.RegisterNodeMapper;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
-import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 @Service
 @RequiredArgsConstructor

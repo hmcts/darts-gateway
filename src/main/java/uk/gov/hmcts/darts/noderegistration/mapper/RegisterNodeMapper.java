@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.noderegistration.mapper;
 
 import com.synapps.moj.dfs.response.RegisterNodeResponse;
-import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.model.noderegistration.PostNodeRegistrationResponse;
 

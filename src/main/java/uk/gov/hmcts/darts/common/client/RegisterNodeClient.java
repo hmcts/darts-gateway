@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.common.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import uk.gov.hmcts.darts.api.cases.CasesApi;
 import uk.gov.hmcts.darts.api.noderegistration.RegisterDevicesApi;
 import uk.gov.hmcts.darts.config.ServiceConfig;
 
