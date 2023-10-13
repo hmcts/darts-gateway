@@ -1,9 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
-import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -12,8 +10,10 @@ import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.ClientProvider;
 import uk.gov.hmcts.darts.utils.client.DartsGatewayAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.DartsGatewayClient;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class RegisterNodeWebServiceTest extends IntegrationBase {

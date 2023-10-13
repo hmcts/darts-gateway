@@ -13,7 +13,6 @@ import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
 import com.service.mojdarts.synapps.com.RegisterNode;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import org.springframework.oxm.Marshaller;
