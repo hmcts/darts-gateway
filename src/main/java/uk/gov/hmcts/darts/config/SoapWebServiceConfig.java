@@ -30,6 +30,8 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
     public static final String SCHEMAS_DARTS_WS_SCHEMA_6_XSD = "schemas/darts-ws-schema6.xsd";
     public static final String SCHEMAS_DARTS_ADD_CASE_XSD = "schemas/darts-add-case.xsd";
+
+    public static final String SCHEMAS_DARTS_REGISTER_NODE_XSD = "schemas/darts-register-node.xsd";
     @Value("${darts-gateway.ws.request-validation}")
     private boolean requestValidation;
 
@@ -53,6 +55,7 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
                 List<XsdSchema> schemas = new ArrayList<>();
                 schemas.add(rootSchema());
                 schemas.add(new SimpleXsdSchema(new ClassPathResource(SCHEMAS_DARTS_ADD_CASE_XSD)));
+                schemas.add(new SimpleXsdSchema(new ClassPathResource(SCHEMAS_DARTS_REGISTER_NODE_XSD)));
                 return schemas.toArray(new XsdSchema[0]);
             }
 
@@ -71,6 +74,7 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
         List<Resource> schemaResources = new ArrayList<>();
         schemaResources.add(new ClassPathResource(SCHEMAS_DARTS_WS_SCHEMA_6_XSD));
         schemaResources.add(new ClassPathResource(SCHEMAS_DARTS_ADD_CASE_XSD));
+        schemaResources.add(new ClassPathResource(SCHEMAS_DARTS_REGISTER_NODE_XSD));
         return schemaResources.toArray(new Resource[0]);
     }
 

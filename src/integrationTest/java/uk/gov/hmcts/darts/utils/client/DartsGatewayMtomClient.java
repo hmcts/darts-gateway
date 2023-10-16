@@ -11,6 +11,8 @@ import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
+import com.service.mojdarts.synapps.com.RegisterNode;
+import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import org.springframework.oxm.Marshaller;
@@ -136,6 +138,15 @@ public class DartsGatewayMtomClient extends WebServiceGatewaySupport implements 
                            addCases -> new ObjectFactory().createAddCase(addCases),
                            AddCase.class,
                            addCases -> (JAXBElement<AddCaseResponse>) addCases
+        );
+    }
+
+    @Override
+    public DartsGatewayAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws Exception {
+        return sendMessage(uri, payload,
+                           registerNode -> new ObjectFactory().createRegisterNode(registerNode),
+                           RegisterNode.class,
+                           registerNode -> (JAXBElement<RegisterNodeResponse>) registerNode
         );
     }
 }

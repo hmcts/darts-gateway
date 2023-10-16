@@ -5,6 +5,7 @@ import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import jakarta.xml.bind.JAXBElement;
 
 import java.net.URL;
@@ -34,4 +35,6 @@ public interface DartsGatewayClient {
     DartsGatewayAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload) throws Exception;
 
     DartsGatewayAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws Exception;
+
+    DartsGatewayAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws Exception;
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema id="registerNode" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="node">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="courthouse" minOccurs="1">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="64"></xs:maxLength>
+              <xs:minLength value="1" />
+              <xs:pattern value=".*[^\s].*" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+
+        <xs:element name="courtroom" minOccurs="1">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="64" />
+              <xs:minLength value="1" />
+              <xs:pattern value=".*[^\s].*" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="hostname" minOccurs="1">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="255" />
+              <xs:minLength value="1" />
+              <xs:pattern value=".*[^\s].*" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="ip_address" minOccurs="1">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="16" />
+              <xs:minLength value="1" />
+              <xs:pattern value=".*[^\s].*" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="mac_address" minOccurs="1">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="25" />
+              <xs:minLength value="1" />
+              <xs:pattern value=".*[^\s].*" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="type" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="node" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
