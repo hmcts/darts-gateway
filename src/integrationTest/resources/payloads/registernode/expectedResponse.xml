@@ -1,0 +1,12 @@
+<ns2:registerNodeResponse xmlns:ns2="http://com.synapps.mojdarts.service.com"
+                              xmlns:ns3="http://rt.fs.documentum.emc.com/"
+                              xmlns:ns4="http://core.datamodel.fs.documentum.emc.com/"
+                              xmlns:ns5="http://properties.core.datamodel.fs.documentum.emc.com/"
+                              xmlns:ns6="http://content.core.datamodel.fs.documentum.emc.com/">
+      <return>
+        <code>200</code>
+        <message>OK</message>
+        <node_id>101010</node_id>
+      </return>
+    </ns2:registerNodeResponse>
+

@@ -5,9 +5,23 @@
 def type = "java"
 def product = "darts"
 def component = "gateway"
-def kv = product + '-ss-kv'
 
+def secrets = [
+  'darts-${env}': [
+    secret('app-insights-connection-string', 'app-insights-connection-string')
+  ],
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
 
 withParameterizedPipeline(type, product, component, 'sbox', 'sbox') {
-    enableSlackNotifications('#darts-builds')
+  loadVaultSecrets(secrets)
+  enableSlackNotifications('#darts-builds')
 }

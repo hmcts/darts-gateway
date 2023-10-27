@@ -16,9 +16,8 @@ java:
           alias: FUNC_TEST_ROPC_USERNAME
         - name: api-FUNC-TEST-ROPC-PASSWORD
           alias: FUNC_TEST_ROPC_PASSWORD
-  #  Uncomment once the vault containing the app insights key has been set up
-  #        - name: AppInsightsInstrumentationKey
-  #          alias: azure.application-insights.instrumentation-key
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
   environment:
     DAR_NOTIFY_DEFAULT_URL: http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net

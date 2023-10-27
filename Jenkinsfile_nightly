@@ -11,4 +11,22 @@ def type = "java"
 def product = "darts"
 def component = "gateway"
 
-withNightlyPipeline(type, product, component) {}
+def secrets = [
+  'darts-${env}': [
+    secret('app-insights-connection-string', 'app-insights-connection-string')
+  ],
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
+withNightlyPipeline(type, product, component) {
+  loadVaultSecrets(secrets)
+  enableSlackNotifications('#darts-builds')
+}

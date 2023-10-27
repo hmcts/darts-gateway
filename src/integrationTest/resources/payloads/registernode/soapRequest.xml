@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:registerNode xmlns:ns2="http://com.synapps.mojdarts.service.com">
+<document>&lt;node type="DAR"&gt;&lt;courthouse&gt;CARDIFF&lt;/courthouse&gt;&lt;courtroom&gt;1&lt;/courtroom&gt;&lt;hostname&gt;minehost&lt;/hostname&gt;&lt;ip_address&gt;1234&lt;/ip_address&gt;&lt;mac_address&gt;Mr-op&lt;/mac_address&gt;&lt;/node&gt;</document>
+</ns2:registerNode>

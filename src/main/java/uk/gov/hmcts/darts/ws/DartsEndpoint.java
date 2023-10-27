@@ -11,6 +11,8 @@ import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
+import com.service.mojdarts.synapps.com.RegisterNode;
+import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
+import uk.gov.hmcts.darts.noderegistration.RegisterNodeRoute;
 import uk.gov.hmcts.darts.routing.EventRoutingService;
 
 @Endpoint
@@ -31,13 +34,13 @@ public class DartsEndpoint {
     private final CasesRoute casesRoute;
     private final GetCourtLogRoute getCourtLogRoute;
     private final AddCourtLogsRoute addCourtLogsRoute;
+    private final RegisterNodeRoute registerNodeRoute;
     private final DartsEndpointHandler endpointHandler;
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addDocument")
     @ResponsePayload
     public JAXBElement<AddDocumentResponse> addDocument(@RequestPayload JAXBElement<AddDocument> addDocument) {
         AddDocumentResponse documentResponse = ResponseFactory.getAddDocumentResponse();
-
         documentResponse.setReturn(endpointHandler.makeAPICall("addDocument", () -> eventRoutingService.route(addDocument.getValue()),
                                            documentResponse::getReturn));
 
@@ -88,5 +91,17 @@ public class DartsEndpoint {
                                    addLogEntryResponse::getReturn));
 
         return new ObjectFactory().createAddLogEntryResponse(addLogEntryResponse);
+    }
+
+    @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "registerNode")
+    @ResponsePayload
+    public JAXBElement<RegisterNodeResponse> registerNode(@RequestPayload JAXBElement<RegisterNode> registerNode) {
+        RegisterNodeResponse registerNodeResponse = ResponseFactory.getRegisterNodeResponse();
+
+
+        registerNodeResponse.setReturn(endpointHandler.makeAPICall("registerNode", () -> registerNodeRoute.route(registerNode.getValue()),
+                                                                   registerNodeResponse::getReturn));
+
+        return new ObjectFactory().createRegisterNodeResponse(registerNodeResponse);
     }
 }
