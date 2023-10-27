@@ -769,4 +769,4 @@ assemble.dependsOn openapiJar
 generateCodeFromSpecification.dependsOn extractOpenSpecification
 compileJava.dependsOn generateCodeFromSpecification
 compileJava.dependsOn generateServerFromOpenAPISpecification
-compileJava.dependsOn genJaxbAddCase
+compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode
