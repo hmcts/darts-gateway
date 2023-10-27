@@ -35,6 +35,10 @@ configurations.all {
   exclude group: 'org.bouncycastle', module: 'bcutil-jdk15on'
 }
 
+ext {
+  tomcatEmbedVersion = "10.1.15"
+}
+
 configurations {
   jaxb
   openapispec
@@ -312,6 +316,10 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
+
+  //CVE-2023-44487
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: tomcatEmbedVersion
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: tomcatEmbedVersion
 
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.5'
   constraints {
