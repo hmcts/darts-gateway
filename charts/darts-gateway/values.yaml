@@ -19,5 +19,5 @@ java:
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
   environment:
-    DAR_NOTIFY_DEFAULT_URL: http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx
+    DAR_NOTIFY_DEFAULT_URL: https://darts-stub-services.staging.platform.hmcts.net/VIQDARNotifyEvent/DARNotifyEvent.asmx
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net
