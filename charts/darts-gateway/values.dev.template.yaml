@@ -15,5 +15,4 @@ java:
           alias: FUNC_TEST_ROPC_PASSWORD
   environment:
     DARTS_API_URL: https://darts-api.staging.platform.hmcts.net
-    DAR_NOTIFY_DEFAULT_URL: https://darts-stub-services.staging.platform.hmcts.net/VIQDARNotifyEvent/DARNotifyEvent.asmx
 
