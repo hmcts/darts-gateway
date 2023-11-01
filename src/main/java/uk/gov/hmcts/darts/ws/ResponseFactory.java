@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
@@ -52,5 +53,11 @@ public final class ResponseFactory {
         RegisterNodeResponse registerNodeResponse = new ObjectFactory().createRegisterNodeResponse();
         registerNodeResponse.setReturn(new com.synapps.moj.dfs.response.RegisterNodeResponse());
         return registerNodeResponse;
+    }
+
+    public static AddAudioResponse getAddAudioResponse() {
+        AddAudioResponse addAudioResponse = new ObjectFactory().createAddAudioResponse();
+        addAudioResponse.setReturn(new DARTSResponse());
+        return addAudioResponse;
     }
 }

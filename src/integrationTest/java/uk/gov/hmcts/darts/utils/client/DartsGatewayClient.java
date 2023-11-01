@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.utils.client;
 
+import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
@@ -37,4 +38,6 @@ public interface DartsGatewayClient {
     DartsGatewayAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws Exception;
 
     DartsGatewayAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws Exception;
+
+    DartsGatewayAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws Exception;
 }

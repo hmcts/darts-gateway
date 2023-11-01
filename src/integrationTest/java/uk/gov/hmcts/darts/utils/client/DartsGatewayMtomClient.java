@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.utils.client;
 
+import com.service.mojdarts.synapps.com.AddAudio;
+import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocument;
@@ -147,6 +149,15 @@ public class DartsGatewayMtomClient extends WebServiceGatewaySupport implements 
                            registerNode -> new ObjectFactory().createRegisterNode(registerNode),
                            RegisterNode.class,
                            registerNode -> (JAXBElement<RegisterNodeResponse>) registerNode
+        );
+    }
+
+    @Override
+    public DartsGatewayAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws Exception {
+        return sendMessage(uri, payload,
+                           addAudio -> new ObjectFactory().createAddAudio(addAudio),
+                           AddAudio.class,
+                           addAudio -> (JAXBElement<AddAudioResponse>) addAudio
         );
     }
 }

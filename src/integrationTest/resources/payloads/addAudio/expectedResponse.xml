@@ -1,0 +1,7 @@
+
+<ns2:addAudioResponse xmlns:ns2="http://com.synapps.mojdarts.service.com">
+  <return>
+    <code>200</code>
+    <message>OK</message>
+  </return>
+</ns2:addAudioResponse>
