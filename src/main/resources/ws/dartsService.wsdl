@@ -833,7 +833,7 @@
   <wsdl:service name="DARTSService">
     <wsdl:documentation>@author ewingsg</wsdl:documentation>
     <wsdl:port name="DARTSServicePort" binding="tns:DARTSServicePortBinding">
-      <soap:address location="http://test" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <soap:address location="http://192.168.0.65:8070/service/darts/DARTSService" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

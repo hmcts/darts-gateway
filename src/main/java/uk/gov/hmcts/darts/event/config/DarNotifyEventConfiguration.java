@@ -21,13 +21,6 @@ public class DarNotifyEventConfiguration {
     }
 
     @Bean
-    public Jaxb2Marshaller marshaller() {
-        var marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("com.viqsoultions");
-        return marshaller;
-    }
-
-    @Bean
     @Primary
     public WebServiceTemplate darNotifyEventWebServiceTemplate(
           DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties,

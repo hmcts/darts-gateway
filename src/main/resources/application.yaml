@@ -64,6 +64,7 @@ feign:
         loggerLevel: full
 logging:
   level:
+    root: DEBUG
     uk:
       gov:
         hmcts:

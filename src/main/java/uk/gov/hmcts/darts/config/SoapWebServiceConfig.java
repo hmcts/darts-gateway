@@ -8,9 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.server.EndpointInterceptor;
+import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
+import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
@@ -20,8 +23,10 @@ import org.springframework.xml.validation.XmlValidatorFactory;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 import org.springframework.xml.xsd.XsdSchemaCollection;
+import uk.gov.hmcts.darts.ws.AddAudioServlet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @EnableWs
@@ -80,10 +85,10 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context) {
-        var messageDispatcherServlet = new MessageDispatcherServlet();
+        AddAudioServlet messageDispatcherServlet = new AddAudioServlet();
         messageDispatcherServlet.setApplicationContext(context);
-        messageDispatcherServlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(messageDispatcherServlet, "/ws/*");
+
+        return new ServletRegistrationBean<>(messageDispatcherServlet, "/service/darts/*");
     }
 
     @Bean(name = "darts")
@@ -91,5 +96,28 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
         var wsdl11Definition = new SimpleWsdl11Definition();
         wsdl11Definition.setWsdl(new ClassPathResource("/ws/dartsService.wsdl"));
         return wsdl11Definition;
+    }
+
+    @Bean
+    public Jaxb2Marshaller marshaller() {
+
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setPackagesToScan(new String[]{"com.viqsoultions", "com.emc.documentum.fs", "com.service.mojdarts.synapps.com", "com.synapps.moj.dfs.response"});
+        marshaller.setMtomEnabled(true);
+        return marshaller;
+    }
+
+    @Bean
+    public MarshallingPayloadMethodProcessor methodProcessor(Jaxb2Marshaller marshaller) {
+        return new MarshallingPayloadMethodProcessor(marshaller);
+    }
+
+    @Bean
+    DefaultMethodEndpointAdapter endpointAdapter(MarshallingPayloadMethodProcessor methodProcessor) {
+
+        DefaultMethodEndpointAdapter adapter = new DefaultMethodEndpointAdapter();
+        adapter.setMethodArgumentResolvers(Collections.singletonList(methodProcessor));
+        adapter.setMethodReturnValueHandlers(Collections.singletonList(methodProcessor));
+        return adapter;
     }
 }
