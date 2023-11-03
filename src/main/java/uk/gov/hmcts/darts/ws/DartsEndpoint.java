@@ -1,9 +1,20 @@
 package uk.gov.hmcts.darts.ws;
 
-import com.emc.documentum.fs.datamodel.core.DataObject;
-import com.emc.documentum.fs.datamodel.core.content.*;
-import com.service.mojdarts.synapps.com.*;
+import com.service.mojdarts.synapps.com.AddAudio;
+import com.service.mojdarts.synapps.com.AddAudioResponse;
+import com.service.mojdarts.synapps.com.AddCase;
+import com.service.mojdarts.synapps.com.AddCaseResponse;
+import com.service.mojdarts.synapps.com.AddDocument;
+import com.service.mojdarts.synapps.com.AddDocumentResponse;
+import com.service.mojdarts.synapps.com.AddLogEntry;
+import com.service.mojdarts.synapps.com.AddLogEntryResponse;
+import com.service.mojdarts.synapps.com.GetCases;
+import com.service.mojdarts.synapps.com.GetCasesResponse;
+import com.service.mojdarts.synapps.com.GetCourtLog;
+import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
+import com.service.mojdarts.synapps.com.RegisterNode;
+import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -24,15 +34,17 @@ import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
 import uk.gov.hmcts.darts.noderegistration.RegisterNodeRoute;
 import uk.gov.hmcts.darts.routing.EventRoutingService;
 
-import java.io.*;
-import java.lang.Exception;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Endpoint
 @RequiredArgsConstructor
 @Slf4j
 @MultipartConfig
+@SuppressWarnings("PMD.ExcessiveImports")
 public class DartsEndpoint {
     private final EventRoutingService eventRoutingService;
     private final CasesRoute casesRoute;
@@ -111,23 +123,22 @@ public class DartsEndpoint {
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addAudio")
     @ResponsePayload
-    public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> request) throws Exception {
+    public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> request) throws IOException {
         HttpServletRequest curRequest =
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                         .getRequest();
 
         // TODO: if we have a multi part lets get the media. We store it here but ultimately pass it through
         // to the modernised darts
-        if (curRequest instanceof DartsRequestMultiPart)
-        {
-            File f = new File(System.getProperty("user.home") + "/upload/");
-            f.mkdirs();
+        if (curRequest instanceof DartsMultiPartHttpRequest) {
+            File fileToUpload = new File(System.getProperty("user.home") + "/upload/");
+            fileToUpload.mkdirs();
 
             UUID uuid = UUID.randomUUID();
-            File mediaFile = new File(f.getAbsolutePath() + "/" + uuid.toString() + ".mp2");
+            File mediaFile = new File(fileToUpload.getAbsolutePath() + "/" + uuid.toString() + ".mp2");
             mediaFile.createNewFile();
 
-            IOUtils.copy(((DartsRequestMultiPart)curRequest).mediaStream(), new FileOutputStream(mediaFile));
+            IOUtils.copy(((DartsMultiPartHttpRequest)curRequest).mediaStream(), Files.newOutputStream(Paths.get(mediaFile.getPath())));
         }
 
         AddAudioResponse response = new AddAudioResponse();

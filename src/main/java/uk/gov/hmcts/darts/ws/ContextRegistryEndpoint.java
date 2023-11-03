@@ -1,10 +1,9 @@
 package uk.gov.hmcts.darts.ws;
 
 import contextreg.LookupResponse;
+import contextreg.ObjectFactory;
 import contextreg.RegisterResponse;
-
 import contextreg.UnregisterResponse;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import contextreg.ObjectFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,14 +24,12 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class ContextRegistryEndpoint {
 
-    public static final AtomicLong counter = new AtomicLong();
+    public static final AtomicLong COUNTER = new AtomicLong();
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
     public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<contextreg.Register> addDocument) {
         RegisterResponse registerResponse = new RegisterResponse();
-
-        long unixTime = System.currentTimeMillis() / 1000L;
 
         HttpServletRequest curRequest =
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
@@ -43,28 +39,21 @@ public class ContextRegistryEndpoint {
         return new ObjectFactory().createRegisterResponse(registerResponse);
     }
 
-
-    private String getToken()
-    {
+    private String getToken() {
+        String machineIdentifier;
         try {
-            String machineIdentifier;
-            try {
-                machineIdentifier = InetAddress.getLocalHost().toString();
-            } catch (UnknownHostException var10) {
-                machineIdentifier = "unknown";
-            }
-            int seedByteCount = 20;
-            java.security.SecureRandom secureRandom = new java.security.SecureRandom();
-            byte[] seed = secureRandom.generateSeed(seedByteCount);
-            secureRandom.setSeed(seed);
-            String random = String.valueOf(secureRandom.nextLong());
-            String var7;
-            String var8 = var7 = machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + counter.incrementAndGet();
-            return var7;
-        } catch (Throwable var11) {
-            throw var11;
+            machineIdentifier = InetAddress.getLocalHost().toString();
+        } catch (UnknownHostException var10) {
+            machineIdentifier = "unknown";
         }
+        int seedByteCount = 20;
+        java.security.SecureRandom secureRandom = new java.security.SecureRandom();
+        byte[] seed = secureRandom.generateSeed(seedByteCount);
+        secureRandom.setSeed(seed);
+        String random = String.valueOf(secureRandom.nextLong());
+        return machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + COUNTER.incrementAndGet();
     }
+
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "unregister")
     @ResponsePayload
     public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<contextreg.Unregister> addDocument) {

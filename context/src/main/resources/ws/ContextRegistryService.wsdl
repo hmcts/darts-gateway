@@ -757,7 +757,7 @@
   </wsdl:binding>
   <wsdl:service name="ContextRegistryService">
     <wsdl:port name="ContextRegistryServicePort" binding="tns:ContextRegistryServicePortBinding">
-      <soap:address location="http://192.168.0.65:8070/service/darts/runtime/ContextRegistryService" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <soap:address location="http://test" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

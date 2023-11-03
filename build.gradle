@@ -275,9 +275,8 @@ task generateCodeFromSpecification() {
 }
 
 
-
 dependencies {
-  implementation project(path: ':context', configuration: 'default')
+  implementation project(path: ':context')
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -409,8 +408,15 @@ tasks.withType(Pmd) {
   exclude 'com/viqsoultions/**/*.java'
 }
 
+task copyContextWSDL(type: Copy) {
+  from 'project(:context)/src/main/resources/ws'
+  into 'build/resources/main/ws'
+}
+
 sourceSets {
+
   main {
+
     java {
       srcDir 'src/main/java'
       srcDir 'build/generated-sources/jaxb'
@@ -575,7 +581,7 @@ class CreateAPIMWSDLFile extends DefaultTask {
 
   /** The WSDL location */
   @InputFile
-  File wsdlFile = new File("src/main/resources/ws/contextRegistry/ContextRegistryService.wsdl")
+  File wsdlFile = new File("src/main/resources/ws/dartsService/dartsService.wsdl")
 
   /** The WSDL url to use*/
   @Input
@@ -583,7 +589,7 @@ class CreateAPIMWSDLFile extends DefaultTask {
 
   /** The output file where the compatible APIM file will be spat out*/
   @OutputFile
-  File outputFile = new File("src/main/resources/ws/ContextRegistryService.wsdl")
+  File outputFile = new File("src/main/resources/ws/dartsService.wsdl")
 
   @TaskAction
   void join() {
@@ -756,16 +762,6 @@ task generateServerFromOpenAPISpecification() {
 }
 
 /**
- * Run the custom task with the defaults to process the context registry
- */
-tasks.register('processContextRegistryWSDL', CreateAPIMWSDLFile)
-  {
-    wsdlFile = new File("src/main/resources/ws/contextRegistry/ContextRegistryService.wsdl")
-    urlToReplace = "http://test"
-    outputFile = new File("src/main/resources/ws/ContextRegistryService.wsdl")
-  }
-
-/**
  * Run the custom task with the defaults to process the legacy darts service
  */
 tasks.register('processDartsServiceWSDL', CreateAPIMWSDLFile)
@@ -775,17 +771,25 @@ tasks.register('processDartsServiceWSDL', CreateAPIMWSDLFile)
     outputFile = new File("src/main/resources/ws/dartsService.wsdl")
   }
 
-//project.tasks.processResources.dependsOn processContextRegistryWSDL
-//project.tasks.processResources.dependsOn processDartsServiceWSDL
+project.tasks.processResources.dependsOn processDartsServiceWSDL
 
-//project.tasks.wsdl2java.dependsOn processContextRegistryWSDL
-//project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
+project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
 
-//compileJava.dependsOn processContextRegistryWSDL
-//compileJava.dependsOn processDartsServiceWSDL
+compileJava.dependsOn processDartsServiceWSDL
 
 compileJava.dependsOn updateOpenSpecificationsWithVersion
 assemble.dependsOn openapiJar
+assemble.dependsOn copyContextWSDL
+resolveMainClassName.dependsOn copyContextWSDL
+jar.dependsOn copyContextWSDL
+
+checkstyleMain.dependsOn copyContextWSDL
+
+compileFunctionalTestJava.dependsOn copyContextWSDL
+compileIntegrationTestJava.dependsOn copyContextWSDL
+compileSmokeTestJava.dependsOn copyContextWSDL
+compileTestJava.dependsOn copyContextWSDL
+pmdMain.dependsOn copyContextWSDL
 
 generateCodeFromSpecification.dependsOn extractOpenSpecification
 compileJava.dependsOn generateCodeFromSpecification
