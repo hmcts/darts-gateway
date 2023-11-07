@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.service.mojdarts.synapps.com.AddAudio;
+import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocument;
@@ -20,6 +22,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import uk.gov.hmcts.darts.addaudio.AddAudioRoute;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
@@ -36,6 +39,7 @@ public class DartsEndpoint {
     private final AddCourtLogsRoute addCourtLogsRoute;
     private final RegisterNodeRoute registerNodeRoute;
     private final DartsEndpointHandler endpointHandler;
+    private final AddAudioRoute addAudioRoute;
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addDocument")
     @ResponsePayload
@@ -103,5 +107,16 @@ public class DartsEndpoint {
                                                                    registerNodeResponse::getReturn));
 
         return new ObjectFactory().createRegisterNodeResponse(registerNodeResponse);
+    }
+
+    @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addAudio")
+    @ResponsePayload
+    public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> addAudio) {
+        AddAudioResponse addAudioResponse = ResponseFactory.getAddAudioResponse();
+
+        addAudioResponse.setReturn(endpointHandler.makeAPICall("addAudio", () -> addAudioRoute.route(addAudio.getValue()),
+                                                                   addAudioResponse::getReturn));
+
+        return new ObjectFactory().createAddAudioResponse(addAudioResponse);
     }
 }
