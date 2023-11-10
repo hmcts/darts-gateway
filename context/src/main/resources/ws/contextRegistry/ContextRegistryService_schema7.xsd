@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <xs:import namespace="http://profiles.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema5.xsd"/>
+
+  <xs:import namespace="http://properties.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema4.xsd"/>
+
+  <xs:element name="ServiceContext" type="tns:ServiceContext"/>
+
+  <xs:complexType name="ServiceContext">
+    <xs:sequence>
+      <xs:element name="Identities" type="tns:Identity" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Profiles" type="dfs-dm-core-profiles:Profile" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="RuntimeProperties" type="dfs-dm-core-properties:PropertySet" minOccurs="0"/>
+      <xs:element name="OverridePermission" type="tns:OverridePermission" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="token" type="xs:string"/>
+    <xs:attribute name="locale" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="Identity" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="BasicIdentity">
+    <xs:complexContent>
+      <xs:extension base="tns:Identity">
+        <xs:sequence/>
+        <xs:attribute name="userName" type="xs:string"/>
+        <xs:attribute name="password" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SsoIdentity">
+    <xs:complexContent>
+      <xs:extension base="tns:BasicIdentity">
+        <xs:sequence/>
+        <xs:attribute name="ssoType" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RepositoryIdentity">
+    <xs:complexContent>
+      <xs:extension base="tns:BasicIdentity">
+        <xs:sequence/>
+        <xs:attribute name="repositoryName" type="xs:string"/>
+        <xs:attribute name="domain" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="OverridePermission">
+    <xs:sequence>
+      <xs:element name="EnableUpdateInDormantState" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

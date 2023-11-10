@@ -345,6 +345,7 @@ dependencies {
   testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
 
   openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
+  implementation project(path: ':context')
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
@@ -465,7 +466,7 @@ task genJaxbAddCase {
 
 
 wsdl2java {
-    wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
+    wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws/dartsService"))
     includes = [
         "**/*.wsdl"
       ]
@@ -499,7 +500,18 @@ task extractOpenSpecification() {
   }
 }
 
+/**
+ * Run the custom task with the defaults to process the legacy darts service
+ */
+tasks.register('processDartsServiceWSDL', CreateAPIMWSDLFile)
+{
+  wsdlFile = new File("src/main/resources/ws/dartsService/DARTSService.wsdl")
+  urlToReplace = "http://test"
+  outputFile = new File("src/main/resources/ws/dartsService.wsdl")
+}
+
+project.tasks.processResources.dependsOn processDartsServiceWSDL
+project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
 compileJava.dependsOn generateCodeFromSpecification
 generateCodeFromSpecification.dependsOn extractOpenSpecification
 compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode
-

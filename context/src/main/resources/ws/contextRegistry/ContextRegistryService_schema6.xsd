@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <xs:import namespace="http://content.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema8.xsd"/>
+
+  <xs:complexType name="ObjectId">
+    <xs:sequence/>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="RichText">
+    <xs:sequence>
+      <xs:element name="Body" type="dfs-dm-core-content:Content" minOccurs="0"/>
+      <xs:element name="Contents" type="dfs-dm-core-content:Content" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="format" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:simpleType name="PermissionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BASIC"/>
+      <xs:enumeration value="EXTENDED"/>
+      <xs:enumeration value="CUSTOM"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="VersionStrategy">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="IMPLIED"/>
+      <xs:enumeration value="NEXT_MAJOR"/>
+      <xs:enumeration value="NEXT_MINOR"/>
+      <xs:enumeration value="SAME_VERSION"/>
+      <xs:enumeration value="BRANCH_VERSION"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

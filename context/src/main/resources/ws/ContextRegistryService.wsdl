@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://services.rt.fs.documentum.emc.com/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://services.rt.fs.documentum.emc.com/" name="ContextRegistryService">
+  <wsdl:types>
+    <xsd:schema xmlns:ns1="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://services.rt.fs.documentum.emc.com/" targetNamespace="http://services.rt.fs.documentum.emc.com/" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="lookup" type="tns:lookup"/>
+      <xsd:element name="lookupResponse" type="tns:lookupResponse"/>
+      <xsd:element name="register" type="tns:register"/>
+      <xsd:element name="registerResponse" type="tns:registerResponse"/>
+      <xsd:element name="unregister" type="tns:unregister"/>
+      <xsd:element name="unregisterResponse" type="tns:unregisterResponse"/>
+      <xsd:complexType name="register">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="context" type="ns1:ServiceContext"/>
+          <xsd:element minOccurs="0" name="host" type="xs:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="registerResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="return" type="xs:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="unregister">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="token" type="xs:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="unregisterResponse">
+        <xsd:sequence/>
+      </xsd:complexType>
+      <xsd:complexType name="lookup">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="token" type="xs:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="lookupResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="return" type="ns1:ServiceContext"/>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+    <xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://schema.core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:simpleType name="PropertyInfoFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="NONE"/>
+          <xsd:enumeration value="NON_INHERITED"/>
+          <xsd:enumeration value="DISPLAY_CONFIG"/>
+          <xsd:enumeration value="ALL"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-schema="http://schema.core.datamodel.fs.documentum.emc.com/" xmlns:ns1="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-query="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-rt="http://rt.fs.documentum.emc.com/" elementFormDefault="qualified" targetNamespace="http://query.core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:complexType name="ClusteringStrategy">
+        <xsd:complexContent>
+          <xsd:extension base="tns:GroupingStrategy">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="attributes" maxOccurs="unbounded" type="xs:string"/>
+              <xsd:element minOccurs="0" name="tokenizers" type="ns1:PropertySet"/>
+            </xsd:sequence>
+            <xsd:attribute name="clusteringRange" type="tns:ClusteringRange"/>
+            <xsd:attribute use="required" name="clusteringThreshold" type="xs:int"/>
+            <xsd:attribute name="strategyName" type="xs:string"/>
+            <xsd:attribute use="required" name="returnIdentitySet" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="GroupingStrategy" abstract="true">
+        <xsd:sequence/>
+      </xsd:complexType>
+      <xsd:simpleType name="ClusteringRange">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="LOW"/>
+          <xsd:enumeration value="MEDIUM"/>
+          <xsd:enumeration value="HIGH"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://properties.core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:complexType name="PropertySet">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="Properties" maxOccurs="unbounded" type="tns:Property"/>
+        </xsd:sequence>
+        <xsd:attribute use="required" name="isInternal" type="xs:boolean"/>
+      </xsd:complexType>
+      <xsd:complexType name="Property" abstract="true">
+        <xsd:sequence/>
+        <xsd:attribute use="required" name="name" type="xs:string"/>
+        <xsd:attribute use="required" name="isTransient" type="xs:boolean"/>
+      </xsd:complexType>
+      <xsd:complexType name="StringProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Property">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Value" type="xs:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="NumberProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Property">
+            <xsd:sequence>
+              <xsd:choice minOccurs="0">
+                <xsd:element name="Short" type="xs:short"/>
+                <xsd:element name="Integer" type="xs:int"/>
+                <xsd:element name="Long" type="xs:long"/>
+                <xsd:element name="Double" type="xs:double"/>
+              </xsd:choice>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="DateProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Property">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Value" type="xs:dateTime"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="BooleanProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Property">
+            <xsd:sequence>
+              <xsd:element name="Value" type="xs:boolean"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ObjectIdProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Property">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Value" type="dfs-dm-core:ObjectId"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="StringArrayProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:ArrayProperty">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Values" maxOccurs="unbounded" type="xs:string" nillable="true"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayProperty" abstract="true">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Property">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="ValueActions" maxOccurs="unbounded" type="tns:ValueAction"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ValueAction">
+        <xsd:sequence/>
+        <xsd:attribute use="required" name="type" type="tns:ValueActionType"/>
+        <xsd:attribute use="required" name="index" type="xs:int"/>
+      </xsd:complexType>
+      <xsd:complexType name="NumberArrayProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:ArrayProperty">
+            <xsd:sequence>
+              <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="Short" type="xs:short" nillable="true"/>
+                <xsd:element name="Integer" type="xs:int" nillable="true"/>
+                <xsd:element name="Long" type="xs:long" nillable="true"/>
+                <xsd:element name="Double" type="xs:double" nillable="true"/>
+              </xsd:choice>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="BooleanArrayProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:ArrayProperty">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Values" maxOccurs="unbounded" type="xs:boolean" nillable="true"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="DateArrayProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:ArrayProperty">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Values" maxOccurs="unbounded" type="xs:dateTime" nillable="true"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ObjectIdArrayProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:ArrayProperty">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Values" maxOccurs="unbounded" type="dfs-dm-core:ObjectId" nillable="true"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RichTextProperty">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Property">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Value" type="dfs-dm-core:RichText"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:simpleType name="ValueActionType">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="APPEND"/>
+          <xsd:enumeration value="INSERT"/>
+          <xsd:enumeration value="DELETE"/>
+          <xsd:enumeration value="SET"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema xmlns:tns="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-rt="http://rt.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/" xmlns:ns1="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://schema.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" elementFormDefault="qualified" version="1.0" targetNamespace="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:complexType name="Profile" abstract="true">
+        <xsd:sequence/>
+      </xsd:complexType>
+      <xsd:complexType name="ContentTransferProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="ActivityInfo" type="dfs-dm-core-content:ActivityInfo"/>
+            </xsd:sequence>
+            <xsd:attribute name="transferMode" type="dfs-dm-core-content:ContentTransferMode"/>
+            <xsd:attribute name="geolocation" type="xs:string"/>
+            <xsd:attribute use="required" name="allowCachedContentTransfer" type="xs:boolean"/>
+            <xsd:attribute use="required" name="allowAsyncContentTransfer" type="xs:boolean"/>
+            <xsd:attribute use="required" name="isProcessOLELinks" type="xs:boolean"/>
+            <xsd:attribute name="xmlApplicationName" type="xs:string"/>
+            <xsd:attribute name="contentRegistryOption" type="tns:ContentRegistryOption"/>
+            <xsd:attribute name="destinationDirectory" type="xs:string"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="PropertyProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="IncludeProperties" maxOccurs="unbounded" type="xs:string"/>
+              <xsd:element minOccurs="0" name="ExcludeProperties" maxOccurs="unbounded" type="xs:string"/>
+            </xsd:sequence>
+            <xsd:attribute name="filterMode" type="tns:PropertyFilterMode"/>
+            <xsd:attribute use="required" name="isProcessIncludedUnknown" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ContentProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute name="formatFilter" type="tns:FormatFilter"/>
+            <xsd:attribute name="format" type="xs:string"/>
+            <xsd:attribute name="pageFilter" type="tns:PageFilter"/>
+            <xsd:attribute use="required" name="pageNumber" type="xs:int"/>
+            <xsd:attribute name="pageModifierFilter" type="tns:PageModifierFilter"/>
+            <xsd:attribute name="pageModifier" type="xs:string"/>
+            <xsd:attribute name="renditionTypeFilter" type="tns:RenditionTypeFilter"/>
+            <xsd:attribute name="renditionOption" type="tns:RenditionOption"/>
+            <xsd:attribute name="contentReturnType" type="xs:string"/>
+            <xsd:attribute name="postTransferAction" type="xs:string"/>
+            <xsd:attribute name="urlReturnPolicy" type="tns:UrlReturnPolicy"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ClusteringProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="ClusteringStrategies" maxOccurs="unbounded" type="ns1:ClusteringStrategy"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RelationshipProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="PropertyProfile" type="tns:PropertyProfile"/>
+            </xsd:sequence>
+            <xsd:attribute name="resultDataMode" type="tns:ResultDataMode"/>
+            <xsd:attribute name="nameFilter" type="tns:RelationshipNameFilter"/>
+            <xsd:attribute name="relationName" type="xs:string"/>
+            <xsd:attribute name="targetRoleFilter" type="tns:TargetRoleFilter"/>
+            <xsd:attribute name="targetRole" type="xs:string"/>
+            <xsd:attribute name="depthFilter" type="tns:DepthFilter"/>
+            <xsd:attribute use="required" name="depth" type="xs:int"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="PermissionProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute name="permissionTypeFilter" type="tns:PermissionTypeFilter"/>
+            <xsd:attribute name="permissionType" type="dfs-dm-core:PermissionType"/>
+            <xsd:attribute use="required" name="isUseCompoundPermissions" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="SchemaProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="includeTypes" type="xs:boolean"/>
+            <xsd:attribute use="required" name="includeProperties" type="xs:boolean"/>
+            <xsd:attribute name="propertyFilter" type="ns2:PropertyInfoFilter"/>
+            <xsd:attribute use="required" name="includeValues" type="xs:boolean"/>
+            <xsd:attribute use="required" name="includeRelationships" type="xs:boolean"/>
+            <xsd:attribute name="scope" type="xs:string"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="DeleteProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="isDeepDeleteFolders" type="xs:boolean"/>
+            <xsd:attribute use="required" name="isDeepDeleteVdmInFolders" type="xs:boolean"/>
+            <xsd:attribute use="required" name="isPopulateWithReferences" type="xs:boolean"/>
+            <xsd:attribute use="required" name="isDeepDeleteChildrenInFolders" type="xs:boolean"/>
+            <xsd:attribute use="required" name="isDeleteVdm" type="xs:boolean"/>
+            <xsd:attribute name="versionStrategy" type="tns:DeleteVersionStrategy"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CheckinProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="deleteLocalFileHint" type="xs:boolean"/>
+            <xsd:attribute use="required" name="makeCurrent" type="xs:boolean"/>
+            <xsd:attribute use="required" name="checkinOnlyVDMRoot" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CheckoutProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="checkoutOnlyVDMRoot" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CopyProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="nonCurrentObjectAllowed" type="xs:boolean"/>
+            <xsd:attribute use="required" name="deepCopyFolders" type="xs:boolean"/>
+            <xsd:attribute use="required" name="copyOnlyVDMRoot" type="xs:boolean"/>
+            <xsd:attribute use="required" name="leaveAssemblies" type="xs:boolean"/>
+            <xsd:attribute use="required" name="leaveRelationships" type="xs:boolean"/>
+            <xsd:attribute use="required" name="copyChildrenAsReferences" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="MoveProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="isNonCurrentObjectAllowed" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RichTextProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="ImageUrlTemplate" type="xs:string"/>
+              <xsd:element minOccurs="0" name="AnchorUrlTemplate" type="xs:string"/>
+            </xsd:sequence>
+            <xsd:attribute use="required" name="transferContent" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="SearchProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="isAsyncCall" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="LifecycleExecutionProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="testOnly" type="xs:boolean"/>
+            <xsd:attribute use="required" name="bypassEntryCriteria" type="xs:boolean"/>
+            <xsd:attribute use="required" name="resetToBase" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="VdmUpdateProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Labels" maxOccurs="unbounded" type="xs:string"/>
+            </xsd:sequence>
+            <xsd:attribute name="versionStrategy" type="dfs-dm-core:VersionStrategy"/>
+            <xsd:attribute use="required" name="retainLock" type="xs:boolean"/>
+            <xsd:attribute name="updateMethod" type="tns:ListUpdateMethod"/>
+            <xsd:attribute use="required" name="convertToSimple" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="VdmRetrieveProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="shouldFollowAssembly" type="xs:boolean"/>
+            <xsd:attribute name="binding" type="xs:string"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CreateProfile">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Profile">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="DocumentLabels" maxOccurs="unbounded" type="xs:string"/>
+            </xsd:sequence>
+            <xsd:attribute use="required" name="documentCheckout" type="xs:boolean"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:simpleType name="ContentRegistryOption">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="IMPLIED"/>
+          <xsd:enumeration value="UNREGISTERED"/>
+          <xsd:enumeration value="REGISTERED_AS_VIEWED"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="PropertyFilterMode">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="NONE"/>
+          <xsd:enumeration value="IMPLIED"/>
+          <xsd:enumeration value="SPECIFIED_BY_INCLUDE"/>
+          <xsd:enumeration value="SPECIFIED_BY_EXCLUDE"/>
+          <xsd:enumeration value="ALL_NON_SYSTEM"/>
+          <xsd:enumeration value="ALL"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="FormatFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="NONE"/>
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="ANY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="PageFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="ANY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="PageModifierFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="ANY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="RenditionTypeFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="ANY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="RenditionOption">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="CLIENT"/>
+          <xsd:enumeration value="SERVER"/>
+          <xsd:enumeration value="PRIMARY"/>
+          <xsd:enumeration value="CLIENT_AND_SERVER"/>
+          <xsd:enumeration value="PRIMARY_AND_CLIENT"/>
+          <xsd:enumeration value="PRIMARY_AND_SERVER"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="UrlReturnPolicy">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="ALWAYS"/>
+          <xsd:enumeration value="ONLY"/>
+          <xsd:enumeration value="PREFER"/>
+          <xsd:enumeration value="NEVER"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ResultDataMode">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="REFERENCE"/>
+          <xsd:enumeration value="OBJECT"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="RelationshipNameFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="NONE"/>
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="ANY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="TargetRoleFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="ANY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="DepthFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="SINGLE"/>
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="UNLIMITED"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="PermissionTypeFilter">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="NONE"/>
+          <xsd:enumeration value="SPECIFIED"/>
+          <xsd:enumeration value="ANY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="DeleteVersionStrategy">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="IMPLIED"/>
+          <xsd:enumeration value="SELECTED_VERSIONS"/>
+          <xsd:enumeration value="UNUSED_VERSIONS"/>
+          <xsd:enumeration value="ALL_VERSIONS"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ListUpdateMethod">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="REPLACE"/>
+          <xsd:enumeration value="MERGE"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" elementFormDefault="qualified" targetNamespace="http://core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:complexType name="ObjectId">
+        <xsd:sequence/>
+        <xsd:attribute use="required" name="id" type="xs:string"/>
+      </xsd:complexType>
+      <xsd:complexType name="RichText">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="Body" type="dfs-dm-core-content:Content"/>
+          <xsd:element minOccurs="0" name="Contents" maxOccurs="unbounded" type="dfs-dm-core-content:Content"/>
+        </xsd:sequence>
+        <xsd:attribute name="format" type="xs:string"/>
+      </xsd:complexType>
+      <xsd:simpleType name="PermissionType">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="BASIC"/>
+          <xsd:enumeration value="EXTENDED"/>
+          <xsd:enumeration value="CUSTOM"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="VersionStrategy">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="IMPLIED"/>
+          <xsd:enumeration value="NEXT_MAJOR"/>
+          <xsd:enumeration value="NEXT_MINOR"/>
+          <xsd:enumeration value="SAME_VERSION"/>
+          <xsd:enumeration value="BRANCH_VERSION"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" elementFormDefault="qualified" targetNamespace="http://context.core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="ServiceContext" type="tns:ServiceContext"/>
+      <xsd:complexType name="ServiceContext">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="Identities" maxOccurs="unbounded" type="tns:Identity"/>
+          <xsd:element minOccurs="0" name="Profiles" maxOccurs="unbounded" type="dfs-dm-core-profiles:Profile"/>
+          <xsd:element minOccurs="0" name="RuntimeProperties" type="dfs-dm-core-properties:PropertySet"/>
+          <xsd:element minOccurs="0" name="OverridePermission" type="tns:OverridePermission"/>
+        </xsd:sequence>
+        <xsd:attribute name="token" type="xs:string"/>
+        <xsd:attribute name="locale" type="xs:string"/>
+      </xsd:complexType>
+      <xsd:complexType name="Identity" abstract="true">
+        <xsd:sequence/>
+      </xsd:complexType>
+      <xsd:complexType name="BasicIdentity">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Identity">
+            <xsd:sequence/>
+            <xsd:attribute name="userName" type="xs:string"/>
+            <xsd:attribute name="password" type="xs:string"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="SsoIdentity">
+        <xsd:complexContent>
+          <xsd:extension base="tns:BasicIdentity">
+            <xsd:sequence/>
+            <xsd:attribute name="ssoType" type="xs:string"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RepositoryIdentity">
+        <xsd:complexContent>
+          <xsd:extension base="tns:BasicIdentity">
+            <xsd:sequence/>
+            <xsd:attribute name="repositoryName" type="xs:string"/>
+            <xsd:attribute name="domain" type="xs:string"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="OverridePermission">
+        <xsd:sequence>
+          <xsd:element name="EnableUpdateInDormantState" type="xs:boolean"/>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+    <xsd:schema xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" elementFormDefault="qualified" targetNamespace="http://content.core.datamodel.fs.documentum.emc.com/" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:complexType name="ActivityInfo">
+        <xsd:sequence/>
+        <xsd:attribute use="required" name="sessionId" type="xs:string"/>
+        <xsd:attribute name="initiatorSessionId" type="xs:string"/>
+        <xsd:attribute use="required" name="activityId" type="xs:string"/>
+        <xsd:attribute use="required" name="autoCloseConnection" type="xs:boolean"/>
+        <xsd:attribute use="required" name="closed" type="xs:boolean"/>
+        <xsd:attribute name="targetDeploymentId" type="xs:string"/>
+        <xsd:attribute name="initiatorDeploymentId" type="xs:string"/>
+      </xsd:complexType>
+      <xsd:complexType name="Content" abstract="true">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="renditionType" type="tns:RenditionType" nillable="true"/>
+          <xsd:element minOccurs="0" name="intentModifier" type="tns:ContentIntentModifier" nillable="true"/>
+        </xsd:sequence>
+        <xsd:attribute use="required" name="format" type="xs:string"/>
+        <xsd:attribute use="required" name="pageNumber" type="xs:int"/>
+        <xsd:attribute name="pageModifier" type="xs:string"/>
+        <xsd:attribute name="contentTransferMode" type="tns:ContentTransferMode"/>
+      </xsd:complexType>
+      <xsd:complexType name="BinaryContent">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Content">
+            <xsd:sequence>
+              <xsd:element name="Value" type="xs:base64Binary"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="DataHandlerContent">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Content">
+            <xsd:sequence>
+              <xsd:element name="Value"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="UcfContent">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Content">
+            <xsd:sequence>
+              <xsd:element name="LocalFilePath" type="xs:string"/>
+              <xsd:element minOccurs="0" name="ActivityInfo" type="tns:ActivityInfo"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="UrlContent">
+        <xsd:complexContent>
+          <xsd:extension base="tns:Content">
+            <xsd:sequence/>
+            <xsd:attribute use="required" name="url" type="xs:string"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:simpleType name="ContentTransferMode">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="BASE64"/>
+          <xsd:enumeration value="MTOM"/>
+          <xsd:enumeration value="UCF"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="RenditionType">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="CLIENT"/>
+          <xsd:enumeration value="SERVER"/>
+          <xsd:enumeration value="PRIMARY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ContentIntentModifier">
+        <xsd:restriction base="xs:string">
+          <xsd:enumeration value="SET"/>
+          <xsd:enumeration value="INSERT"/>
+          <xsd:enumeration value="REMOVE"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="register">
+    <wsdl:part name="parameters" element="tns:register"/>
+  </wsdl:message>
+  <wsdl:message name="registerResponse">
+    <wsdl:part name="parameters" element="tns:registerResponse"/>
+  </wsdl:message>
+  <wsdl:message name="lookup">
+    <wsdl:part name="parameters" element="tns:lookup"/>
+  </wsdl:message>
+  <wsdl:message name="lookupResponse">
+    <wsdl:part name="parameters" element="tns:lookupResponse"/>
+  </wsdl:message>
+  <wsdl:message name="unregister">
+    <wsdl:part name="parameters" element="tns:unregister"/>
+  </wsdl:message>
+  <wsdl:message name="unregisterResponse">
+    <wsdl:part name="parameters" element="tns:unregisterResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="ContextRegistryServicePort">
+    <wsdl:operation name="register">
+      <wsdl:input message="tns:register"/>
+      <wsdl:output message="tns:registerResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="lookup">
+      <wsdl:input message="tns:lookup"/>
+      <wsdl:output message="tns:lookupResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="unregister">
+      <wsdl:input message="tns:unregister"/>
+      <wsdl:output message="tns:unregisterResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ContextRegistryServicePortBinding" type="tns:ContextRegistryServicePort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+    <wsdl:operation name="register">
+      <soap:operation soapAction="" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <wsdl:input>
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="lookup">
+      <soap:operation soapAction="" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <wsdl:input>
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="unregister">
+      <soap:operation soapAction="" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <wsdl:input>
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ContextRegistryService">
+    <wsdl:port name="ContextRegistryServicePort" binding="tns:ContextRegistryServicePortBinding">
+      <soap:address location="http://test" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

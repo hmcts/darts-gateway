@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.client;
+package uk.gov.hmcts.darts.utils.client.darts;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 /**
  * A junit provider to feed the Spring injected darts gateway client implementations through to the test.
  */
-public class ClientProvider implements ArgumentsProvider {
+public class DartsClientProvider implements ArgumentsProvider {
 
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {

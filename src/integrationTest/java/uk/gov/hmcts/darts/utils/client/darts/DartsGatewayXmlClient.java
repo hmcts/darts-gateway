@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.client;
+package uk.gov.hmcts.darts.utils.client.darts;
 
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 

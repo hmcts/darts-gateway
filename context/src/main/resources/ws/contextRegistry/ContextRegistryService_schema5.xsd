@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://schema.core.datamodel.fs.documentum.emc.com/" xmlns:ns1="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-profiles="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-content="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-context="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-rt="http://rt.fs.documentum.emc.com/">
+
+  <xs:import namespace="http://content.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema8.xsd"/>
+
+  <xs:import namespace="http://query.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema3.xsd"/>
+
+  <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema6.xsd"/>
+
+  <xs:import namespace="http://schema.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema2.xsd"/>
+
+  <xs:complexType name="Profile" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="ContentTransferProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence>
+          <xs:element name="ActivityInfo" type="dfs-dm-core-content:ActivityInfo" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="transferMode" type="dfs-dm-core-content:ContentTransferMode"/>
+        <xs:attribute name="geolocation" type="xs:string"/>
+        <xs:attribute name="allowCachedContentTransfer" type="xs:boolean" use="required"/>
+        <xs:attribute name="allowAsyncContentTransfer" type="xs:boolean" use="required"/>
+        <xs:attribute name="isProcessOLELinks" type="xs:boolean" use="required"/>
+        <xs:attribute name="xmlApplicationName" type="xs:string"/>
+        <xs:attribute name="contentRegistryOption" type="tns:ContentRegistryOption"/>
+        <xs:attribute name="destinationDirectory" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PropertyProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence>
+          <xs:element name="IncludeProperties" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="ExcludeProperties" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="filterMode" type="tns:PropertyFilterMode"/>
+        <xs:attribute name="isProcessIncludedUnknown" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ContentProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="formatFilter" type="tns:FormatFilter"/>
+        <xs:attribute name="format" type="xs:string"/>
+        <xs:attribute name="pageFilter" type="tns:PageFilter"/>
+        <xs:attribute name="pageNumber" type="xs:int" use="required"/>
+        <xs:attribute name="pageModifierFilter" type="tns:PageModifierFilter"/>
+        <xs:attribute name="pageModifier" type="xs:string"/>
+        <xs:attribute name="renditionTypeFilter" type="tns:RenditionTypeFilter"/>
+        <xs:attribute name="renditionOption" type="tns:RenditionOption"/>
+        <xs:attribute name="contentReturnType" type="xs:string"/>
+        <xs:attribute name="postTransferAction" type="xs:string"/>
+        <xs:attribute name="urlReturnPolicy" type="tns:UrlReturnPolicy"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ClusteringProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence>
+          <xs:element name="ClusteringStrategies" type="ns1:ClusteringStrategy" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RelationshipProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence>
+          <xs:element name="PropertyProfile" type="tns:PropertyProfile" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="resultDataMode" type="tns:ResultDataMode"/>
+        <xs:attribute name="nameFilter" type="tns:RelationshipNameFilter"/>
+        <xs:attribute name="relationName" type="xs:string"/>
+        <xs:attribute name="targetRoleFilter" type="tns:TargetRoleFilter"/>
+        <xs:attribute name="targetRole" type="xs:string"/>
+        <xs:attribute name="depthFilter" type="tns:DepthFilter"/>
+        <xs:attribute name="depth" type="xs:int" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PermissionProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="permissionTypeFilter" type="tns:PermissionTypeFilter"/>
+        <xs:attribute name="permissionType" type="dfs-dm-core:PermissionType"/>
+        <xs:attribute name="isUseCompoundPermissions" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SchemaProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="includeTypes" type="xs:boolean" use="required"/>
+        <xs:attribute name="includeProperties" type="xs:boolean" use="required"/>
+        <xs:attribute name="propertyFilter" type="ns2:PropertyInfoFilter"/>
+        <xs:attribute name="includeValues" type="xs:boolean" use="required"/>
+        <xs:attribute name="includeRelationships" type="xs:boolean" use="required"/>
+        <xs:attribute name="scope" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DeleteProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="isDeepDeleteFolders" type="xs:boolean" use="required"/>
+        <xs:attribute name="isDeepDeleteVdmInFolders" type="xs:boolean" use="required"/>
+        <xs:attribute name="isPopulateWithReferences" type="xs:boolean" use="required"/>
+        <xs:attribute name="isDeepDeleteChildrenInFolders" type="xs:boolean" use="required"/>
+        <xs:attribute name="isDeleteVdm" type="xs:boolean" use="required"/>
+        <xs:attribute name="versionStrategy" type="tns:DeleteVersionStrategy"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CheckinProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="deleteLocalFileHint" type="xs:boolean" use="required"/>
+        <xs:attribute name="makeCurrent" type="xs:boolean" use="required"/>
+        <xs:attribute name="checkinOnlyVDMRoot" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CheckoutProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="checkoutOnlyVDMRoot" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CopyProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="nonCurrentObjectAllowed" type="xs:boolean" use="required"/>
+        <xs:attribute name="deepCopyFolders" type="xs:boolean" use="required"/>
+        <xs:attribute name="copyOnlyVDMRoot" type="xs:boolean" use="required"/>
+        <xs:attribute name="leaveAssemblies" type="xs:boolean" use="required"/>
+        <xs:attribute name="leaveRelationships" type="xs:boolean" use="required"/>
+        <xs:attribute name="copyChildrenAsReferences" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="MoveProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="isNonCurrentObjectAllowed" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RichTextProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence>
+          <xs:element name="ImageUrlTemplate" type="xs:string" minOccurs="0"/>
+          <xs:element name="AnchorUrlTemplate" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="transferContent" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SearchProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="isAsyncCall" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="LifecycleExecutionProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="testOnly" type="xs:boolean" use="required"/>
+        <xs:attribute name="bypassEntryCriteria" type="xs:boolean" use="required"/>
+        <xs:attribute name="resetToBase" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="VdmUpdateProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence>
+          <xs:element name="Labels" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="versionStrategy" type="dfs-dm-core:VersionStrategy"/>
+        <xs:attribute name="retainLock" type="xs:boolean" use="required"/>
+        <xs:attribute name="updateMethod" type="tns:ListUpdateMethod"/>
+        <xs:attribute name="convertToSimple" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="VdmRetrieveProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence/>
+        <xs:attribute name="shouldFollowAssembly" type="xs:boolean" use="required"/>
+        <xs:attribute name="binding" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CreateProfile">
+    <xs:complexContent>
+      <xs:extension base="tns:Profile">
+        <xs:sequence>
+          <xs:element name="DocumentLabels" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="documentCheckout" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="ContentRegistryOption">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="IMPLIED"/>
+      <xs:enumeration value="UNREGISTERED"/>
+      <xs:enumeration value="REGISTERED_AS_VIEWED"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyFilterMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="IMPLIED"/>
+      <xs:enumeration value="SPECIFIED_BY_INCLUDE"/>
+      <xs:enumeration value="SPECIFIED_BY_EXCLUDE"/>
+      <xs:enumeration value="ALL_NON_SYSTEM"/>
+      <xs:enumeration value="ALL"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="FormatFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PageFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PageModifierFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RenditionTypeFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RenditionOption">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CLIENT"/>
+      <xs:enumeration value="SERVER"/>
+      <xs:enumeration value="PRIMARY"/>
+      <xs:enumeration value="CLIENT_AND_SERVER"/>
+      <xs:enumeration value="PRIMARY_AND_CLIENT"/>
+      <xs:enumeration value="PRIMARY_AND_SERVER"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="UrlReturnPolicy">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ALWAYS"/>
+      <xs:enumeration value="ONLY"/>
+      <xs:enumeration value="PREFER"/>
+      <xs:enumeration value="NEVER"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResultDataMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="REFERENCE"/>
+      <xs:enumeration value="OBJECT"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RelationshipNameFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TargetRoleFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DepthFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SINGLE"/>
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="UNLIMITED"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PermissionTypeFilter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="SPECIFIED"/>
+      <xs:enumeration value="ANY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DeleteVersionStrategy">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="IMPLIED"/>
+      <xs:enumeration value="SELECTED_VERSIONS"/>
+      <xs:enumeration value="UNUSED_VERSIONS"/>
+      <xs:enumeration value="ALL_VERSIONS"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ListUpdateMethod">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="REPLACE"/>
+      <xs:enumeration value="MERGE"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

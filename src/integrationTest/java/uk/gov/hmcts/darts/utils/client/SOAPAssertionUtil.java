@@ -7,11 +7,11 @@ import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 
 @Getter
-public class DartsGatewayAssertionUtil<O> {
+public class SOAPAssertionUtil<O> {
 
     private final JAXBElement<O> response;
 
-    DartsGatewayAssertionUtil(JAXBElement<O> response) {
+    public SOAPAssertionUtil(JAXBElement<O> response) {
         this.response = response;
     }
 

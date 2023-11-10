@@ -1,0 +1,56 @@
+
+import static groovy.io.FileType.FILES
+import java.nio.file.Files
+
+plugins {
+  id("com.github.bjornvester.wsdl2java") version "2.0.2"
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
+}
+
+configurations {
+  jaxb
+}
+
+dependencies {
+
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir("$buildDir/generated/sources/wsdl2java/ContextRegistryService/java")
+    }
+  }
+}
+
+
+
+tasks.register('processContextRegistryWSDL', CreateAPIMWSDLFile)
+  {
+    wsdlFile = new File( "$projectDir/src/main/resources/ws/contextRegistry/ContextRegistryService.wsdl")
+    urlToReplace = "http://test"
+    outputFile = new File("$projectDir/src/main/resources/ws/ContextRegistryService.wsdl")
+  }
+
+wsdl2java {
+  wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws"))
+  includes = [
+    "**/ContextRegistryService.wsdl"
+  ]
+  packageName.set("contextreg")
+  generatedSourceDir.set(layout.projectDirectory.dir("$buildDir/generated/sources/wsdl2java/ContextRegistryService/java"))
+}
+
+project.tasks.processResources.dependsOn processContextRegistryWSDL
+project.tasks.wsdl2java.dependsOn processContextRegistryWSDL
+compileJava.dependsOn processContextRegistryWSDL

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-properties="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <xs:import namespace="http://core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema6.xsd"/>
+
+  <xs:complexType name="PropertySet">
+    <xs:sequence>
+      <xs:element name="Properties" type="tns:Property" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="isInternal" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="Property" abstract="true">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="isTransient" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="StringProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:Property">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="NumberProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:Property">
+        <xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:element name="Short" type="xs:short"/>
+            <xs:element name="Integer" type="xs:int"/>
+            <xs:element name="Long" type="xs:long"/>
+            <xs:element name="Double" type="xs:double"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DateProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:Property">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="BooleanProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:Property">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:boolean"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ObjectIdProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:Property">
+        <xs:sequence>
+          <xs:element name="Value" type="dfs-dm-core:ObjectId" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="StringArrayProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:ArrayProperty">
+        <xs:sequence>
+          <xs:element name="Values" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ArrayProperty" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="tns:Property">
+        <xs:sequence>
+          <xs:element name="ValueActions" type="tns:ValueAction" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ValueAction">
+    <xs:sequence/>
+    <xs:attribute name="type" type="tns:ValueActionType" use="required"/>
+    <xs:attribute name="index" type="xs:int" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="NumberArrayProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:ArrayProperty">
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Short" type="xs:short" nillable="true"/>
+            <xs:element name="Integer" type="xs:int" nillable="true"/>
+            <xs:element name="Long" type="xs:long" nillable="true"/>
+            <xs:element name="Double" type="xs:double" nillable="true"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="BooleanArrayProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:ArrayProperty">
+        <xs:sequence>
+          <xs:element name="Values" type="xs:boolean" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DateArrayProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:ArrayProperty">
+        <xs:sequence>
+          <xs:element name="Values" type="xs:dateTime" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ObjectIdArrayProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:ArrayProperty">
+        <xs:sequence>
+          <xs:element name="Values" type="dfs-dm-core:ObjectId" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RichTextProperty">
+    <xs:complexContent>
+      <xs:extension base="tns:Property">
+        <xs:sequence>
+          <xs:element name="Value" type="dfs-dm-core:RichText" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="ValueActionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="APPEND"/>
+      <xs:enumeration value="INSERT"/>
+      <xs:enumeration value="DELETE"/>
+      <xs:enumeration value="SET"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

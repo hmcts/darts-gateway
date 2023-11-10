@@ -20,6 +20,7 @@ import org.springframework.xml.validation.XmlValidatorFactory;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 import org.springframework.xml.xsd.XsdSchemaCollection;
+import uk.gov.hmcts.darts.ws.GetWsdlServlet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,16 +81,22 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context) {
-        var messageDispatcherServlet = new MessageDispatcherServlet();
+        var messageDispatcherServlet = new GetWsdlServlet();
         messageDispatcherServlet.setApplicationContext(context);
-        messageDispatcherServlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(messageDispatcherServlet, "/ws/*");
+        return new ServletRegistrationBean<>(messageDispatcherServlet, "/service/darts/*");
     }
 
     @Bean(name = "darts")
     public Wsdl11Definition dartsWsdl11Definition() {
         var wsdl11Definition = new SimpleWsdl11Definition();
         wsdl11Definition.setWsdl(new ClassPathResource("/ws/dartsService.wsdl"));
+        return wsdl11Definition;
+    }
+
+    @Bean(name = "ctxt")
+    public Wsdl11Definition contextRegistryWsdl11Definition() {
+        var wsdl11Definition = new SimpleWsdl11Definition();
+        wsdl11Definition.setWsdl(new ClassPathResource("/ws/ContextRegistryService.wsdl"));
         return wsdl11Definition;
     }
 }

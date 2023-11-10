@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<S:Envelope
+  xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns4:registerResponse
+      xmlns:ns2="http://properties.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns3="http://context.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns4="http://services.rt.fs.documentum.emc.com/"
+      xmlns:ns5="http://profiles.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns6="http://query.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns7="http://content.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns8="http://core.datamodel.fs.documentum.emc.com/">
+      <return>
+        dartsdev4.darts.dev/192.168.0.72-1699397597245--4236597267263368793-1
+      </return>
+    </ns4:registerResponse>
+  </S:Body>
+</S:Envelope>
