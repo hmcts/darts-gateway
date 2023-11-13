@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.utils.client.darts;
 
+import com.service.mojdarts.synapps.com.AddAudio;
+import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocument;
@@ -89,25 +91,6 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public void send(URL uri, String payload) throws Exception {
-        getWebServiceTemplate().sendSourceAndReceiveToResult(
-            uri.toString(),
-            new StringSource(payload),
-            new javax.xml.transform.Result() {
-                @Override
-                public void setSystemId(String systemId) {
-
-                }
-
-                @Override
-                public String getSystemId() {
-                    return null;
-                }
-            }
-        );
-    }
-
-    @Override
     public SOAPAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            getCaseLog -> new ObjectFactory().createGetCourtLog(getCaseLog),
@@ -140,6 +123,15 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
                            registerNode -> new ObjectFactory().createRegisterNode(registerNode),
                            RegisterNode.class,
                            registerNode -> (JAXBElement<RegisterNodeResponse>) registerNode
+        );
+    }
+
+    @Override
+    public SOAPAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws Exception {
+        return sendMessage(uri, payload,
+                           addAudio -> new ObjectFactory().createAddAudio(addAudio),
+                           AddAudio.class,
+                           addAudio -> (JAXBElement<AddAudioResponse>) addAudio
         );
     }
 }

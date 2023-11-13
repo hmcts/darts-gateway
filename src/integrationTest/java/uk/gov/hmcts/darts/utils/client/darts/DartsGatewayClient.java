@@ -1,15 +1,11 @@
 package uk.gov.hmcts.darts.utils.client.darts;
 
-import com.service.mojdarts.synapps.com.AddCaseResponse;
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
-import com.service.mojdarts.synapps.com.AddLogEntryResponse;
-import com.service.mojdarts.synapps.com.GetCasesResponse;
-import com.service.mojdarts.synapps.com.GetCourtLogResponse;
-import com.service.mojdarts.synapps.com.RegisterNodeResponse;
+import com.service.mojdarts.synapps.com.*;
 import jakarta.xml.bind.JAXBElement;
 import uk.gov.hmcts.darts.utils.client.SOAPAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.SOAPTestClient;
 
+import java.lang.Exception;
 import java.net.URL;
 import java.util.function.Function;
 
@@ -27,4 +23,6 @@ public interface DartsGatewayClient extends SOAPTestClient {
     SOAPAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws Exception;
 
     SOAPAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws Exception;
+
+    SOAPAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws Exception;
 }

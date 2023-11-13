@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
 import com.ibm.icu.impl.Assert;
-import contextreg.RegisterResponse;
+import documentum.contextreg.RegisterResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,35 +39,21 @@ public class ContextRegistryServiceTest extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/ctxtRegistry/register/soapRequest.xml");
 
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/ctxtRegistry/register/expectedResponse.xml");
+        String header = TestUtils.getContentsFromFile(
+            "payloads/ctxtRegistry/register/requestHeaders.xml");
 
+        client.setHeaderBlock(header);
         SOAPAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue());
     }
 
-    //@ParameterizedTest
+    @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void handleLookup(ContextRegistryClient client) throws Exception {
-        String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/soapRequest.xml");
-
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/dartsApiResponse.json");
-
-        String expectedResponseStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/expectedResponse.xml");
     }
-    //@ParameterizedTest
+
+    @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void handleUnregister(ContextRegistryClient client) throws Exception {
-        String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/soapRequest.xml");
-
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/dartsApiResponse.json");
-
-        String expectedResponseStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/expectedResponse.xml");
     }
 }

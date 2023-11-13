@@ -5,14 +5,39 @@ import jakarta.xml.bind.JAXBElement;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.WebServiceMessage;
+import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
+import org.springframework.ws.soap.SoapHeader;
+import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.xml.transform.StringSource;
+import uk.gov.hmcts.darts.utils.TestUtils;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import java.net.URL;
 import java.util.function.Function;
 
-public abstract class AbstractSOAPTestClient extends WebServiceGatewaySupport {
+public abstract class AbstractSOAPTestClient extends WebServiceGatewaySupport implements  SOAPTestClient{
+
+    private String headerContents;
+
+
+    private javax.xml.transform.Result getResult() {
+        return new javax.xml.transform.Result() {
+            @Override
+            public void setSystemId(String systemId) {
+
+            }
+
+            @Override
+            public String getSystemId() {
+                return null;
+            }
+        };
+    }
+
     public AbstractSOAPTestClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);
     }
@@ -43,10 +68,51 @@ public abstract class AbstractSOAPTestClient extends WebServiceGatewaySupport {
         jakarta.xml.bind.Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         JAXBElement<I> unmarshal = jaxbUnmarshaller.unmarshal(new StringSource(payload), clazz);
         JAXBElement<I> ijaxbElement = supplier.apply(unmarshal.getValue());
-        return new SOAPAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
-            uri.toString(),
-            ijaxbElement
-        )));
+
+        // if we have no header don't add one otherwise add the header contents we have specified
+        if (headerContents==null || headerContents.isEmpty())
+        {
+            return new SOAPAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
+                uri.toString(),
+                ijaxbElement)));
+        }
+        else {
+            return new SOAPAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
+                uri.toString(),
+                ijaxbElement,
+                new  WebServiceMessageCallback() {
+
+                    public void doWithMessage(WebServiceMessage message) {
+                        try {
+                            SoapMessage soapMessage = (SoapMessage) message;
+                            SoapHeader header = soapMessage.getSoapHeader();
+                            StringSource headerSource = new StringSource(headerContents);
+                            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                            transformer.transform(headerSource, header.getResult());
+                        } catch (Exception e) {
+                            // exception handling
+                        }
+                    }
+                }
+            )));
+        }
+    }
+
+    private WebServiceMessageCallback getSOAPRequestHeader() {
+        return new WebServiceMessageCallback() {
+
+            public void doWithMessage(WebServiceMessage message) {
+                try {
+                    SoapMessage soapMessage = (SoapMessage) message;
+                    SoapHeader header = soapMessage.getSoapHeader();
+                    StringSource headerSource = new StringSource(headerContents);
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                    transformer.transform(headerSource, header.getResult());
+                } catch (Exception e) {
+                    // exception handling
+                }
+            }
+        };
     }
 
     public <C> JAXBElement<C> convertData(String payload, Class<C> clazz)
@@ -57,21 +123,49 @@ public abstract class AbstractSOAPTestClient extends WebServiceGatewaySupport {
     }
 
 
-    protected void send(URL uri, String payload) throws Exception {
-        getWebServiceTemplate().sendSourceAndReceiveToResult(
-            uri.toString(),
-            new StringSource(payload),
-            new javax.xml.transform.Result() {
-                @Override
-                public void setSystemId(String systemId) {
+    public void send(URL uri, String payload) throws Exception {
+        WebServiceMessageCallback addHeader = getSOAPRequestHeader();
 
-                }
+        if (headerContents==null || headerContents.isEmpty())
+        {
+            getWebServiceTemplate().sendSourceAndReceiveToResult(
+                uri.toString(),
+                new StringSource(payload),
+                new javax.xml.transform.Result() {
+                    @Override
+                    public void setSystemId(String systemId) {
 
-                @Override
-                public String getSystemId() {
-                    return null;
+                    }
+
+                    @Override
+                    public String getSystemId() {
+                        return null;
+                    }
                 }
-            }
-        );
+            );
+        }
+        else {
+            getWebServiceTemplate().sendSourceAndReceiveToResult(
+                uri.toString(),
+                new StringSource(payload),
+                addHeader,
+                new javax.xml.transform.Result() {
+                    @Override
+                    public void setSystemId(String systemId) {
+
+                    }
+
+                    @Override
+                    public String getSystemId() {
+                        return null;
+                    }
+                }
+            );
+        }
+    }
+
+    @Override
+    public void setHeaderBlock(String header) {
+        this.headerContents = header;
     }
 }

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.darts.ws;
 
-import contextreg.LookupResponse;
-import contextreg.ObjectFactory;
-import contextreg.RegisterResponse;
-import contextreg.UnregisterResponse;
+import documentum.contextreg.LookupResponse;
+import documentum.contextreg.ObjectFactory;
+import documentum.contextreg.RegisterResponse;
+import documentum.contextreg.UnregisterResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ContextRegistryEndpoint {
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
-    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<contextreg.Register> addDocument) {
+    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<documentum.contextreg.Register> addDocument) {
         RegisterResponse registerResponse = new RegisterResponse();
 
         // create a session as the client needs this
@@ -63,14 +63,14 @@ public class ContextRegistryEndpoint {
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "unregister")
     @ResponsePayload
-    public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<contextreg.Unregister> addDocument) {
+    public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<documentum.contextreg.Unregister> addDocument) {
         UnregisterResponse registerResponse = new UnregisterResponse();
         return new ObjectFactory().createUnregisterResponse(registerResponse);
     }
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "lookup")
     @ResponsePayload
-    public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<contextreg.Lookup> addDocument) {
+    public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> addDocument) {
         LookupResponse registerResponse = new LookupResponse();
         return new ObjectFactory().createLookupResponse(registerResponse);
     }

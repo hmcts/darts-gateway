@@ -47,7 +47,7 @@ wsdl2java {
   includes = [
     "**/ContextRegistryService.wsdl"
   ]
-  packageName.set("contextreg")
+  packageName.set("documentum.contextreg")
   generatedSourceDir.set(layout.projectDirectory.dir("$buildDir/generated/sources/wsdl2java/ContextRegistryService/java"))
 }
 

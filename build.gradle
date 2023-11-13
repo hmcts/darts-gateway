@@ -331,7 +331,7 @@ dependencies {
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-  testImplementation(platform('org.junit:junit-bom:5.10.0'))
+  testImplementation(platform('org.junit:junit-bom:5.10.1'))
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -346,6 +346,10 @@ dependencies {
 
   openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
   implementation project(path: ':context')
+
+// https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
+  implementation group: 'org.apache.ws.xmlschema', name: 'xmlschema-core', version: '2.3.1'
+
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'

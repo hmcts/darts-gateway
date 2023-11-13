@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.service.mojdarts.synapps.com.AddAudio;
+import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCase;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocument;
@@ -13,6 +15,8 @@ import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
 import com.service.mojdarts.synapps.com.RegisterNode;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
+import com.synapps.moj.dfs.response.DARTSResponse;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +24,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import uk.gov.hmcts.darts.addaudio.AddAudioRoute;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
@@ -29,6 +34,7 @@ import uk.gov.hmcts.darts.routing.EventRoutingService;
 @Endpoint
 @RequiredArgsConstructor
 @Slf4j
+@MultipartConfig
 public class DartsEndpoint {
     private final EventRoutingService eventRoutingService;
     private final CasesRoute casesRoute;
@@ -36,6 +42,7 @@ public class DartsEndpoint {
     private final AddCourtLogsRoute addCourtLogsRoute;
     private final RegisterNodeRoute registerNodeRoute;
     private final DartsEndpointHandler endpointHandler;
+    private final AddAudioRoute addAudioRoute;
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addDocument")
     @ResponsePayload
@@ -103,5 +110,21 @@ public class DartsEndpoint {
                                                                    registerNodeResponse::getReturn));
 
         return new ObjectFactory().createRegisterNodeResponse(registerNodeResponse);
+    }
+
+    @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addAudio")
+    @ResponsePayload
+    public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> addAudio) {
+        AddAudioResponse addAudioResponse = ResponseFactory.getAddAudioResponse();
+
+        addAudioResponse.setReturn(endpointHandler.makeAPICall("addAudio", () -> addAudioRoute.route(addAudio.getValue()),
+                                                                   addAudioResponse::getReturn));
+        AddAudioResponse response = new AddAudioResponse();
+        DARTSResponse dartsResponse = new DARTSResponse();
+        dartsResponse.setCode("200");
+        dartsResponse.setMessage("OK");
+        response.setReturn(dartsResponse);
+
+        return new ObjectFactory().createAddAudioResponse(response);
     }
 }

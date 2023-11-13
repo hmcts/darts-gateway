@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.utils.client.ctxt;
 
-import contextreg.*;
+import documentum.contextreg.*;
 import jakarta.xml.bind.JAXBElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import uk.gov.hmcts.darts.utils.client.SOAPAssertionUtil;

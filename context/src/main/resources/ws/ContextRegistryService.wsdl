@@ -403,7 +403,6 @@
             <xsd:sequence>
               <xsd:element minOccurs="0" name="Labels" maxOccurs="unbounded" type="xs:string"/>
             </xsd:sequence>
-            <xsd:attribute name="versionStrategy" type="dfs-dm-core:VersionStrategy"/>
             <xsd:attribute use="required" name="retainLock" type="xs:boolean"/>
             <xsd:attribute name="updateMethod" type="tns:ListUpdateMethod"/>
             <xsd:attribute use="required" name="convertToSimple" type="xs:boolean"/>

@@ -29,7 +29,7 @@ public class MtomClientConfig {
     public DartsGatewayXmlClient vanillaClient(SaajSoapMessageFactory messageFactory) {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setPackagesToScan("com.emc.documentum.fs", "com.service.mojdarts.synapps.com", "com.synapps.moj.dfs.response");
-        marshaller.setMtomEnabled(true);
+        marshaller.setMtomEnabled(false);
 
         DartsGatewayXmlClient client = new DartsGatewayXmlClient(messageFactory);
         client.setMarshaller(marshaller);
@@ -41,7 +41,7 @@ public class MtomClientConfig {
     public ContextRegistryClient mtomClientContextRegistry(SaajSoapMessageFactory messageFactory) {
 
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("contextreg");
+        marshaller.setPackagesToScan("documentum.contextreg");
         marshaller.setMtomEnabled(true);
 
         ContextRegistryMtomClient client = new ContextRegistryMtomClient(messageFactory);
@@ -51,14 +51,15 @@ public class MtomClientConfig {
     }
 
     @Bean
-    public DartsGatewayXmlClient vanillaClientContextRegistry(SaajSoapMessageFactory messageFactory) {
+    public ContextRegistryMtomClient vanillaClientContextRegistry(SaajSoapMessageFactory messageFactory) {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("contextreg");
-        marshaller.setMtomEnabled(true);
+        marshaller.setPackagesToScan("documentum.contextreg");
+        marshaller.setMtomEnabled(false);
 
-        DartsGatewayXmlClient client = new DartsGatewayXmlClient(messageFactory);
+        ContextRegistryMtomClient client = new ContextRegistryMtomClient(messageFactory);
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
+
         return client;
     }
 

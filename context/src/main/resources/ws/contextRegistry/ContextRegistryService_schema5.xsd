@@ -210,7 +210,12 @@
         <xs:sequence>
           <xs:element name="Labels" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
+
+        <!--
+        This attribute has to be commented out in order for spring to validate the xsd. If the
+        gateway property darts-gateway.ws.request-validation= false this comment would not be needed
         <xs:attribute name="versionStrategy" type="dfs-dm-core:VersionStrategy"/>
+        -->
         <xs:attribute name="retainLock" type="xs:boolean" use="required"/>
         <xs:attribute name="updateMethod" type="tns:ListUpdateMethod"/>
         <xs:attribute name="convertToSimple" type="xs:boolean" use="required"/>
@@ -361,4 +366,3 @@
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>
-
