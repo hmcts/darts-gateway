@@ -16,11 +16,11 @@ class AddAudioWebServiceTest  extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void addAudio(DartsGatewayClient client) throws Exception {
         String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/soapRequest.xml");
+                "payloads/addAudio/register/soapRequest.xml");
 
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/expectedResponse.xml");
+                "payloads/addAudio/register/expectedResponse.xml");
 
         SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());

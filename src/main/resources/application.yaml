@@ -26,6 +26,8 @@ azure:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
 
 darts-gateway:
+  context-registry:
+    generate-jwt: true
   ws:
     request-validation: false
     response-validation: false

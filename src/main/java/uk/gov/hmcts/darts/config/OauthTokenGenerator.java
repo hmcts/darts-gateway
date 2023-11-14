@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -13,7 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class OAuthTokenGenerator {
+@Component
+public class OauthTokenGenerator {
     @Value("${azure-ad-ropc.token-uri}")
     private String tokenUri;
     @Value("${azure-ad-ropc.scope}")
@@ -27,8 +29,9 @@ public class OAuthTokenGenerator {
 
     private final RestTemplate template;
 
-    public Map<?, ?> acquireNewToken() {
-        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(), Map.class).getBody();
+    public String acquireNewToken() {
+        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(), Map.class)
+                .getBody().get("access_token").toString();
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity() {

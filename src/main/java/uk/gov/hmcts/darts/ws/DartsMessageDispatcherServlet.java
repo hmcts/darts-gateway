@@ -33,7 +33,7 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         HttpMethod getMethod = HttpMethod.GET;
 
-        if (getMethod.equals(req.getMethod())) {
+        if (getMethod.toString().equals(req.getMethod())) {
             EndpointMetaData fndMetaData = null;
             for (EndpointMetaData metaData : endpointMetaDataList) {
                 String query = req.getQueryString();

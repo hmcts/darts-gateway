@@ -4,27 +4,23 @@ import documentum.contextreg.LookupResponse;
 import documentum.contextreg.ObjectFactory;
 import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.UnregisterResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.atomic.AtomicLong;
+import uk.gov.hmcts.darts.ctxtregistry.RefreshableCacheValue;
+import uk.gov.hmcts.darts.ctxtregistry.TokenHolder;
+import uk.gov.hmcts.darts.ctxtregistry.TokenRegisterable;
 
 @Endpoint
 @RequiredArgsConstructor
 @Slf4j
 public class ContextRegistryEndpoint {
 
-    public static final AtomicLong COUNTER = new AtomicLong();
+    private final TokenRegisterable registerable;
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
@@ -32,46 +28,34 @@ public class ContextRegistryEndpoint {
         RegisterResponse registerResponse = new RegisterResponse();
 
         // create a session as the client needs this
-        createSession();
+        TokenHolder holder = registerable.createToken(addDocument.getValue().getContext());
+        registerable.store(holder, registerable.createValue(addDocument.getValue().getContext()));
 
         // for now return a documentum id
-        registerResponse.setReturn(getToken());
+        registerResponse.setReturn(holder.getToken());
         return new ObjectFactory().createRegisterResponse(registerResponse);
-    }
-
-    private void createSession() {
-        HttpServletRequest curRequest =
-            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                .getRequest();
-        curRequest.getSession();
-    }
-
-    private String getToken() {
-        String machineIdentifier;
-        try {
-            machineIdentifier = InetAddress.getLocalHost().toString();
-        } catch (UnknownHostException var10) {
-            machineIdentifier = "unknown";
-        }
-        int seedByteCount = 20;
-        java.security.SecureRandom secureRandom = new java.security.SecureRandom();
-        byte[] seed = secureRandom.generateSeed(seedByteCount);
-        secureRandom.setSeed(seed);
-        String random = String.valueOf(secureRandom.nextLong());
-        return machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + COUNTER.incrementAndGet();
     }
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "unregister")
     @ResponsePayload
-    public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<documentum.contextreg.Unregister> addDocument) {
-        UnregisterResponse registerResponse = new UnregisterResponse();
-        return new ObjectFactory().createUnregisterResponse(registerResponse);
+    public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<documentum.contextreg.Unregister> unregister) {
+        UnregisterResponse unregisterResponse = new UnregisterResponse();
+
+        registerable.evict(TokenHolder.generateToken(unregister.getValue().getToken()));
+
+        return new ObjectFactory().createUnregisterResponse(unregisterResponse);
     }
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "lookup")
     @ResponsePayload
-    public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> addDocument) {
-        LookupResponse registerResponse = new LookupResponse();
-        return new ObjectFactory().createLookupResponse(registerResponse);
+    public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> lookup) {
+        LookupResponse lookupResponse = new LookupResponse();
+        RefreshableCacheValue value = registerable.lookup(TokenHolder.generateToken(lookup.getValue().getToken()));
+
+        if (value != null) {
+            lookupResponse.setReturn(value.getContext());
+        }
+
+        return new ObjectFactory().createLookupResponse(lookupResponse);
     }
 }
