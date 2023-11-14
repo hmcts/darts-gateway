@@ -2,20 +2,21 @@ package uk.gov.hmcts.darts.metadata;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.xml.xsd.SimpleXsdSchema;
-import org.springframework.xml.xsd.XsdSchema;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ContextRegistryEndpointMetaData implements EndpointMetaData{
+public class ContextRegistryEndpointMetaData implements EndpointMetaData {
 
     private final String webcontext;
 
     public ContextRegistryEndpointMetaData(String webcontext) {
         this.webcontext = webcontext;
     }
-    public Resource[] getResources(){
+
+    @Override
+    public Resource[] getResources() {
         List<Resource> schemaResources = new ArrayList<>();
         schemaResources.add(new ClassPathResource("ws/contextRegistry/ContextRegistryService_schema1.xsd"));
         schemaResources.add(new ClassPathResource("ws/contextRegistry/ContextRegistryService_schema2.xsd"));

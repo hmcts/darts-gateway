@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
-import uk.gov.hmcts.darts.utils.client.SOAPAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws Exception {
         theEventApi.willRespondSuccessfully();
 
-        SOAPAssertionUtil<AddDocumentResponse> response = client.addDocument(getGatewayUri(),
+        SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(getGatewayUri(),
                                                                                      validEvent.getContentAsString(
                                                                                          Charset.defaultCharset()));
         response.assertIdenticalResponse(client.convertData(validEventResponse.getContentAsString(Charset.defaultCharset()),
@@ -67,7 +67,7 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws Exception {
         dailyListApiStub.willRespondSuccessfully();
 
-        SOAPAssertionUtil<AddDocumentResponse> response = client.addDocument(getGatewayUri(),
+        SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(getGatewayUri(),
                                                                                      validDlEvent.getContentAsString(
                                                                                          Charset.defaultCharset()));
         response.assertIdenticalResponse(client.convertData(validDlEventResponse.getContentAsString(Charset.defaultCharset()),
@@ -96,7 +96,7 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws Exception {
         dailyListApiStub.willRespondSuccessfully();
 
-        SOAPAssertionUtil<AddDocumentResponse> response = client.addDocument(getGatewayUri(),
+        SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(getGatewayUri(),
                                                                                      invalidDailyListRequest.getContentAsString(
                                                                                          Charset.defaultCharset()));
         response.assertIdenticalResponse(client.convertData(expectedResponse.getContentAsString(Charset.defaultCharset()),

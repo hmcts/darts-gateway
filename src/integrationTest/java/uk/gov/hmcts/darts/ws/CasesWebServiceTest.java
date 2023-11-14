@@ -8,8 +8,8 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
-import uk.gov.hmcts.darts.utils.client.SOAPAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -40,7 +40,7 @@ class CasesWebServiceTest extends IntegrationBase {
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/expectedResponse.xml");
 
-        SOAPAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
     }
 
@@ -52,8 +52,8 @@ class CasesWebServiceTest extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
-        SOAPAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
-        SOAPAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
+        SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
     }
 
     @ParameterizedTest
@@ -72,7 +72,7 @@ class CasesWebServiceTest extends IntegrationBase {
             "payloads/addCase/expectedResponse.xml");
 
 
-        SOAPAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 
@@ -109,7 +109,7 @@ class CasesWebServiceTest extends IntegrationBase {
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/expectedResponse.xml");
 
-        SOAPAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 }

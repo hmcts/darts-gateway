@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xs:schema id="addAudio" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="audio">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="start" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="Y" type="xs:string" use="required" />
+            <xs:attribute name="M" type="xs:string" use="required" />
+            <xs:attribute name="D" type="xs:string" use="required" />
+            <xs:attribute name="H" type="xs:string" use="required" />
+            <xs:attribute name="MIN" type="xs:string" use="required" />
+            <xs:attribute name="S" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="end" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="Y" type="xs:integer" use="required" />
+            <xs:attribute name="M" type="xs:integer" use="required" />
+            <xs:attribute name="D" type="xs:integer" use="required" />
+            <xs:attribute name="H" type="xs:integer" use="required" />
+            <xs:attribute name="MIN" type="xs:integer" use="required" />
+            <xs:attribute name="S" type="xs:integer" use="required" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="channel" type="xs:integer" minOccurs="1" />
+        <xs:element name="max_channels" type="xs:integer" minOccurs="1" />
+        <xs:element name="mediaformat" minOccurs="1">
+        	<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="64"></xs:maxLength>
+				</xs:restriction>
+			</xs:simpleType>
+        </xs:element>
+        <xs:element name="mediafile" minOccurs="1">
+        	<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="255"></xs:maxLength>
+				</xs:restriction>
+			</xs:simpleType>
+        </xs:element>
+        <xs:element name="courthouse" minOccurs="1">
+        	<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="255"></xs:maxLength>
+				</xs:restriction>
+			</xs:simpleType>
+        </xs:element>
+        <xs:element name="courtroom" minOccurs="1">
+        	<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="64"></xs:maxLength>
+				</xs:restriction>
+			</xs:simpleType>
+        </xs:element>
+        <xs:element name="case_numbers" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="case_number" minOccurs="1" maxOccurs="unbounded">
+        		<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="255"></xs:maxLength>
+					</xs:restriction>
+				</xs:simpleType>
+        	  </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="audio" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

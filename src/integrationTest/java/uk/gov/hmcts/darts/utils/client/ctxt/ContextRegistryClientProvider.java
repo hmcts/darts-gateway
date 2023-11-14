@@ -4,7 +4,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import uk.gov.hmcts.darts.utils.ApplicationContextProvider;
-import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import java.util.ArrayList;
 import java.util.Collection;

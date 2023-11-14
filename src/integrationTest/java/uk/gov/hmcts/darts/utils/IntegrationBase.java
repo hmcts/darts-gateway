@@ -42,4 +42,8 @@ public class IntegrationBase {
             return new URL(url);
         }
     }
+
+    public String getIpAndPort() {
+        return "localhost:" + serverPort;
+    }
 }

@@ -15,24 +15,21 @@ import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
 import com.service.mojdarts.synapps.com.RegisterNode;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.xml.transform.StringSource;
-import uk.gov.hmcts.darts.utils.client.SOAPAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.AbstractSOAPTestClient;
+import uk.gov.hmcts.darts.utils.client.AbstractSoapTestClient;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 
 import java.net.URL;
-import java.util.function.Function;
 
 /**
  * Simple client that demonstrates Mtom interaction for the darts api.
  */
 @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "unchecked"})
-public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements DartsGatewayClient {
+public class DartsGatewayMtomClient extends AbstractSoapTestClient implements DartsGatewayClient {
 
     public DartsGatewayMtomClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);
@@ -56,24 +53,7 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public <I, O> SOAPAssertionUtil<O> sendMessage(URL uri, String payload,
-                                                   Function<I,
-                                                                               JAXBElement<I>> supplier,
-                                                   Class<I> clazz, Function<Object,
-        JAXBElement<O>> responseSupplier)
-        throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-        jakarta.xml.bind.Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        JAXBElement<I> unmarshal = jaxbUnmarshaller.unmarshal(new StringSource(payload), clazz);
-        JAXBElement<I> ijaxbElement = supplier.apply(unmarshal.getValue());
-        return new SOAPAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
-            uri.toString(),
-            ijaxbElement
-        )));
-    }
-
-    @Override
-    public SOAPAssertionUtil<GetCasesResponse> getCases(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<GetCasesResponse> getCases(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            getCases -> new ObjectFactory().createGetCases(getCases),
                            GetCases.class,
@@ -82,7 +62,7 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public SOAPAssertionUtil<AddDocumentResponse> addDocument(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddDocumentResponse> addDocument(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            addDocument -> new ObjectFactory().createAddDocument(addDocument),
                            AddDocument.class,
@@ -91,7 +71,7 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public SOAPAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            getCaseLog -> new ObjectFactory().createGetCourtLog(getCaseLog),
                            GetCourtLog.class,
@@ -100,7 +80,7 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public SOAPAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            addLog -> new ObjectFactory().createAddLogEntry(addLog),
                            AddLogEntry.class,
@@ -109,7 +89,7 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public SOAPAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            addCases -> new ObjectFactory().createAddCase(addCases),
                            AddCase.class,
@@ -118,7 +98,7 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public SOAPAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            registerNode -> new ObjectFactory().createRegisterNode(registerNode),
                            RegisterNode.class,
@@ -127,7 +107,7 @@ public class DartsGatewayMtomClient extends AbstractSOAPTestClient implements Da
     }
 
     @Override
-    public SOAPAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            addAudio -> new ObjectFactory().createAddAudio(addAudio),
                            AddAudio.class,

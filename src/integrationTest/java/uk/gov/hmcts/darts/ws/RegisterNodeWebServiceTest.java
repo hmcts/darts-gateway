@@ -7,8 +7,8 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
-import uk.gov.hmcts.darts.utils.client.SOAPAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -36,7 +36,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             "payloads/registernode/expectedResponse.xml");
 
 
-        SOAPAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
     }
 

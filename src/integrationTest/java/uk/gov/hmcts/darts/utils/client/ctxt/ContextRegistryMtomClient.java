@@ -1,26 +1,31 @@
 package uk.gov.hmcts.darts.utils.client.ctxt;
 
-import documentum.contextreg.*;
+import documentum.contextreg.Lookup;
+import documentum.contextreg.LookupResponse;
+import documentum.contextreg.ObjectFactory;
+import documentum.contextreg.Register;
+import documentum.contextreg.RegisterResponse;
+import documentum.contextreg.Unregister;
+import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import uk.gov.hmcts.darts.utils.client.SOAPAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.AbstractSOAPTestClient;
+import uk.gov.hmcts.darts.utils.client.AbstractSoapTestClient;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 
 import java.net.URL;
-import java.lang.Exception;
 
 /**
  * Simple client that demonstrates Mtom interaction for the context registry api.
  */
 @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "unchecked"})
-public class ContextRegistryMtomClient extends AbstractSOAPTestClient implements ContextRegistryClient {
+public class ContextRegistryMtomClient extends AbstractSoapTestClient implements ContextRegistryClient {
 
     public ContextRegistryMtomClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);
     }
 
     @Override
-    public SOAPAssertionUtil<RegisterResponse> register(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<RegisterResponse> register(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            register -> new ObjectFactory().createRegister(register),
                            Register.class,
@@ -29,7 +34,7 @@ public class ContextRegistryMtomClient extends AbstractSOAPTestClient implements
     }
 
     @Override
-    public SOAPAssertionUtil<LookupResponse> lookup(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<LookupResponse> lookup(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            lookup -> new ObjectFactory().createLookup(lookup),
                            Lookup.class,
@@ -38,7 +43,7 @@ public class ContextRegistryMtomClient extends AbstractSOAPTestClient implements
     }
 
     @Override
-    public SOAPAssertionUtil<UnregisterResponse> unregister(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<UnregisterResponse> unregister(URL uri, String payload) throws Exception {
         return sendMessage(uri, payload,
                            unregister -> new ObjectFactory().createUnregister(unregister),
                            Unregister.class,

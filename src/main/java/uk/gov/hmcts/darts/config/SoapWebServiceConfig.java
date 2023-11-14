@@ -18,11 +18,10 @@ import org.springframework.xml.validation.XmlValidator;
 import org.springframework.xml.validation.XmlValidatorFactory;
 import org.springframework.xml.xsd.XsdSchema;
 import org.springframework.xml.xsd.XsdSchemaCollection;
-import org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection;
 import uk.gov.hmcts.darts.metadata.ContextRegistryEndpointMetaData;
-import uk.gov.hmcts.darts.metadata.DartsSOAPEndpointMetaData;
+import uk.gov.hmcts.darts.metadata.DartsEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.EndpointMetaData;
-import uk.gov.hmcts.darts.ws.DartsSOAPMessageDispatcherServlet;
+import uk.gov.hmcts.darts.ws.DartsMessageDispatcherServlet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,20 +80,20 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context, List<EndpointMetaData> metaData) {
-        var messageDispatcherServlet = new DartsSOAPMessageDispatcherServlet(metaData);
+        var messageDispatcherServlet = new DartsMessageDispatcherServlet(metaData);
         messageDispatcherServlet.setApplicationContext(context);
         return new ServletRegistrationBean<>(messageDispatcherServlet, BASE_WEB_CONTEXT + "*");
     }
 
     @Bean
     public List<Wsdl11Definition> dartsWsdl11Definition(List<EndpointMetaData> metaData) {
-        return metaData.stream().map(EndpointMetaData::getWSDLDefinition).collect(Collectors.toList());
+        return metaData.stream().map(EndpointMetaData::getWsdlDefinition).collect(Collectors.toList());
     }
 
     @Bean
     List<EndpointMetaData> getEndpointMetaData() {
         List<EndpointMetaData> endpointMetaData = new ArrayList<>();
-        endpointMetaData.add(new DartsSOAPEndpointMetaData(BASE_WEB_CONTEXT));
+        endpointMetaData.add(new DartsEndpointMetaData(BASE_WEB_CONTEXT));
         endpointMetaData.add(new ContextRegistryEndpointMetaData(BASE_WEB_CONTEXT));
         return endpointMetaData;
     }

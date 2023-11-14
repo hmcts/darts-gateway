@@ -405,6 +405,7 @@ sourceSets {
       srcDir 'src/main/java/generated'
       srcDir 'build/generated-sources/jaxbRegisterNode'
       srcDir 'build/generated-sources/jaxbAddCase'
+      srcDir 'build/generated-sources/jaxbAddAudio'
     }
   }
 }
@@ -468,6 +469,25 @@ task genJaxbAddCase {
   }
 }
 
+task genJaxbAddAudio {
+  ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddAudio"
+  ext.schema = "src/main/resources/schemas/addAudio.xsd"
+
+  outputs.dir sourcesDir
+
+  doLast() {
+    project.ant {
+      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+      mkdir(dir: sourcesDir)
+
+      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addaudio",  schema: schema) {
+        arg(value: "-wsdl")
+
+        produces(dir: sourcesDir, includes: "**/*.java")
+      }
+    }
+  }
+}
 
 wsdl2java {
     wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws/dartsService"))
@@ -518,4 +538,4 @@ project.tasks.processResources.dependsOn processDartsServiceWSDL
 project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
 compileJava.dependsOn generateCodeFromSpecification
 generateCodeFromSpecification.dependsOn extractOpenSpecification
-compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode
+compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio
