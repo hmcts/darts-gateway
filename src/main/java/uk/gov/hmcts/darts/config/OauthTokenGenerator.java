@@ -34,13 +34,28 @@ public class OauthTokenGenerator {
                 .getBody().get("access_token").toString();
     }
 
+    public String acquireNewToken(String username, String password) {
+        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
+            .getBody().get("access_token").toString();
+    }
+
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity() {
+            return buildTokenRequestEntity(null, null);
+    }
+
+    private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {
         MultiValueMap<String, String> formValues = new LinkedMultiValueMap<>();
         formValues.add("grant_type", "password");
         formValues.add("client_id", clientId);
         formValues.add("scope", scope);
-        formValues.add("username", username);
-        formValues.add("password", password);
+
+        if (username != null) {
+            formValues.add("username", username);
+        }
+
+        if (password != null) {
+            formValues.add("password", password);
+        }
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

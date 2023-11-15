@@ -27,7 +27,14 @@ azure:
 
 darts-gateway:
   context-registry:
-    generate-jwt: true
+    token-generate: jwt
+    map-token-to-session: true
+  authentication:
+    users:
+      - user-name: dmadmin
+        password: dmadmin
+        jwt-username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
+        jwt-password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
   ws:
     request-validation: false
     response-validation: false

@@ -11,9 +11,11 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import uk.gov.hmcts.darts.ctxtregistry.RefreshableCacheValue;
-import uk.gov.hmcts.darts.ctxtregistry.TokenHolder;
-import uk.gov.hmcts.darts.ctxtregistry.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
+import uk.gov.hmcts.darts.cache.token.Token;
+import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
+
+import java.util.Optional;
 
 @Endpoint
 @RequiredArgsConstructor
@@ -28,11 +30,16 @@ public class ContextRegistryEndpoint {
         RegisterResponse registerResponse = new RegisterResponse();
 
         // create a session as the client needs this
-        TokenHolder holder = registerable.createToken(addDocument.getValue().getContext());
-        registerable.store(holder, registerable.createValue(addDocument.getValue().getContext()));
+        Optional<Token> token = registerable.createToken(addDocument.getValue().getContext());
 
-        // for now return a documentum id
-        registerResponse.setReturn(holder.getToken());
+        if (token.isPresent()) {
+            registerable.store(token.get(), registerable.createValue(addDocument.getValue().getContext()));
+
+            // for now return a documentum id
+            registerResponse.setReturn(token.get().getToken());
+        }
+
+        // TODO: Do we throw an exception here if we cant get a token?
         return new ObjectFactory().createRegisterResponse(registerResponse);
     }
 
@@ -41,8 +48,11 @@ public class ContextRegistryEndpoint {
     public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<documentum.contextreg.Unregister> unregister) {
         UnregisterResponse unregisterResponse = new UnregisterResponse();
 
-        registerable.evict(TokenHolder.generateToken(unregister.getValue().getToken()));
+        Optional<Token> token = registerable.getToken(unregister.getValue().getToken());
 
+        token.ifPresent(registerable::evict);
+
+        // TODO: Do we throw an exception here if token not found?
         return new ObjectFactory().createUnregisterResponse(unregisterResponse);
     }
 
@@ -50,12 +60,17 @@ public class ContextRegistryEndpoint {
     @ResponsePayload
     public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> lookup) {
         LookupResponse lookupResponse = new LookupResponse();
-        RefreshableCacheValue value = registerable.lookup(TokenHolder.generateToken(lookup.getValue().getToken()));
+        Optional<Token> token = registerable.getToken(lookup.getValue().getToken());
 
-        if (value != null) {
-            lookupResponse.setReturn(value.getContext());
+        if (token.isPresent()) {
+            RefreshableCacheValue value = registerable.lookup(token.get(), true);
+
+            if (value != null) {
+                lookupResponse.setReturn(value.getContext());
+            }
         }
 
+        // TODO: Do we throw an exception here if token not found?
         return new ObjectFactory().createLookupResponse(lookupResponse);
     }
 }

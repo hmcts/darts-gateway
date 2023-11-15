@@ -33,7 +33,7 @@ class ContextRegistryJwtServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        Mockito.when(generator.acquireNewToken()).thenReturn("test");
+        Mockito.when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
     }
 
     @Test

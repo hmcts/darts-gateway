@@ -7,6 +7,9 @@ logging:
     root: DEBUG
 
 darts-gateway:
+  context-registry:
+    token-generate: documentum
+    map-token-to-session: false
   darts-api:
     base-url: http://localhost:8090
   ws:
