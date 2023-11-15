@@ -39,7 +39,7 @@ class ContextRegistryJwtServiceTest extends IntegrationBase {
     @Test
     void testGetContextRegistryWsdl() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(new URI(getGatewayUri() + "ContextRegistryService?wsdl"))
+            .uri(new URI(getGatewayUri() + "runtime/ContextRegistryService?wsdl"))
             .timeout(Duration.ofMinutes(2))
             .header("Content-Type", "application/json")
             .build();
