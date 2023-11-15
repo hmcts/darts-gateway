@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("darts-gateway.context-registry")
 @Getter
 @Setter
-public class ContextRegistryPropertiesImpl implements ContextRegistryProperties{
+public class ContextRegistryPropertiesImpl implements ContextRegistryProperties {
     private String tokenGenerate;
 
     private boolean mapTokenToSession;

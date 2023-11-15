@@ -31,20 +31,8 @@ public class Token {
         return token;
     }
 
-    public static Token generateDocumentumToken(String tokenStr, boolean mapToSession) {
-        Token token =  new Token(tokenStr);
-
-        // create a cookie to send back to the client
-        if (mapToSession) {
-            String sessionId = createTokenSession();
-
-            token.setSessionId(sessionId);
-        }
-        return token;
-    }
-
     public static Optional<Token> readToken(String tokenStr, boolean mapToSession) {
-        Token token = null;
+        Token token;
 
         if (mapToSession && doesSessionExist()) {
             token =  new Token(tokenStr);
@@ -55,13 +43,24 @@ public class Token {
             token.setSessionId(sessionId);
 
             return Optional.of(token);
-        }
-        else if (!mapToSession) {
+        } else if (!mapToSession) {
             token =  new Token(tokenStr);
             return Optional.of(token);
         }
 
         return Optional.empty();
+    }
+
+    public static Token generateDocumentumToken(String tokenStr, boolean mapToSession) {
+        Token token =  new Token(tokenStr);
+
+        // create a cookie to send back to the client
+        if (mapToSession) {
+            String sessionId = createTokenSession();
+
+            token.setSessionId(sessionId);
+        }
+        return token;
     }
 
     public static Token generateDocumentumToken(boolean mapToSession) {

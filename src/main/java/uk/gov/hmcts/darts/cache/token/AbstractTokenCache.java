@@ -25,6 +25,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
         return val;
     }
+
     protected abstract RefreshableCacheValue getValue(Token holder);
 
     @Override

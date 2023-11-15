@@ -40,7 +40,7 @@ public class OauthTokenGenerator {
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity() {
-            return buildTokenRequestEntity(null, null);
+        return buildTokenRequestEntity(null, null);
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {

@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.darts.authentication.config.AuthenticationUserToJWTCredentialProperties;
+import uk.gov.hmcts.darts.authentication.config.AuthenticationUserToJwtCredentialProperties;
 import uk.gov.hmcts.darts.cache.token.DefaultCache;
 import uk.gov.hmcts.darts.cache.token.JwtCache;
 import uk.gov.hmcts.darts.ctxtregistry.config.ContextRegistryProperties;
@@ -45,7 +45,7 @@ public class ContextRegistryCacheConfig {
     @Bean
     JwtCache getJwtokenCache(Cache caheToUse, OauthTokenGenerator jwtGenerator,
                              ContextRegistryProperties cxtProperties,
-                             AuthenticationUserToJWTCredentialProperties properties) {
+                             AuthenticationUserToJwtCredentialProperties properties) {
         return new JwtCache(caheToUse, jwtGenerator, cxtProperties, properties);
     }
 }

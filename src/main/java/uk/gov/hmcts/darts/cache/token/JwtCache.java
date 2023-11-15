@@ -1,9 +1,11 @@
 package uk.gov.hmcts.darts.cache.token;
 
-import documentum.contextreg.*;
+import documentum.contextreg.BasicIdentity;
+import documentum.contextreg.Identity;
+import documentum.contextreg.ServiceContext;
 import org.springframework.cache.Cache;
-import uk.gov.hmcts.darts.authentication.config.AuthenticationUserToJWT;
-import uk.gov.hmcts.darts.authentication.config.AuthenticationUserToJWTCredentialProperties;
+import uk.gov.hmcts.darts.authentication.config.AuthenticationUserToJwt;
+import uk.gov.hmcts.darts.authentication.config.AuthenticationUserToJwtCredentialProperties;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.ctxtregistry.config.ContextRegistryProperties;
 
@@ -12,14 +14,14 @@ import java.util.Optional;
 public class JwtCache extends DefaultCache {
     private final OauthTokenGenerator generator;
 
-    private final AuthenticationUserToJWTCredentialProperties authenticationUserToJWTCredentialProperties;
+    private final AuthenticationUserToJwtCredentialProperties authenticationUserToJwtCredentialProperties;
 
     public JwtCache(Cache cacheManager, OauthTokenGenerator generator,
                     ContextRegistryProperties ctxtregproperties,
-                    AuthenticationUserToJWTCredentialProperties properties) {
+                    AuthenticationUserToJwtCredentialProperties properties) {
         super(cacheManager, ctxtregproperties);
         this.generator = generator;
-        this.authenticationUserToJWTCredentialProperties = properties;
+        this.authenticationUserToJwtCredentialProperties = properties;
     }
 
     @Override
@@ -28,8 +30,8 @@ public class JwtCache extends DefaultCache {
         String jwtToken = null;
         if (identity instanceof BasicIdentity) {
 
-            Optional<AuthenticationUserToJWT> jwtCredentials = authenticationUserToJWTCredentialProperties.
-                getUserToJWTCredentials(((BasicIdentity) identity).getUserName(),
+            Optional<AuthenticationUserToJwt> jwtCredentials =
+                    authenticationUserToJwtCredentialProperties.getUserToJwtCredentials(((BasicIdentity) identity).getUserName(),
                 ((BasicIdentity) identity).getPassword());
 
             if (jwtCredentials.isPresent()) {

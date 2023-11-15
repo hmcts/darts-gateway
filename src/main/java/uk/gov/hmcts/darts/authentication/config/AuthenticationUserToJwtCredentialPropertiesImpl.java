@@ -12,12 +12,12 @@ import java.util.Optional;
 @ConfigurationProperties("darts-gateway.authentication")
 @Getter
 @Setter
-public class AuthenticationUserToJWTCredentialPropertiesImpl implements AuthenticationUserToJWTCredentialProperties{
+public class AuthenticationUserToJwtCredentialPropertiesImpl implements AuthenticationUserToJwtCredentialProperties {
 
-    private List<AuthenticationUserToJWT> users;
+    private List<AuthenticationUserToJwt> users;
 
     @Override
-    public Optional<AuthenticationUserToJWT> getUserToJWTCredentials(String username, String password) {
+    public Optional<AuthenticationUserToJwt> getUserToJwtCredentials(String username, String password) {
         return users.stream().filter(user -> user.getUserName().equals(username)
             && user.getPassword().equals(password)).findFirst();
     }

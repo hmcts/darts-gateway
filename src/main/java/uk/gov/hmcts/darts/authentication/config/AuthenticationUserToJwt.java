@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AuthenticationUserToJWT {
+public class AuthenticationUserToJwt {
     private String userName;
 
     private String password;
