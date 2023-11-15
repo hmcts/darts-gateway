@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:ns1="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core-query="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:dfs-dm-core="http://core.datamodel.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dfs-dm-core-schema="http://schema.core.datamodel.fs.documentum.emc.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dfs-rt="http://rt.fs.documentum.emc.com/">
+
+  <xs:import namespace="http://properties.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema4.xsd"/>
+
+  <xs:complexType name="ClusteringStrategy">
+    <xs:complexContent>
+      <xs:extension base="tns:GroupingStrategy">
+        <xs:sequence>
+          <xs:element name="attributes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="tokenizers" type="ns1:PropertySet" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="clusteringRange" type="tns:ClusteringRange"/>
+        <xs:attribute name="clusteringThreshold" type="xs:int" use="required"/>
+        <xs:attribute name="strategyName" type="xs:string"/>
+        <xs:attribute name="returnIdentitySet" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="GroupingStrategy" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:simpleType name="ClusteringRange">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LOW"/>
+      <xs:enumeration value="MEDIUM"/>
+      <xs:enumeration value="HIGH"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

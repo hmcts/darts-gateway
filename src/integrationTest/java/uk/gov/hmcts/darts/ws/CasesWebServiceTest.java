@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
-import uk.gov.hmcts.darts.utils.client.ClientProvider;
-import uk.gov.hmcts.darts.utils.client.DartsGatewayAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.DartsGatewayClient;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
+import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
+import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -23,7 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 class CasesWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
-    @ArgumentsSource(ClientProvider.class)
+    @ArgumentsSource(DartsClientProvider.class)
     void handlesGetCases(DartsGatewayClient client) throws Exception {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
@@ -40,24 +40,24 @@ class CasesWebServiceTest extends IntegrationBase {
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/expectedResponse.xml");
 
-        DartsGatewayAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ClientProvider.class)
+    @ArgumentsSource(DartsClientProvider.class)
     void handlesGetCasesServiceFailure(DartsGatewayClient client) throws Exception {
         getCasesApiStub.returnsFailureWhenGettingCases();
 
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
-        DartsGatewayAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
-        DartsGatewayAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
+        SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ClientProvider.class)
+    @ArgumentsSource(DartsClientProvider.class)
     void handlesAddCase(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
@@ -72,12 +72,12 @@ class CasesWebServiceTest extends IntegrationBase {
             "payloads/addCase/expectedResponse.xml");
 
 
-        DartsGatewayAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ClientProvider.class)
+    @ArgumentsSource(DartsClientProvider.class)
     void handlesAddCaseError(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
@@ -94,7 +94,7 @@ class CasesWebServiceTest extends IntegrationBase {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ClientProvider.class)
+    @ArgumentsSource(DartsClientProvider.class)
     void handlesAddCaseWithInvalidServiceResponse(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
@@ -109,7 +109,7 @@ class CasesWebServiceTest extends IntegrationBase {
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/expectedResponse.xml");
 
-        DartsGatewayAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
     }
 }

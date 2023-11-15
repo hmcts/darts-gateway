@@ -7,9 +7,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
-import uk.gov.hmcts.darts.utils.client.ClientProvider;
-import uk.gov.hmcts.darts.utils.client.DartsGatewayAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.DartsGatewayClient;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
+import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
+import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -20,7 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 class RegisterNodeWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
-    @ArgumentsSource(ClientProvider.class)
+    @ArgumentsSource(DartsClientProvider.class)
     void handlesRegisterNode(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(
@@ -36,12 +36,12 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             "payloads/registernode/expectedResponse.xml");
 
 
-        DartsGatewayAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
+        SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ClientProvider.class)
+    @ArgumentsSource(DartsClientProvider.class)
     void handlesRegisterNodeError(DartsGatewayClient client) throws Exception {
 
         String soapRequestStr = TestUtils.getContentsFromFile(

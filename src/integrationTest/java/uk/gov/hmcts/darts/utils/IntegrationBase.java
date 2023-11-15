@@ -37,9 +37,13 @@ public class IntegrationBase {
     public URL getGatewayUri() throws MalformedURLException {
         String url = System.getenv("TEST_URL");
         if (System.getenv("TEST_URL") == null) {
-            return new URL("http://localhost:" + serverPort + "/ws");
+            return new URL("http://localhost:" + serverPort + "/service/darts/");
         } else {
             return new URL(url);
         }
+    }
+
+    public String getIpAndPort() {
+        return "localhost:" + serverPort;
     }
 }

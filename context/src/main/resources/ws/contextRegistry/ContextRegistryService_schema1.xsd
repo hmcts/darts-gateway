@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://services.rt.fs.documentum.emc.com/" xmlns:ns1="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:tns="http://services.rt.fs.documentum.emc.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:import namespace="http://context.core.datamodel.fs.documentum.emc.com/" schemaLocation="ContextRegistryService_schema7.xsd"/>
+
+  <xs:element name="lookup" type="tns:lookup"/>
+
+  <xs:element name="lookupResponse" type="tns:lookupResponse"/>
+
+  <xs:element name="register" type="tns:register"/>
+
+  <xs:element name="registerResponse" type="tns:registerResponse"/>
+
+  <xs:element name="unregister" type="tns:unregister"/>
+
+  <xs:element name="unregisterResponse" type="tns:unregisterResponse"/>
+
+  <xs:complexType name="register">
+    <xs:sequence>
+      <xs:element name="context" type="ns1:ServiceContext" minOccurs="0"/>
+      <xs:element name="host" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="registerResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="unregister">
+    <xs:sequence>
+      <xs:element name="token" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="unregisterResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="lookup">
+    <xs:sequence>
+      <xs:element name="token" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="lookupResponse">
+    <xs:sequence>
+      <xs:element name="return" type="ns1:ServiceContext" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

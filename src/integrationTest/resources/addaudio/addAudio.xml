@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<audio>
+	<start Y="2023" M="10" D="23" H="09" MIN="00" S="00" />
+	<end Y="2023" M="10" D="23" H="10" MIN="00" S="00" />
+    <channel>0</channel>
+    <max_channels>3</max_channels>
+    <mediaformat>mp2</mediaformat>
+    <mediafile>sample6.mp2</mediafile>
+    <courthouse>CARDIFF</courthouse>
+    <courtroom>1</courtroom>
+    <case_numbers>
+        <case_number>123456789</case_number>
+    </case_numbers>
+</audio>
