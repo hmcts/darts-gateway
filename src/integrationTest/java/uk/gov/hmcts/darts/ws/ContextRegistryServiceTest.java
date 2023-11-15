@@ -112,5 +112,6 @@ class ContextRegistryServiceTest extends IntegrationBase {
         SoapAssertionUtil<UnregisterResponse> response = client.unregister(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse());
         Assertions.assertNull(lookup(client).getReturn().getToken());
+        Assertions.assertTrue(true);
     }
 }

@@ -10,7 +10,7 @@ management:
       base-path: /
       exposure:
         include: health, info, prometheus
-
+ 
 springdoc:
   packagesToScan: uk.gov.hmcts.darts
 
