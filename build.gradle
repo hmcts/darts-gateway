@@ -278,7 +278,7 @@ sourceSets {
 dependencies {
   implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.16'
   implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.15'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.15'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.16'
   implementation 'org.apache.santuario:xmlsec:4.0.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
