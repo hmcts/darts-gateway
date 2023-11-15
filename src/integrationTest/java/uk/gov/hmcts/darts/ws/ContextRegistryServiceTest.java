@@ -32,7 +32,7 @@ class ContextRegistryServiceTest extends IntegrationBase {
         HttpClient client = HttpClient.newBuilder().build();
         HttpResponse.BodyHandler<?> responseBodyHandler = BodyHandlers.ofString();
         HttpResponse<?> response = client.send(request, responseBodyHandler);
-        Assertions.assertNotNull(response.body());
+        Assertions.assertFalse(response.body().toString().isEmpty());
     }
 
     @ParameterizedTest
