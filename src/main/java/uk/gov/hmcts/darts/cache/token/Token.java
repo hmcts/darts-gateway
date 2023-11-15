@@ -38,8 +38,7 @@ public class Token {
             token =  new Token(tokenStr);
 
             // create a cookie to send back to the client
-            String sessionId = createTokenSession();
-
+            String sessionId = getHttpSessionId();
             token.setSessionId(sessionId);
 
             return Optional.of(token);
@@ -94,10 +93,19 @@ public class Token {
         return curRequest.getSession().getId();
     }
 
+    private static String getHttpSessionId() {
+        HttpServletRequest curRequest =
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                        .getRequest();
+        return curRequest.getSession(false).getId();
+    }
+
     private static boolean doesSessionExist() {
         HttpServletRequest curRequest =
             ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                 .getRequest();
         return curRequest.getSession(false) != null;
     }
+
+
 }

@@ -26,7 +26,7 @@ public class ContextRegistryCacheConfig {
     Cache getCache() {
         return new ConcurrentMapCache(TOKEN_CACHE, CacheBuilder.newBuilder()
             .expireAfterWrite(ENTRY_EXPIRATION_TIME_MINUTES, TimeUnit.MINUTES)
-                .maximumSize(MAXIMUM_NUMBER_OF_ITEMS).build().asMap(), false);
+            .build().asMap(), false);
     }
 
     @ConditionalOnProperty(

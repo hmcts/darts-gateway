@@ -28,7 +28,7 @@ azure:
 darts-gateway:
   context-registry:
     token-generate: jwt
-    map-token-to-session: true
+    map-token-to-session: false
   authentication:
     users:
       - user-name: dmadmin
