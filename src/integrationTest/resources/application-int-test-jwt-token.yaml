@@ -8,7 +8,7 @@ logging:
 
 darts-gateway:
   context-registry:
-    token-generate: documentum
+    token-generate: jwt
     map-token-to-session: false
   darts-api:
     base-url: http://localhost:8090

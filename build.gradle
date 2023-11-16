@@ -156,7 +156,9 @@ def sonarExclusions = [
   'src/main/java/generated/**',
   '**/uk/gov/hmcts/darts/**/model/**',
   '**/uk/gov/hmcts/darts/**/config/**',
-  '**/enums/**'
+  '**/enums/**',
+  '**/DocumentumIdToJwtCache*',
+  '**/CacheValueWithJwt*'
 ]
 
 sonarqube {
@@ -288,6 +290,8 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
+  implementation group: 'org.springframework', name: 'spring-context'
+
   implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
     exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908

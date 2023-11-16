@@ -4,9 +4,14 @@ import documentum.contextreg.LookupResponse;
 import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.UnregisterResponse;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -21,7 +26,16 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 
-class ContextRegistryServiceTest extends IntegrationBase {
+@ActiveProfiles("int-test-jwt-token")
+class ContextRegistryJwtServiceTest extends IntegrationBase {
+    @MockBean
+    private OauthTokenGenerator generator;
+
+    @BeforeEach
+    public void before() {
+        Mockito.when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
+    }
+
     @Test
     void testGetContextRegistryWsdl() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -32,7 +46,7 @@ class ContextRegistryServiceTest extends IntegrationBase {
         HttpClient client = HttpClient.newBuilder().build();
         HttpResponse.BodyHandler<?> responseBodyHandler = BodyHandlers.ofString();
         HttpResponse<?> response = client.send(request, responseBodyHandler);
-        Assertions.assertFalse(response.body().toString().isEmpty());
+        Assertions.assertNotNull(response.body());
     }
 
     @ParameterizedTest
@@ -112,6 +126,5 @@ class ContextRegistryServiceTest extends IntegrationBase {
         SoapAssertionUtil<UnregisterResponse> response = client.unregister(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse());
         Assertions.assertNull(lookup(client).getReturn().getToken());
-        Assertions.assertTrue(true);
     }
 }

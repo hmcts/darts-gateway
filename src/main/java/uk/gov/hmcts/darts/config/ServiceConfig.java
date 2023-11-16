@@ -19,6 +19,7 @@ import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @SuppressWarnings("PMD.ExcessiveImports")
+@Configuration
 public class ServiceConfig {
 
     @Bean
@@ -117,8 +119,8 @@ public class ServiceConfig {
     }
 
     @Bean
-    public OAuthTokenGenerator getTokenGenerator() {
-        return new OAuthTokenGenerator(new RestTemplate());
+    public RestTemplate getTemplate() {
+        return new RestTemplate();
     }
 
     @Bean
@@ -131,10 +133,10 @@ public class ServiceConfig {
     //TODO: Needs to change when we the gateway is passed the token
     @Bean
     @Profile("!int-test")
-    public RequestInterceptor requestInterceptor(OAuthTokenGenerator tokenGenerator) {
+    public RequestInterceptor requestInterceptor(OauthTokenGenerator tokenGenerator) {
         return
             template -> {
-                template.header("Authorization", "Bearer " + tokenGenerator.acquireNewToken().get("access_token"));
+                template.header("Authorization", "Bearer " + tokenGenerator.acquireNewToken());
             };
     }
 }

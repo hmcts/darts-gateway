@@ -26,6 +26,15 @@ azure:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
 
 darts-gateway:
+  context-registry:
+    token-generate: jwt
+    map-token-to-session: false
+  authentication:
+    users:
+      - user-name: dmadmin
+        password: dmadmin
+        jwt-username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
+        jwt-password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
   ws:
     request-validation: false
     response-validation: false

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceContext
+  xmlns="http://context.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns2="http://properties.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns3="http://profiles.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns4="http://query.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns5="http://content.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns6="http://core.datamodel.fs.documentum.emc.com/" token="temporary/127.0.0.1-1699627775508-1813438193751837662">
+  <Identities
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" password="dmadmin" repositoryName="moj_darts" userName="dmadmin" xsi:type="RepositoryIdentity">
+  </Identities>
+  <Profiles
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" allowAsyncContentTransfer="false" allowCachedContentTransfer="false" isProcessOLELinks="false" transferMode="MTOM" xsi:type="ns3:ContentTransferProfile">
+  </Profiles>
+</ServiceContext>

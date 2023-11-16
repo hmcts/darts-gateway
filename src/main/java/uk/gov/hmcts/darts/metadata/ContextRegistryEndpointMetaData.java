@@ -36,6 +36,6 @@ public class ContextRegistryEndpointMetaData implements EndpointMetaData {
 
     @Override
     public Pattern getEndpointMatcher() {
-        return Pattern.compile(webcontext.replace("/", "\\/") + "*\\/ContextRegistryService");
+        return Pattern.compile(webcontext.replace("/", "\\/") + ".*\\/ContextRegistryService");
     }
 }

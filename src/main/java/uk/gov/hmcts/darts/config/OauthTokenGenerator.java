@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -13,7 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class OAuthTokenGenerator {
+@Component
+public class OauthTokenGenerator {
     @Value("${azure-ad-ropc.token-uri}")
     private String tokenUri;
     @Value("${azure-ad-ropc.scope}")
@@ -27,17 +29,33 @@ public class OAuthTokenGenerator {
 
     private final RestTemplate template;
 
-    public Map<?, ?> acquireNewToken() {
-        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(), Map.class).getBody();
+    public String acquireNewToken() {
+        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(), Map.class)
+                .getBody().get("access_token").toString();
+    }
+
+    public String acquireNewToken(String username, String password) {
+        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
+            .getBody().get("access_token").toString();
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity() {
+        return buildTokenRequestEntity(null, null);
+    }
+
+    private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {
         MultiValueMap<String, String> formValues = new LinkedMultiValueMap<>();
         formValues.add("grant_type", "password");
         formValues.add("client_id", clientId);
         formValues.add("scope", scope);
-        formValues.add("username", username);
-        formValues.add("password", password);
+
+        if (username != null) {
+            formValues.add("username", username);
+        }
+
+        if (password != null) {
+            formValues.add("password", password);
+        }
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
