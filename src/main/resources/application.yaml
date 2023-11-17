@@ -10,7 +10,7 @@ management:
       base-path: /
       exposure:
         include: health, info, prometheus
- 
+
 springdoc:
   packagesToScan: uk.gov.hmcts.darts
 
@@ -60,8 +60,8 @@ darts-gateway:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 
 azure-ad-ropc:
-  token-uri: https://hmctsdartsb2csbox.b2clogin.com/hmctsdartsb2csbox.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token
-  scope: https://hmctsdartsb2csbox.onmicrosoft.com/053d44f9-cd27-463e-a995-bcf835233cf8/Functional.Test
+  token-uri: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token
+  scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_ROPC_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Functional.Test
   username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
   password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
   client-id: ${AAD_B2C_ROPC_CLIENT_ID_KEY:#{null}}
