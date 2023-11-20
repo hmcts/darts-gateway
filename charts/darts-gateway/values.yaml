@@ -10,14 +10,15 @@ java:
           alias: DAR_NOTIFY_EVENT_SECUREMENT_USERNAME
         - name: darts-gateway-DarNotifyEventSecurementPassword
           alias: DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD
-        - name: AzureAdB2CFuncTestROPCClientIdKey
+        - name: AzureAdB2CFuncTestROPCClientId
           alias: AAD_B2C_ROPC_CLIENT_ID_KEY
-        - name: api-FUNC-TEST-ROPC-USERNAME
+        - name: AzureAdB2CFuncTestROPCUsername
           alias: FUNC_TEST_ROPC_USERNAME
-        - name: api-FUNC-TEST-ROPC-PASSWORD
+        - name: AzureAdB2CFuncTestROPCPassword
           alias: FUNC_TEST_ROPC_PASSWORD
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
+
   environment:
     DAR_NOTIFY_DEFAULT_URL: https://darts-stub-services.staging.platform.hmcts.net/VIQDARNotifyEvent/DARNotifyEvent.asmx
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net
