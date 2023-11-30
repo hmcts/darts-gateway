@@ -15,7 +15,6 @@ import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.ObjectFactory;
 import com.service.mojdarts.synapps.com.RegisterNode;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
-import com.synapps.moj.dfs.response.DARTSResponse;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
@@ -119,12 +118,7 @@ public class DartsEndpoint {
 
         addAudioResponse.setReturn(endpointHandler.makeAPICall("addAudio", () -> addAudioRoute.route(addAudio.getValue()),
                                                                    addAudioResponse::getReturn));
-        AddAudioResponse response = new AddAudioResponse();
-        DARTSResponse dartsResponse = new DARTSResponse();
-        dartsResponse.setCode("200");
-        dartsResponse.setMessage("OK");
-        response.setReturn(dartsResponse);
 
-        return new ObjectFactory().createAddAudioResponse(response);
+        return new ObjectFactory().createAddAudioResponse(addAudioResponse);
     }
 }

@@ -55,6 +55,9 @@ darts-gateway:
   register-node:
     schema: "src/main/resources/schemas/darts-register-node.xsd"
     validate: false
+  add-audio:
+    schema: "src/main/resources/schemas/addAudio.xsd"
+    validate: false
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 

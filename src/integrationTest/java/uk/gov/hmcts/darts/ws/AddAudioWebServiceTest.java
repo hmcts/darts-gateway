@@ -9,6 +9,12 @@ import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+
+
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class AddAudioWebServiceTest  extends IntegrationBase {
 
@@ -18,6 +24,11 @@ class AddAudioWebServiceTest  extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
+        String dartsApiResponseStr = TestUtils.getContentsFromFile(
+            "payloads/addAudio/register/dartsApiResponse.json");
+
+        stubFor(post(urlPathEqualTo("/audios"))
+                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/expectedResponse.xml");
