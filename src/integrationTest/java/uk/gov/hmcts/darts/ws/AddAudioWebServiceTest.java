@@ -1,8 +1,10 @@
 package uk.gov.hmcts.darts.ws;
 
 import com.service.mojdarts.synapps.com.AddAudioResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -35,6 +37,17 @@ class AddAudioWebServiceTest  extends IntegrationBase {
 
         SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void addAudioHandleError(DartsGatewayClient client) throws Exception {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "payloads/addAudio/register/invalidSoapRequest.xml");
+
+        Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
+            client.addAudio(getGatewayUri(), soapRequestStr);
+        });
     }
 
 }

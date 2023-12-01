@@ -5,11 +5,11 @@ import com.service.mojdarts.synapps.com.addaudio.Audio;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.common.client.AudiosClient;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +33,9 @@ public class AddAudioRoute {
 
         var addAudioLegacy = xmlParser.unmarshal(caseDocumentXmlStr, Audio.class);
 
-        ResponseEntity<Void> responseEntity =
-            audiosClient.addAudio(null, addAudioMapper.mapToDartsApi(addAudioLegacy));
+        audiosClient.addAudio(null, addAudioMapper.mapToDartsApi(addAudioLegacy));
 
-
-        return addAudioMapper.mapToDfsResponse(responseEntity);
-
+        CodeAndMessage okResponse = CodeAndMessage.OK;
+        return okResponse.getResponse();
     }
 }

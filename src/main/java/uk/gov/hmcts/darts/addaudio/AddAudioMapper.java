@@ -1,9 +1,7 @@
 package uk.gov.hmcts.darts.addaudio;
 
 import com.service.mojdarts.synapps.com.addaudio.Audio;
-import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
@@ -26,16 +24,11 @@ public class AddAudioMapper {
         addAudioMetadataRequest.setFilename(legacyAudio.getMediafile());
         addAudioMetadataRequest.setCourthouse(legacyAudio.getCourthouse());
         addAudioMetadataRequest.setCourtroom(legacyAudio.getCourtroom());
+        //TODO legacy does not have the file size but we have made it mandatory
+        addAudioMetadataRequest.setFileSize(1024L);
         addAudioMetadataRequest.setCases(legacyAudio.getCaseNumbers().getCaseNumber());
 
         return addAudioMetadataRequest;
     }
 
-    public DARTSResponse mapToDfsResponse(ResponseEntity<Void> modernizedResponse) {
-        //todo what if this is not 200
-        DARTSResponse dartsResponse = new DARTSResponse();
-        dartsResponse.setCode("200");
-        dartsResponse.setMessage("OK");
-        return dartsResponse;
-    }
 }
