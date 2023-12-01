@@ -9,6 +9,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import uk.gov.hmcts.darts.metadata.EndpointMetaData;
+import uk.gov.hmcts.darts.ws.multipart.DartsMetaDataMultiPartHttpUploadRequestFactory;
+import uk.gov.hmcts.darts.ws.multipart.MTOMMetaDataAndUploadRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +29,8 @@ import java.util.List;
 public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
 
     private final List<EndpointMetaData> endpointMetaDataList;
+
+    private final DartsMetaDataMultiPartHttpUploadRequestFactory requestFactory;
 
     @Override
     @SuppressWarnings("PMD.ConfusingTernary")
@@ -54,9 +58,20 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
             if (fndMetaData == null) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
+            else {
+                super.service(req, res);
+            }
         } else {
-            // if the request is a POST then let the parent implementation deal with this
-            super.service(req, res);
+            boolean isMultipart = MTOMMetaDataAndUploadRequest.isMultipart(req);
+            if (isMultipart) {
+                HttpServletRequest request = null;
+                request = requestFactory.getRequest(req);
+
+                super.service(request, res);
+            }
+            else {
+                super.service(req, res);
+            }
         }
     }
 

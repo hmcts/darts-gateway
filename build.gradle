@@ -351,8 +351,14 @@ dependencies {
   openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
   implementation project(path: ':context')
 
-// https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
+  // https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
   implementation group: 'org.apache.ws.xmlschema', name: 'xmlschema-core', version: '2.3.1'
+  // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+  implementation group: 'javax.mail', name: 'javax.mail-api', version: '1.6.2'
+  // https://mvnrepository.com/artifact/javax.activation/activation
+  implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
+  // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+  implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 
 }
 

@@ -26,7 +26,7 @@ azure:
 
 darts-gateway:
   context-registry:
-    token-generate: jwt
+    token-generate: documentum
     map-token-to-session: false
   authentication:
     users:

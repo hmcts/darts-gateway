@@ -20,6 +20,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -30,6 +31,15 @@ import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
 import uk.gov.hmcts.darts.noderegistration.RegisterNodeRoute;
 import uk.gov.hmcts.darts.routing.EventRoutingService;
+import uk.gov.hmcts.darts.ws.multipart.DartsMetaDataMultiPartHttpUploadRequest;
+import uk.gov.hmcts.darts.ws.multipart.MTOMMetaDataAndUploadRequest;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 
 @Endpoint
 @RequiredArgsConstructor
@@ -115,6 +125,25 @@ public class DartsEndpoint {
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addAudio")
     @ResponsePayload
     public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> addAudio) {
+
+        Optional<MTOMMetaDataAndUploadRequest> request = MTOMMetaDataAndUploadRequest.getCurrentRequest();
+        if (request.isPresent()) {
+            try {
+                File payload = File.createTempFile("payload", ".mp2");
+
+                request.get().consumeFileBinaryStream(is -> {
+                    try {
+                        IOUtils.copy(is, Files.newOutputStream(Paths.get(payload.getPath())));
+                    }
+                    catch (IOException ioException) {
+                    }
+                });
+            }
+            catch (IOException e) {
+
+            }
+        }
+
         AddAudioResponse addAudioResponse = ResponseFactory.getAddAudioResponse();
 
         addAudioResponse.setReturn(endpointHandler.makeAPICall("addAudio", () -> addAudioRoute.route(addAudio.getValue()),

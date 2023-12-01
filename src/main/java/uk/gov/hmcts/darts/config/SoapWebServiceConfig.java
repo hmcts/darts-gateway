@@ -22,6 +22,7 @@ import uk.gov.hmcts.darts.metadata.ContextRegistryEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.DartsEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.EndpointMetaData;
 import uk.gov.hmcts.darts.ws.DartsMessageDispatcherServlet;
+import uk.gov.hmcts.darts.ws.multipart.DartsMetaDataMultiPartHttpUploadRequestFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,8 +80,8 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
     }
 
     @Bean
-    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context, List<EndpointMetaData> metaData) {
-        var messageDispatcherServlet = new DartsMessageDispatcherServlet(metaData);
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context, List<EndpointMetaData> metaData, DartsMetaDataMultiPartHttpUploadRequestFactory factory) {
+        var messageDispatcherServlet = new DartsMessageDispatcherServlet(metaData, factory);
         messageDispatcherServlet.setApplicationContext(context);
         return new ServletRegistrationBean<>(messageDispatcherServlet, BASE_WEB_CONTEXT + "*");
     }

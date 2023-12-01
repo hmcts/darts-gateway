@@ -39,7 +39,6 @@ public class ContextRegistryEndpoint {
             registerResponse.setReturn(token.get().getToken());
         }
 
-        // TODO: Do we throw an exception here if we cant get a token?
         return new ObjectFactory().createRegisterResponse(registerResponse);
     }
 
