@@ -3,14 +3,18 @@ package uk.gov.hmcts.darts.ws.multipart;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.xml.soap.*;
+import org.apache.commons.io.IOUtils;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Consumer;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
 
@@ -36,7 +40,6 @@ public class DartsMetaDataMultiPartHttpUploadRequest extends HttpServletRequestW
 
     private void parse(HttpServletRequest request) {
         try {
-
             MimeMultipart mimeMultipart = new MimeMultipart(new HttpRequestDataSource(request
             ));
 
@@ -44,7 +47,6 @@ public class DartsMetaDataMultiPartHttpUploadRequest extends HttpServletRequestW
             BodyPart binary = getBinary(mimeMultipart);
 
             parsedData = new MetaDataUploadPart(xml, binary);
-
         } catch (MessagingException e) {
             throw new DartsException(e, CodeAndMessage.ERROR);
         }
@@ -76,8 +78,16 @@ public class DartsMetaDataMultiPartHttpUploadRequest extends HttpServletRequestW
         return null;
     }
 
+    private String getMTOMBinaryBoundaryId(BodyPart mimeMultipart) throws MessagingException {
+        String[] idheaders = mimeMultipart.getHeader("Content-Id");
+        if (idheaders.length > 0) {
+            return idheaders[0];
+        }
+        return null;
+    }
+
     @Override
-    public boolean consumeFileBinaryStream(Consumer<InputStream> fileInputStream) throws IOException {
+    public boolean consumeFileBinaryStream(ConsumerWithIOException<InputStream> fileInputStream) throws IOException {
         boolean processed = false;
         MetaDataUploadPart part = parsedData;
         if (part != null && part.hasBinaryFile()) {
@@ -93,12 +103,13 @@ public class DartsMetaDataMultiPartHttpUploadRequest extends HttpServletRequestW
     }
 
     @Override
-    public boolean consumeSOAPXML(Consumer<InputStream> fileInputStream) throws IOException {
+    public boolean consumeSOAPXML(ConsumerWithIOException<InputStream> fileInputStream) throws IOException {
         MetaDataUploadPart part = parsedData;
         if (part != null && part.getXmlPart()!=null) {
-            try (InputStream is = part.getXmlPart().getInputStream()) {
-                fileInputStream.accept(is);
-            } catch (MessagingException ex) {
+            try {
+                fileInputStream.accept(parsedData.getXMLStream());
+            }
+            catch (MessagingException ex) {
                 throw new IOException(ex);
             }
         }
@@ -107,7 +118,7 @@ public class DartsMetaDataMultiPartHttpUploadRequest extends HttpServletRequestW
     }
 
     @Override
-    public boolean consumeFileBinary(Consumer<File> fileConsumer) throws IOException {
+    public boolean consumeFileBinary(ConsumerWithIOException<File> fileConsumer) throws IOException {
         boolean processed = false;
 
         if (parsedData.hasBinaryFile()) {
@@ -118,8 +129,6 @@ public class DartsMetaDataMultiPartHttpUploadRequest extends HttpServletRequestW
             }
             catch (MessagingException | IOException e) {
                 throw new IOException(e);
-            } finally {
-                parsedData.cleanup();
             }
         }
         return processed;
@@ -149,11 +158,27 @@ public class DartsMetaDataMultiPartHttpUploadRequest extends HttpServletRequestW
     @Override
     public ServletInputStream getInputStream() throws IOException {
         try {
-            return new BodyPartServletInputStream(parsedData.getXmlPart());
+            String removedIncludeForxml = removeIncludeInXML();
+            if (removedIncludeForxml != null) {
+                return new BodyPartServletInputStream(removedIncludeForxml);
+            }
+            else {
+                return new BodyPartServletInputStream(parsedData.getXmlPart());
+            }
         }
         catch (MessagingException ex) {
             throw new IOException(ex);
         }
+    }
+
+    private String removeIncludeInXML() throws MessagingException, IOException {
+        // added to ensure the xsd schema validation works. The include mtom portion is invalid according to the schema
+        if (parsedData.hasBinaryFile()) {
+            String includeId = getMTOMBinaryBoundaryId(parsedData.getBinaryPart()).replace("<", "").replace(">", "");
+            return parsedData.getXml().replace(String.format("<Include xmlns=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:%1s\"/>", includeId), "");
+        }
+
+        return null;
     }
 
     @Override

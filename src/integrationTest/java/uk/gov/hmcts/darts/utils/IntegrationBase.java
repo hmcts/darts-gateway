@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.google.common.net.InetAddresses;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -10,8 +11,8 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
+import java.util.Enumeration;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
 @ComponentScan("uk.gov.hmcts.darts")
@@ -43,7 +44,23 @@ public class IntegrationBase {
         }
     }
 
-    public String getIpAndPort() {
-        return "localhost:" + serverPort;
+    public String getIpAndPort() throws UnknownHostException {
+        String ipaddress = "127.0.0.1";
+        try {
+            Enumeration e = NetworkInterface.getNetworkInterfaces();
+            while (e.hasMoreElements()) {
+                NetworkInterface n = (NetworkInterface) e.nextElement();
+                Enumeration ee = n.getInetAddresses();
+                while (ee.hasMoreElements()) {
+                    InetAddress i = (InetAddress) ee.nextElement();
+                    if (!i.isLoopbackAddress() && i.getHostAddress().contains(".")) {
+                        ipaddress = i.getHostAddress();
+                    }
+                }
+            }
+        }
+        catch (SocketException s) {}
+
+        return ipaddress + ":" + serverPort;
     }
 }

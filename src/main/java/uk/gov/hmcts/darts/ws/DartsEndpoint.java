@@ -126,24 +126,6 @@ public class DartsEndpoint {
     @ResponsePayload
     public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> addAudio) {
 
-        Optional<MTOMMetaDataAndUploadRequest> request = MTOMMetaDataAndUploadRequest.getCurrentRequest();
-        if (request.isPresent()) {
-            try {
-                File payload = File.createTempFile("payload", ".mp2");
-
-                request.get().consumeFileBinaryStream(is -> {
-                    try {
-                        IOUtils.copy(is, Files.newOutputStream(Paths.get(payload.getPath())));
-                    }
-                    catch (IOException ioException) {
-                    }
-                });
-            }
-            catch (IOException e) {
-
-            }
-        }
-
         AddAudioResponse addAudioResponse = ResponseFactory.getAddAudioResponse();
 
         addAudioResponse.setReturn(endpointHandler.makeAPICall("addAudio", () -> addAudioRoute.route(addAudio.getValue()),

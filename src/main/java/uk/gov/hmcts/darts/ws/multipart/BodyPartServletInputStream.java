@@ -18,6 +18,13 @@ class BodyPartServletInputStream extends ServletInputStream {
 
     }
 
+    public BodyPartServletInputStream(String payload) throws MessagingException, IOException {
+        super();
+
+        input = new ByteArrayInputStream(payload.getBytes());
+
+    }
+
     @Override
     public int read() throws IOException {
         return input.read();

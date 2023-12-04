@@ -43,7 +43,7 @@ public interface MTOMMetaDataAndUploadRequest extends HttpServletRequest{
      * i.e. removed from the file system
      * @return A boolean signifying success
      * */
-    boolean consumeFileBinary(Consumer<File> fileInputStream) throws IOException;
+    boolean consumeFileBinary(ConsumerWithIOException<File> fileInputStream) throws IOException;
 
     /**
      * Read a file associated with the boundary. The caller need not close the stream this is handler for you
@@ -51,11 +51,11 @@ public interface MTOMMetaDataAndUploadRequest extends HttpServletRequest{
      * The consumer could get called multiple times if there are many files per boundary
      * @return A boolean signifying success
      */
-    boolean consumeFileBinaryStream(Consumer<InputStream> fileInputStream) throws IOException;
+    boolean consumeFileBinaryStream(ConsumerWithIOException<InputStream> fileInputStream) throws IOException;
 
     /**
      * Read the soap xml associated with the boundary NOTE: This will only be called once
      * @return A boolean signifying success
      */
-    boolean consumeSOAPXML(Consumer<InputStream> fileInputStream) throws IOException;
+    boolean consumeSOAPXML(ConsumerWithIOException<InputStream> fileInputStream) throws IOException;
 }
