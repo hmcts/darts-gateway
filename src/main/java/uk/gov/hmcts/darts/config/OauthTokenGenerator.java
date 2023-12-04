@@ -31,7 +31,7 @@ public class OauthTokenGenerator {
 
     public String acquireNewToken() {
         return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(), Map.class)
-                .getBody().get("access_token").toString();
+            .getBody().get("access_token").toString();
     }
 
     public String acquireNewToken(String username, String password) {
@@ -40,7 +40,7 @@ public class OauthTokenGenerator {
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity() {
-        return buildTokenRequestEntity(null, null);
+        return buildTokenRequestEntity(username, password);
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {
