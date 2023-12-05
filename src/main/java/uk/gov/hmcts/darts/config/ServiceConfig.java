@@ -19,12 +19,10 @@ import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.common.client.exeption.JacksonClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.CaseAPIProblemResponseMapper;
@@ -51,7 +49,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @SuppressWarnings("PMD.ExcessiveImports")
-@Configuration
 public class ServiceConfig {
 
     @Bean
@@ -116,11 +113,6 @@ public class ServiceConfig {
         ObjectFactory<HttpMessageConverters> objectFactory = () -> httpMessageConverters;
 
         return new SpringEncoder(objectFactory);
-    }
-
-    @Bean
-    public RestTemplate getTemplate() {
-        return new RestTemplate();
     }
 
     @Bean

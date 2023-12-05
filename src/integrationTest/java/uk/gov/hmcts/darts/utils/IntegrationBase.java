@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.google.common.net.InetAddresses;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -11,7 +10,12 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.net.*;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
@@ -26,6 +30,16 @@ public class IntegrationBase {
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
+
+    private static String localhost;
+
+    static {
+        try {
+            localhost = InetAddress.getByName("localhost").getHostAddress();
+        } catch (UnknownHostException he) {
+            localhost = "unknown";
+        }
+    }
 
     @Value("${server.port}")
     private int serverPort;
@@ -44,23 +58,24 @@ public class IntegrationBase {
         }
     }
 
-    public String getIpAndPort() throws UnknownHostException {
-        String ipaddress = "127.0.0.1";
+    public String getIpAndPort() {
+        String ipaddressStr = null;
         try {
-            Enumeration e = NetworkInterface.getNetworkInterfaces();
-            while (e.hasMoreElements()) {
-                NetworkInterface n = (NetworkInterface) e.nextElement();
-                Enumeration ee = n.getInetAddresses();
-                while (ee.hasMoreElements()) {
-                    InetAddress i = (InetAddress) ee.nextElement();
-                    if (!i.isLoopbackAddress() && i.getHostAddress().contains(".")) {
-                        ipaddress = i.getHostAddress();
+            Enumeration networkEnum = NetworkInterface.getNetworkInterfaces();
+            while (networkEnum.hasMoreElements()) {
+                NetworkInterface networkInterfaces = (NetworkInterface) networkEnum.nextElement();
+                Enumeration ipaddressesOfNic = networkInterfaces.getInetAddresses();
+                while (ipaddressesOfNic.hasMoreElements()) {
+                    InetAddress ipaddress = (InetAddress) ipaddressesOfNic.nextElement();
+                    if (!ipaddress.isLoopbackAddress() && ipaddress.getHostAddress().contains(".")) {
+                        ipaddressStr = ipaddress.getHostAddress() + ":" + serverPort;
                     }
                 }
             }
+        } catch (SocketException s) {
+            ipaddressStr = localhost + ":" + serverPort;
         }
-        catch (SocketException s) {}
 
-        return ipaddress + ":" + serverPort;
+        return ipaddressStr;
     }
 }

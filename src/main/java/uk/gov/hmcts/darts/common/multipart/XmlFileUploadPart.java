@@ -1,12 +1,9 @@
-package uk.gov.hmcts.darts.ws.multipart;
+package uk.gov.hmcts.darts.common.multipart;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +11,12 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
 
 @RequiredArgsConstructor
 @Getter
-class MetaDataUploadPart {
+class XmlFileUploadPart {
     private final BodyPart xmlPart;
     private final BodyPart binaryPart;
     private File binaryFile;
@@ -33,10 +32,10 @@ class MetaDataUploadPart {
     }
 
     public boolean hasBinaryFile() {
-        return binaryPart!=null;
+        return binaryPart != null;
     }
 
-    public InputStream getXMLStream() throws MessagingException, IOException {
+    public InputStream getXmlStream() throws MessagingException, IOException {
         if (xml == null) {
             xml = IOUtils.toString(xmlPart.getInputStream(), Charset.defaultCharset());
         }

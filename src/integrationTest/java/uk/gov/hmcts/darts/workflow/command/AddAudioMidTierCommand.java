@@ -6,23 +6,15 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.testcontainers.containers.Container;
-import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.startupcheck.IndefiniteWaitOneShotStartupCheckStrategy;
-import org.testcontainers.containers.startupcheck.IsRunningStartupCheckStrategy;
-import org.testcontainers.containers.startupcheck.MinimumDurationRunningStartupCheckStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.images.builder.Transferable;
-import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
+import uk.gov.hmcts.darts.config.SoapWebServiceConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 
 
 public class AddAudioMidTierCommand implements Command {
@@ -31,11 +23,11 @@ public class AddAudioMidTierCommand implements Command {
 
     private final String ipToGateway;
 
-    private Audio audio = null;
+    private Audio audio;
 
     private final File fileToSend;
 
-    private File audioFile = null;
+    private File audioFile;
 
     private File tempFile;
 
@@ -46,6 +38,8 @@ public class AddAudioMidTierCommand implements Command {
             new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/addaudio.xml").getFile());
 
     private GenericContainer container;
+
+    public static final String BASE_DOCKER_COMMAND_WEB_CONTEXT = "/service";
 
     public static final Audio getDefaultAddAudioMetadata() throws IOException, JAXBException {
         File audioFile = new File(AddAudioMidTierCommand.class.getClassLoader().getResource(
@@ -79,54 +73,55 @@ public class AddAudioMidTierCommand implements Command {
         }
     }
 
-    private File getAudioFile() throws Exception
-    {
-        if (audio!=null) {
-            tempFile = File.createTempFile("audio", ".xml");
-            JAXBContext jaxbContext = JAXBContext.newInstance(Audio.class);
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.marshal(audio, tempFile);
-            return tempFile;
+    private File getAudioFile() throws IOException {
+        if (audio != null) {
+            try {
+                tempFile = File.createTempFile("audio", ".xml");
+                JAXBContext jaxbContext = JAXBContext.newInstance(Audio.class);
+                Marshaller marshaller = jaxbContext.createMarshaller();
+                marshaller.marshal(audio, tempFile);
+                return tempFile;
+            } catch (JAXBException jaxbException) {
+                throw new IOException(jaxbException);
+            }
         }
 
         return audioFile;
     }
 
     @Override
-    public void execute() throws Exception {
+    public void execute() throws IOException {
         try {
-            cleanupResources();
-
             File xmlFile = getAudioFile();
 
             File file =
                 new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/addaudio.sh").getFile());
 
             ProcessBuilder builder = new ProcessBuilder();
-            builder.command(file.getAbsolutePath(), "http://" + ipToGateway + "/service/", xmlFile.getAbsolutePath(), fileToSend.getAbsolutePath());
+            builder.command(file.getAbsolutePath(), "http://" + ipToGateway + SoapWebServiceConfig.BASE_WEB_CONTEXT, xmlFile.getAbsolutePath(), fileToSend.getAbsolutePath());
             Process process = builder.start();
             exitCode = process.exitValue();
 
             if (!isSuccess()) {
                 throw new CommandException(exitCode, null);
             }
-        } catch (IOException | JAXBException e) {
+        } catch (IOException e) {
             throw new CommandException(exitCode, e);
+        } finally {
+            cleanupResources();
         }
     }
 
     @Override
-    public void executeWithDocker() throws Exception{
-        try {
-            cleanupResources();
+    public void executeWithDocker() throws IOException {
+        File xmlFile = getAudioFile();
 
-            File xmlFile = getAudioFile();
-            container = getContainer(xmlFile);
-            container.start();;
+        try (GenericContainer container = getContainer(xmlFile)) {
+            container.start();
 
             Container.ExecResult result = container.execInContainer(
                     "sh", "addaudio.sh",
-                    "http://" + ipToGateway + "/service/",
+                    "http://" + ipToGateway + BASE_DOCKER_COMMAND_WEB_CONTEXT,
                     xmlFile.getName(),
                     fileToSend.getName());
 
@@ -135,16 +130,14 @@ public class AddAudioMidTierCommand implements Command {
             if (!isSuccess()) {
                 throw new CommandException(exitCode, null);
             }
-        }
-        catch (IOException | InterruptedException | JAXBException e) {
+        } catch (IOException | InterruptedException e) {
             throw new CommandException(exitCode, e);
-        }
-        finally {
-            container.close();
+        } finally {
+            cleanupResources();
         }
     }
 
-    private GenericContainer getContainer(File xmlFile) throws Exception{
+    private GenericContainer getContainer(File xmlFile) {
 
         ImageFromDockerfile importDocker = new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder ->
@@ -154,10 +147,10 @@ public class AddAudioMidTierCommand implements Command {
                                 .build());
         if (container == null || !container.isRunning()) {
             container = new GenericContainer<>(importDocker)
-                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 0777),  "/")
-                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio/Lib", 0777),  "/")
-                    .withCopyFileToContainer(MountableFile.forHostPath(fileToSend.getAbsolutePath(), 0777),  "/")
-                    .withCopyFileToContainer(MountableFile.forHostPath(xmlFile.getAbsolutePath(), 0777),  "/");
+                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 077),  "/")
+                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio/Lib", 777),  "/")
+                    .withCopyFileToContainer(MountableFile.forHostPath(fileToSend.getAbsolutePath(), 777),  "/")
+                    .withCopyFileToContainer(MountableFile.forHostPath(xmlFile.getAbsolutePath(), 777),  "/");
 
         }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsse:BinarySecurityToken QualificationValueType="http://schemas.emc.com/documentum#ResourceAccessToken" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="RAD">Supports-MacBook-Pro.local/127.0.0.1-1701714890338--7954288146977321393-1</wsse:BinarySecurityToken></wsse:Security></S:Header><S:Body><ns5:addAudio xmlns:ns6="http://rt.fs.documentum.emc.com/" xmlns:ns5="http://com.synapps.mojdarts.service.com" xmlns:ns4="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:ns3="http://core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://content.core.datamodel.fs.documentum.emc.com/"><document>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+  &lt;audio&gt;
+  &lt;start Y="2023" M="10" D="23" H="09" MIN="00" S="00" /&gt;
+  &lt;end Y="2023" M="10" D="23" H="10" MIN="00" S="00" /&gt;
+  &lt;channel&gt;0&lt;/channel&gt;
+  &lt;max_channels&gt;3&lt;/max_channels&gt;
+  &lt;mediaformat&gt;mp2&lt;/mediaformat&gt;
+  &lt;mediafile&gt;sample6.mp2&lt;/mediafile&gt;
+  &lt;courthouse&gt;CARDIFF&lt;/courthouse&gt;
+  &lt;courtroom&gt;1&lt;/courtroom&gt;
+  &lt;case_numbers&gt;
+  &lt;case_number&gt;123456789&lt;/case_number&gt;
+  &lt;/case_numbers&gt;
+  &lt;/audio&gt;
+</document><dataPackage><ns3:DataObjects transientId="1508038883" type="UNDEFINED"><ns3:Identity repositoryName="moj_darts" valueType="UNDEFINED"></ns3:Identity><ns3:Properties isInternal="false"></ns3:Properties><ns3:Contents xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:DataHandlerContent" pageNumber="0" format="mpeg2"><ns2:renditionType>PRIMARY</ns2:renditionType><ns2:Value><Include xmlns="http://www.w3.org/2004/08/xop/include" href="cid:1bf75185-047d-4bd5-9868-ef84faab48c0@example.jaxws.sun.com"/></ns2:Value></ns3:Contents></ns3:DataObjects></dataPackage></ns5:addAudio></S:Body></S:Envelope>

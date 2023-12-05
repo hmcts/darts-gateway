@@ -1,18 +1,18 @@
-package uk.gov.hmcts.darts.ws.multipart;
+package uk.gov.hmcts.darts.common.multipart;
 
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import javax.activation.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.activation.DataSource;
 
 public class HttpRequestDataSource implements DataSource {
 
-    private HttpServletRequest request;
-    public HttpRequestDataSource(HttpServletRequest request)
-    {
+    private final HttpServletRequest request;
+
+    public HttpRequestDataSource(HttpServletRequest request) {
         this.request = request;
     }
 

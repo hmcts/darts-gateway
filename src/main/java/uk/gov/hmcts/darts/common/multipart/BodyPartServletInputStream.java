@@ -1,21 +1,21 @@
-package uk.gov.hmcts.darts.ws.multipart;
+package uk.gov.hmcts.darts.common.multipart;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
-import java.io.*;
 
 class BodyPartServletInputStream extends ServletInputStream {
     private final InputStream input;
-
 
     public BodyPartServletInputStream(BodyPart payload) throws MessagingException, IOException {
         super();
 
         input = payload.getInputStream();
-
     }
 
     public BodyPartServletInputStream(String payload) throws MessagingException, IOException {
@@ -47,12 +47,5 @@ class BodyPartServletInputStream extends ServletInputStream {
     @Override
     public void setReadListener(ReadListener listener) {
 
-    }
-
-    @Override
-    public void close() throws IOException {
-        super.close();
-
-        //file.delete();
     }
 }

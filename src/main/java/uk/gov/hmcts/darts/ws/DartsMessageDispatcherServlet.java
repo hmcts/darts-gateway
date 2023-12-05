@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import uk.gov.hmcts.darts.common.multipart.JavaMailXmlWithFileMultiPartRequestFactory;
+import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.metadata.EndpointMetaData;
-import uk.gov.hmcts.darts.ws.multipart.DartsMetaDataMultiPartHttpUploadRequestFactory;
-import uk.gov.hmcts.darts.ws.multipart.MTOMMetaDataAndUploadRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,13 +30,27 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
 
     private final List<EndpointMetaData> endpointMetaDataList;
 
-    private final DartsMetaDataMultiPartHttpUploadRequestFactory requestFactory;
+    private final JavaMailXmlWithFileMultiPartRequestFactory requestFactory;
 
     @Override
     @SuppressWarnings("PMD.ConfusingTernary")
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        HttpMethod getMethod = HttpMethod.GET;
+        boolean processedGet = processGet(req, res);
+        if (!processedGet) {
+            boolean isMultipart = XmlWithFileMultiPartRequest.isMultipart(req);
+            if (isMultipart) {
+                try (XmlWithFileMultiPartRequest request = requestFactory.getRequest(req)) {
+                    super.service(request, res);
+                }
+            } else {
+                super.service(req, res);
+            }
+        }
+    }
 
+    private boolean processGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        HttpMethod getMethod = HttpMethod.GET;
+        boolean processed = false;
         if (getMethod.toString().equals(req.getMethod())) {
             EndpointMetaData fndMetaData = null;
             for (EndpointMetaData metaData : endpointMetaDataList) {
@@ -48,31 +62,20 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
                         // we know that this will be a wsdl and therefore xml
                         res.setHeader("Content-Type", "text/xml");
                         fndMetaData = metaData;
+                        processed = true;
                         break;
-                    } catch (Exception e) {
-                        throw new IOException(e);
                     }
                 }
             }
 
             if (fndMetaData == null) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            }
-            else {
-                super.service(req, res);
-            }
-        } else {
-            boolean isMultipart = MTOMMetaDataAndUploadRequest.isMultipart(req);
-            if (isMultipart) {
-                HttpServletRequest request = null;
-                request = requestFactory.getRequest(req);
-
-                super.service(request, res);
-            }
-            else {
+            } else {
                 super.service(req, res);
             }
         }
+
+        return processed;
     }
 
     private void writeWsdlStreamToResponse(InputStream wsdlInputStream, HttpServletResponse response) throws IOException {

@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.server.EndpointInterceptor;
@@ -18,11 +19,11 @@ import org.springframework.xml.validation.XmlValidator;
 import org.springframework.xml.validation.XmlValidatorFactory;
 import org.springframework.xml.xsd.XsdSchema;
 import org.springframework.xml.xsd.XsdSchemaCollection;
+import uk.gov.hmcts.darts.common.multipart.JavaMailXmlWithFileMultiPartRequestFactory;
 import uk.gov.hmcts.darts.metadata.ContextRegistryEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.DartsEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.EndpointMetaData;
 import uk.gov.hmcts.darts.ws.DartsMessageDispatcherServlet;
-import uk.gov.hmcts.darts.ws.multipart.DartsMetaDataMultiPartHttpUploadRequestFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +41,7 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
     @Value("${darts-gateway.ws.response-validation}")
     private boolean responseValidation;
 
-    private static final String BASE_WEB_CONTEXT = "/service/darts/";
+    public static final String BASE_WEB_CONTEXT = "/service/darts/";
 
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
@@ -80,7 +81,8 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
     }
 
     @Bean
-    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context, List<EndpointMetaData> metaData, DartsMetaDataMultiPartHttpUploadRequestFactory factory) {
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
+        ApplicationContext context, List<EndpointMetaData> metaData, JavaMailXmlWithFileMultiPartRequestFactory factory) {
         var messageDispatcherServlet = new DartsMessageDispatcherServlet(metaData, factory);
         messageDispatcherServlet.setApplicationContext(context);
         return new ServletRegistrationBean<>(messageDispatcherServlet, BASE_WEB_CONTEXT + "*");
@@ -99,4 +101,8 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
         return endpointMetaData;
     }
 
+    @Bean
+    public RestTemplate getTemplate() {
+        return new RestTemplate();
+    }
 }
