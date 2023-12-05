@@ -7,13 +7,13 @@ import jakarta.xml.bind.Unmarshaller;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.soap.SoapHeaderElement;
 
-import javax.xml.transform.Source;
 import java.util.Optional;
+import javax.xml.transform.Source;
 
 @Component
 public class SoapHeaderConverter {
 
-    private JAXBContext jaxbContext;
+    private final JAXBContext jaxbContext;
 
     public SoapHeaderConverter() throws JAXBException {
         this.jaxbContext = JAXBContext.newInstance(ServiceContext.class);

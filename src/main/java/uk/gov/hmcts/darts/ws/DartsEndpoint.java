@@ -24,7 +24,11 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 import uk.gov.hmcts.darts.addaudio.AddAudioRoute;
+import uk.gov.hmcts.darts.authentication.component.SoapHeaderConverter;
+import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.courtlogs.AddCourtLogsRoute;
 import uk.gov.hmcts.darts.courtlogs.GetCourtLogRoute;
@@ -43,13 +47,18 @@ public class DartsEndpoint {
     private final RegisterNodeRoute registerNodeRoute;
     private final DartsEndpointHandler endpointHandler;
     private final AddAudioRoute addAudioRoute;
+    private final SoapHeaderConverter soapHeaderConverter;
+    private final TokenRegisterable tokenRegisterable;
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addDocument")
     @ResponsePayload
     public JAXBElement<AddDocumentResponse> addDocument(@RequestPayload JAXBElement<AddDocument> addDocument) {
         AddDocumentResponse documentResponse = ResponseFactory.getAddDocumentResponse();
-        documentResponse.setReturn(endpointHandler.makeAPICall("addDocument", () -> eventRoutingService.route(addDocument.getValue()),
-                                           documentResponse::getReturn));
+        documentResponse.setReturn(endpointHandler.makeAPICall(
+            "addDocument",
+            () -> eventRoutingService.route(addDocument.getValue()),
+            documentResponse::getReturn
+        ));
 
         return new ObjectFactory().createAddDocumentResponse(documentResponse);
     }
@@ -57,21 +66,25 @@ public class DartsEndpoint {
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCases")
     @ResponsePayload
     public JAXBElement<GetCasesResponse> getCases(@RequestPayload JAXBElement<GetCases> getCases) {
-        GetCasesResponse casesResponse =  ResponseFactory.getCasesResponse();
+        GetCasesResponse casesResponse = ResponseFactory.getCasesResponse();
 
         casesResponse.setReturn(endpointHandler.makeAPICall("getCases", () -> casesRoute.route(getCases.getValue()),
-                                                            casesResponse::getReturn));
+                                                            casesResponse::getReturn
+        ));
 
         return new ObjectFactory().createGetCasesResponse(casesResponse);
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addCase")
     @ResponsePayload
-    public JAXBElement<AddCaseResponse> addCase(@RequestPayload JAXBElement<AddCase> addCase) {
+    public JAXBElement<AddCaseResponse> addCase(
+        @SoapHeader("{http://context.core.datamodel.fs.documentum.emc.com/}ServiceContext") SoapHeaderElement soapHeaderElement,
+        @RequestPayload JAXBElement<AddCase> addCase) {
         AddCaseResponse addCaseResponse = ResponseFactory.getAddCaseResponse();
 
         addCaseResponse.setReturn(endpointHandler.makeAPICall("addCases", () -> casesRoute.route(addCase.getValue()),
-                                                            addCaseResponse::getReturn));
+                                                              addCaseResponse::getReturn
+        ));
 
         return new ObjectFactory().createAddCaseResponse(addCaseResponse);
     }
@@ -82,8 +95,11 @@ public class DartsEndpoint {
 
         GetCourtLogResponse addCaseResponseLog = ResponseFactory.getCourtLogResponse();
 
-        addCaseResponseLog.setReturn(endpointHandler.makeAPICall("getCourtLogResponse", () -> getCourtLogRoute.route(getCourtLog.getValue()),
-                                    addCaseResponseLog::getReturn));
+        addCaseResponseLog.setReturn(endpointHandler.makeAPICall(
+            "getCourtLogResponse",
+            () -> getCourtLogRoute.route(getCourtLog.getValue()),
+            addCaseResponseLog::getReturn
+        ));
 
         return new ObjectFactory().createGetCourtLogResponse(addCaseResponseLog);
     }
@@ -94,8 +110,11 @@ public class DartsEndpoint {
 
         AddLogEntryResponse addLogEntryResponse = ResponseFactory.getAddLogEntryResponse();
 
-        addLogEntryResponse.setReturn(endpointHandler.makeAPICall("addLogEntry", () -> addCourtLogsRoute.route(addLogEntry.getValue().getDocument()),
-                                   addLogEntryResponse::getReturn));
+        addLogEntryResponse.setReturn(endpointHandler.makeAPICall(
+            "addLogEntry",
+            () -> addCourtLogsRoute.route(addLogEntry.getValue().getDocument()),
+            addLogEntryResponse::getReturn
+        ));
 
         return new ObjectFactory().createAddLogEntryResponse(addLogEntryResponse);
     }
@@ -106,8 +125,11 @@ public class DartsEndpoint {
         RegisterNodeResponse registerNodeResponse = ResponseFactory.getRegisterNodeResponse();
 
 
-        registerNodeResponse.setReturn(endpointHandler.makeAPICall("registerNode", () -> registerNodeRoute.route(registerNode.getValue()),
-                                                                   registerNodeResponse::getReturn));
+        registerNodeResponse.setReturn(endpointHandler.makeAPICall(
+            "registerNode",
+            () -> registerNodeRoute.route(registerNode.getValue()),
+            registerNodeResponse::getReturn
+        ));
 
         return new ObjectFactory().createRegisterNodeResponse(registerNodeResponse);
     }
@@ -117,8 +139,11 @@ public class DartsEndpoint {
     public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> addAudio) {
         AddAudioResponse addAudioResponse = ResponseFactory.getAddAudioResponse();
 
-        addAudioResponse.setReturn(endpointHandler.makeAPICall("addAudio", () -> addAudioRoute.route(addAudio.getValue()),
-                                                                   addAudioResponse::getReturn));
+        addAudioResponse.setReturn(endpointHandler.makeAPICall(
+            "addAudio",
+            () -> addAudioRoute.route(addAudio.getValue()),
+            addAudioResponse::getReturn
+        ));
         AddAudioResponse response = new AddAudioResponse();
         DARTSResponse dartsResponse = new DARTSResponse();
         dartsResponse.setCode("200");

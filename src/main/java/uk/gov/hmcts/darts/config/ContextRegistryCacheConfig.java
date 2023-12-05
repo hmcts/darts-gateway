@@ -7,7 +7,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.darts.authentication.config.AuthenticationUserToJwtCredentialProperties;
 import uk.gov.hmcts.darts.cache.token.DefaultCache;
 import uk.gov.hmcts.darts.cache.token.JwtCache;
 import uk.gov.hmcts.darts.ctxtregistry.config.ContextRegistryProperties;
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class ContextRegistryCacheConfig {
     public static final String TOKEN_CACHE = "token_cache";
-    public static final int MAXIMUM_NUMBER_OF_ITEMS = 100;
 
     public static final int ENTRY_EXPIRATION_TIME_MINUTES = 30;
 
@@ -30,22 +28,22 @@ public class ContextRegistryCacheConfig {
     }
 
     @ConditionalOnProperty(
-            value = "darts-gateway.context-registry.token-generate",
-            havingValue = "documentum",
-            matchIfMissing = true)
+        value = "darts-gateway.context-registry.token-generate",
+        havingValue = "documentum",
+        matchIfMissing = true)
     @Bean
     DefaultCache getDefaultTokenCache(Cache cacheToUse, ContextRegistryProperties properties) {
         return new DefaultCache(cacheToUse, properties);
     }
 
     @ConditionalOnProperty(
-            value = "darts-gateway.context-registry.token-generate",
-            havingValue = "jwt",
-            matchIfMissing = false)
+        value = "darts-gateway.context-registry.token-generate",
+        havingValue = "jwt",
+        matchIfMissing = false)
     @Bean
-    JwtCache getJwtokenCache(Cache caheToUse, OauthTokenGenerator jwtGenerator,
-                             ContextRegistryProperties cxtProperties,
-                             AuthenticationUserToJwtCredentialProperties properties) {
-        return new JwtCache(caheToUse, jwtGenerator, cxtProperties, properties);
+    JwtCache getJwtTokenCache(Cache cacheToUse, OauthTokenGenerator jwtGenerator,
+                              ContextRegistryProperties cxtProperties) {
+        return new JwtCache(cacheToUse, jwtGenerator, cxtProperties);
     }
+
 }
