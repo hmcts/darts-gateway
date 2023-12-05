@@ -35,7 +35,7 @@ public class AddAudioMidTierCommand implements Command {
             new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/sample6.mp2").getFile());
 
     public static final File SAMPLE_XML =
-            new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/addaudio.xml").getFile());
+            new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/addAudio.xml").getFile());
 
     private GenericContainer container;
 
