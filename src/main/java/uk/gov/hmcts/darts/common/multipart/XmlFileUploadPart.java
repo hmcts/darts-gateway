@@ -2,12 +2,14 @@ package uk.gov.hmcts.darts.common.multipart;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,11 +18,11 @@ import javax.mail.MessagingException;
 
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 class XmlFileUploadPart {
     private final BodyPart xmlPart;
     private final BodyPart binaryPart;
     private File binaryFile;
-
     private String xml;
 
     public String getXml()throws MessagingException, IOException {
@@ -37,7 +39,9 @@ class XmlFileUploadPart {
 
     public InputStream getXmlStream() throws MessagingException, IOException {
         if (xml == null) {
-            xml = IOUtils.toString(xmlPart.getInputStream(), Charset.defaultCharset());
+            try (InputStream isStream = xmlPart.getInputStream()) {
+                xml = IOUtils.toString(isStream, Charset.defaultCharset());
+            }
         }
 
         return new ByteArrayInputStream(xml.getBytes());
@@ -46,18 +50,22 @@ class XmlFileUploadPart {
     public File getFileForBinary() throws MessagingException, IOException  {
         if (binaryFile == null) {
             File payload = File.createTempFile("payload", ".tmp");
+            binaryFile = payload;
 
-            IOUtils.copy(binaryPart.getInputStream(), Files.newOutputStream(Paths.get(payload.getPath())));
+            try (InputStream isStream = binaryPart.getInputStream();
+                OutputStream osStream = Files.newOutputStream(Paths.get(payload.getPath()))) {
+                IOUtils.copy(isStream, osStream);
+            }
 
-            return payload;
+            return binaryFile;
         }
 
         return binaryFile;
     }
 
     public void cleanup() {
-        if (binaryFile != null) {
-            binaryFile.delete();
+        if (binaryFile != null && !binaryFile.delete()) {
+            log.error("Could not remove temporary binary file {} !!!. This will need manual removal", binaryFile.getAbsolutePath());
         }
     }
 }
