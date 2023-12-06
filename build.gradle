@@ -362,6 +362,8 @@ dependencies {
   // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
   implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.14'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.14'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
