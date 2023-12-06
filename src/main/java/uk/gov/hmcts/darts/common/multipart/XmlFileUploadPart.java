@@ -49,7 +49,7 @@ class XmlFileUploadPart {
 
     public File getFileForBinary() throws MessagingException, IOException  {
         if (binaryFile == null) {
-            File payload = File.createTempFile("payload", ".tmp");
+            File payload = File.createTempFile("payload", ".tmp", new File(System.getProperty("user.home")));
             binaryFile = payload;
 
             try (InputStream isStream = binaryPart.getInputStream();

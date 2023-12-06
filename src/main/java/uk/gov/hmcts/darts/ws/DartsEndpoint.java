@@ -120,12 +120,7 @@ public class DartsEndpoint {
 
         addAudioResponse.setReturn(endpointHandler.makeAPICall("addAudio", () -> addAudioRoute.route(addAudio.getValue()),
                                                                    addAudioResponse::getReturn));
-        AddAudioResponse response = new AddAudioResponse();
-        DARTSResponse dartsResponse = new DARTSResponse();
-        dartsResponse.setCode("200");
-        dartsResponse.setMessage("OK");
-        response.setReturn(dartsResponse);
 
-        return new ObjectFactory().createAddAudioResponse(response);
+        return new ObjectFactory().createAddAudioResponse(addAudioResponse);
     }
 }
