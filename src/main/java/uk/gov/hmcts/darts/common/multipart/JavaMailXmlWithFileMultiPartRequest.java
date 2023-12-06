@@ -85,11 +85,15 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
         boolean processed = false;
         XmlFileUploadPart part = parsedData;
         if (part != null && part.hasBinaryFile()) {
-            try (InputStream fileStream = Files.newInputStream(Path.of(parsedData.getFileForBinary().getAbsolutePath()))) {
-                log.trace("Consuming binary file of payload");
-                fileInputStream.accept(fileStream);
-                log.trace("Consumed binary file of payload");
-                processed = true;
+            try {
+                String binaryFile = parsedData.getFileForBinary().getAbsolutePath();
+                Path filePath = Path.of(binaryFile);
+                try (InputStream fileStream = Files.newInputStream(filePath)) {
+                    log.trace("Consuming binary file of payload");
+                    fileInputStream.accept(fileStream);
+                    log.trace("Consumed binary file of payload");
+                    processed = true;
+                }
             } catch (MessagingException ex) {
                 throw new IOException(ex);
             }
