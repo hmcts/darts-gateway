@@ -9,9 +9,10 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -80,14 +81,14 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
     }
 
     @Override
-    @SuppressWarnings("PMD.AvoidFileStream")
+    @SuppressWarnings({"squid:S2083"})
     public boolean consumeFileBinaryStream(ConsumerWithIoException<InputStream> fileInputStream) throws IOException {
         boolean processed = false;
         XmlFileUploadPart part = parsedData;
         if (part != null && part.hasBinaryFile()) {
             try {
                 File binaryFile = parsedData.getFileForBinary();
-                try (InputStream fileStream = new FileInputStream(binaryFile)) {
+                try (InputStream fileStream = Files.newInputStream(Path.of(binaryFile.getAbsolutePath()))) {
                     log.trace("Consuming binary file of payload");
                     fileInputStream.accept(fileStream);
                     log.trace("Consumed binary file of payload");
