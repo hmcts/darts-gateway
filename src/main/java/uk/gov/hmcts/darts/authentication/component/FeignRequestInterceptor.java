@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @Component
 @Profile("!int-test")
 public class FeignRequestInterceptor implements RequestInterceptor {
@@ -18,7 +20,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
         Object accessTokenObj = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
             .getAttribute(ACCESS_TOKEN_REQUEST_ATTR);
         if (accessTokenObj != null) {
-            template.header("Authorization", "Bearer " + (String) accessTokenObj);
+            template.header(AUTHORIZATION, "Bearer " + (String) accessTokenObj);
         }
     }
 

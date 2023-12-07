@@ -47,18 +47,18 @@ class APIResponseMapperTest {
         Assertions.assertEquals(problem, exception.get().getProblem());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.NonStaticInitializer"})
     class DummyAPIResponseMapper extends AbstractAPIProblemResponseMapper {
         {
             var opmapping = new ProblemResponseMappingOperation
-                    . ProblemResponseMappingOperationBuilder<PostDailyListErrorCode>()
-                    .operation(PostDailyListErrorCode.class)
-                    .exception((mapping) -> new DailyListAPIAddException(
-                            (ProblemResponseMapping<PostDailyListErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
+                .ProblemResponseMappingOperationBuilder<PostDailyListErrorCode>()
+                .operation(PostDailyListErrorCode.class)
+                .exception((mapping) -> new DailyListAPIAddException(
+                    (ProblemResponseMapping<PostDailyListErrorCode>) mapping.getMapping(), mapping.getProblem())).build();
 
             opmapping.addMapping(opmapping.createProblemResponseMapping()
-                    .problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND)
-                    .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+                                     .problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND)
+                                     .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
             addOperationMappings(opmapping);
         }

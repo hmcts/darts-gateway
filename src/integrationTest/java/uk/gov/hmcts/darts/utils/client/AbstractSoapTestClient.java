@@ -19,8 +19,9 @@ import java.util.function.Function;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 
+@SuppressWarnings("PMD.EmptyCatchBlock")
 public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
-        implements SoapTestClient {
+    implements SoapTestClient {
     private String headerContents;
 
     private javax.xml.transform.Result getResult() {
@@ -59,10 +60,10 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
 
     protected <I, O> SoapAssertionUtil<O> sendMessage(URL uri, String payload,
                                                       Function<I,
-                                                              JAXBElement<I>> supplier,
+                                                          JAXBElement<I>> supplier,
                                                       Class<I> clazz, Function<Object,
-            JAXBElement<O>> responseSupplier)
-            throws JAXBException {
+        JAXBElement<O>> responseSupplier)
+        throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         jakarta.xml.bind.Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         JAXBElement<I> unmarshal = jaxbUnmarshaller.unmarshal(new StringSource(payload), clazz);
@@ -71,27 +72,28 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
         // if we have no header don't add one otherwise add the header contents we have specified
         if (headerContents == null || headerContents.isEmpty()) {
             return new SoapAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
-                    uri.toString(),
-                    ijaxbElement)));
+                uri.toString(),
+                ijaxbElement
+            )));
         } else {
             return new SoapAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
-                    uri.toString(),
-                    ijaxbElement,
-                    new WebServiceMessageCallback() {
+                uri.toString(),
+                ijaxbElement,
+                new WebServiceMessageCallback() {
 
-                        @Override
-                        public void doWithMessage(WebServiceMessage message) {
-                            try {
-                                SoapMessage soapMessage = (SoapMessage) message;
-                                SoapHeader header = soapMessage.getSoapHeader();
-                                StringSource headerSource = new StringSource(headerContents);
-                                Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                                transformer.transform(headerSource, header.getResult());
-                            } catch (Exception e) {
-                                // exception handling
-                            }
+                    @Override
+                    public void doWithMessage(WebServiceMessage message) {
+                        try {
+                            SoapMessage soapMessage = (SoapMessage) message;
+                            SoapHeader header = soapMessage.getSoapHeader();
+                            StringSource headerSource = new StringSource(headerContents);
+                            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                            transformer.transform(headerSource, header.getResult());
+                        } catch (Exception e) {
+                            // exception handling
                         }
                     }
+                }
             )));
         }
     }
@@ -116,7 +118,7 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
 
     @Override
     public <C> JAXBElement<C> convertData(String payload, Class<C> clazz)
-         throws JAXBException {
+        throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         jakarta.xml.bind.Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         return jaxbUnmarshaller.unmarshal(new StringSource(payload), clazz);
@@ -129,36 +131,36 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
 
         if (headerContents == null || headerContents.isEmpty()) {
             getWebServiceTemplate().sendSourceAndReceiveToResult(
-                    uri.toString(),
-                    new StringSource(payload),
-                    new javax.xml.transform.Result() {
-                        @Override
-                        public void setSystemId(String systemId) {
+                uri.toString(),
+                new StringSource(payload),
+                new javax.xml.transform.Result() {
+                    @Override
+                    public void setSystemId(String systemId) {
 
-                        }
-
-                        @Override
-                        public String getSystemId() {
-                            return null;
-                        }
                     }
+
+                    @Override
+                    public String getSystemId() {
+                        return null;
+                    }
+                }
             );
         } else {
             getWebServiceTemplate().sendSourceAndReceiveToResult(
-                    uri.toString(),
-                    new StringSource(payload),
-                    addHeader,
-                    new javax.xml.transform.Result() {
-                        @Override
-                        public void setSystemId(String systemId) {
+                uri.toString(),
+                new StringSource(payload),
+                addHeader,
+                new javax.xml.transform.Result() {
+                    @Override
+                    public void setSystemId(String systemId) {
 
-                        }
-
-                        @Override
-                        public String getSystemId() {
-                            return null;
-                        }
                     }
+
+                    @Override
+                    public String getSystemId() {
+                        return null;
+                    }
+                }
             );
         }
     }
