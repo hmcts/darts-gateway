@@ -7,6 +7,7 @@ import org.springframework.cache.Cache;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.ctxtregistry.config.ContextRegistryProperties;
 
+import java.util.List;
 import java.util.Optional;
 
 public class JwtCache extends DefaultCache {
@@ -20,17 +21,20 @@ public class JwtCache extends DefaultCache {
 
     @Override
     public Optional<Token> createToken(ServiceContext context) {
-        Identity identity = context.getIdentities().get(0);
-        String jwtToken = null;
+        List<Identity> identities = context.getIdentities();
+        if (identities.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Identity identity = identities.get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
-            jwtToken = generator.acquireNewToken(
+            String jwtToken = generator.acquireNewToken(
                 basicIdentity.getUserName(),
                 basicIdentity.getPassword()
             );
-        }
-
-        if (jwtToken != null) {
-            return Optional.of(Token.generateDocumentumToken(jwtToken, properties.isMapTokenToSession()));
+            if (jwtToken != null) {
+                return Optional.of(Token.generateDocumentumToken(jwtToken, properties.isMapTokenToSession()));
+            }
         }
 
         return Optional.empty();
