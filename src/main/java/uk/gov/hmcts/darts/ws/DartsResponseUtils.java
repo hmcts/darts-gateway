@@ -14,7 +14,7 @@ import static uk.gov.hmcts.darts.ws.CodeAndMessage.OK;
 public class DartsResponseUtils {
 
     DARTSResponse createDartsResponseMessage(Exception ex) {
-        if (ex instanceof DartsException) {
+        if (ex instanceof DartsException && ((DartsException) ex).hasCodeAndMessage()) {
             return createDartsResponseMessage(((DartsException) ex).getCodeAndMessage());
         }
 
@@ -42,7 +42,7 @@ public class DartsResponseUtils {
     }
 
     GetCourtLogResponse createCourtLogResponse(Exception ex) {
-        if (ex instanceof DartsException) {
+        if (ex instanceof DartsException && ((DartsException) ex).hasCodeAndMessage()) {
             return createCourtLogResponse(((DartsException) ex).getCodeAndMessage());
         }
 

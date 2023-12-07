@@ -40,17 +40,27 @@ public interface XmlWithFileMultiPartRequest extends HttpServletRequest, Closeab
     /**
      * Read a file. If false there was no binary to process
      * @return A boolean signifying success
+     * @throws IOException Any IO issues
      * */
     boolean consumeFileBinary(ConsumerWithIoException<File> file) throws IOException;
 
     /**
      * Read a file stream associated with the binary. The caller need not close the stream this is handled for you
      * @return A boolean signifying success. If false there was no binary to process
+     * @throws IOException Any IO issues
      */
     boolean consumeFileBinaryStream(ConsumerWithIoException<InputStream> fileInputStream) throws IOException;
 
     /**
      * Read the xml. The caller need not close the stream this is handled for you
+     * @throws IOException Any IO issues
      */
     void consumeXmlBody(ConsumerWithIoException<InputStream> fileInputStream) throws IOException;
+
+    /**
+     * get the size in bytes of the underlying binary.
+     * @return The bytes available
+     * @throws IOException If the file does not exist
+     */
+    long getBinarySize() throws IOException;
 }

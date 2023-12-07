@@ -55,6 +55,11 @@ darts-gateway:
   register-node:
     schema: "src/main/resources/schemas/darts-register-node.xsd"
     validate: false
+  add-audio:
+    schema: "src/main/resources/schemas/addAudio.xsd"
+    validate: false
+    # Represents 360 MB per channel as maximum upload
+    fileSizeInBytes: 377487360
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 

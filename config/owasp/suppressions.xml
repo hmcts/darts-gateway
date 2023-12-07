@@ -25,6 +25,11 @@
     <notes>URL Redirection to Untrusted Site ('Open Redirect') vulnerability in FORM authentication feature Apache Tomcat.</notes>
     <vulnerabilityName>CVE-2023-41080</vulnerabilityName>
   </suppress>
-  
+
+  <suppress until="2024-01-14">
+    <notes>Need a Spring boot update to fix</notes>
+    <cve>CVE-2023-6378</cve>
+  </suppress>
+
   <!--End of temporary suppression section -->
 </suppressions>

@@ -44,12 +44,12 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
             MimeMultipart mimeMultipart = new MimeMultipart(new HttpRequestDataSource(request
             ));
 
-            BodyPart xmlPayload = getXml(mimeMultipart);
+            BodyPart xmlPayload = MultIPartUtil.getXml(mimeMultipart);
             if (xmlPayload == null) {
                 throw new DartsException(null, CodeAndMessage.ERROR);
             }
 
-            BodyPart binary = getBinary(mimeMultipart);
+            BodyPart binary = MultIPartUtil.getBinary(mimeMultipart);
 
             parsedData = new XmlFileUploadPart(xmlPayload, binary);
         } catch (MessagingException e) {
@@ -58,27 +58,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
         }
     }
 
-    private BodyPart getXml(MimeMultipart mimeMultipart) throws MessagingException {
-        for (int i = 0; i < mimeMultipart.getCount(); i++) {
-            String[] headers = mimeMultipart.getBodyPart(i).getHeader("Content-Type");
-            if (headers.length > 0 && headers[0].contains("application/xop+xml")) {
-                return mimeMultipart.getBodyPart(i);
-            }
-        }
 
-        return null;
-    }
-
-    private BodyPart getBinary(MimeMultipart mimeMultipart) throws MessagingException {
-        for (int i = 0; i < mimeMultipart.getCount(); i++) {
-            String[] headers = mimeMultipart.getBodyPart(i).getHeader("Content-Type");
-            if (headers.length > 0 && headers[0].contains("application/octet-stream")) {
-                return mimeMultipart.getBodyPart(i);
-            }
-        }
-
-        return null;
-    }
 
     @Override
     @SuppressWarnings({"squid:S2083"})
@@ -114,6 +94,20 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                 throw new IOException(ex);
             }
         }
+    }
+
+    @Override
+    public long getBinarySize() throws IOException {
+        if (parsedData != null) {
+            try {
+                return parsedData.getFileForBinary().length();
+            } catch (MessagingException | IOException e) {
+                log.error("Problem consuming binary", e);
+                throw new IOException(e);
+            }
+        }
+
+        throw new IOException("File does not exist");
     }
 
     @Override
