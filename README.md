@@ -2,11 +2,21 @@
 
 [![Build Status](https://travis-ci.org/hmcts/darts-gateway.svg?branch=master)](https://travis-ci.org/hmcts/darts-gateway)
 
-## Notes
+# DARTSService SoapUI
 
-Since Spring Boot 2.1 bean overriding is disabled. If you want to enable it you will need to set `spring.main.allow-bean-definition-overriding` to `true`.
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/DARTSService?wsdl
+  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
+* [SoapUI](https://www.soapui.org/downloads/soapui/) can be used for "Try it out" functionality
+  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER).
 
-JUnit 5 is now enabled by default in the project. Please refrain from using JUnit4 and use the next generation
+* Import SOAP Project [README-DARTSService](README-DARTSService-soapui-project.xml) with
+  initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
+* Sample requests for all operations have been created. Initial requests e.g. addCase will use the ServiceContext Soap Header with some custom project
+  properties: `userName="${#Project#userName}" password="${#Project#password}"`
+* **IMPORTANT!The property values will need to be updated to suit your test user, remembering not to commit them if you make any changes.**
+* Go to the top level project folder in SoapUI and choose Custom Properties to change them.
+* See https://www.soapui.org/docs/soap-and-wsdl/
 
 ## Building and deploying the application
 
@@ -79,7 +89,8 @@ For more information:
 ./bin/run-in-docker.sh -h
 ```
 
-Script includes bare minimum environment variables necessary to start api instance. Whenever any variable is changed or any other script regarding docker image/container build, the suggested way to ensure all is cleaned up properly is by this command:
+Script includes bare minimum environment variables necessary to start api instance. Whenever any variable is changed or any other script regarding docker
+image/container build, the suggested way to ensure all is cleaned up properly is by this command:
 
 ```bash
 docker-compose rm
@@ -99,19 +110,19 @@ There is no need to remove postgres and java or similar core images.
 
 #### Updating the DARTS Legacy SOAP API
 
-If there are updates to the legacy darts API please add all supporting files into the directory [here](/src/main/ws/dartsService)
+If there are updates to the legacy darts API please add all supporting files into the directory [here](src/main/resources/ws/dartsService)
 
 #### Updating the Documentum Context Registry SOAP API
 
-If there are updates to the documentum context registry please add all supporting files into the directory [here](context/src/main/ws/contextRegistry)
+If there are updates to the documentum context registry please add all supporting files into the directory [here](context/src/main/resources/ws)
 
 ### Building the new configuration
 
-This project can be build by the gradle command :-
+This project can be built by the gradle command :-
 
 gradle clean build
 
-Post build, you will find that the wsdl files directly under [here](/src/main/ws) will have updated and are ready for git commit. If you
+Post build, you will find that the wsdl files directly under [here](src/main/resources/ws) will have updated and are ready for git commit. If you
 are happy with the wsdl changes then commit them
 
 #### Building just the new darts context registry wsdl
@@ -126,6 +137,7 @@ gradle clean processDartsServiceWSDL
 
 Hystrix offers much more than Circuit Breaker pattern implementation or command monitoring.
 Here are some other functionalities it provides:
+
 * [Separate, per-dependency thread pools](https://github.com/Netflix/Hystrix/wiki/How-it-Works#isolation)
 * [Semaphores](https://github.com/Netflix/Hystrix/wiki/How-it-Works#semaphores), which you can use to limit
   the number of concurrent calls to any given dependency
