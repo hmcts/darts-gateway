@@ -49,8 +49,10 @@ public class AddAudioRoute {
                     );
                     AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
                     metaData.setFileSize(request.get().getBinarySize());
-                    audiosClient.addAudioStream(multipartFile, metaData);
+                    audiosClient.streamAudio(multipartFile, metaData);
                 });
+            } else {
+                throw new DartsException(null, CodeAndMessage.ERROR);
             }
         } catch (IOException ioe) {
             throw new DartsException(ioe, CodeAndMessage.ERROR);
