@@ -15,7 +15,7 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 @RequiredArgsConstructor
 public class AddAudioRoute {
     @Value("${darts-gateway.add-audio.schema}")
-    private String addCaseSchemaPath;
+    private String addAudioSchemaPath;
     @Value("${darts-gateway.add-audio.validate}")
     private boolean validateAddAudio;
 
@@ -28,7 +28,7 @@ public class AddAudioRoute {
     public DARTSResponse route(AddAudio addAudio) {
         var addAudioDocumentXmlStr = addAudio.getDocument();
         if (validateAddAudio) {
-            xmlValidator.validate(addAudioDocumentXmlStr, addCaseSchemaPath);
+            xmlValidator.validate(addAudioDocumentXmlStr, addAudioSchemaPath);
         }
 
         var addAudioLegacy = xmlParser.unmarshal(addAudioDocumentXmlStr, Audio.class);
