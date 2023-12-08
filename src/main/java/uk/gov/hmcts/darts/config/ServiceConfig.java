@@ -19,11 +19,14 @@ import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import uk.gov.hmcts.darts.common.client.exeption.JacksonClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonDartsClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonFeignClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.CaseAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
@@ -42,13 +45,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * DO NOT ANNOTATE THIS CLASS WITH @Configuration. This class works alongside the
- * {@link org.springframework.cloud.openfeign.FeignClient} annotation. In this way configurations can be specific to a set of
- * * feign interactions and not applied globally which may cause unintended sideeffects
- */
 @RequiredArgsConstructor
 @SuppressWarnings("PMD.ExcessiveImports")
+@Configuration
 public class ServiceConfig {
 
     @Bean
@@ -72,11 +71,11 @@ public class ServiceConfig {
         JavaTimeModule module = new JavaTimeModule();
 
         module.addSerializer(LocalDateTime.class, new LocalDateTimeTypeSerializer())
-            .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
-            .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
-            .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
-            .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
-            .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
+                .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
+                .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
+                .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
+                .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
+                .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
 
         return new ObjectMapper()
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -90,19 +89,6 @@ public class ServiceConfig {
         HttpMessageConverters httpMessageConverters = new HttpMessageConverters(jacksonConverter);
         ObjectFactory<HttpMessageConverters> objectFactory = () -> httpMessageConverters;
         return new ResponseEntityDecoder(new SpringDecoder(objectFactory, new EmptyObjectProvider<>()));
-    }
-
-    @Bean
-    public ErrorDecoder feignErrorDecoder(List<APIProblemResponseMapper> mappers) {
-        return new JacksonClientProblemDecoder(mappers);
-    }
-
-    @Bean
-    public List<APIProblemResponseMapper> getResponseMappers() {
-        return Arrays.asList(new APIProblemResponseMapper[] {
-            new CaseAPIProblemResponseMapper(),
-            new DailyListAPIProblemResponseMapper(),
-            new EventAPIProblemResponseMapper()});
     }
 
     @Bean
@@ -127,8 +113,26 @@ public class ServiceConfig {
     @Profile("!int-test")
     public RequestInterceptor requestInterceptor(OauthTokenGenerator tokenGenerator) {
         return
-            template -> {
-                template.header("Authorization", "Bearer " + tokenGenerator.acquireNewToken());
-            };
+                template -> {
+                    template.header("Authorization", "Bearer " + tokenGenerator.acquireNewToken());
+                };
+    }
+
+    @Bean
+    public List<APIProblemResponseMapper> getResponseMappers() {
+        return Arrays.asList(new APIProblemResponseMapper[]{
+            new CaseAPIProblemResponseMapper(),
+            new DailyListAPIProblemResponseMapper(),
+            new EventAPIProblemResponseMapper()});
+    }
+
+    @Bean
+    public ErrorDecoder feignErrorDecoder(List<APIProblemResponseMapper> mappers) {
+        return new JacksonFeignClientProblemDecoder(mappers);
+    }
+
+    @Bean
+    public DartsClientProblemDecoder dartsDecoder(ErrorDecoder decoder, List<APIProblemResponseMapper> mappers) {
+        return new JacksonDartsClientProblemDecoder(mappers);
     }
 }

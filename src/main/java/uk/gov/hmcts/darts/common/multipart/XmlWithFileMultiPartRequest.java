@@ -49,7 +49,7 @@ public interface XmlWithFileMultiPartRequest extends HttpServletRequest, Closeab
      * @return A boolean signifying success. If false there was no binary to process
      * @throws IOException Any IO issues
      */
-    boolean consumeFileBinaryStream(ConsumerWithIoException<InputStream> fileInputStream) throws IOException;
+    boolean consumeFileBinaryStream(ConsumerWithIoException<SizesableInputSource> fileInputStream) throws IOException;
 
     /**
      * Read the xml. The caller need not close the stream this is handled for you

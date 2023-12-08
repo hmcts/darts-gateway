@@ -62,7 +62,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     @Override
     @SuppressWarnings({"squid:S2083"})
-    public boolean consumeFileBinaryStream(ConsumerWithIoException<InputStream> fileInputStream) throws IOException {
+    public boolean consumeFileBinaryStream(ConsumerWithIoException<SizesableInputSource> fileInputStream) throws IOException {
         boolean processed = false;
         XmlFileUploadPart part = parsedData;
         if (part != null && part.hasBinaryFile()) {
@@ -70,7 +70,17 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                 File binaryFile = parsedData.getFileForBinary();
                 try (InputStream fileStream = Files.newInputStream(Path.of(binaryFile.getAbsolutePath()))) {
                     log.trace("Consuming binary file of payload");
-                    fileInputStream.accept(fileStream);
+                    fileInputStream.accept(new SizesableInputSource() {
+                        @Override
+                        public long getSize() {
+                            return binaryFile.length();
+                        }
+
+                        @Override
+                        public InputStream getInputStream() throws IOException {
+                            return fileStream;
+                        }
+                    });
                     log.trace("Consumed binary file of payload");
                     processed = true;
                 }

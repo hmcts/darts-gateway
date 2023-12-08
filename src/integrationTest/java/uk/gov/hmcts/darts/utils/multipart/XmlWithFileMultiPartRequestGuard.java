@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.common.multipart;
+package uk.gov.hmcts.darts.utils.multipart;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
 import uk.gov.hmcts.darts.common.function.ConsumerWithIoException;
+import uk.gov.hmcts.darts.common.multipart.SizesableInputSource;
+import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +37,7 @@ public class XmlWithFileMultiPartRequestGuard implements XmlWithFileMultiPartReq
     }
 
     @Override
-    public boolean consumeFileBinaryStream(ConsumerWithIoException<InputStream> fileInputStream) throws IOException {
+    public boolean consumeFileBinaryStream(ConsumerWithIoException<SizesableInputSource> fileInputStream) throws IOException {
         throw new UnsupportedOperationException("Override to use");
     }
 

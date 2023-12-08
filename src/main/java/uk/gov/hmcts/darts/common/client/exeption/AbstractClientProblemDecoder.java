@@ -1,29 +1,30 @@
 package uk.gov.hmcts.darts.common.client.exeption;
 
 import feign.Response;
-import feign.codec.ErrorDecoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.DartsException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractClientProblemDecoder implements ErrorDecoder {
+public abstract class AbstractClientProblemDecoder {
 
     private final List<APIProblemResponseMapper> responseMappers;
 
-    @Override
     public Exception decode(String methodKey, Response response) {
         Exception returnEx;
-        try {
-            Problem problem = getProblem(response);
+        try (InputStream is = response.body().asInputStream()) {
+            Problem problem = getProblem(is);
             returnEx = getExceptionForProblem(problem);
         } catch (IOException ioEx) {
             log.error("Failed to read the problem json", ioEx);
@@ -31,6 +32,16 @@ public abstract class AbstractClientProblemDecoder implements ErrorDecoder {
         }
 
         return returnEx;
+    }
+
+    public DartsException decode(HttpStatusCodeException response) {
+        try (ByteArrayInputStream is = new ByteArrayInputStream(response.getResponseBodyAsByteArray())) {
+            Problem problem = getProblem(is);
+            return getExceptionForProblem(problem);
+        } catch (IOException ioEx) {
+            log.error("Failed to read the problem json", ioEx);
+            return new DartsException(ioEx, CodeAndMessage.ERROR);
+        }
     }
 
     private ClientProblemException getExceptionForProblem(Problem problem) {
@@ -51,5 +62,6 @@ public abstract class AbstractClientProblemDecoder implements ErrorDecoder {
         return returnEx;
     }
 
-    protected abstract Problem getProblem(Response response) throws IOException;
+
+    protected abstract Problem getProblem(InputStream response) throws IOException;
 }

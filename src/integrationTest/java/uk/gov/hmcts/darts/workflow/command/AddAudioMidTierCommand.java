@@ -43,7 +43,7 @@ public class AddAudioMidTierCommand implements Command {
 
     public static final Audio getDefaultAddAudioMetadata() throws IOException, JAXBException {
         File audioFile = new File(AddAudioMidTierCommand.class.getClassLoader().getResource(
-            "addaudio/addAudio.xml").getFile());
+                "addaudio/addAudio.xml").getFile());
         InputStream audioFileStream = Files.newInputStream(audioFile.toPath());
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Audio.class);
@@ -95,7 +95,7 @@ public class AddAudioMidTierCommand implements Command {
             File xmlFile = getAudioFile();
 
             File file =
-                new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/addaudio.sh").getFile());
+                    new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/addaudio.sh").getFile());
 
             ProcessBuilder builder = new ProcessBuilder();
             builder.command(file.getAbsolutePath(), "http://" + ipToGateway + SoapWebServiceConfig.BASE_WEB_CONTEXT, xmlFile.getAbsolutePath(), fileToSend.getAbsolutePath());
@@ -116,7 +116,7 @@ public class AddAudioMidTierCommand implements Command {
     public void executeWithDocker() throws IOException {
         File xmlFile = getAudioFile();
 
-        try (GenericContainer container = getContainer(xmlFile)) {
+        try (GenericContainer<?> container = getContainer(xmlFile)) {
             container.start();
 
             Container.ExecResult result = container.execInContainer(
@@ -147,10 +147,10 @@ public class AddAudioMidTierCommand implements Command {
                                 .build());
         if (container == null || !container.isRunning()) {
             container = new GenericContainer<>(importDocker)
-                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 077),  "/")
-                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio/Lib", 777),  "/")
-                    .withCopyFileToContainer(MountableFile.forHostPath(fileToSend.getAbsolutePath(), 777),  "/")
-                    .withCopyFileToContainer(MountableFile.forHostPath(xmlFile.getAbsolutePath(), 777),  "/");
+                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 077), "/")
+                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio/Lib", 777), "/")
+                    .withCopyFileToContainer(MountableFile.forHostPath(fileToSend.getAbsolutePath(), 777), "/")
+                    .withCopyFileToContainer(MountableFile.forHostPath(xmlFile.getAbsolutePath(), 777), "/");
 
         }
 

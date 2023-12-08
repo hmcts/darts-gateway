@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.darts.common.multipart.DummyXmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
@@ -15,18 +14,23 @@ import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
+import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
+import uk.gov.hmcts.darts.utils.multipart.DummyXmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 
 import java.util.Optional;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-class AddAudioWebServiceTest  extends IntegrationBase {
+class AddAudioWebServiceTest extends IntegrationBase {
 
     @MockBean
     private XmlWithFileMultiPartRequestHolder requestHolder;
@@ -41,10 +45,10 @@ class AddAudioWebServiceTest  extends IntegrationBase {
                 "payloads/addAudio/register/soapRequest.xml");
 
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/dartsApiResponse.json");
+                "payloads/addAudio/register/dartsApiResponse.json");
 
         stubFor(post(urlPathEqualTo("/audios"))
-                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+                .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
         String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/expectedResponse.xml");
@@ -54,19 +58,16 @@ class AddAudioWebServiceTest  extends IntegrationBase {
 
         SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
         response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+
+        verify(postRequestedFor(urlPathEqualTo("/audios"))
+                .withRequestBody(new MultipartDartsProxyContentPattern()));
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void addAudioHandleErrorFileSizeExceed(DartsGatewayClient client) throws Exception {
         final String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/soapRequest.xml");
-
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/dartsApiResponse.json");
-
-        stubFor(post(urlPathEqualTo("/audios"))
-                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+                "payloads/addAudio/register/soapRequest.xml");
 
         XmlWithFileMultiPartRequest request = Mockito.mock(XmlWithFileMultiPartRequest.class);
         Mockito.when(request.getBinarySize()).thenReturn(maxByteSize + 1);
@@ -81,13 +82,7 @@ class AddAudioWebServiceTest  extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void addAudioHandleErrorInDocumentXml(DartsGatewayClient client) throws Exception {
         final String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/invalidDocumentStructure.xml");
-
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/dartsApiResponse.json");
-
-        stubFor(post(urlPathEqualTo("/audios"))
-                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+                "payloads/addAudio/register/invalidDocumentStructure.xml");
 
         XmlWithFileMultiPartRequest request = Mockito.mock(XmlWithFileMultiPartRequest.class);
         Mockito.when(request.getBinarySize()).thenReturn(maxByteSize);
@@ -96,5 +91,25 @@ class AddAudioWebServiceTest  extends IntegrationBase {
         CodeAndMessage responseCode = CodeAndMessage.INVALID_XML;
         SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
         Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void addAudioFailingResponse(DartsGatewayClient client) throws Exception {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+        stubFor(post(urlPathEqualTo("/audios"))
+                .willReturn(aResponse().withStatus(404).withBody("this is not a valid error format")));
+
+        XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+        Mockito.when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+        CodeAndMessage responseCode = CodeAndMessage.ERROR;
+        SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+        Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+
+        verify(postRequestedFor(urlPathEqualTo("/audios"))
+                .withRequestBody(new MultipartDartsProxyContentPattern()));
     }
 }
