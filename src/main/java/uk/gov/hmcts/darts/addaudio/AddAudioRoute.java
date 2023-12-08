@@ -26,12 +26,12 @@ public class AddAudioRoute {
     private final AddAudioMapper addAudioMapper;
 
     public DARTSResponse route(AddAudio addAudio) {
-        var caseDocumentXmlStr = addAudio.getDocument();
+        var addAudioDocumentXmlStr = addAudio.getDocument();
         if (validateAddAudio) {
-            xmlValidator.validate(caseDocumentXmlStr, addCaseSchemaPath);
+            xmlValidator.validate(addAudioDocumentXmlStr, addCaseSchemaPath);
         }
 
-        var addAudioLegacy = xmlParser.unmarshal(caseDocumentXmlStr, Audio.class);
+        var addAudioLegacy = xmlParser.unmarshal(addAudioDocumentXmlStr, Audio.class);
 
         audiosClient.addAudio(null, addAudioMapper.mapToDartsApi(addAudioLegacy));
 
