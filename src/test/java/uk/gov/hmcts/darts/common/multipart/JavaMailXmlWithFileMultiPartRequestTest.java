@@ -56,6 +56,9 @@ class JavaMailXmlWithFileMultiPartRequestTest {
             Assertions.assertEquals(IOUtils.toString(xmlContents.getBytes()), IOUtils.toString(is.readAllBytes())); });
         Assertions.assertTrue(requestUnderTest.consumeFileBinaryStream(is -> {
             Assertions.assertEquals(IOUtils.toString(fileContents.getBytes()), IOUtils.toString(is.getInputStream().readAllBytes())); }));
+        Assertions.assertTrue(requestUnderTest.consumeFileBinary(file -> {
+            Assertions.assertEquals(IOUtils.toString(fileContents.getBytes()), IOUtils.toString(
+                    Files.newInputStream(Paths.get(file.getAbsolutePath())))); }));
     }
 
     @Test

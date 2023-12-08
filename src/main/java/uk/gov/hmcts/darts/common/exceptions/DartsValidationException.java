@@ -12,8 +12,4 @@ public class DartsValidationException extends DartsException {
     public DartsValidationException(Throwable cause, CodeAndMessage codeAndMessage) {
         super(cause, codeAndMessage);
     }
-
-    public DartsValidationException(String errorMessage) {
-        super(errorMessage);
-    }
 }

@@ -41,7 +41,7 @@ public class DailyListRoute {
     public DARTSResponse handle(String document, String type) {
         Optional<SystemType> systemType = SystemType.getByType(type);
         if (systemType.isEmpty()) {
-            throw new DartsValidationException("SystemType is not valid " + type);
+            throw new DartsValidationException(null, CodeAndMessage.SYSTEM_TYPE_NOT_FOUND);
         }
 
         if (validate) {
