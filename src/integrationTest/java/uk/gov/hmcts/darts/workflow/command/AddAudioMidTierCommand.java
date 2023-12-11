@@ -90,7 +90,7 @@ public class AddAudioMidTierCommand implements Command {
     }
 
     @Override
-    public void execute() throws IOException {
+    public void execute() {
         try {
             File xmlFile = getAudioFile();
 

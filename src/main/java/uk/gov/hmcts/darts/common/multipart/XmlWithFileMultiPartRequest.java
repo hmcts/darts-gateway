@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.common.multipart;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.common.function.ConsumerWithIoException;
@@ -25,8 +26,12 @@ public interface XmlWithFileMultiPartRequest extends HttpServletRequest, Closeab
                 RequestContextHolder.currentRequestAttributes())
                 .getRequest();
 
-        if (curRequest instanceof XmlWithFileMultiPartRequest) {
-            return Optional.ofNullable((XmlWithFileMultiPartRequest) curRequest);
+        while (curRequest instanceof HttpServletRequestWrapper) {
+            if (curRequest instanceof XmlWithFileMultiPartRequest) {
+                return Optional.of((XmlWithFileMultiPartRequest) curRequest);
+            } else {
+                curRequest = (HttpServletRequest)((HttpServletRequestWrapper) curRequest).getRequest();
+            }
         }
 
         return Optional.empty();
