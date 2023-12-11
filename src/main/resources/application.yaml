@@ -26,7 +26,7 @@ azure:
 
 darts-gateway:
   context-registry:
-    token-generate: documentum
+    token-generate: jwt
     map-token-to-session: false
   authentication:
     users:
@@ -59,7 +59,7 @@ darts-gateway:
     schema: "src/main/resources/schemas/addAudio.xsd"
     validate: false
     # Represents 360 MB per channel as maximum upload
-    fileSizeInBytes: 377487360
+    fileSizeInMegaBytes: ${MAX_FILE_UPLOAD_SIZE_MEGABYTES:350}
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 

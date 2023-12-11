@@ -23,7 +23,7 @@ public class AddAudioValidator {
     private String addCaseSchemaPath;
     @Value("${darts-gateway.add-audio.validate}")
     private boolean validateAddAudio;
-    @Value("${darts-gateway.add-audio.fileSizeInBytes}")
+    @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")
     private long expectedFileSize;
 
     private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
@@ -55,11 +55,15 @@ public class AddAudioValidator {
             throw new DartsValidationException(null, CodeAndMessage.ERROR);
         }
         try {
-            if (request.get().getBinarySize() > expectedFileSize) {
+            if (request.get().getBinarySize() > getBytes(expectedFileSize)) {
                 throw new DartsValidationException(null, CodeAndMessage.AUDIO_TOO_LARGE);
             }
         } catch (IOException ioe) {
             throw new DartsValidationException(ioe, CodeAndMessage.ERROR);
         }
+    }
+
+    public static long getBytes(long megaBytes) {
+        return megaBytes * 1024 * 1024;
     }
 }

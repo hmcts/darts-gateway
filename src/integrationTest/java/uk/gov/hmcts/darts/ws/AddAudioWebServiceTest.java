@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
@@ -35,7 +36,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @MockBean
     private XmlWithFileMultiPartRequestHolder requestHolder;
 
-    @Value("${darts-gateway.add-audio.fileSizeInBytes}")
+    @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")
     private long maxByteSize;
 
     @ParameterizedTest
@@ -70,7 +71,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/soapRequest.xml");
 
         XmlWithFileMultiPartRequest request = Mockito.mock(XmlWithFileMultiPartRequest.class);
-        Mockito.when(request.getBinarySize()).thenReturn(maxByteSize + 1);
+        Mockito.when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize) + 1);
         Mockito.when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
         CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
