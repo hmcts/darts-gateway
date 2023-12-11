@@ -18,6 +18,7 @@ import org.springframework.xml.validation.XmlValidator;
 import org.springframework.xml.validation.XmlValidatorFactory;
 import org.springframework.xml.xsd.XsdSchema;
 import org.springframework.xml.xsd.XsdSchemaCollection;
+import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.metadata.ContextRegistryEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.DartsEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.EndpointMetaData;
@@ -33,6 +34,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
+    private final SoapRequestInterceptor soapRequestInterceptor;
+
     @Value("${darts-gateway.ws.request-validation}")
     private boolean requestValidation;
 
@@ -43,6 +46,8 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
+        interceptors.add(soapRequestInterceptor);
+
         var validatingInterceptor = new PayloadValidatingInterceptor();
         validatingInterceptor.setValidateRequest(requestValidation);
         validatingInterceptor.setValidateResponse(responseValidation);

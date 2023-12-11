@@ -1,7 +1,5 @@
 # darts-gateway
 
-[![Build Status](https://travis-ci.org/hmcts/darts-gateway.svg?branch=master)](https://travis-ci.org/hmcts/darts-gateway)
-
 # DARTSService SoapUI
 
 * To View the application SOAP Web Services:
@@ -14,7 +12,7 @@
   initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
 * Sample requests for all operations have been created. Initial requests e.g. addCase will use the ServiceContext Soap Header with some custom project
   properties: `userName="${#Project#userName}" password="${#Project#password}"`
-* **IMPORTANT!The property values will need to be updated to suit your test user, remembering not to commit them if you make any changes.**
+* **IMPORTANT! The property values will need to be updated to suit your test user, remembering not to commit them if you make any changes.**
 * Go to the top level project folder in SoapUI and choose Custom Properties to change them.
 * See https://www.soapui.org/docs/soap-and-wsdl/
 

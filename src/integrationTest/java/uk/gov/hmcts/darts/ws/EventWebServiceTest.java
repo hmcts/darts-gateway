@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -90,7 +89,8 @@ class EventWebServiceTest extends IntegrationBase {
         });
         theEventApi.verifyDoesntReceiveEvent();
 
-        verifyNoInteractions(mockOauthTokenGenerator);
+        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     //TODO: We need to comment this back in when we know what we are doing with the json string header its failing
