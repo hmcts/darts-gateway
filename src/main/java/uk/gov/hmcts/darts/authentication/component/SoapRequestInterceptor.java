@@ -38,11 +38,10 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     @Override
-    public boolean handleRequest(MessageContext messageContext, Object endpoint) throws Exception {
+    public boolean handleRequest(MessageContext messageContext, Object endpoint) {
         SaajSoapMessage message = (SaajSoapMessage) messageContext.getRequest();
-        SoapHeader soapHeader = message.getSoapHeader();
-
-        return handleServiceContextSoapHeader(soapHeader);
+        handleServiceContextSoapHeader(message.getSoapHeader());
+        return true; // continue processing of the request interceptor chain
     }
 
     private boolean handleServiceContextSoapHeader(SoapHeader soapHeader) {
@@ -83,17 +82,17 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     @Override
-    public boolean handleResponse(MessageContext messageContext, Object endpoint) throws Exception {
+    public boolean handleResponse(MessageContext messageContext, Object endpoint) {
         return true;
     }
 
     @Override
-    public boolean handleFault(MessageContext messageContext, Object endpoint) throws Exception {
+    public boolean handleFault(MessageContext messageContext, Object endpoint) {
         return true;
     }
 
     @Override
-    public void afterCompletion(MessageContext messageContext, Object endpoint, Exception ex) throws Exception {
+    public void afterCompletion(MessageContext messageContext, Object endpoint, Exception ex) {
 
     }
 

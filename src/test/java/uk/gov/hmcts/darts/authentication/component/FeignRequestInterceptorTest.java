@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -35,12 +37,11 @@ class FeignRequestInterceptorTest {
     }
 
     @Test
-    void givenAccessTokenRequestAttributeIsNotSet_whenFeignRequestInterceptorCalledForRequest_thenAuthorizationHeaderIsNotAdded() {
+    void givenAccessTokenRequestAttributeIsNotSet_whenFeignRequestInterceptorCalledForRequest_thenDartsValidationExceptionIsThrown() {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
 
-        feignRequestInterceptor.apply(requestTemplate);
-
-        assertFalse(requestTemplate.headers().containsKey(AUTHORIZATION));
+        Exception exception = assertThrows(DartsValidationException.class, () -> feignRequestInterceptor.apply(requestTemplate));
+        assertEquals("Authorization Bearer Header missing JWT", exception.getMessage());
     }
 
 }

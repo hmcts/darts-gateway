@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -19,8 +20,10 @@ public class FeignRequestInterceptor implements RequestInterceptor {
     public void apply(RequestTemplate template) {
         Object accessTokenObj = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
             .getAttribute(ACCESS_TOKEN_REQUEST_ATTR);
-        if (accessTokenObj != null) {
-            template.header(AUTHORIZATION, "Bearer " + (String) accessTokenObj);
+        if (accessTokenObj instanceof String accessToken) {
+            template.header(AUTHORIZATION, "Bearer " + accessToken);
+        } else {
+            throw new DartsValidationException("Authorization Bearer Header missing JWT");
         }
     }
 
