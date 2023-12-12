@@ -1,20 +1,32 @@
 # darts-gateway
 
-# DARTSService SoapUI
+# SoapUI
+
+* [SoapUI](https://www.soapui.org/downloads/soapui/) can be used for "Try it out" functionality
+  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER).
+* **IMPORTANT! The property values will need to be updated to suit your test user, remembering not to commit them if you make any changes!**
+* Go to the top level project folder in SoapUI and choose Custom Properties to change them.
+* See https://www.soapui.org/docs/soap-and-wsdl/
+
+## DARTSService SoapUI
 
 * To View the application SOAP Web Services:
   * http://localhost:8070/service/darts/DARTSService?wsdl
-  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
-* [SoapUI](https://www.soapui.org/downloads/soapui/) can be used for "Try it out" functionality
-  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER).
-
 * Import SOAP Project [README-DARTSService](README-DARTSService-soapui-project.xml) with
   initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
 * Sample requests for all operations have been created. Initial requests e.g. addCase will use the ServiceContext Soap Header with some custom project
   properties: `userName="${#Project#userName}" password="${#Project#password}"`
-* **IMPORTANT! The property values will need to be updated to suit your test user, remembering not to commit them if you make any changes.**
-* Go to the top level project folder in SoapUI and choose Custom Properties to change them.
-* See https://www.soapui.org/docs/soap-and-wsdl/
+
+## ContextRegistryService SoapUI
+
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
+* Import SOAP Project [README-ContextRegistryService](README-ContextRegistryService-soapui-project.xml) with
+  initial [ContextRegistryService WSDL](context/src/main/resources/ws/ContextRegistryService.wsdl).
+* Sample requests for all operations have been created. Initial requests e.g. register will use the ServiceContext Soap Header with some custom project
+  properties: `userName="${#Project#userName}" password="${#Project#password}"`
+* Requests for lookup / unregister operations use the JWT token property provided in the Soap Body, so you will need to remember to update it using the register
+  response: `<token>${#Project#token}</token>`
 
 ## Building and deploying the application
 
