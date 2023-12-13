@@ -18,8 +18,8 @@ import java.util.List;
 @Slf4j
 @Component
 public class AudiosClient extends AbstractRestTemplateClient implements AudiosApi {
-    @Value("${darts-gateway.darts-api.baseUrl}")
-    private String url;
+    @Value("${darts-gateway.darts-api.base-url}")
+    private String baseUrl;
 
     private final DartsClientProblemDecoder decoder;
 
@@ -38,7 +38,7 @@ public class AudiosClient extends AbstractRestTemplateClient implements AudiosAp
      * @param audio The audio meta data
      */
     public void streamAudio(MultipartFile multipartFile, AddAudioMetadataRequest audio) {
-        streamFileWithMetaData(multipartFile, audio, url + "/audios");
+        streamFileWithMetaData(multipartFile, audio, baseUrl + "/audios");
     }
 
     @Override

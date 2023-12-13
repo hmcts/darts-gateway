@@ -20,7 +20,7 @@ import java.util.Optional;
 public class AddAudioValidator {
 
     @Value("${darts-gateway.add-audio.schema}")
-    private String addCaseSchemaPath;
+    private String addAudioSchema;
     @Value("${darts-gateway.add-audio.validate}")
     private boolean validateAddAudio;
     @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")
@@ -42,7 +42,7 @@ public class AddAudioValidator {
 
         if (validateAddAudio) {
             try {
-                xmlValidator.validate(audio.getDocument(), addCaseSchemaPath);
+                xmlValidator.validate(audio.getDocument(), addAudioSchema);
             } catch (DartsValidationException de) {
                 throw new DartsValidationException(de, CodeAndMessage.INVALID_XML);
             }
