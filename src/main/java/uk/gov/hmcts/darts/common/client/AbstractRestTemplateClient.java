@@ -30,7 +30,7 @@ public abstract class AbstractRestTemplateClient {
     /**
      * Uploads a file by streaming NOTE: This mechanism does not use feign for the reason that feign loads files into memory (see
      * https://github.com/OpenFeign/feign-form/issues/88)
-     * @param multipartFile The multipart file to transfer. A default one that disableS in memory loading
+     * @param multipartFile The multipart file to transfer. A default one that disables in memory loading
      *                      can be found {@link uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart}
      * @param metadata The meta data
      * @param url The url to use

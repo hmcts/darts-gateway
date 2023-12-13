@@ -20,7 +20,6 @@ import java.nio.file.Path;
 public class StreamingMultipart implements MultipartFile {
     private final String name;
 
-    @Nullable
     private final String contentType;
 
     private final SizeableInputSource is;
