@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.utils.multipart;
 
 import uk.gov.hmcts.darts.common.function.ConsumerWithIoException;
-import uk.gov.hmcts.darts.common.multipart.SizesableInputSource;
+import uk.gov.hmcts.darts.common.multipart.SizeableInputSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +23,9 @@ public class DummyXmlWithFileMultiPartRequest extends XmlWithFileMultiPartReques
     }
 
     @Override
-    public boolean consumeFileBinaryStream(ConsumerWithIoException<SizesableInputSource> fileInputStream) throws IOException {
+    public boolean consumeFileBinaryStream(ConsumerWithIoException<SizeableInputSource> fileInputStream) throws IOException {
 
-        SizesableInputSource is = new SizesableInputSource() {
+        SizeableInputSource is = new SizeableInputSource() {
             @Override
             public long getSize() {
                 return fileRepresentingUpload.length();

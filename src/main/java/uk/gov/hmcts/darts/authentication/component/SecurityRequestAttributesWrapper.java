@@ -6,13 +6,13 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 
-public class RequestAttributesWrapper {
+public class SecurityRequestAttributesWrapper {
 
     private static final String ACCESS_TOKEN_REQUEST_ATTR = "access_token";
 
     private final RequestAttributes requestAttributes;
 
-    public RequestAttributesWrapper(RequestAttributes attributes) {
+    public SecurityRequestAttributesWrapper(RequestAttributes attributes) {
         this.requestAttributes = attributes;
     }
 

@@ -6,8 +6,8 @@ import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
-import uk.gov.hmcts.darts.common.client.AudioClient;
-import uk.gov.hmcts.darts.common.client.multipart.DefaultMultipart;
+import uk.gov.hmcts.darts.api.audio.AudiosApi;
+import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AddAudioRoute {
     private final XmlParser xmlParser;
-    private final AudioClient audiosClient;
+    private final AudiosApi audiosClient;
     private final AddAudioMapper addAudioMapper;
     private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
     private final AddAudioValidator addAudioValidator;
@@ -42,17 +42,17 @@ public class AddAudioRoute {
             if (request.isPresent()) {
                 // consume the uploaded file and proxy downstream
                 request.get().consumeFileBinaryStream(uploadedStream -> {
-                    DefaultMultipart multipartFile = new DefaultMultipart(
+                    StreamingMultipart multipartFile = new StreamingMultipart(
                         addAudioLegacy.getMediafile(),
                         addAudioLegacy.getMediaformat(),
                         uploadedStream
                     );
                     AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
                     metaData.setFileSize(request.get().getBinarySize());
-                    audiosClient.streamAudio(multipartFile, metaData);
+                    audiosClient.addAudio(multipartFile, metaData);
                 });
             } else {
-                throw new DartsException(null, CodeAndMessage.ERROR);
+                throw new DartsException(CodeAndMessage.ERROR);
             }
         } catch (IOException ioe) {
             throw new DartsException(ioe, CodeAndMessage.ERROR);

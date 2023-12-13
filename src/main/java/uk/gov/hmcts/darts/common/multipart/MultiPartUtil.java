@@ -4,9 +4,9 @@ import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 
-public final class MultIPartUtil {
+public final class MultiPartUtil {
 
-    private MultIPartUtil() {
+    private MultiPartUtil() {
 
     }
 

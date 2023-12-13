@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Client;
 import feign.Logger;
-import feign.RequestInterceptor;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
@@ -21,9 +20,9 @@ import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.exeption.JacksonDartsClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.exeption.JacksonFeignClientProblemDecoder;
@@ -107,17 +106,6 @@ public class ServiceConfig {
         return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
     }
 
-    // Temporary fix for service to service authentication.
-    //TODO: Needs to change when we the gateway is passed the token
-    @Bean
-    @Profile("!int-test")
-    public RequestInterceptor requestInterceptor(OauthTokenGenerator tokenGenerator) {
-        return
-                template -> {
-                    template.header("Authorization", "Bearer " + tokenGenerator.acquireNewToken());
-                };
-    }
-
     @Bean
     public List<APIProblemResponseMapper> getResponseMappers() {
         return Arrays.asList(new APIProblemResponseMapper[]{
@@ -134,5 +122,11 @@ public class ServiceConfig {
     @Bean
     public DartsClientProblemDecoder dartsDecoder(ErrorDecoder decoder, List<APIProblemResponseMapper> mappers) {
         return new JacksonDartsClientProblemDecoder(mappers);
+    }
+
+
+    @Bean
+    public RestTemplate getTemplate() {
+        return new RestTemplate();
     }
 }

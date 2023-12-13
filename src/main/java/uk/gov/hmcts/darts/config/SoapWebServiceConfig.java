@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.server.EndpointInterceptor;
@@ -19,6 +18,7 @@ import org.springframework.xml.validation.XmlValidator;
 import org.springframework.xml.validation.XmlValidatorFactory;
 import org.springframework.xml.xsd.XsdSchema;
 import org.springframework.xml.xsd.XsdSchemaCollection;
+import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.common.multipart.JavaMailXmlWithFileMultiPartRequestFactory;
 import uk.gov.hmcts.darts.metadata.ContextRegistryEndpointMetaData;
 import uk.gov.hmcts.darts.metadata.DartsEndpointMetaData;
@@ -43,8 +43,12 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
 
     public static final String BASE_WEB_CONTEXT = "/service/darts/";
 
+    private final SoapRequestInterceptor soapRequestInterceptor;
+
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
+        interceptors.add(soapRequestInterceptor);
+
         var validatingInterceptor = new PayloadValidatingInterceptor();
         validatingInterceptor.setValidateRequest(requestValidation);
         validatingInterceptor.setValidateResponse(responseValidation);
@@ -99,10 +103,5 @@ public class SoapWebServiceConfig extends WsConfigurerAdapter {
         endpointMetaData.add(new DartsEndpointMetaData(BASE_WEB_CONTEXT));
         endpointMetaData.add(new ContextRegistryEndpointMetaData(BASE_WEB_CONTEXT));
         return endpointMetaData;
-    }
-
-    @Bean
-    public RestTemplate getTemplate() {
-        return new RestTemplate();
     }
 }

@@ -44,12 +44,12 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
             MimeMultipart mimeMultipart = new MimeMultipart(new HttpRequestDataSource(request
             ));
 
-            BodyPart xmlPayload = MultIPartUtil.getXml(mimeMultipart);
+            BodyPart xmlPayload = MultiPartUtil.getXml(mimeMultipart);
             if (xmlPayload == null) {
-                throw new DartsException(null, CodeAndMessage.ERROR);
+                throw new DartsException((Throwable) null, CodeAndMessage.ERROR);
             }
 
-            BodyPart binary = MultIPartUtil.getBinary(mimeMultipart);
+            BodyPart binary = MultiPartUtil.getBinary(mimeMultipart);
 
             parsedData = new XmlFileUploadPart(xmlPayload, binary);
         } catch (MessagingException e) {
@@ -62,7 +62,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     @Override
     @SuppressWarnings({"squid:S2083"})
-    public boolean consumeFileBinaryStream(ConsumerWithIoException<SizesableInputSource> fileInputStream) throws IOException {
+    public boolean consumeFileBinaryStream(ConsumerWithIoException<SizeableInputSource> fileInputStream) throws IOException {
         boolean processed = false;
         XmlFileUploadPart part = parsedData;
         if (part != null && part.hasBinaryFile()) {
@@ -70,7 +70,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                 File binaryFile = parsedData.getFileForBinary();
                 try (InputStream fileStream = Files.newInputStream(Path.of(binaryFile.getAbsolutePath()))) {
                     log.trace("Consuming binary file of payload");
-                    fileInputStream.accept(new SizesableInputSource() {
+                    fileInputStream.accept(new SizeableInputSource() {
                         @Override
                         public long getSize() {
                             return binaryFile.length();

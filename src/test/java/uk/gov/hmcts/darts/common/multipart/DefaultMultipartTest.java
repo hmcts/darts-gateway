@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.common.multipart;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
-import uk.gov.hmcts.darts.common.client.multipart.DefaultMultipart;
+import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -13,7 +13,7 @@ import java.nio.charset.Charset;
 
 class DefaultMultipartTest {
 
-    private final DefaultMultipart multipart;
+    private final StreamingMultipart multipart;
 
     private static final String NAME = "TESTNAME";
 
@@ -21,8 +21,8 @@ class DefaultMultipartTest {
 
     private static final String IS_BYTES = "test";
 
-    static SizesableInputSource getIS(String contents) {
-        return new SizesableInputSource() {
+    static SizeableInputSource getIS(String contents) {
+        return new SizeableInputSource() {
             @Override
             public long getSize() {
                 return contents.length();
@@ -36,7 +36,7 @@ class DefaultMultipartTest {
     }
 
     DefaultMultipartTest() throws Exception {
-        multipart = new DefaultMultipart(NAME, CONTENT_TYPE, getIS(IS_BYTES));
+        multipart = new StreamingMultipart(NAME, CONTENT_TYPE, getIS(IS_BYTES));
     }
 
     @Test

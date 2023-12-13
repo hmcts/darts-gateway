@@ -147,7 +147,7 @@ public class AddAudioMidTierCommand implements Command {
                                 .build());
         if (container == null || !container.isRunning()) {
             container = new GenericContainer<>(importDocker)
-                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 077), "/")
+                    .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 777), "/")
                     .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio/Lib", 777), "/")
                     .withCopyFileToContainer(MountableFile.forHostPath(fileToSend.getAbsolutePath(), 777), "/")
                     .withCopyFileToContainer(MountableFile.forHostPath(xmlFile.getAbsolutePath(), 777), "/");

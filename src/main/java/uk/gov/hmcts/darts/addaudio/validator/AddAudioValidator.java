@@ -37,7 +37,7 @@ public class AddAudioValidator {
     private void validateXml(AddAudio audio) {
         Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
         if (!request.isPresent()) {
-            throw new DartsValidationException(null, CodeAndMessage.ERROR);
+            throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
         if (validateAddAudio) {
@@ -52,11 +52,11 @@ public class AddAudioValidator {
     private void validateSize() {
         Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
         if (!request.isPresent()) {
-            throw new DartsValidationException(null, CodeAndMessage.ERROR);
+            throw new DartsValidationException(CodeAndMessage.ERROR);
         }
         try {
             if (request.get().getBinarySize() > getBytes(expectedFileSize)) {
-                throw new DartsValidationException(null, CodeAndMessage.AUDIO_TOO_LARGE);
+                throw new DartsValidationException(CodeAndMessage.AUDIO_TOO_LARGE);
             }
         } catch (IOException ioe) {
             throw new DartsValidationException(ioe, CodeAndMessage.ERROR);
