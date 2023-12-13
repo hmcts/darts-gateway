@@ -46,6 +46,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
             BodyPart xmlPayload = MultiPartUtil.getXml(mimeMultipart);
             if (xmlPayload == null) {
+                log.error("Error due to no XML being found for request");
                 throw new DartsException((Throwable) null, CodeAndMessage.ERROR);
             }
 
