@@ -60,7 +60,7 @@ darts-gateway:
     validate: false
     fileSizeInMegaBytes: ${MAX_FILE_UPLOAD_SIZE_MEGABYTES:350}
   darts-api:
-    base-url: ${DARTS_API_URL:http://localhost:4550}
+    baseUrl: ${DARTS_API_URL:http://localhost:4550}
 
 azure-ad-ropc:
   token-uri: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token

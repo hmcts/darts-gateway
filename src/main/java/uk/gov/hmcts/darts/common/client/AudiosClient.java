@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class AudiosClient extends AbstractRestTemplateClient implements AudiosApi {
-    @Value("${darts-gateway.darts-api.base-url}")
+    @Value("${darts-gateway.darts-api.baseUrl}")
     private String url;
 
     private final DartsClientProblemDecoder decoder;

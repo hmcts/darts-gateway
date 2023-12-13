@@ -4,6 +4,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import uk.gov.hmcts.darts.api.event.CourtlogsApi;
 import uk.gov.hmcts.darts.config.ServiceConfig;
 
-@FeignClient(name = "courtLogs", url = "${darts-gateway.darts-api.base-url}", configuration = ServiceConfig.class)
+@FeignClient(name = "courtLogs", url = "${darts-gateway.darts-api.baseUrl}", configuration = ServiceConfig.class)
 public interface CourtLogsClient extends CourtlogsApi {
 }

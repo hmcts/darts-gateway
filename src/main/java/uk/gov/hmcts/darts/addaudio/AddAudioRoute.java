@@ -4,6 +4,7 @@ import com.service.mojdarts.synapps.com.AddAudio;
 import com.service.mojdarts.synapps.com.addaudio.Audio;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AddAudioRoute {
     private final XmlParser xmlParser;
     private final AudiosApi audiosClient;
@@ -52,13 +54,14 @@ public class AddAudioRoute {
                     audiosClient.addAudio(multipartFile, metaData);
                 });
             } else {
+                log.error("The add audio endpoint requires a file to be specified. No file was found");
                 throw new DartsException(CodeAndMessage.ERROR);
             }
         } catch (IOException ioe) {
             throw new DartsException(ioe, CodeAndMessage.ERROR);
         }
 
-        CodeAndMessage mesage = CodeAndMessage.OK;
-        return mesage.getResponse();
+        CodeAndMessage message = CodeAndMessage.OK;
+        return message.getResponse();
     }
 }

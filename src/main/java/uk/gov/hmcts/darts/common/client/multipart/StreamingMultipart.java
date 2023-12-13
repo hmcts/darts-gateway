@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.common.client.multipart;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.lang.NonNull;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Slf4j
+@Getter
 public class StreamingMultipart implements MultipartFile {
     private final String name;
 
@@ -23,31 +25,20 @@ public class StreamingMultipart implements MultipartFile {
 
     private final SizeableInputSource is;
 
-    private final InputStream stream;
+    private final InputStream inputStream;
 
     public StreamingMultipart(
         String name, @Nullable String contentType, SizeableInputSource source) throws IOException {
         this.name = name;
         this.contentType = contentType;
         this.is = source;
-        stream = is.getInputStream();
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
+        inputStream = is.getInputStream();
     }
 
     @Override
     @NonNull
     public String getOriginalFilename() {
         return getName();
-    }
-
-    @Override
-    @Nullable
-    public String getContentType() {
-        return this.contentType;
     }
 
     @Override
@@ -60,10 +51,6 @@ public class StreamingMultipart implements MultipartFile {
         return is.getSize();
     }
 
-    @Override
-    public InputStream getInputStream() throws IOException {
-        return stream;
-    }
 
     @Override
     public void transferTo(File dest) throws IOException {
