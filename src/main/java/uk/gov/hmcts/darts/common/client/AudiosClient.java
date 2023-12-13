@@ -12,7 +12,7 @@ import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AudioClient extends AbstractFileUpload {
+public class AudioClient extends AbstractRestTemplateClient {
     @Value("${darts-gateway.darts-api.base-url}")
     private String url;
 

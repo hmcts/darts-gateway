@@ -12,17 +12,16 @@ import java.io.IOException;
 
 @UtilityClass
 @Slf4j
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestUtils {
 
     public String getContentsFromFile(String filelocation) throws IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         File file = new File(classLoader.getResource(filelocation).getFile());
         return FileUtils.readFileToString(file, "UTF-8");
-
     }
 
     public void compareJson(String expected, String actual) throws JSONException {
-
         try {
             JSONAssert.assertEquals(expected, actual, JSONCompareMode.NON_EXTENSIBLE);
         } catch (JSONException e) {
@@ -30,4 +29,5 @@ public class TestUtils {
             throw e;
         }
     }
+
 }
