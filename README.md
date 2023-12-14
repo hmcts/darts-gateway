@@ -16,6 +16,7 @@
   initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
 * Sample requests for all operations have been created. Initial requests e.g. addCase will use the ServiceContext Soap Header with some custom project
   properties: `userName="${#Project#userName}" password="${#Project#password}"`
+* When testing the add audio endpoint make sure to change the properties to support MTOM and Multipart. Additionally, attach an mp2 file
 
 ## ContextRegistryService SoapUI
 
@@ -157,4 +158,3 @@ Here are some other functionalities it provides:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-

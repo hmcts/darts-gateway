@@ -10,8 +10,13 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
 @ComponentScan("uk.gov.hmcts.darts")
@@ -25,6 +30,16 @@ public class IntegrationBase {
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
+
+    private static String localhost;
+
+    static {
+        try {
+            localhost = InetAddress.getByName("localhost").getHostAddress();
+        } catch (UnknownHostException he) {
+            localhost = "unknown";
+        }
+    }
 
     @Value("${server.port}")
     private int serverPort;
@@ -44,6 +59,23 @@ public class IntegrationBase {
     }
 
     public String getIpAndPort() {
-        return "localhost:" + serverPort;
+        String ipaddressStr = null;
+        try {
+            Enumeration networkEnum = NetworkInterface.getNetworkInterfaces();
+            while (networkEnum.hasMoreElements()) {
+                NetworkInterface networkInterfaces = (NetworkInterface) networkEnum.nextElement();
+                Enumeration ipaddressesOfNic = networkInterfaces.getInetAddresses();
+                while (ipaddressesOfNic.hasMoreElements()) {
+                    InetAddress ipaddress = (InetAddress) ipaddressesOfNic.nextElement();
+                    if (!ipaddress.isLoopbackAddress() && ipaddress.getHostAddress().contains(".")) {
+                        ipaddressStr = ipaddress.getHostAddress() + ":" + serverPort;
+                    }
+                }
+            }
+        } catch (SocketException s) {
+            ipaddressStr = localhost + ":" + serverPort;
+        }
+
+        return ipaddressStr;
     }
 }

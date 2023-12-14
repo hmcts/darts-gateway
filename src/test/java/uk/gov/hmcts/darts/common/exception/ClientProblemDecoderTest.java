@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
-import uk.gov.hmcts.darts.common.client.exeption.JacksonClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonFeignClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.utilities.TestUtils;
@@ -44,7 +44,7 @@ class ClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        Exception exception = new JacksonClientProblemDecoder(responseMappers).decode("", response);
+        Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
 
         Assertions.assertTrue(ClientProblemException.class.isAssignableFrom(exception.getClass()));
         Assertions.assertNotNull(((ClientProblemException) exception).getProblem());
@@ -62,7 +62,7 @@ class ClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        Exception exception = new JacksonClientProblemDecoder(responseMappers).decode("", response);
+        Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
         Assertions.assertTrue(ClientProblemException.class.isAssignableFrom(exception.getClass()));
         Assertions.assertSame(exception, exceptionToReturn);
     }
@@ -86,7 +86,7 @@ class ClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        Exception exception = new JacksonClientProblemDecoder(responseMappers).decode("", response);
+        Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
         Assertions.assertEquals(DartsException.class, exception.getClass());
         Assertions.assertEquals(CodeAndMessage.ERROR, ((DartsException) exception).getCodeAndMessage());
     }

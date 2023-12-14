@@ -8,6 +8,19 @@ public class DartsException extends RuntimeException {
         this.codeAndMessage = codeAndMessage;
     }
 
+    public DartsException(CodeAndMessage codeAndMessage) {
+        this.codeAndMessage = codeAndMessage;
+    }
+
+    public DartsException(String cause, CodeAndMessage codeAndMessage) {
+        super(cause);
+        this.codeAndMessage = codeAndMessage;
+    }
+
+    public boolean hasCodeAndMessage() {
+        return codeAndMessage != null;
+    }
+
     public CodeAndMessage getCodeAndMessage() {
         return codeAndMessage;
     }

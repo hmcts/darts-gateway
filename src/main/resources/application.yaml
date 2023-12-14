@@ -35,7 +35,7 @@ darts-gateway:
         jwt-username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
         jwt-password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
   ws:
-    request-validation: false
+    request-validation: true
     response-validation: false
   events:
     validate: false
@@ -58,6 +58,7 @@ darts-gateway:
   add-audio:
     schema: "src/main/resources/schemas/addAudio.xsd"
     validate: false
+    fileSizeInMegaBytes: ${MAX_FILE_UPLOAD_SIZE_MEGABYTES:350}
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
 

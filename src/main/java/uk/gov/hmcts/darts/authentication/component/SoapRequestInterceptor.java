@@ -19,16 +19,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.xml.namespace.QName;
 
-import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private static final String SERVICE_CONTEXT_HEADER = "{http://context.core.datamodel.fs.documentum.emc.com/}ServiceContext";
-    private static final String ACCESS_TOKEN_REQUEST_ATTR = "access_token";
-
     private final SoapHeaderConverter soapHeaderConverter;
     private final TokenRegisterable tokenRegisterable;
 
@@ -61,10 +57,9 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                         .findFirst();
                     if (basicIdentityOptional.isPresent()) {
                         tokenRegisterable.createToken(serviceContext)
-                            .ifPresent(cacheToken -> RequestContextHolder.currentRequestAttributes().setAttribute(
-                                ACCESS_TOKEN_REQUEST_ATTR,
-                                cacheToken.getToken(),
-                                SCOPE_REQUEST
+                            .ifPresent(cacheToken ->
+                                           new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                                   cacheToken.getToken()
                             ));
                         isAccessTokenRequestAttrSet.set(true);
                     }

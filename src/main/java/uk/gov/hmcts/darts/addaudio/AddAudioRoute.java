@@ -4,38 +4,64 @@ import com.service.mojdarts.synapps.com.AddAudio;
 import com.service.mojdarts.synapps.com.addaudio.Audio;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.common.client.AudiosClient;
+import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
+import uk.gov.hmcts.darts.api.audio.AudiosApi;
+import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
+import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
+import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
+import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.utilities.XmlParser;
-import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
+import uk.gov.hmcts.darts.ws.DartsException;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AddAudioRoute {
-    @Value("${darts-gateway.add-audio.schema}")
-    private String addAudioSchemaPath;
-    @Value("${darts-gateway.add-audio.validate}")
-    private boolean validateAddAudio;
-
-    private final XmlValidator xmlValidator;
     private final XmlParser xmlParser;
-
-    private final AudiosClient audiosClient;
+    private final AudiosApi audiosClient;
     private final AddAudioMapper addAudioMapper;
+    private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
+    private final AddAudioValidator addAudioValidator;
 
     public DARTSResponse route(AddAudio addAudio) {
-        var addAudioDocumentXmlStr = addAudio.getDocument();
-        if (validateAddAudio) {
-            xmlValidator.validate(addAudioDocumentXmlStr, addAudioSchemaPath);
+        addAudioValidator.validate(addAudio);
+
+        var audioXml = addAudio.getDocument();
+
+        Audio addAudioLegacy;
+
+        try {
+            addAudioLegacy = (Audio) xmlParser.unmarshal(audioXml, Audio.class);
+
+            Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
+
+            if (request.isPresent()) {
+                // consume the uploaded file and proxy downstream
+                request.get().consumeFileBinaryStream(uploadedStream -> {
+                    StreamingMultipart multipartFile = new StreamingMultipart(
+                        addAudioLegacy.getMediafile(),
+                        addAudioLegacy.getMediaformat(),
+                        uploadedStream
+                    );
+                    AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
+                    metaData.setFileSize(request.get().getBinarySize());
+                    audiosClient.addAudio(multipartFile, metaData);
+                });
+            } else {
+                log.error("The add audio endpoint requires a file to be specified. No file was found");
+                throw new DartsException(CodeAndMessage.ERROR);
+            }
+        } catch (IOException ioe) {
+            throw new DartsException(ioe, CodeAndMessage.ERROR);
         }
 
-        var addAudioLegacy = xmlParser.unmarshal(addAudioDocumentXmlStr, Audio.class);
-
-        audiosClient.addAudio(null, addAudioMapper.mapToDartsApi(addAudioLegacy));
-
-        CodeAndMessage okResponse = CodeAndMessage.OK;
-        return okResponse.getResponse();
+        CodeAndMessage message = CodeAndMessage.OK;
+        return message.getResponse();
     }
 }

@@ -15,6 +15,8 @@ darts-gateway:
   ws:
     request-validation: true
     response-validation: false
+  add-audio:
+    validate: true
   daily-list:
     validate: true
   events:

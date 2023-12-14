@@ -24,8 +24,6 @@ public class AddAudioMapper {
         addAudioMetadataRequest.setFilename(legacyAudio.getMediafile());
         addAudioMetadataRequest.setCourthouse(legacyAudio.getCourthouse());
         addAudioMetadataRequest.setCourtroom(legacyAudio.getCourtroom());
-        //TODO legacy does not have the file size but we have made it mandatory
-        addAudioMetadataRequest.setFileSize(1024L);
         addAudioMetadataRequest.setCases(legacyAudio.getCaseNumbers().getCaseNumber());
 
         return addAudioMetadataRequest;

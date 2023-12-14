@@ -53,10 +53,10 @@ public class Token {
     public static Token generateDocumentumToken(String tokenStr, boolean mapToSession) {
         Token token =  new Token(tokenStr);
 
+        String sessionId = createTokenSession();
+
         // create a cookie to send back to the client
         if (mapToSession) {
-            String sessionId = createTokenSession();
-
             token.setSessionId(sessionId);
         }
         return token;
@@ -78,8 +78,9 @@ public class Token {
         // create a cookie to send back to the client
         Token token =  new Token(machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + COUNTER.incrementAndGet());
 
+        String sessionId = createTokenSession();
+
         if (mapToSession) {
-            String sessionId = createTokenSession();
             token.setSessionId(sessionId);
         }
 

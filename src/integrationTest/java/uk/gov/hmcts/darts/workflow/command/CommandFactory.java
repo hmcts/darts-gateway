@@ -55,4 +55,8 @@ public final class CommandFactory {
 
         return new AddAudioMidTierCommand(ipadddress, audio, mediaPayload);
     }
+
+    public static AddAudioMidTierCommand getAudioCommand(String ipadddress, File xmlPayload, File mediaPayload) {
+        return new AddAudioMidTierCommand(ipadddress, xmlPayload, mediaPayload);
+    }
 }

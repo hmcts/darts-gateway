@@ -10,6 +10,7 @@ public enum CodeAndMessage {
 
     ERROR("500", null),
     INVALID_XML("400", "Invalid XML Document"),
+    SYSTEM_TYPE_NOT_FOUND("400", "System type not found"),
     NOT_FOUND_COURTHOUSE("404", "Courthouse Not Found"),
     NOT_FOUND_HANLDER("404", "Handler Not Found"),
     AUDIO_TOO_LARGE("404", "Audio Too Large"),

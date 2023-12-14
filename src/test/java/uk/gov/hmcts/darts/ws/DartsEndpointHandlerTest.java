@@ -21,6 +21,6 @@ class DartsEndpointHandlerTest {
     }
 
     private DARTSResponse executeWithCourtHouseError() {
-        throw new DartsException(null, assertMessage);
+        throw new DartsException(assertMessage);
     }
 }
