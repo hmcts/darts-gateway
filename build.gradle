@@ -317,7 +317,7 @@ dependencies {
 
   // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
   implementation 'com.fasterxml.jackson.core:jackson-databind'
-  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.5'
+  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.1'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.4', {
@@ -331,7 +331,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.14'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.14'
 
-  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.5'
+  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.1'
   constraints {
     implementation('com.squareup.okio:okio:3.6.0') {
       because 'version 3.0.0 has vulnerability CVE-2023-3635'
