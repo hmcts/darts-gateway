@@ -4,7 +4,7 @@ import com.synapps.moj.dfs.response.CourtLog;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-@SuppressWarnings("PMD.HideUtilityClassConstructor")
+@SuppressWarnings("HideUtilityClassConstructor")
 public class CustomAssertions {
 
     public static CourtLogAssert verifyThat(CourtLog actual) {

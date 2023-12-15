@@ -119,10 +119,9 @@ task smoke(type: Test) {
   classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
+
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.12.6'
-  getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
 var sourceSetsCopy = sourceSets
@@ -203,7 +202,6 @@ dependencyCheck {
     assemblyEnabled = false
   }
   skipConfigurations = [
-    "checkstyle",
     "compileOnly",
     "pmd",
     "integrationTest",
@@ -375,15 +373,6 @@ dependencies {
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.14'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.14'
-}
-
-dependencyManagement {
-  dependencies {
-    // Fix for checkstyle trying to bring in 2 incompatible version of guava. Look at removing this at some point
-    dependencySet(group: 'com.google.guava', version: '32.0.1-jre') {
-      entry 'guava'
-    }
-  }
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
