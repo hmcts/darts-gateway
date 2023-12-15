@@ -129,12 +129,6 @@ public interface DailyListRequestMapper {
 
     Defendant map(DefendantStructure defendant);
 
-    @Named("nameMapper")
-    default String mapName(List<String> names) {
-        return String.join(" ", names);
-    }
-
-
     default List<Charge> map(DefendantStructure.Charges charges) {
         if (charges == null) {
             return null;
@@ -153,9 +147,13 @@ public interface DailyListRequestMapper {
         return list;
     }
 
-
     @Mappings({
         @Mapping(source = "courtHouseCode.value", target = "courtHouseCode.code")
     })
     CourtHouse map(CourtHouseStructure courtHouseStructure);
+
+    @Named("nameMapper")
+    default String mapName(List<String> names) {
+        return String.join(" ", names);
+    }
 }

@@ -13,7 +13,7 @@ import java.time.ZoneOffset;
 import static uk.gov.hmcts.darts.utilities.DateUtil.LONDON_ZONE_ID;
 
 @UtilityClass
-@SuppressWarnings({"PMD.HideUtilityClassConstructor"})
+@SuppressWarnings({"HideUtilityClassConstructor"})
 public class MapperUtility {
 
     public static LocalDateTime toLocalDateTime(LogEntry dartsEvent) {
