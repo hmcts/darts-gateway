@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.utils.client.ctxt;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
-import uk.gov.hmcts.darts.utils.ApplicationContextProvider;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,10 +17,10 @@ import java.util.stream.Stream;
 public class ContextRegistryClientProvider implements ArgumentsProvider {
 
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
 
         // get the injected client
-        Map<String, ContextRegistryClient> beans = ApplicationContextProvider.getApplicationContext().getBeansOfType(
+        Map<String, ContextRegistryClient> beans = SpringExtension.getApplicationContext(context).getBeansOfType(
             ContextRegistryClient.class);
 
         Arguments[] clientable = new Arguments[0];

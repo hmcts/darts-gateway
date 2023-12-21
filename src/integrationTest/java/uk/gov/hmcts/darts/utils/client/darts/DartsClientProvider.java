@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.utils.client.darts;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
-import uk.gov.hmcts.darts.utils.ApplicationContextProvider;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,10 +17,9 @@ import java.util.stream.Stream;
 public class DartsClientProvider implements ArgumentsProvider {
 
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
         // get the injected client
-        Map<String, DartsGatewayClient> beans = ApplicationContextProvider.getApplicationContext().getBeansOfType(
+        Map<String, DartsGatewayClient> beans = SpringExtension.getApplicationContext(context).getBeansOfType(
             DartsGatewayClient.class);
 
         Arguments[] clientable = new Arguments[0];
