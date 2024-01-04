@@ -27,8 +27,3 @@ variable "aks_subscription_id" {
   type        = string
   description = "The AKS subscription id for the environment.  Set by pipeline."
 }
-
-variable "api_hostname" {
-  type        = string
-  description = "The hostname for the DARTS API on the cluster"
-}

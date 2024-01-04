@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
@@ -21,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
+@ActiveProfiles("int-test-jwt-token")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
 class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @MockBean
@@ -56,6 +58,5 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
 
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                 .withRequestBody(new MultipartDartsProxyContentPattern()));
-
     }
 }
