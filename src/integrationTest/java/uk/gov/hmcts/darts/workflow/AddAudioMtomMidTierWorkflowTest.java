@@ -5,18 +5,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.TestUtils;
+import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 import uk.gov.hmcts.darts.workflow.command.CommandFactory;
 
+import java.io.File;
+import java.util.Objects;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
-@ActiveProfiles("int-test-jwt-token")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
 class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @MockBean
@@ -34,6 +38,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @Test
     void addAudioTest() throws Exception {
 
+        File homeDirForTempFiles = new File(System.getProperty("user.home"));
+        final int fileCountBefore = Objects.requireNonNull(homeDirForTempFiles.list()).length;
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
@@ -42,6 +48,14 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
 
         getCommand().executeWithDocker();
 
+        homeDirForTempFiles = new File(System.getProperty("user.home"));
+        int fileCountAfter = Objects.requireNonNull(homeDirForTempFiles.list()).length;
+
         Assertions.assertTrue(getCommand().isSuccess());
+        Assertions.assertEquals(fileCountBefore, fileCountAfter);
+
+        verify(postRequestedFor(urlPathEqualTo("/audios"))
+                .withRequestBody(new MultipartDartsProxyContentPattern()));
+
     }
 }

@@ -42,12 +42,19 @@ public class StreamingMultipart implements MultipartFile {
 
     @Override
     public boolean isEmpty() {
-        return is.getSize() == 0;
+        return getSize() == 0;
     }
 
     @Override
     public long getSize() {
-        return is.getSize();
+        long size = -1;
+        try {
+            size = is.getSize();
+        } catch (IOException ioEx) {
+            size = -1;
+        }
+
+        return size;
     }
 
 
