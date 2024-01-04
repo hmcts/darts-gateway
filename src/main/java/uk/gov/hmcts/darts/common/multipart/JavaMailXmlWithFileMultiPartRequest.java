@@ -66,8 +66,6 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
         }
     }
 
-
-
     @Override
     @SuppressWarnings({"squid:S2083"})
     public boolean consumeFileBinaryStream(ConsumerWithIoException<SizeableInputSource> fileInputStream) throws IOException {
@@ -96,6 +94,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                     processed = true;
                 }
             } catch (MessagingException ex) {
+                log.error("Failure when consuming binary", ex);
                 throw new IOException(ex);
             }
         }
@@ -112,6 +111,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                 fileInputStream.accept(xmlFileStream);
                 log.trace("Consumed xml of payload");
             } catch (MessagingException ex) {
+                log.error("Failure when consuming xml", ex);
                 throw new IOException(ex);
             }
         }
@@ -181,6 +181,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                 return new BodyPartServletInputStream(parsedData.getXmlPart());
             }
         } catch (MessagingException ex) {
+            log.error("Problem consuming input stream", ex);
             throw new IOException(ex);
         }
     }
