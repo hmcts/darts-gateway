@@ -48,7 +48,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
             if (mimeMultipart.getCount() > MAXIMUM_PARTS) {
                 log.error("Error due to too many binary files");
-                throw new DartsException(CodeAndMessage.ERROR);
+                throw new DartsException("Too many binary files", CodeAndMessage.ERROR);
             }
 
             BodyPart xmlPayload = MultiPartUtil.getXml(mimeMultipart);
@@ -121,8 +121,8 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
     public long getBinarySize() throws IOException {
         if (parsedData != null) {
             try {
-                return parsedData.getFileForBinary().length();
-            } catch (MessagingException | IOException e) {
+                return parsedData.getBinaryPart().getSize();
+            } catch (MessagingException e) {
                 log.error("Problem consuming binary", e);
                 throw new IOException(e);
             }

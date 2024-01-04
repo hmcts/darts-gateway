@@ -68,6 +68,7 @@ public class HttpRequestDataSource implements DataSource, Closeable {
 
     class NonCloseableSharedFileStream extends SharedFileInputStream {
 
+        @SuppressWarnings("javasecurity:S2083")
         public NonCloseableSharedFileStream(File file) throws IOException {
             super(file);
         }
