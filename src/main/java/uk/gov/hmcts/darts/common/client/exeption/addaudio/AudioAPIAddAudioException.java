@@ -1,10 +1,12 @@
 package uk.gov.hmcts.darts.common.client.exeption.addaudio;
 
+import lombok.Getter;
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.model.audio.AddAudioErrorCode;
 import uk.gov.hmcts.darts.model.audio.Problem;
 
+@Getter
 public class AudioAPIAddAudioException extends ClientProblemException {
     private final transient ProblemResponseMapping<AddAudioErrorCode> mapping;
 
