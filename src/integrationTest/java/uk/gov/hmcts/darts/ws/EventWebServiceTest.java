@@ -93,9 +93,7 @@ class EventWebServiceTest extends IntegrationBase {
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
-    //TODO: We need to comment this back in when we know what we are doing with the json string header its failing
-    // as part of the spring feign data validation annotations
-    //@ParameterizedTest
+    @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void routesValidDailyListPayload(
         DartsGatewayClient client
