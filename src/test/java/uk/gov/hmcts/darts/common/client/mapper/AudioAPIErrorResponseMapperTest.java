@@ -5,10 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.common.client.exeption.addaudio.AudioAPIAddAudioException;
-import uk.gov.hmcts.darts.common.client.exeption.cases.CasesAPIPostCaseException;
 import uk.gov.hmcts.darts.model.audio.AddAudioErrorCode;
 import uk.gov.hmcts.darts.model.audio.Problem;
-import uk.gov.hmcts.darts.model.cases.PostCasesErrorCode;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
