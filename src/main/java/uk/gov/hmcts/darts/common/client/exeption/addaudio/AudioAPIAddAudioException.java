@@ -7,7 +7,6 @@ import uk.gov.hmcts.darts.model.audio.AddAudioErrorCode;
 import uk.gov.hmcts.darts.model.audio.Problem;
 
 @Getter
-@SuppressWarnings("java:S110")
 public class AudioAPIAddAudioException extends ClientProblemException {
     private final transient ProblemResponseMapping<AddAudioErrorCode> mapping;
 
