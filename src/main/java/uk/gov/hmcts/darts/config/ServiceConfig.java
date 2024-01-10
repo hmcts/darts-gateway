@@ -27,6 +27,7 @@ import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.exeption.JacksonDartsClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.exeption.JacksonFeignClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.AudioAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.CaseAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.EventAPIProblemResponseMapper;
@@ -111,7 +112,8 @@ public class ServiceConfig {
         return Arrays.asList(new APIProblemResponseMapper[]{
             new CaseAPIProblemResponseMapper(),
             new DailyListAPIProblemResponseMapper(),
-            new EventAPIProblemResponseMapper()});
+            new EventAPIProblemResponseMapper(),
+            new AudioAPIProblemResponseMapper()});
     }
 
     @Bean
