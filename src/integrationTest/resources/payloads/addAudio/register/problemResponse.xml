@@ -1,0 +1,7 @@
+
+<ns2:addAudioResponse xmlns:ns2="http://com.synapps.mojdarts.service.com">
+  <return>
+    <code>404</code>
+    <message>Courthouse Not Found</message>
+  </return>
+</ns2:addAudioResponse>
