@@ -42,10 +42,7 @@ public class AddAudioRoute {
             Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
 
             if (request.isPresent()) {
-                //check courtroom in populated, if empty throw 500 to match legacy
-                if (addAudioLegacy.getCourthouse().isEmpty()) {
-                    throw new DartsException(CodeAndMessage.ERROR);
-                }
+                addAudioValidator.validateCourtroom(addAudioLegacy);
                 // consume the uploaded file and proxy downstream
                 request.get().consumeFileBinaryStream(uploadedStream -> {
                     StreamingMultipart multipartFile = new StreamingMultipart(
