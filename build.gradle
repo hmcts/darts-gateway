@@ -287,7 +287,7 @@ sourceSets {
 
 dependencies {
   implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.18'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.17'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.18'
   implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.17'
   implementation 'org.apache.santuario:xmlsec:4.0.1'
 
