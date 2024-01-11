@@ -31,6 +31,11 @@
 
 ## Building and deploying the application
 
+External dependencies:-
+
+* darts-api
+* redis
+
 ### Building the application
 
 The project uses [Gradle](https://gradle.org) as a build tool. It already contains
@@ -40,7 +45,7 @@ To build the project execute the following command:
 
 ### Prerequisites
 
-For this project to build successfully you need the darts open api artifact in the local
+For this project to build successfully and run against the local darts api code you need the darts open api artifact in the local
 maven repository. To do this then follow these steps:-
 
 1) Checkout https://github.com/hmcts/darts-api
@@ -154,6 +159,12 @@ Here are some other functionalities it provides:
   the number of concurrent calls to any given dependency
 * [Request caching](https://github.com/Netflix/Hystrix/wiki/How-it-Works#request-caching), allowing
   different code paths to execute Hystrix Commands without worrying about duplicating work
+
+
+### Troubleshooting
+
+If the tests fail for  relating to a redis connection failure then please manually close down the running redis instance
+through task manager
 
 ## License
 

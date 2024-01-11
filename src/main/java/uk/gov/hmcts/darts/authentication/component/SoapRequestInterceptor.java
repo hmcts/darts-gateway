@@ -12,8 +12,11 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapHeaderException;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
+import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
 import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -56,10 +59,12 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                         .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
                         .findFirst();
                     if (basicIdentityOptional.isPresent()) {
-                        tokenRegisterable.createToken(serviceContext)
+                        RefreshableCacheValue refreshableCacheValue = tokenRegisterable.createValue(serviceContext);
+                        // force getting a already accessible token
+                        tokenRegisterable.store(refreshableCacheValue, true)
                             .ifPresent(cacheToken ->
                                            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                   cacheToken.getToken()
+                                   cacheToken.getToken().orElse("")
                             ));
                         isAccessTokenRequestAttrSet.set(true);
                     }
@@ -69,10 +74,13 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                     break;
                 }
             }
-        } catch (SoapHeaderException soapHeaderException) {
+        }
+        catch (CacheException ioException) {
+            log.info("Context registry problem", ioException);
+        }
+        catch (SoapHeaderException soapHeaderException) {
             log.info("The ServiceContext header cannot be returned", soapHeaderException);
         }
-
         return isAccessTokenRequestAttrSet.get();
     }
 

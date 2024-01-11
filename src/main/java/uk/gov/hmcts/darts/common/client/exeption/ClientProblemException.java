@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.common.client.exeption;
 import lombok.Getter;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 @Getter
 public class ClientProblemException extends DartsException {

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.darts.ws;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
@@ -14,8 +16,8 @@ import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
 
 
-@ActiveProfiles("int-test-jwt-token")
-class ContextRegistryJwtServiceTest extends ContextRegistryParent {
+@ActiveProfiles("int-test-jwt-token-shared")
+class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     @MockBean
     private OauthTokenGenerator generator;
 
@@ -39,6 +41,12 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void handleRegister(ContextRegistryClient client) throws Exception {
         executeHandleRegister(client);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void handleRegisterWithSharing(ContextRegistryClient client) throws Exception {
+        executeHandleRegisterWithSharing(client);
     }
 
     @ParameterizedTest
@@ -67,7 +75,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void handleUnregister(ContextRegistryClient client) throws Exception {
-        executeTestHandleUnregister(client);
+    void handleUnregisterSharing(ContextRegistryClient client) throws Exception {
+        executeTestHandleUnregisterSharing(client);
     }
 }

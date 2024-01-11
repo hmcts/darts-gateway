@@ -13,9 +13,8 @@ import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
 
-
-@ActiveProfiles("int-test-jwt-token")
-class ContextRegistryJwtServiceTest extends ContextRegistryParent {
+@ActiveProfiles("int-test-documentum-jwt-token-shared")
+class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegistryParent {
     @MockBean
     private OauthTokenGenerator generator;
 
@@ -25,12 +24,12 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @Autowired
     private RedisTemplate<String, Object> restTemplate;
 
-    private static final int REGISTERED_USER_COUNT = 10;
+    private static final int REGISTERED_COUNT = 10;
 
     @BeforeEach
     public void before() {
         Mockito.when(generator.acquireNewToken("dmadmin", "dmadmin")).thenReturn("test");
-        for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
+        for (int i = 0; i < REGISTERED_COUNT; i++) {
             Mockito.when(generator.acquireNewToken("user" + i, "pass")).thenReturn("test2");
         }
     }
@@ -39,6 +38,12 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void handleRegister(ContextRegistryClient client) throws Exception {
         executeHandleRegister(client);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void handleRegisterWithSharing(ContextRegistryClient client) throws Exception {
+        executeHandleRegisterWithSharing(client);
     }
 
     @ParameterizedTest
@@ -62,12 +67,12 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testBasicConcurrency(ContextRegistryClient client) throws Exception {
-        executeBasicConcurrency(client, REGISTERED_USER_COUNT, properties);
+        executeBasicConcurrency(client, REGISTERED_COUNT, properties);
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void handleUnregister(ContextRegistryClient client) throws Exception {
-        executeTestHandleUnregister(client);
+    void handleUnregisterSharing(ContextRegistryClient client) throws Exception {
+        executeTestHandleUnregisterSharing(client);
     }
 }

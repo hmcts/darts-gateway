@@ -13,5 +13,7 @@ java:
           alias: FUNC_TEST_ROPC_USERNAME
         - name: AzureAdB2CFuncTestROPCPassword
           alias: FUNC_TEST_ROPC_PASSWORD
+        - name: redis-connection-string
+          alias: REDIS_CONNECTION_STRING
   environment:
     DARTS_API_URL: https://darts-api.staging.platform.hmcts.net

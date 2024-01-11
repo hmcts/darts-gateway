@@ -298,7 +298,11 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
   implementation group: 'org.springframework', name: 'spring-context'
+  implementation 'org.springframework.integration:spring-integration-redis:6.2.1'
+  testImplementation 'it.ozimov:embedded-redis:0.7.2'
 
   implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {

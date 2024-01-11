@@ -4,7 +4,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.io.StringReader;
 

@@ -3,7 +3,6 @@ package uk.gov.hmcts.darts.cache.token;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -11,58 +10,74 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 
 @EqualsAndHashCode
 @Getter
-@Setter
 public class Token {
 
+    @EqualsAndHashCode.Include
     private final String token;
 
-    private String sessionId;
+    @EqualsAndHashCode.Include
+    private String sessionId = "";
 
     public static final AtomicLong COUNTER = new AtomicLong();
 
-    public Token(String token) {
+    private Predicate<Token> validate;
+
+    Token(String token,  Predicate<Token> validate) {
         this.token = token;
+        this.validate = validate;
     }
 
-    public String getToken() {
+    public Optional<String> getToken() {
+        if (validate != null && !validate.test(this)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(token);
+    }
+
+    public String getId() {
+        return token + ":" + sessionId;
+    }
+
+    public boolean valid() {
+        if (validate != null) {
+            return validate.test(this);
+        }
+        return true;
+    }
+
+    void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public static Token readToken(String tokenStr, boolean mapToSession, Predicate<Token> validate) {
+        Token token;
+
+        token =  new Token(tokenStr, validate);
+
+        setupSession(token, mapToSession);
+
         return token;
     }
 
-    public static Optional<Token> readToken(String tokenStr, boolean mapToSession) {
-        Token token;
-
-        if (mapToSession && doesSessionExist()) {
-            token =  new Token(tokenStr);
-
-            // create a cookie to send back to the client
-            String sessionId = getHttpSessionId();
-            token.setSessionId(sessionId);
-
-            return Optional.of(token);
-        } else if (!mapToSession) {
-            token =  new Token(tokenStr);
-            return Optional.of(token);
+    private static void setupSession(Token token, boolean mapToSession) {
+        String sessionId;
+        if (!doesSessionExist()) {
+            sessionId = createTokenSession();
+        } else {
+            sessionId = getHttpSessionId();
         }
 
-        return Optional.empty();
-    }
-
-    public static Token generateDocumentumToken(String tokenStr, boolean mapToSession) {
-        Token token =  new Token(tokenStr);
-
-        String sessionId = createTokenSession();
-
-        // create a cookie to send back to the client
         if (mapToSession) {
             token.setSessionId(sessionId);
         }
-        return token;
     }
 
-    public static Token generateDocumentumToken(boolean mapToSession) {
+    public static Token generateDocumentumToken(boolean mapToSession, Predicate<Token> validate) {
         String machineIdentifier;
         try {
             machineIdentifier = InetAddress.getLocalHost().toString();
@@ -76,13 +91,8 @@ public class Token {
         String random = String.valueOf(secureRandom.nextLong());
 
         // create a cookie to send back to the client
-        Token token =  new Token(machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + COUNTER.incrementAndGet());
-
-        String sessionId = createTokenSession();
-
-        if (mapToSession) {
-            token.setSessionId(sessionId);
-        }
+        Token token =  new Token(machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + COUNTER.incrementAndGet(), validate);
+        setupSession(token, mapToSession);
 
         return token;
     }
@@ -107,6 +117,4 @@ public class Token {
                 .getRequest();
         return curRequest.getSession(false) != null;
     }
-
-
 }

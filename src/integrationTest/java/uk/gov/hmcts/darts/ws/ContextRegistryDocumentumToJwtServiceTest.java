@@ -13,9 +13,8 @@ import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
 
-
-@ActiveProfiles("int-test-jwt-token")
-class ContextRegistryJwtServiceTest extends ContextRegistryParent {
+@ActiveProfiles("int-test-documentum-jwt-token")
+class ContextRegistryDocumentumToJwtServiceTest extends ContextRegistryParent {
     @MockBean
     private OauthTokenGenerator generator;
 
@@ -25,7 +24,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @Autowired
     private RedisTemplate<String, Object> restTemplate;
 
-    private static final int REGISTERED_USER_COUNT = 10;
+    private final static int REGISTERED_USER_COUNT = 10;
 
     @BeforeEach
     public void before() {
@@ -70,4 +69,5 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     void handleUnregister(ContextRegistryClient client) throws Exception {
         executeTestHandleUnregister(client);
     }
+
 }

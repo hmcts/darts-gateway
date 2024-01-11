@@ -15,7 +15,7 @@ import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.utilities.TestUtils;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;

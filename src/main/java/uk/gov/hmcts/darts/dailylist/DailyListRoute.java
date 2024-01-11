@@ -19,7 +19,7 @@ import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.util.Optional;
 

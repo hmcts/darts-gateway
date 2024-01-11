@@ -1,21 +1,24 @@
 package uk.gov.hmcts.darts.cache.token;
 
 import documentum.contextreg.ServiceContext;
+import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
 import java.util.Optional;
 
 public interface TokenRegisterable {
-    void store(Token holder, RefreshableCacheValue value);
+    Optional<Token> store(RefreshableCacheValue value) throws CacheException;
 
-    RefreshableCacheValue lookup(Token holder, boolean refresh);
+    Optional<Token> store(RefreshableCacheValue value, Boolean reuseTokenIfPossible) throws CacheException;
 
-    void evict(Token holder);
+    Optional<RefreshableCacheValue> lookup(Token holder) throws CacheException;
 
-    Optional<Token> createToken(ServiceContext context);
+    Optional<Token> lookup(RefreshableCacheValue context) throws CacheException;
 
-    Optional<Token> getToken(String token);
+    void evict(Token holder) throws CacheException;
 
-    RefreshableCacheValue createValue(ServiceContext serviceContext);
+    Token getToken(String token) throws CacheException;;
+
+    RefreshableCacheValue createValue(ServiceContext serviceContext) throws CacheException;
 
 
 }

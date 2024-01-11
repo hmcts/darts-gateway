@@ -4,6 +4,7 @@ import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.util.function.Supplier;
 

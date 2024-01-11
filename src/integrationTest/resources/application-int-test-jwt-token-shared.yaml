@@ -10,14 +10,13 @@ darts-gateway:
   cache:
     token-generate: jwt
     map-token-to-session: false
-    share-token-for-same-credentials: false
+    share-token-for-same-credentials: true
+    entry-time-to-idle-seconds: 15
   darts-api:
     base-url: http://localhost:8090
   ws:
     request-validation: true
     response-validation: false
-  add-audio:
-    validate: true
   daily-list:
     validate: true
   events:
