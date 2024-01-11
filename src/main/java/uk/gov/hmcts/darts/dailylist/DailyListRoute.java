@@ -60,14 +60,6 @@ public class DailyListRoute {
 
         DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyListObject);
 
-        String modernisedDailyListJson;
-        try {
-            modernisedDailyListJson = ServiceConfig.getServiceObjectMapper().writeValueAsString(modernisedDailyList);
-        } catch (JsonProcessingException ex) {
-            throw new DartsException(ex, CodeAndMessage.INVALID_XML);
-        }
-
-
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
                 legacyDailyListObject,
                 document
@@ -80,10 +72,17 @@ public class DailyListRoute {
             postDailyListRequest.getUniqueId(),
             OffsetDateTimeTypeDeserializer.getLOffsetDate(postDailyListRequest.getPublishedTs()),
             postDailyListRequest.getDailyListXml(),
-            modernisedDailyListJson
+            null
         );
 
         Integer dalId = postDailyListResponse.getBody().getDalId();
+
+        String modernisedDailyListJson;
+        try {
+            modernisedDailyListJson = ServiceConfig.getServiceObjectMapper().writeValueAsString(modernisedDailyList);
+        } catch (JsonProcessingException ex) {
+            throw new DartsException(ex, CodeAndMessage.INVALID_XML);
+        }
 
         dailyListsClient.dailylistsPatch(
                 dalId,
