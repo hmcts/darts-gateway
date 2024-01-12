@@ -11,7 +11,7 @@ import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.io.IOException;
 import java.util.Optional;
