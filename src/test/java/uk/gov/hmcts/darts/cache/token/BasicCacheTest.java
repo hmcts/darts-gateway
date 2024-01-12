@@ -4,6 +4,7 @@ import documentum.contextreg.BasicIdentity;
 import documentum.contextreg.ServiceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,15 +17,15 @@ import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Predicate;
 
-public class BasicCacheTest {
+class BasicCacheTest {
 
     private DummyCache cache;
 
@@ -46,11 +47,13 @@ public class BasicCacheTest {
 
     private static final long TOKEN_EXPIRE_SECONDS = 15L;
 
+    private static MockedStatic<RequestContextHolder> contextHolder;
+
     @BeforeAll
     static void beforeAll() {
-        MockedStatic<RequestContextHolder> contextHolder = Mockito.mockStatic(RequestContextHolder.class);
+        contextHolder = Mockito.mockStatic(RequestContextHolder.class);
         ServletRequestAttributes attributes = Mockito.mock(ServletRequestAttributes.class);
-        contextHolder.when(() -> RequestContextHolder.currentRequestAttributes()).thenReturn(attributes);
+        contextHolder.when(RequestContextHolder::currentRequestAttributes).thenReturn(attributes);
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -61,6 +64,11 @@ public class BasicCacheTest {
         Mockito.when(request.getSession(false)).thenReturn(existingSession);
         Mockito.when(session.getId()).thenReturn(SESSION_ID);
         Mockito.when(existingSession.getId()).thenReturn(EXISTING_SESSION_ID);
+    }
+
+    @AfterAll
+    public static void close() {
+        contextHolder.close();
     }
 
     @BeforeEach
@@ -252,7 +260,6 @@ public class BasicCacheTest {
         RefreshableCacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
 
-        Optional<RefreshableCacheValue> refreshableCacheValue = cache.lookup(token.get());
         cache.evict(token.get());
 
         Assertions.assertNull(redisData.getModel().get(token.get().getId()));
@@ -282,19 +289,18 @@ public class BasicCacheTest {
         RefreshableCacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
 
-        Optional<RefreshableCacheValue> refreshableCacheValue = cache.lookup(token.get());
         cache.evict(token.get());
 
         Assertions.assertNotNull(redisData.getModel().get(token.get().getId()));
     }
 
-    class DummyInMemoryRedisTemplate extends RedisTemplate<String, Object> {
+    static class DummyInMemoryRedisTemplate extends RedisTemplate<String, Object> {
+        private final InMemoryValueOperations values;
 
-        private InMemoryValueOperations values;
-
-        private HashMap<String, Duration> map = new HashMap<>();
+        private final Map<String, Duration> map = new HashMap<>();
 
         public DummyInMemoryRedisTemplate(InMemoryValueOperations values) {
+            super();
             this.values = values;
         }
 
@@ -315,7 +321,7 @@ public class BasicCacheTest {
             return values;
         }
 
-        public HashMap<String, Duration> getExpireDuration() {
+        public Map<String, Duration> getExpireDuration() {
             return map;
         }
     }
@@ -327,11 +333,11 @@ public class BasicCacheTest {
     class DummyCache extends AbstractTokenCache implements TokenGeneratable {
         private TokenGeneratable cache;
 
-        private ValidateToken validate;
+        private final ValidateToken validate;
 
-        private String token;
+        private final String token;
 
-        private TokenGeneratable generatable;
+        private final TokenGeneratable generatable;
 
         public DummyCache(RedisTemplate<String, Object> template, CacheProperties properties,
                                       LockRegistry registry, ValidateToken validate, String token, TokenGeneratable generatable) {
@@ -352,12 +358,12 @@ public class BasicCacheTest {
         }
 
         @Override
-        public RefreshableCacheValueWithJwt createValue(ServiceContext context) throws CacheException {
+        public RefreshableCacheValueWithJwt createValue(ServiceContext context) {
             return new RefreshableCacheValueWithJwt(context, generatable);
         }
 
         @Override
-        protected RefreshableCacheValue getValue(RefreshableCacheValue holder) throws CacheException {
+        protected RefreshableCacheValue getValue(RefreshableCacheValue holder) {
             return new RefreshableCacheValueWithJwt((RefreshableCacheValueWithJwt)holder, generatable);
         }
 

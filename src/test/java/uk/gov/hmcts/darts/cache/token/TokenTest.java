@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.cache.token;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,11 @@ class TokenTest {
     private static final String SESSION_ID = "testSession";
     private static final String EXISTING_SESSION_ID = "testSessionExisting";
 
+    private static MockedStatic<RequestContextHolder> contextHolder;
+
     @BeforeAll
     static void before() {
-        MockedStatic<RequestContextHolder> contextHolder = Mockito.mockStatic(RequestContextHolder.class);
+        contextHolder = Mockito.mockStatic(RequestContextHolder.class);
         ServletRequestAttributes attributes = Mockito.mock(ServletRequestAttributes.class);
         contextHolder.when(() -> RequestContextHolder.currentRequestAttributes()).thenReturn(attributes);
 
@@ -33,6 +36,11 @@ class TokenTest {
 
         Mockito.when(session.getId()).thenReturn(SESSION_ID);
         Mockito.when(existingSession.getId()).thenReturn(EXISTING_SESSION_ID);
+    }
+
+    @AfterAll
+    public static void close() {
+        contextHolder.close();
     }
 
     @Test

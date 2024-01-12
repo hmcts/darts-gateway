@@ -1,19 +1,17 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import redis.embedded.RedisServer;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -36,6 +34,9 @@ public class IntegrationBase {
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
 
+    @Autowired
+    protected RedisTemplate<String, Object> template;
+
     private static String localhost;
 
     static {
@@ -52,11 +53,12 @@ public class IntegrationBase {
     @BeforeEach
     void clearStubs() {
         WireMock.reset();
+        template.getConnectionFactory().getConnection().serverCommands().flushAll();
     }
 
     @AfterAll
     static void afterAll() {
-        RedisConfiguration.redisServer.stop();
+        RedisConfiguration.REDISSERVER.stop();
     }
 
     public URL getGatewayUri() throws MalformedURLException {

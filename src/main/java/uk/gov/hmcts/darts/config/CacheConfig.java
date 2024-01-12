@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -33,19 +34,15 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.cache.token.TokenGeneratable;
-import uk.gov.hmcts.darts.cache.token.jwt.JwtCache;
-import uk.gov.hmcts.darts.cache.token.documentum.DocumentumIdToJwtCache;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import org.springframework.data.redis.cache.RedisCacheWriter;
+import uk.gov.hmcts.darts.cache.token.documentum.DocumentumIdToJwtCache;
+import uk.gov.hmcts.darts.cache.token.jwt.JwtCache;
 
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.UnaryOperator;
 
 import static java.nio.charset.Charset.defaultCharset;

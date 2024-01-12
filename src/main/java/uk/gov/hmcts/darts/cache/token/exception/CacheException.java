@@ -1,6 +1,6 @@
 package uk.gov.hmcts.darts.cache.token.exception;
 
-public class CacheException extends RuntimeException{
+public class CacheException extends RuntimeException {
     public CacheException(Throwable cause) {
         super(cause);
     }

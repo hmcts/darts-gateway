@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class InMemoryValueOperations implements ValueOperations<String, Object> {
 
-    private HashMap<String, Object> map = new HashMap<>();
+    private final Map<String, Object> memoryBackedDataStore = new HashMap<>();
 
     @Override
     public void set(String key, Object value) {
@@ -32,7 +32,7 @@ public class InMemoryValueOperations implements ValueOperations<String, Object> 
 
     @Override
     public void set(String key, Object value, Duration timeout) {
-        map.put(key, value);
+        memoryBackedDataStore.put(key, value);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class InMemoryValueOperations implements ValueOperations<String, Object> 
 
     @Override
     public Object get(Object key) {
-        return map.get(key);
+        return memoryBackedDataStore.get(key);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class InMemoryValueOperations implements ValueOperations<String, Object> 
         throw new UnsupportedOperationException();
     }
 
-    public HashMap<String, Object> getModel() {
-        return map;
+    public Map<String, Object> getModel() {
+        return memoryBackedDataStore;
     }
 }

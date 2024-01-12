@@ -16,7 +16,7 @@ public interface TokenRegisterable {
 
     void evict(Token holder) throws CacheException;
 
-    Token getToken(String token) throws CacheException;;
+    Token getToken(String token) throws CacheException;
 
     RefreshableCacheValue createValue(ServiceContext serviceContext) throws CacheException;
 

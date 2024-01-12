@@ -3,7 +3,6 @@ package uk.gov.hmcts.darts.cache.token;
 import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 

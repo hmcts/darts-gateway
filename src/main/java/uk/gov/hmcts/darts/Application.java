@@ -8,7 +8,7 @@ import uk.gov.hmcts.darts.cache.token.config.KeyConfiguration;
 
 @SpringBootApplication
 @EnableFeignClients
-@EnableRedisRepositories (keyspaceConfiguration= KeyConfiguration.class)
+@EnableRedisRepositories (keyspaceConfiguration = KeyConfiguration.class)
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
 

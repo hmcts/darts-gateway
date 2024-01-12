@@ -5,28 +5,21 @@ import jakarta.annotation.PreDestroy;
 import org.springframework.boot.test.context.TestConfiguration;
 import redis.embedded.RedisServer;
 
-/**
- * A configuration that can be used with
- */
 @TestConfiguration
-public class RedisConfiguration {
-    public static RedisServer redisServer;
-
-    public RedisConfiguration() {
-        this.redisServer = new RedisServer();
-    }
+class RedisConfiguration {
+    public static final RedisServer REDISSERVER = new RedisServer();
 
     @PostConstruct
     public void postConstruct() {
-        if (!redisServer.isActive()) {
-            redisServer.start();
+        if (!REDISSERVER.isActive()) {
+            REDISSERVER.start();
         }
     }
 
     @PreDestroy
     public void preDestroy() {
-        if (redisServer.isActive()) {
-            redisServer.stop();
+        if (REDISSERVER.isActive()) {
+            REDISSERVER.stop();
         }
     }
 }

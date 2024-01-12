@@ -3,8 +3,8 @@ package uk.gov.hmcts.darts.utilities;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.StringReader;
 

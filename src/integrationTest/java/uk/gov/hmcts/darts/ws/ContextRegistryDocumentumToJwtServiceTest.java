@@ -24,7 +24,7 @@ class ContextRegistryDocumentumToJwtServiceTest extends ContextRegistryParent {
     @Autowired
     private RedisTemplate<String, Object> restTemplate;
 
-    private final static int REGISTERED_USER_COUNT = 10;
+    private static final int REGISTERED_USER_COUNT = 10;
 
     @BeforeEach
     public void before() {

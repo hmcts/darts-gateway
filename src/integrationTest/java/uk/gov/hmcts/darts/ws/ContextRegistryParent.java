@@ -3,10 +3,10 @@ package uk.gov.hmcts.darts.ws;
 import documentum.contextreg.LookupResponse;
 import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.UnregisterResponse;
-import junit.framework.AssertionFailedError;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.utils.CacheUtil;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
@@ -68,9 +68,9 @@ public class ContextRegistryParent extends IntegrationBase {
         SoapAssertionUtil<RegisterResponse> response3 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue());
 
-        Assertions.assertTrue(response.getResponse().getValue().getReturn().equals(response1.getResponse().getValue().getReturn()));
-        Assertions.assertTrue(response.getResponse().getValue().getReturn().equals(response2.getResponse().getValue().getReturn()));
-        Assertions.assertTrue(response.getResponse().getValue().getReturn().equals(response3.getResponse().getValue().getReturn()));
+        Assertions.assertEquals(response.getResponse().getValue().getReturn(), response1.getResponse().getValue().getReturn());
+        Assertions.assertEquals(response.getResponse().getValue().getReturn(), response2.getResponse().getValue().getReturn());
+        Assertions.assertEquals(response.getResponse().getValue().getReturn(), response3.getResponse().getValue().getReturn());
     }
 
     void executeHandleLookup(ContextRegistryClient client) throws Exception {
@@ -162,6 +162,8 @@ public class ContextRegistryParent extends IntegrationBase {
         return response.getResponse().getValue().getReturn();
     }
 
+
+    @SuppressWarnings({"PMD.SimplifiableTestAssertion", "PMD.DoNotUseThreads", "PMD.AvoidInstantiatingObjectsInLoops"})
     void executeBasicConcurrency(ContextRegistryClient client, int usersCount, CacheProperties properties) throws Exception {
         CountDownLatch semaphore = new CountDownLatch(usersCount);
         CountDownLatch lookupSemaphore = new CountDownLatch(usersCount);
@@ -284,7 +286,7 @@ public class ContextRegistryParent extends IntegrationBase {
                 token = ContextRegistryParent.this.registerToken(client);
                 latch.countDown();
             } catch (Exception e) {
-                throw new AssertionFailedError("The register operation errorred");
+                throw new CacheException("The register operation errored", e);
             }
         }
     }
@@ -315,7 +317,7 @@ public class ContextRegistryParent extends IntegrationBase {
                 value = ContextRegistryParent.this.lookup(client, token);
                 latch.countDown();
             } catch (Exception e) {
-                throw new AssertionFailedError("The register operation errorred");
+                throw new CacheException("The lookup operation errored", e);
             }
         }
     }

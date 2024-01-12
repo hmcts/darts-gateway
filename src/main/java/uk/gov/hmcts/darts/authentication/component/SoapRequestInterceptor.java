@@ -16,7 +16,6 @@ import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
 import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -74,11 +73,9 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                     break;
                 }
             }
-        }
-        catch (CacheException ioException) {
+        } catch (CacheException ioException) {
             log.info("Context registry problem", ioException);
-        }
-        catch (SoapHeaderException soapHeaderException) {
+        } catch (SoapHeaderException soapHeaderException) {
             log.info("The ServiceContext header cannot be returned", soapHeaderException);
         }
         return isAccessTokenRequestAttrSet.get();

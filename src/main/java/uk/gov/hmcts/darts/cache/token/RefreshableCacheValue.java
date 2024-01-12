@@ -3,8 +3,6 @@ package uk.gov.hmcts.darts.cache.token;
 import documentum.contextreg.ServiceContext;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
-import java.util.Optional;
-
 public interface RefreshableCacheValue {
     String getContextString() throws CacheException;
 
@@ -14,7 +12,7 @@ public interface RefreshableCacheValue {
 
     boolean refresh() throws CacheException;
 
-    void performRefresh() throws CacheException;;
+    void performRefresh() throws CacheException;
 
     String getDownstreamToken();
 
