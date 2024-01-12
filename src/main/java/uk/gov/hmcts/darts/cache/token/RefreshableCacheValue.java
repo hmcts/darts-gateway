@@ -14,9 +14,4 @@ public interface RefreshableCacheValue {
 
     void performRefresh() throws CacheException;
 
-    String getDownstreamToken();
-
-    default boolean hasToken() {
-        return !getDownstreamToken().isEmpty();
-    }
 }

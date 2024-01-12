@@ -74,15 +74,19 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             return token;
         }  else {
+            CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
+
             // if we have a global token stored then make sure the token has the service context if
             // not add one
-            Optional<RefreshableCacheValue> concurrentValue = lookup(globalToken.get());
-            if (!concurrentValue.isPresent()) {
-                redisTemplate.opsForValue()
-                        .set(getToken(concurrentValue.get().getDownstreamToken()).getId(), value, getSecondsToExpire());
-            } else {
-                redisTemplate.expire(globalToken.get().getId(), getSecondsToExpire());
-            }
+            work.execute((t) -> {
+                Optional<RefreshableCacheValue> concurrentValue = lookup(t);
+                if (concurrentValue.isEmpty()) {
+                    redisTemplate.opsForValue()
+                            .set(t.getId(), value, getSecondsToExpire());
+                } else {
+                    redisTemplate.expire(t.getId(), getSecondsToExpire());
+                }
+            }, globalToken.get());
         }
 
         return globalToken;

@@ -108,13 +108,14 @@ class BasicCacheTest {
         Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, validateToken));
         Mockito.when(validateToken.test(Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken.get());
 
         RefreshableCacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
         Assertions.assertEquals(TOKEN_STRING, token.get().getToken().get());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
         Assertions.assertNotNull(value.getServiceContext());
-        Assertions.assertEquals(valueToken, value.getDownstreamToken());
+        Assertions.assertEquals(valueToken, ((DownstreamTokenisable)value).getValidatedToken().get().getToken().get());
     }
 
     @Test
@@ -168,7 +169,7 @@ class BasicCacheTest {
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
         Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());
-        Assertions.assertEquals(valueToken, value.getDownstreamToken());
+        Assertions.assertEquals(valueToken, ((DownstreamTokenisable)value).getValidatedToken().get().getToken().get());
     }
 
     @Test
@@ -224,6 +225,7 @@ class BasicCacheTest {
         // first token validation is true and second one a false
         Mockito.when(generatable.createToken(Mockito.notNull())).thenReturn(returnToken).thenReturn(returnTokenAlternative);
         Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnTokenInvalid.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnTokenAlternative.get());
 
         RefreshableCacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
@@ -231,9 +233,8 @@ class BasicCacheTest {
         Optional<RefreshableCacheValue> refreshableCacheValue = cache.lookup(token.get());
 
         Assertions.assertFalse(refreshableCacheValue.isEmpty());
-        Assertions.assertEquals(valueTokenAlternative, refreshableCacheValue.get().getDownstreamToken());
+        Assertions.assertEquals(valueTokenAlternative, ((DownstreamTokenisable)refreshableCacheValue.get()).getValidatedToken().get().getToken().get());
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
-        Assertions.assertEquals(valueTokenAlternative, ((RefreshableCacheValue)redisData.getModel().get(token.get().getId())).getDownstreamToken());
         Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());
     }
 

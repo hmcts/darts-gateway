@@ -12,7 +12,9 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapHeaderException;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
+import uk.gov.hmcts.darts.cache.token.DownstreamTokenisable;
 import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
+import uk.gov.hmcts.darts.cache.token.Token;
 import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
@@ -59,12 +61,24 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                         .findFirst();
                     if (basicIdentityOptional.isPresent()) {
                         RefreshableCacheValue refreshableCacheValue = tokenRegisterable.createValue(serviceContext);
+                        Optional<Token> token = tokenRegisterable.store(refreshableCacheValue, true);
+                        if (token.isPresent() && refreshableCacheValue instanceof uk.gov.hmcts.darts.cache.token.DownstreamTokenisable) {
+                            Optional<Token> tokenDownstream = ((DownstreamTokenisable) refreshableCacheValue).getValidatedToken();
+                            if (tokenDownstream.isEmpty()) {
+                                // TODO: THROW AN EXCEPTION FOR AUTH FAILURE
+                            } else {
+                                new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                                                        tokenDownstream.get().getToken().orElse(""));
+                            }
+                        } else if (!token.isPresent()) {
+                            // TODO: THROW AN EXCEPTION FOR AUTH FAILURE
+                        } else {
+                            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                                    token.get().getToken().orElse(""));
+                        }
+
                         // force getting a already accessible token
-                        tokenRegisterable.store(refreshableCacheValue, true)
-                            .ifPresent(cacheToken ->
-                                           new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                   cacheToken.getToken().orElse("")
-                            ));
+
                         isAccessTokenRequestAttrSet.set(true);
                     }
                 });

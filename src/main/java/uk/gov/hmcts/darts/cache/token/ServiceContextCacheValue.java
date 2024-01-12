@@ -24,8 +24,6 @@ public class ServiceContextCacheValue implements RefreshableCacheValue {
 
     private ServiceContext context;
 
-    private String token;
-
     protected static final String EMPTY_DOWN_STREAM_TOKEN = "";
 
     public ServiceContextCacheValue() throws CacheException {
@@ -49,8 +47,9 @@ public class ServiceContextCacheValue implements RefreshableCacheValue {
     public ServiceContextCacheValue(ServiceContextCacheValue value) {
         setId(value.getId());
         setContextString(value.getContextString());
-        setDownstreamToken(value.getDownstreamToken());
+
     }
+
 
     public String getContextString() {
         return contextStr;
@@ -86,15 +85,6 @@ public class ServiceContextCacheValue implements RefreshableCacheValue {
     @Override
     public void performRefresh() throws CacheException {
 
-    }
-
-    @Override
-    public String getDownstreamToken() {
-        return token;
-    }
-
-    public void setDownstreamToken(String token) {
-        this.token = token;
     }
 
     private String getUserName() throws CacheException {
