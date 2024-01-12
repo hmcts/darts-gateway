@@ -38,7 +38,7 @@ public class AddAudioValidator {
 
     public void validateCourtroom(Audio audio) {
         //check courtroom in populated, if empty throw 500 to match legacy
-        if (audio.getCourthouse().isEmpty()) {
+        if (audio.getCourthouse() == null || audio.getCourthouse().isEmpty()) {
             throw new DartsException(CodeAndMessage.ERROR);
         }
     }
