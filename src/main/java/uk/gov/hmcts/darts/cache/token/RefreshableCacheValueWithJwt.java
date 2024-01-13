@@ -48,14 +48,19 @@ public class RefreshableCacheValueWithJwt extends ServiceContextCacheValue imple
     public boolean refresh() throws CacheException {
         Optional<Token> downstream = getValidatedToken();
 
-        return EMPTY_DOWN_STREAM_TOKEN.equals(getValidatedToken()) || (!EMPTY_DOWN_STREAM_TOKEN.equals(getValidatedToken())
+        return EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken()) || (!EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken())
             && downstream.isPresent() && !downstream.get().valid());
     }
 
     @Override
     public void performRefresh() throws CacheException {
         Optional<Token> token = jwtCacheRegistrable.createToken(getServiceContext());
-        setDownstreamToken(token.get().getToken().orElse(EMPTY_DOWN_STREAM_TOKEN));
+
+        if (token.isPresent()) {
+            setDownstreamToken(token.get().getToken().orElse(EMPTY_DOWN_STREAM_TOKEN));
+        } else {
+            setDownstreamToken(EMPTY_DOWN_STREAM_TOKEN);
+        }
     }
 
     @Override

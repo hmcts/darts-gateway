@@ -24,6 +24,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
     protected final CacheProperties properties;
 
+
     private Duration getSecondsToExpire() {
         return Duration.of(properties.getEntryTimeToIdleSeconds(), ChronoUnit.SECONDS);
     }
@@ -40,40 +41,46 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
         log.info("Storing the supplied value");
 
-        Optional<Token> globalToken = Optional.empty();
-        if ((reuseTokenIfPossible == null && properties.isShareTokenForSameCredentials())
-                || reuseTokenIfPossible != null && reuseTokenIfPossible) {
-            log.info("Looking up token for the same credentials");
+        CacheLockableUnitOfWork distributedLockWork = new CacheLockableUnitOfWork(lockRegistry);
+        Optional<Token> token = distributedLockWork.execute(() -> {
+            Optional<Token> tokenToUse = Optional.empty();
 
-            globalToken = lookup(value);
+            // if we have found a token but it is invalid then invalid it and force a new token to be created
+            if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
+                log.info("Looking up token for the same credentials");
 
-            log.info("Found the token for the credentials");
-        }
+                tokenToUse = lookup(value);
 
-        // if we have found a token but it is invalid then invalid it and force a new token to be created
-        if (globalToken.isPresent() && !globalToken.get().valid()) {
-            globalToken = Optional.empty();
-        }
+                if (tokenToUse.isPresent() && !tokenToUse.get().valid()) {
+                    tokenToUse = Optional.empty();
+                }
 
-        if (globalToken.isEmpty()) {
-            Optional<Token> token = createToken(value.getServiceContext());
-
-            log.info("Creating a new token");
-
-            if (token.isPresent()) {
-                CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
-                work.execute((t) -> {
-                    redisTemplate.opsForValue().set(t.getId(), value, getSecondsToExpire());
-
-                    redisTemplate.opsForValue().set(value.getId(), t.getToken().orElse(""), getSecondsToExpire());
-
-                }, token.get());
+                log.info("Found the token for the credentials");
             }
 
-            log.info("Token value stored in cache");
+            if (tokenToUse.isEmpty()) {
+                tokenToUse = createToken(value.getServiceContext());
 
-            return token;
-        }  else {
+                log.info("Creating a new token");
+
+                if (tokenToUse.isPresent()) {
+                    CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
+
+                    work.execute((t) -> {
+                        redisTemplate.opsForValue().set(t.getId(), value, getSecondsToExpire());
+
+                        redisTemplate.opsForValue().set(value.getId(), t.getToken().orElse(""), getSecondsToExpire());
+
+                    }, tokenToUse.get());
+                }
+            }
+
+            return tokenToUse;
+        }, reuseTokenBasedOnCredentials(reuseTokenIfPossible));
+
+        log.info("Token value stored in cache");
+
+        if (token.isPresent() && reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
             CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
             // if we have a global token stored then make sure the token has the service context if
@@ -86,10 +93,15 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 } else {
                     redisTemplate.expire(t.getId(), getSecondsToExpire());
                 }
-            }, globalToken.get());
+            }, token.get());
         }
 
-        return globalToken;
+        return token;
+    }
+
+    private boolean reuseTokenBasedOnCredentials(Boolean reuseTokenIfPossible) {
+        return properties.isShareTokenForSameCredentials()
+                || (reuseTokenIfPossible != null && reuseTokenIfPossible);
     }
 
     protected abstract Predicate<Token> getValidateToken();
@@ -178,7 +190,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         redisTemplate.expire(holder.getId(), getSecondsToExpire());
 
         if (value != null) {
-            return Optional.of(getValue((RefreshableCacheValue)value));
+            return Optional.of(getValue((RefreshableCacheValue) value));
         }
 
         return Optional.empty();
@@ -189,7 +201,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         redisTemplate.expire(holder.getId(), getSecondsToExpire());
 
         if (value != null) {
-            return Optional.of(Token.readToken((String)value, properties.isMapTokenToSession(), getValidateToken()));
+            return Optional.of(Token.readToken((String) value, properties.isMapTokenToSession(), getValidateToken()));
         }
 
         return Optional.empty();
