@@ -26,12 +26,15 @@ public class StreamingMultipart implements MultipartFile {
 
     private final InputStream inputStream;
 
+    private final long size;
+
     public StreamingMultipart(
         String name, @Nullable String contentType, SizeableInputSource source) throws IOException {
         this.name = name;
         this.contentType = contentType;
         this.is = source;
         inputStream = is.getInputStream();
+        size = is.getSize();
     }
 
     @Override
@@ -42,12 +45,12 @@ public class StreamingMultipart implements MultipartFile {
 
     @Override
     public boolean isEmpty() {
-        return is.getSize() == 0;
+        return getSize() == 0;
     }
 
     @Override
     public long getSize() {
-        return is.getSize();
+        return size;
     }
 
 
