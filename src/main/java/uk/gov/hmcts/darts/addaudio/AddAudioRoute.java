@@ -42,6 +42,7 @@ public class AddAudioRoute {
             Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
 
             if (request.isPresent()) {
+                addAudioValidator.validateCourtroom(addAudioLegacy);
                 // consume the uploaded file and proxy downstream
                 request.get().consumeFileBinaryStream(uploadedStream -> {
                     StreamingMultipart multipartFile = new StreamingMultipart(

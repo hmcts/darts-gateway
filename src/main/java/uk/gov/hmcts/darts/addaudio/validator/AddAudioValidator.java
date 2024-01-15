@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.addaudio.validator;
 
 import com.service.mojdarts.synapps.com.AddAudio;
+import com.service.mojdarts.synapps.com.addaudio.Audio;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
+import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -32,6 +34,13 @@ public class AddAudioValidator {
     public void validate(AddAudio audio) {
         validateXml(audio);
         validateSize();
+    }
+
+    public void validateCourtroom(Audio audio) {
+        //check courtroom in populated, if empty throw 500 to match legacy
+        if (audio.getCourthouse() == null || audio.getCourthouse().isEmpty()) {
+            throw new DartsException(CodeAndMessage.ERROR);
+        }
     }
 
     private void validateXml(AddAudio audio) {

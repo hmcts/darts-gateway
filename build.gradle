@@ -7,7 +7,7 @@ plugins {
   id "io.freefair.lombok" version "8.4"
   id 'io.spring.dependency-management' version '1.1.4'
   id 'org.springframework.boot' version '3.2.0'
-  id 'org.owasp.dependencycheck' version '9.0.7'
+  id 'org.owasp.dependencycheck' version '9.0.8'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'org.sonarqube' version '4.4.1.3373'
   id 'java-library'
@@ -286,9 +286,9 @@ sourceSets {
 }
 
 dependencies {
-  implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.17'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.17'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.17'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.18'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.18'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.18'
   implementation 'org.apache.santuario:xmlsec:4.0.1'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -350,7 +350,7 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
-  testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.0.9'
+  testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.0.10'
   testImplementation group: 'commons-io', name: 'commons-io', version: '2.15.1'// CVE-2021-29425
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.1.0'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
