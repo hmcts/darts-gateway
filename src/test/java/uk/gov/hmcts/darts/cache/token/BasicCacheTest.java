@@ -17,6 +17,7 @@ import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -215,17 +216,12 @@ class BasicCacheTest {
         ValidateToken valueValidateToken = (t) -> true;
         ValidateToken valueValidateTokenFalse = (t) -> false;
 
-        //Mockito.when(valueValidateToken.test(Mockito.notNull())).thenReturn(true).thenReturn(false);
-
         Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, valueValidateToken));
         Optional<Token> returnTokenInvalid = Optional.of(Token.readToken(valueToken, false, valueValidateTokenFalse));
+        Optional<Token> returnTokenAlternative = Optional.of(Token.readToken(valueTokenAlternative, false, valueValidateTokenFalse));
 
-        Optional<Token> returnTokenAlternative = Optional.of(Token.readToken(valueTokenAlternative, false, valueValidateToken));
-
-        // first token validation is true and second one a false
-        Mockito.when(generatable.createToken(Mockito.notNull())).thenReturn(returnToken).thenReturn(returnTokenAlternative);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnTokenInvalid.get());
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnTokenAlternative.get());
+        Mockito.when(generatable.createToken(Mockito.notNull())).thenReturn(returnToken).thenReturn(returnToken);
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnTokenAlternative.get()).thenReturn(returnToken.get());
 
         RefreshableCacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
@@ -233,7 +229,10 @@ class BasicCacheTest {
         Optional<RefreshableCacheValue> refreshableCacheValue = cache.lookup(token.get());
 
         Assertions.assertFalse(refreshableCacheValue.isEmpty());
-        Assertions.assertEquals(valueTokenAlternative, ((DownstreamTokenisable)refreshableCacheValue.get()).getValidatedToken().get().getToken().get());
+
+        DummyRefreshableCacheValueWithJwt dummyRefreshableCacheValueWithJwt = ((DummyRefreshableCacheValueWithJwt)refreshableCacheValue.get());
+        Assertions.assertEquals(valueToken, dummyRefreshableCacheValueWithJwt.getValidatedToken().get().getToken().get());
+        Assertions.assertTrue(dummyRefreshableCacheValueWithJwt.hasRefreshed);
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
         Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());
     }
@@ -360,17 +359,35 @@ class BasicCacheTest {
 
         @Override
         public RefreshableCacheValueWithJwt createValue(ServiceContext context) {
-            return new RefreshableCacheValueWithJwt(context, generatable);
+            return new DummyRefreshableCacheValueWithJwt(context, generatable);
         }
 
         @Override
         protected RefreshableCacheValue getValue(RefreshableCacheValue holder) {
-            return new RefreshableCacheValueWithJwt((RefreshableCacheValueWithJwt)holder, generatable);
+            return new DummyRefreshableCacheValueWithJwt((DummyRefreshableCacheValueWithJwt)holder, generatable);
         }
 
         @Override
         public Token getToken(String token) {
             return Token.readToken(token, properties.isMapTokenToSession(), validate);
+        }
+    }
+
+    class DummyRefreshableCacheValueWithJwt extends RefreshableCacheValueWithJwt {
+        boolean hasRefreshed;
+
+        public DummyRefreshableCacheValueWithJwt(ServiceContext context, TokenGeneratable registerable) throws CacheException {
+            super(context, registerable);
+        }
+
+        public DummyRefreshableCacheValueWithJwt(DummyRefreshableCacheValueWithJwt context, TokenGeneratable registerable) throws CacheException {
+            super(context, registerable);
+        }
+
+        @Override
+        public void performRefresh() throws CacheException {
+            hasRefreshed = true;
+            super.performRefresh();
         }
     }
 }
