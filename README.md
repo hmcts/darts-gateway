@@ -163,8 +163,12 @@ Here are some other functionalities it provides:
 
 ### Troubleshooting
 
-If the tests fail for  relating to a redis connection failure then please manually close down the running redis instance
+If the tests fail for relating to a redis connection failure then please manually close down the running redis instance
 through task manager
+
+If we encounter a lock error message response please check that the redis server is accessible:-
+
+Failed to lock mutex at MY_REDIS_KEY:LOCK
 
 ## License
 

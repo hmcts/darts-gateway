@@ -20,27 +20,14 @@ public class OauthTokenGenerator {
     private String tokenUri;
     @Value("${azure-ad-ropc.scope}")
     private String scope;
-    @Value("${azure-ad-ropc.username}")
-    private String username;
-    @Value("${azure-ad-ropc.password}")
-    private String password;
     @Value("${azure-ad-ropc.client-id}")
     private String clientId;
 
     private final RestTemplate template;
 
-    public String acquireNewToken() {
-        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(), Map.class)
-            .getBody().get("access_token").toString();
-    }
-
     public String acquireNewToken(String username, String password) {
         return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
             .getBody().get("access_token").toString();
-    }
-
-    private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity() {
-        return buildTokenRequestEntity(username, password);
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {

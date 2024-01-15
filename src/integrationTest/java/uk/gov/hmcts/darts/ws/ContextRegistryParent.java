@@ -30,7 +30,6 @@ public class ContextRegistryParent extends IntegrationBase {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(getGatewayUri() + "runtime/ContextRegistryService?wsdl"))
                 .timeout(Duration.ofMinutes(2))
-                .header("Content-Type", "application/json")
                 .build();
         HttpClient client = HttpClient.newBuilder().build();
         HttpResponse.BodyHandler<?> responseBodyHandler = HttpResponse.BodyHandlers.ofString();

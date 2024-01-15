@@ -9,10 +9,6 @@ java:
           alias: app-insights-connection-string
         - name: AzureAdB2CFuncTestROPCClientId
           alias: AAD_B2C_ROPC_CLIENT_ID_KEY
-        - name: AzureAdB2CFuncTestROPCUsername
-          alias: FUNC_TEST_ROPC_USERNAME
-        - name: AzureAdB2CFuncTestROPCPassword
-          alias: FUNC_TEST_ROPC_PASSWORD
         - name: redis-connection-string
           alias: REDIS_CONNECTION_STRING
   environment:

@@ -26,8 +26,14 @@ public class ServiceContextCacheValue implements RefreshableCacheValue {
 
     protected static final String EMPTY_DOWN_STREAM_TOKEN = "";
 
-    public ServiceContextCacheValue() throws CacheException {
+    private JAXBContext jaxbContext;
 
+    public ServiceContextCacheValue() throws CacheException {
+        try {
+            jaxbContext = JAXBContext.newInstance(ServiceContext.class);
+        } catch (JAXBException e) {
+            throw new CacheException(e);
+        }
     }
 
     public ServiceContextCacheValue(ServiceContext context) throws CacheException {
@@ -45,6 +51,11 @@ public class ServiceContextCacheValue implements RefreshableCacheValue {
     }
 
     public ServiceContextCacheValue(ServiceContextCacheValue value) {
+        try {
+            jaxbContext = JAXBContext.newInstance(ServiceContext.class);
+        } catch (JAXBException e) {
+            throw new CacheException(e);
+        }
         setId(value.getId());
         setContextString(value.getContextString());
 

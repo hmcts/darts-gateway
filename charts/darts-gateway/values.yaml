@@ -12,10 +12,6 @@ java:
           alias: DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD
         - name: AzureAdB2CFuncTestROPCClientId
           alias: AAD_B2C_ROPC_CLIENT_ID_KEY
-        - name: AzureAdB2CFuncTestROPCUsername
-          alias: FUNC_TEST_ROPC_USERNAME
-        - name: AzureAdB2CFuncTestROPCPassword
-          alias: FUNC_TEST_ROPC_PASSWORD
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
         - name: MaxFileUploadSizeInMegabytes

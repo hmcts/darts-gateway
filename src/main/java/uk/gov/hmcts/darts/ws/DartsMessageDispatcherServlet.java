@@ -44,7 +44,11 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
 
                 }
             } else {
-                super.service(req, res);
+                try {
+                    super.service(req, res);
+                } catch (Exception e) {
+                    logger.error("An error occurred", e);
+                }
             }
         }
     }

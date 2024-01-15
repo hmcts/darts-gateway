@@ -55,6 +55,7 @@ services:
     image: darts-gateway:master
     environment:
       - DAR_NOTIFY_DEFAULT_URL=http://darts-stub-services:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx
+      - AAD_B2C_ROPC_CLIENT_ID_KEY
     ports:
       - "8070:8070"
     networks:
@@ -96,11 +97,11 @@ services:
       - darts-network
 
 volumes:
-  darts-db:
-    driver: local
   darts-cache:
     driver: local
 
+  darts-db:
+    driver: local
 networks:
   darts-network:
     driver: bridge
