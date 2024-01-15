@@ -41,7 +41,6 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
             if (isMultipart) {
                 try (XmlWithFileMultiPartRequest request = requestFactory.getRequest(req)) {
                     super.service(request, res);
-
                 }
             } else {
                 super.service(req, res);

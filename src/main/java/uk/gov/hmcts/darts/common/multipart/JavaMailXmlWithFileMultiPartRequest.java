@@ -8,11 +8,10 @@ import uk.gov.hmcts.darts.common.function.ConsumerWithIoException;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.DartsException;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -29,9 +28,12 @@ import javax.mail.internet.MimeMultipart;
  * the time of writing
  */
 @Slf4j
-public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapper implements XmlWithFileMultiPartRequest {
+public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapper implements XmlWithFileMultiPartRequest, Closeable {
     private XmlFileUploadPart parsedData;
 
+    private HttpRequestDataSource source;
+
+    private static final int MAXIMUM_PARTS = 2;
 
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public JavaMailXmlWithFileMultiPartRequest(HttpServletRequest request) {
@@ -41,8 +43,13 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     private void parse(HttpServletRequest request) {
         try {
-            MimeMultipart mimeMultipart = new MimeMultipart(new HttpRequestDataSource(request
-            ));
+            source = new HttpRequestDataSource(request);
+            MimeMultipart mimeMultipart = new MimeMultipart(source);
+
+            if (mimeMultipart.getCount() > MAXIMUM_PARTS) {
+                log.error("Error due to too many binary files");
+                throw new DartsException("Too many binary files", CodeAndMessage.ERROR);
+            }
 
             BodyPart xmlPayload = MultiPartUtil.getXml(mimeMultipart);
             if (xmlPayload == null) {
@@ -53,13 +60,11 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
             BodyPart binary = MultiPartUtil.getBinary(mimeMultipart);
 
             parsedData = new XmlFileUploadPart(xmlPayload, binary);
-        } catch (MessagingException e) {
+        } catch (IOException | MessagingException e) {
             log.error("Multipart parsing problem", e);
             throw new DartsException(e, CodeAndMessage.ERROR);
         }
     }
-
-
 
     @Override
     @SuppressWarnings({"squid:S2083"})
@@ -68,13 +73,16 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
         XmlFileUploadPart part = parsedData;
         if (part != null && part.hasBinaryFile()) {
             try {
-                File binaryFile = parsedData.getFileForBinary();
-                try (InputStream fileStream = Files.newInputStream(Path.of(binaryFile.getAbsolutePath()))) {
+                try (InputStream fileStream = parsedData.getBinaryPart().getInputStream()) {
                     log.trace("Consuming binary file of payload");
                     fileInputStream.accept(new SizeableInputSource() {
                         @Override
-                        public long getSize() {
-                            return binaryFile.length();
+                        public long getSize() throws IOException {
+                            try {
+                                return parsedData.getBinaryPart().getSize();
+                            } catch (MessagingException me) {
+                                throw new IOException(me);
+                            }
                         }
 
                         @Override
@@ -86,6 +94,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                     processed = true;
                 }
             } catch (MessagingException ex) {
+                log.error("Failure when consuming binary", ex);
                 throw new IOException(ex);
             }
         }
@@ -102,6 +111,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                 fileInputStream.accept(xmlFileStream);
                 log.trace("Consumed xml of payload");
             } catch (MessagingException ex) {
+                log.error("Failure when consuming xml", ex);
                 throw new IOException(ex);
             }
         }
@@ -111,8 +121,8 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
     public long getBinarySize() throws IOException {
         if (parsedData != null) {
             try {
-                return parsedData.getFileForBinary().length();
-            } catch (MessagingException | IOException e) {
+                return parsedData.getBinaryPart().getSize();
+            } catch (MessagingException e) {
                 log.error("Problem consuming binary", e);
                 throw new IOException(e);
             }
@@ -171,6 +181,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
                 return new BodyPartServletInputStream(parsedData.getXmlPart());
             }
         } catch (MessagingException ex) {
+            log.error("Problem consuming input stream", ex);
             throw new IOException(ex);
         }
     }
@@ -188,5 +199,6 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
     @Override
     public void close() throws IOException {
         parsedData.cleanup();
+        source.close();
     }
 }

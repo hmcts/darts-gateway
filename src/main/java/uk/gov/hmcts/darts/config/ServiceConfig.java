@@ -122,7 +122,7 @@ public class ServiceConfig {
     }
 
     @Bean
-    public DartsClientProblemDecoder dartsDecoder(ErrorDecoder decoder, List<APIProblemResponseMapper> mappers) {
+    public DartsClientProblemDecoder dartsDecoder(List<APIProblemResponseMapper> mappers) {
         return new JacksonDartsClientProblemDecoder(mappers);
     }
 

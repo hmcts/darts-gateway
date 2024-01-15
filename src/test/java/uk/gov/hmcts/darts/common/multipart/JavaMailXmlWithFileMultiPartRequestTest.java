@@ -102,6 +102,53 @@ class JavaMailXmlWithFileMultiPartRequestTest {
                 requestUnderTest = new JavaMailXmlWithFileMultiPartRequest(request));
     }
 
+    @Test
+    void testParseWithMultipleBinaryParts() throws Exception {
+        File multipartFile = new File(JavaMailXmlWithFileMultiPartRequestTest
+                .class.getClassLoader().getResource("tests/multipart/httpmultipartuploadmorethanonebinary.txt").getFile());
+        File payloadFileUploadContents = new File(
+                JavaMailXmlWithFileMultiPartRequestTest.class.getClassLoader().getResource("tests/multipart/file.txt").getFile());
+        File payloadXmlContents = new File(JavaMailXmlWithFileMultiPartRequestTest.class.getClassLoader().getResource("tests/multipart/payload.xml").getFile());
+        String payloadBody = IOUtils.toString(Files.newInputStream(Paths.get(multipartFile.getAbsolutePath())));
+        String fileContents = IOUtils.toString(Files.newInputStream(Paths.get(payloadFileUploadContents.getAbsolutePath())));
+        String xmlContents = IOUtils.toString(Files.newInputStream(Paths.get(payloadXmlContents.getAbsolutePath())));
+        DefaultInputServletStream servletFileStream = new DefaultInputServletStream(payloadBody
+                .replace(BINARY_PLACEHOLDER, fileContents)
+                .replace(XML_PLACEHOLDER, xmlContents)
+                .getBytes("UTF-8"));
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
+
+        // run the test
+        Throwable throwable = Assertions.assertThrows(DartsException.class, () ->
+                requestUnderTest = new JavaMailXmlWithFileMultiPartRequest(request));
+        Assertions.assertEquals("Too many binary files", throwable.getMessage());
+    }
+
+    @Test
+    void testParseWithMultipleBinaryPartMisFormatted() throws Exception {
+        File multipartFile = new File(JavaMailXmlWithFileMultiPartRequestTest
+                .class.getClassLoader().getResource("tests/multipart/httpmultipartuploadmisformatted.txt").getFile());
+        File payloadFileUploadContents = new File(
+                JavaMailXmlWithFileMultiPartRequestTest.class.getClassLoader().getResource("tests/multipart/file.txt").getFile());
+        File payloadXmlContents = new File(JavaMailXmlWithFileMultiPartRequestTest.class.getClassLoader().getResource("tests/multipart/payload.xml").getFile());
+        String payloadBody = IOUtils.toString(Files.newInputStream(Paths.get(multipartFile.getAbsolutePath())));
+        String fileContents = IOUtils.toString(Files.newInputStream(Paths.get(payloadFileUploadContents.getAbsolutePath())));
+        String xmlContents = IOUtils.toString(Files.newInputStream(Paths.get(payloadXmlContents.getAbsolutePath())));
+        DefaultInputServletStream servletFileStream = new DefaultInputServletStream(payloadBody
+                .replace(BINARY_PLACEHOLDER, fileContents)
+                .replace(XML_PLACEHOLDER, xmlContents)
+                .getBytes("UTF-8"));
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
+
+        // run the test
+        Assertions.assertThrows(DartsException.class, () ->
+                requestUnderTest = new JavaMailXmlWithFileMultiPartRequest(request));
+    }
+
     class DefaultInputServletStream extends ServletInputStream {
         private int lastIndexRetrieved = -1;
 
