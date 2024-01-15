@@ -60,7 +60,7 @@ darts-gateway:
     base-url: ${DARTS_API_URL:http://localhost:4550}
   redis:
     connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
-    ssl-enabled: ${REDIS_SSL_ENABLED:false}
+    ssl-enabled: ${REDIS_SSL_ENABLED:true}
 
 azure-ad-ropc:
   token-uri: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token
