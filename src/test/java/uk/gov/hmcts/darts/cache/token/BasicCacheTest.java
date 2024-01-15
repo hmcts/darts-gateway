@@ -17,7 +17,6 @@ import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -217,7 +216,6 @@ class BasicCacheTest {
         ValidateToken valueValidateTokenFalse = (t) -> false;
 
         Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, valueValidateToken));
-        Optional<Token> returnTokenInvalid = Optional.of(Token.readToken(valueToken, false, valueValidateTokenFalse));
         Optional<Token> returnTokenAlternative = Optional.of(Token.readToken(valueTokenAlternative, false, valueValidateTokenFalse));
 
         Mockito.when(generatable.createToken(Mockito.notNull())).thenReturn(returnToken).thenReturn(returnToken);
@@ -230,7 +228,7 @@ class BasicCacheTest {
 
         Assertions.assertFalse(refreshableCacheValue.isEmpty());
 
-        DummyRefreshableCacheValueWithJwt dummyRefreshableCacheValueWithJwt = ((DummyRefreshableCacheValueWithJwt)refreshableCacheValue.get());
+        DummyRefreshableCacheValueWithJwt dummyRefreshableCacheValueWithJwt = (DummyRefreshableCacheValueWithJwt)refreshableCacheValue.get();
         Assertions.assertEquals(valueToken, dummyRefreshableCacheValueWithJwt.getValidatedToken().get().getToken().get());
         Assertions.assertTrue(dummyRefreshableCacheValueWithJwt.hasRefreshed);
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
@@ -376,16 +374,16 @@ class BasicCacheTest {
     class DummyRefreshableCacheValueWithJwt extends RefreshableCacheValueWithJwt {
         boolean hasRefreshed;
 
-        public DummyRefreshableCacheValueWithJwt(ServiceContext context, TokenGeneratable registerable) throws CacheException {
+        public DummyRefreshableCacheValueWithJwt(ServiceContext context, TokenGeneratable registerable)  {
             super(context, registerable);
         }
 
-        public DummyRefreshableCacheValueWithJwt(DummyRefreshableCacheValueWithJwt context, TokenGeneratable registerable) throws CacheException {
+        public DummyRefreshableCacheValueWithJwt(DummyRefreshableCacheValueWithJwt context, TokenGeneratable registerable) {
             super(context, registerable);
         }
 
         @Override
-        public void performRefresh() throws CacheException {
+        public void performRefresh() {
             hasRefreshed = true;
             super.performRefresh();
         }
