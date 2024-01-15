@@ -1,9 +1,14 @@
 package uk.gov.hmcts.darts.authentication.component;
 
 import documentum.contextreg.BasicIdentity;
+import documentum.contextreg.ServiceContext;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.opensaml.soap.wssecurity.BinarySecurityToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.ws.context.MessageContext;
@@ -18,6 +23,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ import javax.xml.namespace.QName;
 public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private static final String SERVICE_CONTEXT_HEADER = "{http://context.core.datamodel.fs.documentum.emc.com/}ServiceContext";
+    private static final String BINARY_TOKEN_HEADER = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}BinarySecurityToken";
     private final SoapHeaderConverter soapHeaderConverter;
     private final TokenRegisterable tokenRegisterable;
 
@@ -41,39 +48,57 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private boolean handleServiceContextSoapHeader(SoapHeader soapHeader) {
-        AtomicBoolean isAccessTokenRequestAttrSet = new AtomicBoolean(false);
-        try {
-            Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
-                QName.valueOf(SERVICE_CONTEXT_HEADER));
-            while (serviceContextSoapHeaderElementIt.hasNext()) {
-                SoapHeaderElement soapHeaderElement = serviceContextSoapHeaderElementIt.next();
-                soapHeaderConverter.convertSoapHeader(soapHeaderElement).ifPresent(serviceContext -> {
-                    Optional<BasicIdentity> basicIdentityOptional = serviceContext.getIdentities()
-                        .stream()
-                        .filter(identity -> identity instanceof BasicIdentity)
-                        .map(identity -> (BasicIdentity) identity)
-                        .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getUserName()))
-                        .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
-                        .findFirst();
-                    if (basicIdentityOptional.isPresent()) {
-                        tokenRegisterable.createToken(serviceContext)
-                            .ifPresent(cacheToken ->
-                                           new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                   cacheToken.getToken()
-                            ));
-                        isAccessTokenRequestAttrSet.set(true);
-                    }
-                });
+        Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
+            QName.valueOf(SERVICE_CONTEXT_HEADER));
+        Iterator<SoapHeaderElement> tokenSoapHeaderElementIt = soapHeader.examineHeaderElements(
+            QName.valueOf(BINARY_TOKEN_HEADER));
 
-                if (isAccessTokenRequestAttrSet.get()) {
-                    break;
-                }
-            }
-        } catch (SoapHeaderException soapHeaderException) {
-            log.info("The ServiceContext header cannot be returned", soapHeaderException);
+        if (isTokenAuthentication(soapHeader)) {
+            boolean authenticated = authenticateToken(soapHeader);
+
+
+        }
+        else {
+            boolean authenticated = authenticateUsernameAndPassword(soapHeader);
         }
 
-        return isAccessTokenRequestAttrSet.get();
+        return true;
+    }
+
+    private boolean isTokenAuthentication(SoapHeader soapHeader) {
+        Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
+            QName.valueOf(SERVICE_CONTEXT_HEADER));
+        return !serviceContextSoapHeaderElementIt.hasNext();
+    }
+
+    private boolean authenticateToken(SoapHeader soapHeader) {
+        return true;
+    }
+
+    private boolean authenticateUsernameAndPassword(SoapHeader soapHeader) {
+        Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
+            QName.valueOf(SERVICE_CONTEXT_HEADER));
+        while (serviceContextSoapHeaderElementIt.hasNext()) {
+            SoapHeaderElement soapHeaderElement = serviceContextSoapHeaderElementIt.next();
+            soapHeaderConverter.convertSoapHeader(soapHeaderElement).ifPresent(serviceContext -> {
+                Optional<BasicIdentity> basicIdentityOptional = serviceContext.getIdentities()
+                    .stream()
+                    .filter(identity -> identity instanceof BasicIdentity)
+                    .map(identity -> (BasicIdentity) identity)
+                    .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getUserName()))
+                    .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
+                    .findFirst();
+                if (basicIdentityOptional.isPresent()) {
+                    tokenRegisterable.createToken(serviceContext)
+                        .ifPresent(cacheToken ->
+                                       new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                                           cacheToken.getToken()
+                                       ));
+                }
+            });
+        }
+
+        return true;
     }
 
     @Override

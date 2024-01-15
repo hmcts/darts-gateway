@@ -4,6 +4,7 @@ import documentum.contextreg.ServiceContext;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import org.opensaml.soap.wssecurity.BinarySecurityToken;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.soap.SoapHeaderElement;
 
@@ -32,4 +33,16 @@ public class SoapHeaderConverter {
         return serviceContextOptional;
     }
 
+    public Optional<BinarySecurityToken> convertSoapHeaderToToken(SoapHeaderElement soapHeaderElement) {
+        Optional<BinarySecurityToken> serviceContextOptional = Optional.empty();
+        final Source source = soapHeaderElement.getSource();
+        try {
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            BinarySecurityToken serviceContext = unmarshaller.unmarshal(source, BinarySecurityToken.class).getValue();
+            serviceContextOptional = Optional.ofNullable(serviceContext);
+        } catch (JAXBException e) {
+            // ignore
+        }
+        return serviceContextOptional;
+    }
 }
