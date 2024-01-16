@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.common.exceptions;
 
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
 
 public class DartsValidationException extends DartsException {
 

@@ -43,7 +43,11 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
                     super.service(request, res);
                 }
             } else {
-                super.service(req, res);
+                try {
+                    super.service(req, res);
+                } catch (Exception e) {
+                    logger.error("An error occurred", e);
+                }
             }
         }
     }
@@ -71,7 +75,11 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
             if (fndMetaData == null) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
             } else {
-                super.service(req, res);
+                try {
+                    super.service(req, res);
+                } catch (Exception e) {
+                    logger.error("An error occurred", e);
+                }
             }
         }
 

@@ -5,8 +5,8 @@ import documentum.contextreg.ObjectFactory;
 import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBElement;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -18,11 +18,14 @@ import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
 import java.util.Optional;
 
 @Endpoint
-@RequiredArgsConstructor
 @Slf4j
 public class ContextRegistryEndpoint {
 
     private final TokenRegisterable registerable;
+
+    public ContextRegistryEndpoint(@Qualifier("primarycache") TokenRegisterable registerable) {
+        this.registerable = registerable;
+    }
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
@@ -30,14 +33,10 @@ public class ContextRegistryEndpoint {
         RegisterResponse registerResponse = new RegisterResponse();
 
         // create a session as the client needs this
-        Optional<Token> token = registerable.createToken(addDocument.getValue().getContext());
+        Optional<Token> token = registerable.store(registerable.createValue(addDocument.getValue().getContext()));
 
-        if (token.isPresent()) {
-            registerable.store(token.get(), registerable.createValue(addDocument.getValue().getContext()));
-
-            // for now return a documentum id
-            registerResponse.setReturn(token.get().getToken());
-        }
+        // for now return a documentum id
+        token.ifPresent(value -> registerResponse.setReturn(value.getToken().orElse("")));
 
         return new ObjectFactory().createRegisterResponse(registerResponse);
     }
@@ -47,11 +46,10 @@ public class ContextRegistryEndpoint {
     public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<documentum.contextreg.Unregister> unregister) {
         UnregisterResponse unregisterResponse = new UnregisterResponse();
 
-        Optional<Token> token = registerable.getToken(unregister.getValue().getToken());
+        Token token = registerable.getToken(unregister.getValue().getToken());
 
-        token.ifPresent(registerable::evict);
+        registerable.evict(token);
 
-        // TODO: Do we throw an exception here if token not found?
         return new ObjectFactory().createUnregisterResponse(unregisterResponse);
     }
 
@@ -59,17 +57,11 @@ public class ContextRegistryEndpoint {
     @ResponsePayload
     public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> lookup) {
         LookupResponse lookupResponse = new LookupResponse();
-        Optional<Token> token = registerable.getToken(lookup.getValue().getToken());
+        Token token = registerable.getToken(lookup.getValue().getToken());
 
-        if (token.isPresent()) {
-            RefreshableCacheValue value = registerable.lookup(token.get(), true);
+        Optional<RefreshableCacheValue> value = registerable.lookup(token);
+        value.ifPresent(refreshableCacheValue -> lookupResponse.setReturn(refreshableCacheValue.getServiceContext()));
 
-            if (value != null) {
-                lookupResponse.setReturn(value.getContext());
-            }
-        }
-
-        // TODO: Do we throw an exception here if token not found?
         return new ObjectFactory().createLookupResponse(lookupResponse);
     }
 }

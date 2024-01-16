@@ -9,7 +9,7 @@
   xmlns:ns2="http://context.core.datamodel.fs.documentum.emc.com/">
   <context>
     <ns2:Identities
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="dmadmin" userName="dmadmin">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="pass" userName="${USER}">
     </ns2:Identities>
     <ns2:Profiles
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:ContentTransferProfile" isProcessOLELinks="false" allowAsyncContentTransfer="false" allowCachedContentTransfer="false" transferMode="MTOM">

@@ -298,7 +298,10 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
   implementation group: 'org.springframework', name: 'spring-context'
+  implementation 'org.springframework.integration:spring-integration-redis:6.2.1'
 
   implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
@@ -341,6 +344,20 @@ dependencies {
 
   implementation 'org.mapstruct:mapstruct:1.5.5.Final'
   implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+
+  implementation project(path: ':context')
+
+  // https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
+  implementation group: 'org.apache.ws.xmlschema', name: 'xmlschema-core', version: '2.3.1'
+  // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+  implementation group: 'javax.mail', name: 'javax.mail-api', version: '1.6.2'
+  // https://mvnrepository.com/artifact/javax.activation/activation
+  implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
+  // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+  implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.14'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.14'
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
@@ -358,21 +375,10 @@ dependencies {
   testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
   testImplementation 'org.testcontainers:testcontainers:1.19.3'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.3'
+  testImplementation 'it.ozimov:embedded-redis:0.7.2'
 
   openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
-  implementation project(path: ':context')
 
-  // https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
-  implementation group: 'org.apache.ws.xmlschema', name: 'xmlschema-core', version: '2.3.1'
-  // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-  implementation group: 'javax.mail', name: 'javax.mail-api', version: '1.6.2'
-  // https://mvnrepository.com/artifact/javax.activation/activation
-  implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
-  // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
-  implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
-
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.14'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.14'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'

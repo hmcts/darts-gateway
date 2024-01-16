@@ -7,9 +7,11 @@ logging:
     root: DEBUG
 
 darts-gateway:
-  context-registry:
+  cache:
     token-generate: jwt
     map-token-to-session: false
+    share-token-for-same-credentials: false
+    entry-time-to-idle-seconds: 15
   darts-api:
     base-url: http://localhost:8090
   ws:
@@ -19,3 +21,6 @@ darts-gateway:
     validate: true
   events:
     validate: true
+  redis:
+    connection-string: redis://localhost:6379
+    ssl-enabled: false

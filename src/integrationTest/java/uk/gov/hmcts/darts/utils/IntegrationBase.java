@@ -1,13 +1,16 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.net.InetAddress;
@@ -22,7 +25,7 @@ import java.util.Enumeration;
 @ComponentScan("uk.gov.hmcts.darts")
 @ActiveProfiles("int-test")
 @AutoConfigureWireMock(port = 8090)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = RedisConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class IntegrationBase {
 
     protected EventApiStub theEventApi = new EventApiStub();
@@ -30,6 +33,9 @@ public class IntegrationBase {
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
+
+    @Autowired
+    protected RedisTemplate<String, Object> template;
 
     private static String localhost;
 
@@ -47,6 +53,12 @@ public class IntegrationBase {
     @BeforeEach
     void clearStubs() {
         WireMock.reset();
+        template.getConnectionFactory().getConnection().serverCommands().flushAll();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        RedisConfiguration.REDISSERVER.stop();
     }
 
     public URL getGatewayUri() throws MalformedURLException {

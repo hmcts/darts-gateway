@@ -15,8 +15,12 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import uk.gov.hmcts.darts.cache.token.config.CachePropertiesImpl;
+import uk.gov.hmcts.darts.config.CacheConfig;
+import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
 import uk.gov.hmcts.darts.event.config.DarNotifyEventConfiguration;
 import uk.gov.hmcts.darts.event.service.impl.DarNotifyEventServiceImpl;
@@ -32,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DarNotifyController.class)
-@Import({DarNotifyEventConfiguration.class, DarNotifyEventClient.class, DarNotifyEventServiceImpl.class})
+@Import({DarNotifyEventConfiguration.class, DarNotifyEventClient.class, DarNotifyEventServiceImpl.class, CachePropertiesImpl.class, CacheConfig.class, OauthTokenGenerator.class, RestTemplate.class})
 class DarNotifyControllerTest {
 
     @Autowired
@@ -49,19 +53,19 @@ class DarNotifyControllerTest {
     void shouldMarshalDarNotifyEventAsExpected() throws JAXBException {
         Unmarshaller unmarshaller = jaxb2Marshaller.createUnmarshaller();
         String expectedDarNotifyEventXml = """
-            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-            <ns2:DARNotifyEvent xmlns:ns2="http://www.VIQSoultions.com">
-                <XMLEventDocument>
-                    <event type="3" Y="2023" M="6" D="19" H="15" MIN="30" S="25">
-                        <courthouse>courthouse</courthouse>
-                        <courtroom>courtroom</courtroom>
-                        <case_numbers>
-                            <case_number>A123456</case_number>
-                        </case_numbers>
-                    </event>
-                </XMLEventDocument>
-            </ns2:DARNotifyEvent>
-            """;
+                <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <ns2:DARNotifyEvent xmlns:ns2="http://www.VIQSoultions.com">
+                    <XMLEventDocument>
+                        <event type="3" Y="2023" M="6" D="19" H="15" MIN="30" S="25">
+                            <courthouse>courthouse</courthouse>
+                            <courtroom>courtroom</courtroom>
+                            <case_numbers>
+                                <case_number>A123456</case_number>
+                            </case_numbers>
+                        </event>
+                    </XMLEventDocument>
+                </ns2:DARNotifyEvent>
+                """;
         Object jaxbElement = unmarshaller.unmarshal(new StreamSource(new StringReader(expectedDarNotifyEventXml)));
         assertThat(jaxbElement instanceof DARNotifyEvent);
 
@@ -76,27 +80,27 @@ class DarNotifyControllerTest {
     @Test
     void shouldSendDarNotifyEventSoapAction() throws Exception {
         String requestBody = """
-            {
-              "notification_type": "3",
-              "timestamp": "2023-06-19T14:52:40.637Z",
-              "courthouse": "Test Court",
-              "courtroom": "1",
-              "case_numbers": [
-                "A123456"
-              ]
-            }
-            """;
+                {
+                  "notification_type": "3",
+                  "timestamp": "2023-06-19T14:52:40.637Z",
+                  "courthouse": "Test Court",
+                  "courtroom": "1",
+                  "case_numbers": [
+                    "A123456"
+                  ]
+                }
+                """;
         MockHttpServletRequestBuilder requestBuilder = post("/events/dar-notify")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(requestBody);
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody);
 
         MvcResult response = mockMvc.perform(requestBuilder).andExpect(status().is2xxSuccessful()).andReturn();
 
         assertThat(response.getResponse().getContentAsString()).isEqualTo("");
         Mockito.verify(mockWebServiceTemplate).marshalSendAndReceive(
-            eq("http://localhost:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx"),
-            any(DARNotifyEvent.class),
-            any(SoapActionCallback.class)
+                eq("http://localhost:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx"),
+                any(DARNotifyEvent.class),
+                any(SoapActionCallback.class)
         );
         Mockito.verifyNoMoreInteractions(mockWebServiceTemplate);
     }

@@ -1,4 +1,6 @@
-package uk.gov.hmcts.darts.ws;
+package uk.gov.hmcts.darts.common.exceptions;
+
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 public class DartsException extends RuntimeException {
     private final CodeAndMessage codeAndMessage;

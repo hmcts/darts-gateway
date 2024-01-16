@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
 import uk.gov.hmcts.darts.common.client.DailyListsClient;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.config.ServiceConfig;
 import uk.gov.hmcts.darts.dailylist.enums.SystemType;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.util.Optional;
 

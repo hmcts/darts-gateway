@@ -2,8 +2,8 @@ package uk.gov.hmcts.darts.document;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.courtservice.events.DartsEvent;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.utilities.XmlParser;
-import uk.gov.hmcts.darts.ws.DartsException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
