@@ -12,19 +12,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class FeignRequestInterceptor implements RequestInterceptor {
-
-    private static final String ACCESS_TOKEN_REQUEST_ATTR = "access_token";
-
     @Override
     public void apply(RequestTemplate template) {
-        Object accessTokenObj = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
-            .getAttribute(ACCESS_TOKEN_REQUEST_ATTR);
-        if (accessTokenObj instanceof String accessToken) {
-            template.header(AUTHORIZATION, "Bearer " + accessToken);
-        } else {
-            throw new DartsValidationException("Authorization Bearer Header missing JWT", CodeAndMessage.ERROR);
-        }
+        String authenticationToken = new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).getAuthenticationToken();
+
+        template.header(AUTHORIZATION, "Bearer " + authenticationToken);
     }
-
-
 }

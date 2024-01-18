@@ -20,6 +20,7 @@ import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -43,125 +44,218 @@ class EventWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken("some-user", "some-password"))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void routesValidEventPayload(
+    void testRoutesAddDocumentRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
+
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenThrow(new RuntimeException());
+
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
+        {
+           theEventApi.willRespondSuccessfully();
+
+           SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+               getGatewayUri(),
+               validEvent.getContentAsString(
+                   Charset.defaultCharset())
+           );
+           response.assertIdenticalResponse(client.convertData(
+               validEventResponse.getContentAsString(Charset.defaultCharset()),
+               AddDocumentResponse.class
+           ).getValue());
+        }
+            , DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRouteAddDocumentRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
+
+        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
+        {
+            theEventApi.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validEvent.getContentAsString(
+                    Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void routesAddDocumentRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () ->
+        {
+            theEventApi.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validEvent.getContentAsString(
+                    Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        });
+
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesValidEventPayloadWithAuthenticationToken(
         DartsGatewayClient client
     ) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        theEventApi.willRespondSuccessfully();
+        authenticationStub.assertWithTokenHeader(client, () ->
+        {
+            theEventApi.willRespondSuccessfully();
 
-        SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-            getGatewayUri(),
-            validEvent.getContentAsString(
-                Charset.defaultCharset())
-        );
-        response.assertIdenticalResponse(client.convertData(
-            validEventResponse.getContentAsString(Charset.defaultCharset()),
-            AddDocumentResponse.class
-        ).getValue());
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validEvent.getContentAsString(
+                    Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         theEventApi.verifyReceivedEventWithMessageId("12345");
 
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void rejectsInvalidSoapMessage(
-        DartsGatewayClient client) throws IOException {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
-
-        theEventApi.willRespondSuccessfully();
-
-        Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
-            client.send(getGatewayUri(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
-        });
-        theEventApi.verifyDoesntReceiveEvent();
-
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(DartsClientProvider.class)
-    void routesValidDailyListPayload(
+    void testRoutesValidEventPayload(
         DartsGatewayClient client
     ) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        dailyListApiStub.willRespondSuccessfully();
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
+        {
+         theEventApi.willRespondSuccessfully();
 
-        SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-            getGatewayUri(),
-            validDlEvent.getContentAsString(
-                Charset.defaultCharset())
-        );
-        response.assertIdenticalResponse(client.convertData(
-            validDlEventResponse.getContentAsString(Charset.defaultCharset()),
-            AddDocumentResponse.class
-        ).getValue());
+         SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+             getGatewayUri(),
+             validEvent.getContentAsString(
+                 Charset.defaultCharset())
+         );
+         response.assertIdenticalResponse(client.convertData(
+             validEventResponse.getContentAsString(Charset.defaultCharset()),
+             AddDocumentResponse.class
+         ).getValue());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        dailyListApiStub.verifySentRequest();
+        theEventApi.verifyReceivedEventWithMessageId("12345");
 
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void routesValidDailyListPayloadWithInvalidServiceResponse(
-        DartsGatewayClient client
-    ) throws IOException {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void testRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception{
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
 
-        dailyListApiStub.returnsFailureWhenPostingDailyList();
+            theEventApi.willRespondSuccessfully();
 
-        Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
-            client.addDocument(getGatewayUri(), validDlEventResponse.getContentAsString(Charset.defaultCharset()));
-        });
+            Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
+                client.send(getGatewayUri(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
+            });
+            theEventApi.verifyDoesntReceiveEvent();
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void routesInvalidDailyListPayload(
+    void testRoutesValidDailyListPayload(
         DartsGatewayClient client
     ) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        dailyListApiStub.willRespondSuccessfully();
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+           dailyListApiStub.willRespondSuccessfully();
 
-        SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-            getGatewayUri(),
-            invalidDailyListRequest.getContentAsString(
-                Charset.defaultCharset())
-        );
-        response.assertIdenticalResponse(client.convertData(
-            expectedResponse.getContentAsString(Charset.defaultCharset()),
-            AddDocumentResponse.class
-        ).getValue());
+           SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+               getGatewayUri(),
+               validDlEvent.getContentAsString(
+                   Charset.defaultCharset())
+           );
+           response.assertIdenticalResponse(client.convertData(
+               validDlEventResponse.getContentAsString(Charset.defaultCharset()),
+               AddDocumentResponse.class
+           ).getValue());
 
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+           dailyListApiStub.verifySentRequest();
+       }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesValidDailyListPayloadWithInvalidServiceResponse(
+        DartsGatewayClient client
+    ) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            dailyListApiStub.returnsFailureWhenPostingDailyList();
+
+            Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
+                client.addDocument(getGatewayUri(), validDlEventResponse.getContentAsString(Charset.defaultCharset()));
+            });
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesInvalidDailyListPayload(
+        DartsGatewayClient client
+    ) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            dailyListApiStub.willRespondSuccessfully();
+
+               SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                   getGatewayUri(),
+                   invalidDailyListRequest.getContentAsString(
+                       Charset.defaultCharset())
+               );
+               response.assertIdenticalResponse(client.convertData(
+                   expectedResponse.getContentAsString(Charset.defaultCharset()),
+                   AddDocumentResponse.class
+               ).getValue());
+           }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
 }

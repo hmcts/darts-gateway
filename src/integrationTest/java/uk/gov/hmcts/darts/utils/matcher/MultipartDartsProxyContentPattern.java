@@ -14,7 +14,8 @@ public class MultipartDartsProxyContentPattern extends ContentPattern<Object> {
     public MatchResult match(Object value) {
         String body =  new String((byte[])value);
         boolean dispositionValid = body.contains("form-data; name=\"metadata\"") && body.contains("form-data; name=\"file\"");
-        boolean headerValid = body.contains("Content-Type: application/octet-stream") &&  body.contains("Content-Type: application/json");
+        boolean headerValid = body.contains("Content-Type: application/octet-stream") || body.contains("Content-Type: audio/mpeg")
+            &&  body.contains("Content-Type: application/json");
 
         if (dispositionValid && headerValid) {
             return MatchResult.exactMatch();

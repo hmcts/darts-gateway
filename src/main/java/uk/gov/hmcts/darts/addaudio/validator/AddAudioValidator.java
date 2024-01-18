@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.io.IOException;
 import java.util.Optional;

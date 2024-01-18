@@ -26,15 +26,11 @@ azure:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
 
 darts-gateway:
-  context-registry:
+  cache:
     token-generate: jwt
     map-token-to-session: false
-  authentication:
-    users:
-      - user-name: dmadmin
-        password: dmadmin
-        jwt-username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
-        jwt-password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
+    share-token-for-same-credentials: true
+    entry-time-to-idle-seconds: 3600
   ws:
     request-validation: true
     response-validation: false
@@ -62,22 +58,15 @@ darts-gateway:
     fileSizeInMegaBytes: ${MAX_FILE_UPLOAD_SIZE_MEGABYTES:350}
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
+  redis:
+    connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
+    ssl-enabled: ${REDIS_SSL_ENABLED:true}
 
 azure-ad-ropc:
   token-uri: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token
   scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_ROPC_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Functional.Test
-  username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
-  password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
   client-id: ${AAD_B2C_ROPC_CLIENT_ID_KEY:#{null}}
 
-feign:
-  client:
-    config:
-      default:
-        loggerLevel: full
 logging:
   level:
-    uk:
-      gov:
-        hmcts:
-          darts: DEBUG
+    uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}

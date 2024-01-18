@@ -69,6 +69,17 @@ class DefaultMultipartTest {
     }
 
     @Test
+    void testIsEmptyFalse() throws Exception {
+        Assertions.assertFalse(multipart.isEmpty());
+    }
+
+    @Test
+    void testIsEmptyTrue() throws Exception {
+        StreamingMultipart streamingMultipart = new StreamingMultipart(NAME, CONTENT_TYPE, getIS(""));
+        Assertions.assertTrue(streamingMultipart.isEmpty());
+    }
+
+    @Test
     void testTransferTo() throws Exception {
         File payloadFile = null;
         try {

@@ -1,0 +1,7 @@
+Content-Id: <rootpart*b93ca7c1-d42d-4acd-aa56-3c9db058d44f@example.jaxws.sun.com>
+Content-Type: application/xop+xml;charset=utf-8;type="text/xml"
+Content-Transfer-Encoding: binary
+
+${XML CONTENT}
+
+${BINARY CONTENT}

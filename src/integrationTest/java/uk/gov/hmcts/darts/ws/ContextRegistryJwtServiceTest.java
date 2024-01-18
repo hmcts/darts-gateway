@@ -1,130 +1,238 @@
 package uk.gov.hmcts.darts.ws;
 
-import documentum.contextreg.LookupResponse;
-import documentum.contextreg.RegisterResponse;
-import documentum.contextreg.UnregisterResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
-import uk.gov.hmcts.darts.utils.IntegrationBase;
-import uk.gov.hmcts.darts.utils.TestUtils;
-import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
 
-import java.net.URI;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.time.Duration;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token")
-class ContextRegistryJwtServiceTest extends IntegrationBase {
+public class ContextRegistryJwtServiceTest extends ContextRegistryParent{
     @MockBean
     private OauthTokenGenerator generator;
 
+    @Autowired
+    private CacheProperties properties;
+
+    private static final int REGISTERED_USER_COUNT = 10;
+
     @BeforeEach
     public void before() {
-        Mockito.when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
-    }
+        when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenReturn("test");
 
-    @Test
-    void testGetContextRegistryWsdl() throws Exception {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(new URI(getGatewayUri() + "runtime/ContextRegistryService?wsdl"))
-            .timeout(Duration.ofMinutes(2))
-            .header("Content-Type", "application/json")
-            .build();
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpResponse.BodyHandler<?> responseBodyHandler = BodyHandlers.ofString();
-        HttpResponse<?> response = client.send(request, responseBodyHandler);
-        Assertions.assertNotNull(response.body());
+        for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
+            Mockito.when(generator.acquireNewToken("user" + i, "pass")).thenReturn("test2");
+        }
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void handleRegister(ContextRegistryClient client) throws Exception {
-        String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/ctxtRegistry/register/soapRequest.xml");
+    void testRegisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
-        String header = TestUtils.getContentsFromFile(
-            "payloads/ctxtRegistry/register/requestHeaders.xml");
+        when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenThrow(new RuntimeException());
 
-        client.setHeaderBlock(header);
-        SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
-        Assertions.assertNotNull(response.getResponse().getValue());
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
+        {
+            executeHandleRegister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(generator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void handleLookup(ContextRegistryClient client) throws Exception {
+    void testRegisterWithNoIdentities(ContextRegistryClient client) throws Exception {
 
-        String token = registerToken(client);
+        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
+        {
+            executeHandleRegister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/ctxtRegistry/lookup/soapRequest.xml");
-        soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
-
-        String header = TestUtils.getContentsFromFile(
-            "payloads/ctxtRegistry/lookup/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
-        SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
-        Assertions.assertNotNull(response.getResponse().getValue().getReturn());
-    }
-
-    private String registerToken(ContextRegistryClient client) throws Exception {
-        String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/ctxtRegistry/register/soapRequest.xml");
-
-        String header = TestUtils.getContentsFromFile(
-            "payloads/ctxtRegistry/register/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
-        SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
-        return response.getResponse().getValue().getReturn();
-    }
-
-    private LookupResponse lookup(ContextRegistryClient client) throws Exception {
-        String token = registerToken(client);
-
-        String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/soapRequest.xml");
-        soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
-
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
-        SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
-        return response.getResponse().getValue();
+        verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void handleUnregister(ContextRegistryClient client) throws Exception {
+    void testRoutesRegisterWithAuthenticatiooTokenFailure(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
+            executeHandleRegister(client);
+        });
 
-        String token = registerToken(client);
-        Assertions.assertNotNull(lookup(client));
+        verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
 
-        String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/unregister/soapRequest.xml");
-        soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/unregister/requestHeaders.xml");
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleRegister(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            executeHandleRegister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
 
-        client.setHeaderBlock(header);
-        SoapAssertionUtil<UnregisterResponse> response = client.unregister(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
-        Assertions.assertNotNull(response.getResponse());
-        Assertions.assertNull(lookup(client).getReturn().getToken());
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleRegisterWithAuthenticationToken(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithTokenHeader(client, () -> {
+            executeHandleRegister(client);
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testLookupWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
+
+        when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenThrow(new RuntimeException());
+
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
+        {
+            executeHandleLookup(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(generator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testLookupWithNoIdentities(ContextRegistryClient client) throws Exception {
+
+        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
+        {
+            executeHandleLookup(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRoutesLookupWithAuthenticationTokenFailure(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
+            executeHandleLookup(client);
+        });
+
+        verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleLookup(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            executeHandleLookup(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void handleLookupWithAuthenticationToken(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithTokenHeader(client, () -> {
+            executeHandleLookup(client);
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testTimeToLive(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            executeTestTimeToLive(client, properties);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testTimeToIdle(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            executeTestTimeToIdle(client, properties);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testBasicConcurrency(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            executeBasicConcurrency(client, REGISTERED_USER_COUNT, properties);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
+
+        when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenThrow(new RuntimeException());
+
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
+        {
+            executeTestHandleUnregister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(generator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testUnregisterWithNoIdentities(ContextRegistryClient client) throws Exception {
+
+        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
+        {
+            executeTestHandleUnregister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRoutesUnregisterWithAuthenticationTokenFailure(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
+            executeTestHandleUnregister(client);
+        });
+
+        verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testGetContextRegistry() throws Exception {
+        executeTestGetContextRegistryWsdl();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHhandleUnregister(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            executeTestHandleUnregister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleUnregisterWithToken(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithTokenHeader(client, () -> {
+            executeTestHandleUnregister(client);
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 }

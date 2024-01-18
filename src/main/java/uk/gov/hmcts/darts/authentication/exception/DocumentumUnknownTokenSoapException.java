@@ -1,14 +1,13 @@
 package uk.gov.hmcts.darts.authentication.exception;
 
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
+import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 
-@XmlType(
-    name = "ServiceContextLookupException",
-    namespace = "http://rt.fs.documentum.emc.com/"
-)
-public class DocumentumUnknownTokenSoapException extends ServiceInvocationException {
+@XmlRootElement
+public class DocumentumUnknownTokenSoapException extends SoapFaultServiceException {
 
     public DocumentumUnknownTokenSoapException(String token) {
-        super("E_UNKNOWN_TOKEN", new String[] {token, "central"});
+        super(FaultErrorCodes.E_UNKNOWN_TOKEN, new String[]{token, "central"});
     }
 }

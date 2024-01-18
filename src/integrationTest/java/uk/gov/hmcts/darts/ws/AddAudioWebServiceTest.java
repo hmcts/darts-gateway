@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
@@ -30,6 +31,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 
@@ -47,149 +50,256 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken("some-user", "some-password"))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
     }
 
-
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void addAudio(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void testRoutesAddAudioRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
 
-        String soapRequestStr = TestUtils.getContentsFromFile(
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenThrow(new RuntimeException());
+
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
+        {
+            String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-        stubFor(post(urlPathEqualTo("/audios"))
-                .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
-        String expectedResponseStr = TestUtils.getContentsFromFile(
+            String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/expectedResponse.xml");
 
-        XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
-        when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-        SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-        response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+            client.addAudio(getGatewayUri(), soapRequestStr);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(postRequestedFor(urlPathEqualTo("/audios"))
-                .withRequestBody(new MultipartDartsProxyContentPattern()));
+        Mockito.verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void addAudioHandleErrorFileSizeExceed(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void routesAddAudioRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
 
-        final String soapRequestStr = TestUtils.getContentsFromFile(
+        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
+        {
+            String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
-        XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-        when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize) + 1);
-        when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsApiResponse.json");
 
-        CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
-        SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-        Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+
+            String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/expectedResponse.xml");
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            client.addAudio(getGatewayUri(), soapRequestStr);
+
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void addAudioHandleErrorInDocumentXml(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void testRoutesAddAudioRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () ->
+        {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
 
-        final String soapRequestStr = TestUtils.getContentsFromFile(
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsApiResponse.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+
+            String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/expectedResponse.xml");
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            client.addAudio(getGatewayUri(), soapRequestStr);
+        });
+
+        Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioWithAuthenticationToken(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithTokenHeader(client, () ->
+        {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsApiResponse.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+
+            String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/expectedResponse.xml");
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+
+            verify(postRequestedFor(urlPathEqualTo("/audios"))
+                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudio(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
+        {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsApiResponse.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+
+            String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/expectedResponse.xml");
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+
+            verify(postRequestedFor(urlPathEqualTo("/audios"))
+                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioHandleErrorFileSizeExceed(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
+        {
+            final String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+            XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
+            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize) + 1);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioHandleErrorInDocumentXml(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
+        {
+            final String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/invalidDocumentStructure.xml");
 
-        XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-        when(request.getBinarySize()).thenReturn(maxByteSize);
-        when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+            XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
+            when(request.getBinarySize()).thenReturn(maxByteSize);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-        CodeAndMessage responseCode = CodeAndMessage.INVALID_XML;
-        SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-        Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            CodeAndMessage responseCode = CodeAndMessage.INVALID_XML;
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void addAudioFailingResponse(DartsGatewayClient client) throws Exception {
-
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
-
-        String soapRequestStr = TestUtils.getContentsFromFile(
+    void testAddAudioFailingResponse(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
+        {
+            String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
-        stubFor(post(urlPathEqualTo("/audios"))
-                .willReturn(aResponse().withStatus(404).withBody("this is not a valid error format")));
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(aResponse().withStatus(404).withBody("this is not a valid error format")));
 
-        XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
-        when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-        CodeAndMessage responseCode = CodeAndMessage.ERROR;
-        SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-        Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
-
-        verify(postRequestedFor(urlPathEqualTo("/audios"))
-                .withRequestBody(new MultipartDartsProxyContentPattern()));
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(DartsClientProvider.class)
-    void addAudioHandleEmptyCourthouse(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
-
-        final String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/soapRequestEmptyCourthouse.xml");
-
-        XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-        when(request.getBinarySize()).thenReturn(maxByteSize);
-        when(requestHolder.getRequest()).thenReturn(Optional.of(request));
-
-        CodeAndMessage responseCode = CodeAndMessage.ERROR;
-        SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-        Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(DartsClientProvider.class)
-    void addAudioHandleUnknownCourthouse(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
-
-        String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/soapRequestUnknownCourthouse.xml");
-
-        String dartsApiResponseStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/problemResponse.json");
-
-        stubFor(post(urlPathEqualTo("/audios"))
-                    .willReturn(aResponse().withStatus(404)
-                    .withBody(dartsApiResponseStr)));
-
-        String expectedResponseStr = TestUtils.getContentsFromFile(
-            "payloads/addAudio/register/problemResponse.xml");
-
-        XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
-        when(requestHolder.getRequest()).thenReturn(Optional.of(request));
-
-        SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-        response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
-
+            CodeAndMessage responseCode = CodeAndMessage.ERROR;
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                    .withRequestBody(new MultipartDartsProxyContentPattern()));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioHandleEmptyCourthouse(DartsGatewayClient client) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
+        {
+            final String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequestEmptyCourthouse.xml");
+
+            XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
+            when(request.getBinarySize()).thenReturn(maxByteSize);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            CodeAndMessage responseCode = CodeAndMessage.ERROR;
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioHandleUnknownCourthouse(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
+        {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequestUnknownCourthouse.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/problemResponse.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(aResponse().withStatus(404)
+                                        .withBody(dartsApiResponseStr)));
+
+            String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/problemResponse.xml");
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+
+            verify(postRequestedFor(urlPathEqualTo("/audios"))
+                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 }

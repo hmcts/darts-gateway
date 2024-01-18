@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.ws;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 class DartsEndpointHandlerTest {
 

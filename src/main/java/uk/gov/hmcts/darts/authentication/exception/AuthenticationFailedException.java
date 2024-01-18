@@ -1,10 +1,12 @@
 package uk.gov.hmcts.darts.authentication.exception;
 
-public class AuthenticationFailedException extends ServiceInvocationException {
-    public static final String TYPE = "dfs.authentication.exception";
+import jakarta.xml.bind.annotation.XmlRootElement;
+import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
+import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 
+@XmlRootElement
+public class AuthenticationFailedException extends SoapFaultServiceException {
     public AuthenticationFailedException() {
-        super("E_SERVICE_AUTHORIZATION_FAILED", new String[0]);
-        this.setExceptionType("dfs.authentication.exception");
+        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, "dfs.authentication.exception", new String[]{""});
     }
 }

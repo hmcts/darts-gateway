@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
 import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.io.IOException;
 import java.util.Optional;

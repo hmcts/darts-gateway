@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
-import uk.gov.hmcts.darts.ws.DartsException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

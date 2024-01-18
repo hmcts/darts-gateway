@@ -1,12 +1,17 @@
 package uk.gov.hmcts.darts.cache.token;
 
 import documentum.contextreg.ServiceContext;
+import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
 public interface RefreshableCacheValue {
-    ServiceContext getContext();
+    String getContextString() throws CacheException;
 
-    /**
-     * The ability for a cached value to be refreshed e.g. jwt refresh etc
-     */
-    void refresh();
+    String getId() throws CacheException;
+
+    ServiceContext getServiceContext() throws CacheException;
+
+    boolean refresh() throws CacheException;
+
+    void performRefresh() throws CacheException;
+
 }

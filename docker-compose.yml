@@ -4,14 +4,9 @@ services:
   darts-gateway:
     container_name: darts-gateway
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - AAD_B2C_CLIENT_ID_KEY
-      - AAD_B2C_CLIENT_SECRET_KEY
-      - AAD_B2C_TENANT_ID_KEY
-      - GOVUK_NOTIFY_API_KEY
       - AAD_B2C_ROPC_CLIENT_ID_KEY
-      - AAD_B2C_ROPC_CLIENT_SECRET_KEY
-      - AZURE_STORAGE_CONNECTION_STRING
+      - DAR_NOTIFY_DEFAULT_URL
+      - DARTS_API_URL
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,11 +15,6 @@ services:
       - "8070:8070"
     networks:
       - darts-network
-
-volumes:
-  darts-db:
-    driver: local
-
 networks:
   darts-network:
     driver: bridge

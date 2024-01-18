@@ -71,12 +71,14 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
 
         // if we have no header don't add one otherwise add the header contents we have specified
         if (headerContents == null || headerContents.isEmpty()) {
-            return new SoapAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
+            Object obj = getWebServiceTemplate().marshalSendAndReceive(
                 uri.toString(),
                 ijaxbElement
-            )));
+            );
+            return new SoapAssertionUtil<>(responseSupplier.apply(obj));
         } else {
-            return new SoapAssertionUtil<>(responseSupplier.apply(getWebServiceTemplate().marshalSendAndReceive(
+
+            Object obj = getWebServiceTemplate().marshalSendAndReceive(
                 uri.toString(),
                 ijaxbElement,
                 new WebServiceMessageCallback() {
@@ -94,7 +96,8 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
                         }
                     }
                 }
-            )));
+            );
+            return new SoapAssertionUtil<>(responseSupplier.apply(obj));
         }
     }
 
