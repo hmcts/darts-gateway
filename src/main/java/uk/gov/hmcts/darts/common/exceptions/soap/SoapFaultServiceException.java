@@ -25,11 +25,6 @@ public class SoapFaultServiceException extends RuntimeException {
         serviceExceptionType = new ServiceExceptionType(code.name(), "", args);
     }
 
-    public SoapFaultServiceException(FaultErrorCodes code) {
-        super(getMessage(code.name(), new String[]{""}));
-        serviceExceptionType = new ServiceExceptionType(code.name(), "", "");
-    }
-
     public static String getMessage(String key, String... args) {
         return MessageFormat.format(BUNDLE.getString(key), (Object[])args);
     }
