@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.ws;
 
-import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +14,6 @@ import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
-
-import java.nio.charset.Charset;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -46,8 +43,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/soapRequest.xml");
 
@@ -74,8 +70,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void routeRegisterNodeRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/soapRequest.xml");
 
@@ -92,7 +87,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
 
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -101,8 +96,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void routesRegisterNodeRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/soapRequest.xml");
 
@@ -129,8 +123,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void handlesRegisterNodeWithAuthenticationToken(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertWithTokenHeader(client, () ->
-        {
+        authenticationStub.assertWithTokenHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/soapRequest.xml");
 
@@ -156,8 +149,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesRegisterNode(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/soapRequest.xml");
 
@@ -183,8 +175,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesRegisterNodeError(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/invalidSoapRequest.xml");
 

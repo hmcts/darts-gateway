@@ -1,13 +1,7 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.bind.UnmarshallerHandler;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +13,9 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.ws.soap.SoapFaultDetailElement;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-import org.xml.sax.XMLFilter;
-import uk.gov.hmcts.darts.common.exceptions.DartsException;
-import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
@@ -58,9 +39,9 @@ public class IntegrationBase {
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
     protected AuthenticationStub authenticationStub = new AuthenticationStub();
 
-    protected String DEFAULT_USERNAME = "some-user";
+    protected static final String DEFAULT_USERNAME = "some-user";
 
-    protected String DEFAULT_PASSWORD = "password";
+    protected static final String DEFAULT_PASSWORD = "password";
 
     @Autowired
     private Map<String, ContextRegistryClient> contextClients;
@@ -126,7 +107,7 @@ public class IntegrationBase {
     }
 
     protected ContextRegistryClient getContextClient() {
-        if (contextClients.values().size() > 0) {
+        if (!contextClients.values().isEmpty()) {
             return contextClients.values().iterator().next();
         }
 

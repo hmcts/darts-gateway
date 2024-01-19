@@ -3,7 +3,6 @@ package uk.gov.hmcts.darts.ws;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,7 +34,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
             .thenReturn("test");
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
-            Mockito.when(generator.acquireNewToken("user" + i, "pass")).thenReturn("test2");
+            when(generator.acquireNewToken("user" + i, "pass")).thenReturn("test2");
         }
     }
 
@@ -46,8 +45,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeHandleRegister(client);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
@@ -59,10 +57,9 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRegisterWithNoIdentities(ContextRegistryClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             executeHandleRegister(client);
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);
@@ -103,8 +100,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeHandleLookup(client);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
@@ -116,10 +112,9 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testLookupWithNoIdentities(ContextRegistryClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             executeHandleLookup(client);
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);
@@ -178,13 +173,12 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void TestUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
+    void testUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeTestHandleUnregister(client);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
@@ -196,10 +190,9 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testTestUnregisterWithNoIdentities(ContextRegistryClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             executeTestHandleUnregister(client);
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);

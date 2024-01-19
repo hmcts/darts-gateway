@@ -14,7 +14,6 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
-import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
@@ -61,18 +60,16 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-                                                                                   {
-                                                                                       var dartsApiCourtLogsResponse = someListOfCourtLog(3);
-                                                                                       courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
+            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
-                                                                                       client.getCourtLogs(
-                                                                                           getGatewayUri(),
-                                                                                           getCourtLogs.getContentAsString(
-                                                                                               Charset.defaultCharset())
-                                                                                       );
-                                                                                   }
-            , DEFAULT_USERNAME, DEFAULT_PASSWORD);
+            client.getCourtLogs(
+                getGatewayUri(),
+                getCourtLogs.getContentAsString(
+                   Charset.defaultCharset())
+            );
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -82,8 +79,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             var dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
@@ -93,7 +89,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
                     Charset.defaultCharset())
             );
 
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -102,8 +98,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
             var dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
@@ -121,8 +116,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequestWithAuthenticationToken(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithTokenHeader(client, () ->
-        {
+        authenticationStub.assertWithTokenHeader(client, () -> {
             var dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
@@ -152,8 +146,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequest(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             var dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
@@ -184,8 +177,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @SuppressWarnings("PMD.LawOfDemeter")
     void testRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             courtLogsApi.returnsCourtLogs(someListOfCourtLog(1));
 
             org.assertj.core.api.Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
@@ -203,8 +195,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testPostCourtLogsRoute(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             postCourtLogsApi.returnsEventResponse();
             client.postCourtLogs(getGatewayUri(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
 
@@ -218,8 +209,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testPostCourtLogsRouteFailOnInvalidServiceResponse(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             postCourtLogsApi.returnsFailureWhenAddingCourtLogs();
 
             SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(

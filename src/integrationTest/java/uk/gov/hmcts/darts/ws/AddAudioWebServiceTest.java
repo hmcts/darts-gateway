@@ -61,8 +61,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -71,9 +70,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             stubFor(post(urlPathEqualTo("/audios"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
-
-            String expectedResponseStr = TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/expectedResponse.xml");
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
@@ -89,8 +85,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void routesAddAudioRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -100,15 +95,12 @@ class AddAudioWebServiceTest extends IntegrationBase {
             stubFor(post(urlPathEqualTo("/audios"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
-            String expectedResponseStr = TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/expectedResponse.xml");
-
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             client.addAudio(getGatewayUri(), soapRequestStr);
 
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -117,8 +109,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesAddAudioRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -127,9 +118,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             stubFor(post(urlPathEqualTo("/audios"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
-
-            String expectedResponseStr = TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/expectedResponse.xml");
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
@@ -144,8 +132,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioWithAuthenticationToken(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithTokenHeader(client, () ->
-        {
+        authenticationStub.assertWithTokenHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -172,8 +159,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudio(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -200,8 +186,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioHandleErrorFileSizeExceed(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             final String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -218,8 +203,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioHandleErrorInDocumentXml(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             final String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/invalidDocumentStructure.xml");
 
@@ -236,8 +220,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioFailingResponse(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -259,8 +242,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioHandleEmptyCourthouse(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             final String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequestEmptyCourthouse.xml");
 
@@ -277,8 +259,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioHandleUnknownCourthouse(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequestUnknownCourthouse.xml");
 

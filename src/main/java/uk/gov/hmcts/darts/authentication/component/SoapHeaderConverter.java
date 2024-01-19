@@ -4,8 +4,6 @@ import documentum.contextreg.ServiceContext;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import org.opensaml.soap.wssecurity.BinarySecurityToken;
-import org.opensaml.soap.wssecurity.Security;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.w3c.dom.Element;
@@ -41,7 +39,7 @@ public class SoapHeaderConverter {
         Optional<String> securityOptional = Optional.empty();
 
         // spring uses DOM Source as a default so lets use that and parse the model
-        if (soapHeaderElement.getSource() instanceof DOMSource){
+        if (soapHeaderElement.getSource() instanceof DOMSource) {
             DOMSource source = (DOMSource) soapHeaderElement.getSource();
 
             if (source.getNode() instanceof Element) {

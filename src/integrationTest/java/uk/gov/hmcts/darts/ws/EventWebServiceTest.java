@@ -12,12 +12,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
-import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static org.mockito.Mockito.times;
@@ -55,21 +53,19 @@ class EventWebServiceTest extends IntegrationBase {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-        {
-           theEventApi.willRespondSuccessfully();
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
+            theEventApi.willRespondSuccessfully();
 
-           SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-               getGatewayUri(),
-               validEvent.getContentAsString(
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validEvent.getContentAsString(
                    Charset.defaultCharset())
-           );
-           response.assertIdenticalResponse(client.convertData(
-               validEventResponse.getContentAsString(Charset.defaultCharset()),
-               AddDocumentResponse.class
-           ).getValue());
-        }
-            , DEFAULT_USERNAME, DEFAULT_PASSWORD);
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -79,8 +75,7 @@ class EventWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRouteAddDocumentRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             theEventApi.willRespondSuccessfully();
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
@@ -93,7 +88,7 @@ class EventWebServiceTest extends IntegrationBase {
                 AddDocumentResponse.class
             ).getValue());
 
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -102,8 +97,7 @@ class EventWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void routesAddDocumentRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
             theEventApi.willRespondSuccessfully();
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
@@ -127,8 +121,7 @@ class EventWebServiceTest extends IntegrationBase {
         DartsGatewayClient client
     ) throws Exception {
 
-        authenticationStub.assertWithTokenHeader(client, () ->
-        {
+        authenticationStub.assertWithTokenHeader(client, () -> {
             theEventApi.willRespondSuccessfully();
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
@@ -154,19 +147,18 @@ class EventWebServiceTest extends IntegrationBase {
         DartsGatewayClient client
     ) throws Exception {
 
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
-         theEventApi.willRespondSuccessfully();
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            theEventApi.willRespondSuccessfully();
 
-         SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-             getGatewayUri(),
-             validEvent.getContentAsString(
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validEvent.getContentAsString(
                  Charset.defaultCharset())
-         );
-         response.assertIdenticalResponse(client.convertData(
-             validEventResponse.getContentAsString(Charset.defaultCharset()),
-             AddDocumentResponse.class
-         ).getValue());
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         theEventApi.verifyReceivedEventWithMessageId("12345");
@@ -177,7 +169,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void testRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception{
+    void testRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
 
             theEventApi.willRespondSuccessfully();
@@ -199,20 +191,20 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws Exception {
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-           dailyListApiStub.willRespondSuccessfully();
+            dailyListApiStub.willRespondSuccessfully();
 
-           SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-               getGatewayUri(),
-               validDlEvent.getContentAsString(
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validDlEvent.getContentAsString(
                    Charset.defaultCharset())
-           );
-           response.assertIdenticalResponse(client.convertData(
-               validDlEventResponse.getContentAsString(Charset.defaultCharset()),
-               AddDocumentResponse.class
-           ).getValue());
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validDlEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
 
-           dailyListApiStub.verifySentRequest();
-       }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+            dailyListApiStub.verifySentRequest();
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -243,17 +235,16 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.willRespondSuccessfully();
-
-               SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                    getGatewayUri(),
                    invalidDailyListRequest.getContentAsString(
                        Charset.defaultCharset())
                );
-               response.assertIdenticalResponse(client.convertData(
+            response.assertIdenticalResponse(client.convertData(
                    expectedResponse.getContentAsString(Charset.defaultCharset()),
                    AddDocumentResponse.class
                ).getValue());
-           }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);

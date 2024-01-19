@@ -2,45 +2,19 @@ package uk.gov.hmcts.darts.ws;
 
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
-import com.service.mojdarts.synapps.com.GetCourtLogResponse;
-import documentum.contextreg.ObjectFactory;
-import documentum.contextreg.ServiceContext;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
-import org.springframework.xml.transform.StringSource;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
-import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
-import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
-import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryMtomClient;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -72,14 +46,11 @@ class CasesWebServiceTest extends IntegrationBase {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
-        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () ->
-                                                                                   {
-                                                                                       String soapRequestStr = TestUtils.getContentsFromFile(
-                                                                                           "payloads/getCases/soapRequest.xml");
-
-                                                                                       client.getCases(getGatewayUri(), soapRequestStr);
-                                                                                   }
-            , DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/soapRequest.xml");
+            client.getCases(getGatewayUri(), soapRequestStr);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -88,9 +59,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
-
-        authenticationStub.assertFailBasedOnNoIdentities(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
                 "payloads/soapHeaderServiceContextNoIdentities.xml");
             client.setHeaderBlock(soapHeaderServiceContextStr);
@@ -100,8 +69,7 @@ class CasesWebServiceTest extends IntegrationBase {
 
             client.getCases(getGatewayUri(), soapRequestStr);
             Assertions.fail("Never expect to get here");
-
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        });
 
         verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -110,8 +78,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () ->
-        {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
@@ -127,8 +94,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCasesWithAuthenticationToken(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertWithTokenHeader(client, () ->
-        {
+        authenticationStub.assertWithTokenHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
@@ -153,8 +119,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCases(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
@@ -180,8 +145,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCasesServiceFailure(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () ->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             getCasesApiStub.returnsFailureWhenGettingCases();
 
             String soapRequestStr = TestUtils.getContentsFromFile(
@@ -197,8 +161,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesAddCase(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, ()->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/soapRequest.xml");
 
@@ -222,20 +185,19 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesAddCaseError(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, ()->
-           {
-               String soapRequestStr = TestUtils.getContentsFromFile(
-                   "payloads/addCase/invalidSoapRequest.xml");
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addCase/invalidSoapRequest.xml");
 
-               String dartsApiResponseStr = TestUtils.getContentsFromFile(
-                   "payloads/addCase/dartsApiResponse.json");
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addCase/dartsApiResponse.json");
 
-               stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
+            stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
 
-               Assertions.assertThrows(SoapFaultClientException.class, () -> {
-                   client.addCases(getGatewayUri(), soapRequestStr);
-               });
-           }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+            Assertions.assertThrows(SoapFaultClientException.class, () -> {
+                client.addCases(getGatewayUri(), soapRequestStr);
+            });
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
@@ -243,8 +205,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesAddCaseWithInvalidServiceResponse(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, ()->
-        {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/soapRequest.xml");
 

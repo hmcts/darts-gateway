@@ -1,7 +1,5 @@
 package uk.gov.hmcts.darts.common.exceptions;
 
-import documentum.contextreg.ObjectFactory;
-import documentum.contextreg.ServiceContext;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -17,12 +15,9 @@ import org.springframework.ws.soap.SoapMessage;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
 
+import java.util.Locale;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
-
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
-import java.util.Locale;
 
 /**
  * This class handles all exception that leave the interface. It protects against data being leaked from the
@@ -39,7 +34,7 @@ public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointE
         log.error("Error occurred", ex);
         SoapFaultServiceException serviceException = new UnknownException();
         if (ex instanceof SoapFaultServiceException) {
-            serviceException = ((SoapFaultServiceException)ex);
+            serviceException = ((SoapFaultServiceException) ex);
         }
         final SoapMessage response = (SoapMessage) messageContext.getResponse();
         final SoapBody soapBody = response.getSoapBody();
@@ -56,7 +51,12 @@ public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointE
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceExceptionType.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
-            JAXBElement<ServiceExceptionType> serviceErrorDetail = new JAXBElement<ServiceExceptionType>(_ServiceType_QNAME, ServiceExceptionType.class, null, serviceException.getServiceExceptionType());
+            JAXBElement<ServiceExceptionType> serviceErrorDetail = new JAXBElement<ServiceExceptionType>(
+                _ServiceType_QNAME,
+                ServiceExceptionType.class,
+                null,
+                serviceException.getServiceExceptionType()
+            );
             jaxbMarshaller.marshal(serviceErrorDetail, result);
         } catch (JAXBException e) {
             log.error("Could not marshall soap detail type", e);

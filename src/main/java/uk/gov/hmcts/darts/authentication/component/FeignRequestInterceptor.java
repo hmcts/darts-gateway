@@ -4,9 +4,6 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
-import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 

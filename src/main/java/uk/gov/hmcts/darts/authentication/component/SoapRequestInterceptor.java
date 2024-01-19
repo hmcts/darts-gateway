@@ -50,8 +50,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     private boolean handleServiceContextSoapHeader(SoapHeader soapHeader) {
         if (isTokenAuthentication(soapHeader)) {
             authenticateToken(soapHeader);
-        }
-        else {
+        } else {
             authenticateUsernameAndPassword(soapHeader);
         }
 
@@ -87,8 +86,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                     } else {
                         throw new AuthenticationFailedException();
                     }
-                }
-                else {
+                }  else {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         foundTokenInCache.getToken().orElse(""));
                 }
@@ -103,61 +101,59 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private boolean authenticateUsernameAndPassword(SoapHeader soapHeader) throws AuthenticationFailedException {
-            Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
+        Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
+            QName.valueOf(SERVICE_CONTEXT_HEADER));
+
+        int size = Iterators.size(serviceContextSoapHeaderElementIt);
+        if (size ==  1) {
+            serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
                 QName.valueOf(SERVICE_CONTEXT_HEADER));
+            while (serviceContextSoapHeaderElementIt.hasNext()) {
+                SoapHeaderElement soapHeaderElement = serviceContextSoapHeaderElementIt.next();
+                soapHeaderConverter.convertSoapHeader(soapHeaderElement).ifPresent(serviceContext -> {
 
-            int size = Iterators.size(serviceContextSoapHeaderElementIt);
-            if (size ==  1) {
-                serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
-                    QName.valueOf(SERVICE_CONTEXT_HEADER));
-                while (serviceContextSoapHeaderElementIt.hasNext()) {
-                    SoapHeaderElement soapHeaderElement = serviceContextSoapHeaderElementIt.next();
-                    soapHeaderConverter.convertSoapHeader(soapHeaderElement).ifPresent(serviceContext -> {
+                    if (!identitiesPresent(soapHeaderElement)) {
+                        throw new NoIdentitiesFoundException();
+                    }
 
-                        if (!identitiesPresent(soapHeaderElement)) {
-                            throw new NoIdentitiesFoundException();
+                    Optional<BasicIdentity> basicIdentityOptional = serviceContext.getIdentities()
+                        .stream()
+                        .filter(identity -> identity instanceof BasicIdentity)
+                        .map(identity -> (BasicIdentity) identity)
+                        .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getUserName()))
+                        .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
+                        .findFirst();
+                    if (basicIdentityOptional.isPresent()) {
+                        RefreshableCacheValue refreshableCacheValue = tokenRegisterable.createValue(serviceContext);
+                        Optional<Token> token = tokenRegisterable.store(refreshableCacheValue, true);
+
+                        if (token.isPresent()) {
+                            Optional<RefreshableCacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token.get());
+                            refreshableCacheValue = optRefreshableCacheValue.orElse(null);
                         }
 
-                        Optional<BasicIdentity> basicIdentityOptional = serviceContext.getIdentities()
-                            .stream()
-                            .filter(identity -> identity instanceof BasicIdentity)
-                            .map(identity -> (BasicIdentity) identity)
-                            .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getUserName()))
-                            .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
-                            .findFirst();
-                        if (basicIdentityOptional.isPresent()) {
-                            RefreshableCacheValue refreshableCacheValue = tokenRegisterable.createValue(serviceContext);
-                            Optional<Token> token = tokenRegisterable.store(refreshableCacheValue, true);
-
-                            if (token.isPresent()) {
-                                Optional<RefreshableCacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token.get());
-                                refreshableCacheValue = optRefreshableCacheValue.orElse(null);
-                            }
-
-                            if (token.isPresent() && refreshableCacheValue instanceof uk.gov.hmcts.darts.cache.token.DownstreamTokenisable) {
-                                Optional<Token> tokenDownstream = ((DownstreamTokenisable) refreshableCacheValue).getValidatedToken();
-                                if (tokenDownstream.isEmpty()) {
-                                    throw new AuthenticationFailedException();
-                                } else {
-                                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                        tokenDownstream.get().getToken().orElse(""));
-                                }
-                            } else if (!token.isPresent()) {
+                        if (token.isPresent() && refreshableCacheValue instanceof uk.gov.hmcts.darts.cache.token.DownstreamTokenisable) {
+                            Optional<Token> tokenDownstream = ((DownstreamTokenisable) refreshableCacheValue).getValidatedToken();
+                            if (tokenDownstream.isEmpty()) {
                                 throw new AuthenticationFailedException();
                             } else {
                                 new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                    token.get().getToken().orElse(""));
+                                    tokenDownstream.get().getToken().orElse(""));
                             }
+                        } else if (!token.isPresent()) {
+                            throw new AuthenticationFailedException();
+                        } else {
+                            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                                token.get().getToken().orElse(""));
                         }
-                        else  {
-                            throw new NoIdentitiesFoundException();
-                        }
-                    });
-                }
+                    } else  {
+                        throw new NoIdentitiesFoundException();
+                    }
+                });
             }
-            else {
-                throw new NoIdentitiesFoundException();
-            }
+        }  else {
+            throw new NoIdentitiesFoundException();
+        }
         return true;
     }
 

@@ -10,26 +10,23 @@ import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
-import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapTestClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.ContextRegistryParent;
 
+import java.io.StringWriter;
+import java.net.URL;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URL;
 
 public class AuthenticationStub {
 
     public String assertWithTokenHeader(SoapTestClient client, GeneralRunnableOperationWithException runnable, ContextRegistryClient contextClient,
-                                      URL baseUrl, String userName, String password) throws Exception {
+                                        URL baseUrl, String userName, String password) throws Exception {
 
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
@@ -52,7 +49,8 @@ public class AuthenticationStub {
         return token;
     }
 
-    public void assertWithUserNameAndPasswordHeader(SoapTestClient client, GeneralRunnableOperationWithException runnable, String username, String password)  throws Exception {
+    public void assertWithUserNameAndPasswordHeader(SoapTestClient client,
+                                                    GeneralRunnableOperationWithException runnable, String username, String password) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
@@ -64,22 +62,26 @@ public class AuthenticationStub {
         runnable.run();
     }
 
-    public void assertFailBasedOnNoIdentities(SoapTestClient client, GeneralRunnableOperationWithException runnable, String username, String password) throws Exception {
+    public void assertFailBasedOnNoIdentities(SoapTestClient client,
+        GeneralRunnableOperationWithException runnable) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextNoIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
         try {
             runnable.run();
-        }
-        catch (SoapFaultClientException e) {
+        } catch (SoapFaultClientException e) {
             ServiceExceptionType type = getSoapFaultDetails(e);
             Assertions.assertEquals(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, FaultErrorCodes.valueOf(type.getMessageId()));
-            Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES.name()), type.getMessage());
+            Assertions.assertEquals(
+                SoapFaultServiceException.getMessage(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES.name()),
+                type.getMessage()
+            );
         }
     }
 
-    public void assertFailBasedOnNotAuthenticatedForUsernameAndPassword(SoapTestClient client, GeneralRunnableOperationWithException runnable, String username, String password) throws Exception {
+    public void assertFailBasedOnNotAuthenticatedForUsernameAndPassword(SoapTestClient client,
+        GeneralRunnableOperationWithException runnable, String username, String password) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
@@ -91,8 +93,7 @@ public class AuthenticationStub {
         try {
             runnable.run();
             Assertions.fail("Never expect to get here");
-        }
-        catch (SoapFaultClientException e) {
+        } catch (SoapFaultClientException e) {
             ServiceExceptionType type = getSoapFaultDetails(e);
             Assertions.assertEquals(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.valueOf(type.getMessageId()));
             Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED.name()), type.getMessage());
@@ -104,14 +105,10 @@ public class AuthenticationStub {
             "payloads/soapHeaderServiceContextNoToken.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        String soapRequestStr = TestUtils.getContentsFromFile(
-            "payloads/getCases/soapRequest.xml");
-
         try {
             runnable.run();
             Assertions.fail("Never expect to get here");
-        }
-        catch (SoapFaultClientException e) {
+        } catch (SoapFaultClientException e) {
             ServiceExceptionType type = getSoapFaultDetails(e);
             Assertions.assertEquals(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.valueOf(type.getMessageId()));
             Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED.name()), type.getMessage());
@@ -119,8 +116,8 @@ public class AuthenticationStub {
 
     }
 
-    public ServiceExceptionType getSoapFaultDetails(SoapFaultClientException e) throws Exception {
-        SoapFaultDetailElement faultDetailElement = e.getSoapFault().getFaultDetail().getDetailEntries().next();
+    public ServiceExceptionType getSoapFaultDetails(SoapFaultClientException exception) throws Exception {
+        SoapFaultDetailElement faultDetailElement = exception.getSoapFault().getFaultDetail().getDetailEntries().next();
         DOMResult result = (DOMResult) faultDetailElement.getResult();
 
         StringWriter writer = new StringWriter();
@@ -144,6 +141,6 @@ public class AuthenticationStub {
 
     @FunctionalInterface
     public interface GeneralRunnableOperationWithException {
-        public void run() throws Exception;
+        void run() throws Exception;
     }
 }
