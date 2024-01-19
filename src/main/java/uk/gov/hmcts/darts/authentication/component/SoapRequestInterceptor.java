@@ -14,6 +14,7 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
+import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
 import uk.gov.hmcts.darts.cache.token.DownstreamTokenisable;
 import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
@@ -75,7 +76,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             Optional<RefreshableCacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
 
             if (optRefreshableCacheValue.isEmpty()) {
-                throw new AuthenticationFailedException();
+                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getToken().orElse(""));
             } else {
                 if (optRefreshableCacheValue.get() instanceof uk.gov.hmcts.darts.cache.token.DownstreamTokenisable) {
                     Optional<Token> downstreamToken = ((DownstreamTokenisable)optRefreshableCacheValue.get()).getValidatedToken();
@@ -84,7 +85,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                         new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                             downstreamToken.get().getToken().orElse(""));
                     } else {
-                        throw new AuthenticationFailedException();
+                        throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getToken().orElse(""));
                     }
                 }  else {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
@@ -94,7 +95,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
 
         if  (tokenToReturn.isEmpty()) {
-            throw new AuthenticationFailedException();
+            throw new DocumentumUnknownTokenSoapException("");
         }
 
         return true;

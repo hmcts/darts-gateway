@@ -37,7 +37,7 @@ public class IntegrationBase {
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
-    protected AuthenticationStub authenticationStub = new AuthenticationStub();
+    protected AuthenticationAssertion authenticationStub = new AuthenticationAssertion();
 
     protected static final String DEFAULT_USERNAME = "some-user";
 

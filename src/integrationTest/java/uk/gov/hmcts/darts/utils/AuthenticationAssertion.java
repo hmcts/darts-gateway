@@ -23,7 +23,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-public class AuthenticationStub {
+public class AuthenticationAssertion {
 
     public String assertWithTokenHeader(SoapTestClient client, GeneralRunnableOperationWithException runnable, ContextRegistryClient contextClient,
                                         URL baseUrl, String userName, String password) throws Exception {
@@ -102,7 +102,10 @@ public class AuthenticationStub {
 
     public void assertFailBasedOnNotAuthenticatedToken(SoapTestClient client, GeneralRunnableOperationWithException runnable) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContextNoToken.xml");
+            "payloads/soapHeaderSecurityToken.xml");
+
+        String invalidToken = "invalidToken";
+        soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${TOKEN}", invalidToken);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
         try {
@@ -110,8 +113,8 @@ public class AuthenticationStub {
             Assertions.fail("Never expect to get here");
         } catch (SoapFaultClientException e) {
             ServiceExceptionType type = getSoapFaultDetails(e);
-            Assertions.assertEquals(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.valueOf(type.getMessageId()));
-            Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED.name()), type.getMessage());
+            Assertions.assertEquals(FaultErrorCodes.E_UNKNOWN_TOKEN, FaultErrorCodes.valueOf(type.getMessageId()));
+            Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), invalidToken), type.getMessage());
         }
 
     }
