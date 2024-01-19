@@ -26,7 +26,7 @@ public class SoapFaultServiceException extends RuntimeException {
     }
 
     public SoapFaultServiceException(FaultErrorCodes code) {
-        super(getMessage(code.name(), ""));
+        super(getMessage(code.name(), new String[]{""}));
         serviceExceptionType = new ServiceExceptionType(code.name(), "", "");
     }
 
