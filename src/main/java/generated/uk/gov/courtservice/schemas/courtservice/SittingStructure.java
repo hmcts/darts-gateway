@@ -28,7 +28,7 @@ import java.util.List;
  *   <complexContent>
  *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       <sequence>
- *         <element name="CourtRoomNumber" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         <element name="CourtRoomNumber" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         <element name="SittingSequenceNo" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         <element name="SittingAt" type="{http://www.w3.org/2001/XMLSchema}time" minOccurs="0"/>
  *         <element name="SittingPriority">
@@ -74,7 +74,7 @@ import java.util.List;
 public class SittingStructure {
 
     @XmlElement(name = "CourtRoomNumber")
-    protected int courtRoomNumber;
+    protected String courtRoomNumber;
     @XmlElement(name = "SittingSequenceNo", required = true)
     protected String sittingSequenceNo;
     @XmlElement(name = "SittingAt")
@@ -93,7 +93,7 @@ public class SittingStructure {
      * Gets the value of the courtRoomNumber property.
      *
      */
-    public int getCourtRoomNumber() {
+    public String getCourtRoomNumber() {
         return courtRoomNumber;
     }
 
@@ -101,7 +101,7 @@ public class SittingStructure {
      * Sets the value of the courtRoomNumber property.
      *
      */
-    public void setCourtRoomNumber(int value) {
+    public void setCourtRoomNumber(String value) {
         this.courtRoomNumber = value;
     }
 

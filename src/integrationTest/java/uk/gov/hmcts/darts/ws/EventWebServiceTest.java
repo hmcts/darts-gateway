@@ -153,7 +153,7 @@ class EventWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                 getGatewayUri(),
                 validEvent.getContentAsString(
-                 Charset.defaultCharset())
+                    Charset.defaultCharset())
             );
             response.assertIdenticalResponse(client.convertData(
                 validEventResponse.getContentAsString(Charset.defaultCharset()),
@@ -195,16 +195,18 @@ class EventWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                 getGatewayUri(),
-                validDlEvent.getContentAsString(
-                   Charset.defaultCharset())
+                validDlEvent.getContentAsString(Charset.defaultCharset())
             );
             response.assertIdenticalResponse(client.convertData(
                 validDlEventResponse.getContentAsString(Charset.defaultCharset()),
                 AddDocumentResponse.class
             ).getValue());
 
-            dailyListApiStub.verifySentRequest();
+            dailyListApiStub.verifyPostRequest();
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        dailyListApiStub.verifyPostRequest();
+        dailyListApiStub.verifyPatchRequest();
 
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);

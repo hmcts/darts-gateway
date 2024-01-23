@@ -1303,7 +1303,7 @@
 	</xsd:complexType>
 	<xsd:complexType name="SittingStructure">
 		<xsd:sequence>
-			<xsd:element name="CourtRoomNumber" type="xsd:int"/>
+			<xsd:element name="CourtRoomNumber" type="xsd:string"/>
 			<xsd:element name="SittingSequenceNo" type="xsd:string"/>
 			<xsd:element name="SittingAt" type="xsd:time" minOccurs="0"/>
 			<xsd:element name="SittingPriority">

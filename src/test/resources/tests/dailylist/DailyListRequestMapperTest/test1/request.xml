@@ -45,7 +45,7 @@
       </cs:CourtHouse>
       <cs:Sittings>
         <cs:Sitting>
-          <cs:CourtRoomNumber>1</cs:CourtRoomNumber>
+          <cs:CourtRoomNumber>1A</cs:CourtRoomNumber>
           <cs:SittingSequenceNo>1</cs:SittingSequenceNo>
           <cs:SittingAt>10:00:00</cs:SittingAt>
           <cs:SittingPriority>T</cs:SittingPriority>
