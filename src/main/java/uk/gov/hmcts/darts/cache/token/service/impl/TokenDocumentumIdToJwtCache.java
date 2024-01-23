@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.cache.token.documentum;
+package uk.gov.hmcts.darts.cache.token.service.impl;
 
 import documentum.contextreg.ServiceContext;
 import org.springframework.data.redis.core.RedisTemplate;

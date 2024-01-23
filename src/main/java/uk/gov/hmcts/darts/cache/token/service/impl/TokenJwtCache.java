@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.cache.token.jwt;
+package uk.gov.hmcts.darts.cache.token.service.impl;
 
 import documentum.contextreg.BasicIdentity;
 import documentum.contextreg.Identity;
