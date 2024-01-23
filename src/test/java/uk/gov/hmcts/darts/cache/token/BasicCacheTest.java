@@ -331,7 +331,7 @@ class BasicCacheTest {
     }
 
     @FunctionalInterface
-    interface ValidateToken extends Predicate<Token> {
+    interface ValidateToken extends Predicate<String> {
     }
 
     class DummyCache extends AbstractTokenCache implements TokenGeneratable {
@@ -352,7 +352,7 @@ class BasicCacheTest {
         }
 
         @Override
-        protected Predicate<Token> getValidateToken() {
+        protected Predicate<String> getValidateToken() {
             return validate;
         }
 

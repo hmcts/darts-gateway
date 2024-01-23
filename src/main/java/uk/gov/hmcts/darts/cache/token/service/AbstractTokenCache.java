@@ -69,14 +69,14 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                     work.execute((t) -> {
                         redisTemplate.opsForValue().set(t.getId(), value, getSecondsToExpire());
 
-                        redisTemplate.opsForValue().set(value.getId(), t.getToken().orElse(""), getSecondsToExpire());
+                        redisTemplate.opsForValue().set(value.getId(), t.getToken(false).orElse(""), getSecondsToExpire());
 
                     }, tokenToUse.get());
                 }
             }
 
             return tokenToUse;
-        }, reuseTokenBasedOnCredentials(reuseTokenIfPossible));
+        }, reuseTokenBasedOnCredentials(reuseTokenIfPossible), value.getId());
 
         log.info("Token value stored in cache");
 

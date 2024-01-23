@@ -14,8 +14,6 @@ public class CacheLockableUnitOfWork {
         this.lockRegistry = lockRegistry;
     }
 
-    protected static final String DISTRIBUTED_LOCK = "LOCK";
-
     @FunctionalInterface
     interface Execute {
         void execute(Token token) throws CacheException;
@@ -52,10 +50,10 @@ public class CacheLockableUnitOfWork {
         }
     }
 
-    public Optional<Token> execute(ExecuteForToken runnable, boolean doesLock) throws CacheException {
+    public Optional<Token> execute(ExecuteForToken runnable, boolean doesLock, String id) throws CacheException {
 
         if (doesLock) {
-            Lock lock = lockRegistry.obtain(DISTRIBUTED_LOCK);
+            Lock lock = lockRegistry.obtain(id);
             lock.lock();
             try {
                 return runnable.execute();

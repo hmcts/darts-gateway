@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("int-test-jwt-token")
 class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @MockBean
-    private OauthTokenGenerator generator;
+    private TokenGenerator generator;
 
     @Autowired
     private CacheProperties properties;
@@ -105,6 +106,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
+
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleRegisterWithAuthenticationToken(ContextRegistryClient client) throws Exception {
@@ -162,6 +164,8 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleLookupTokenExpired(ContextRegistryClient client) throws Exception {
+        when(tokenValidator.validate(Mockito.eq(ccntextRegToken))).thenReturn(true,  false, false);
+
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
 
             String token = registerToken(client);
@@ -169,8 +173,6 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/lookup/soapRequest.xml");
             soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
-
-            when(tokenValidator.validate(Mockito.eq("test2"))).thenReturn(true, false);
 
             SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
             Assertions.assertNull(response.getResponse().getValue().getReturn());

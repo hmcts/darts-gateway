@@ -45,7 +45,8 @@ public class ContextRegistryParent extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
-        soapRequestStr = soapRequestStr.replace("${USER}", "user1");
+        soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
 
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue());
@@ -55,15 +56,16 @@ public class ContextRegistryParent extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
-        soapRequestStr = soapRequestStr.replace("${USER}", "user1");
-
+        soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
 
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+        Assertions.assertNotNull(response.getResponse().getValue().getReturn());
         SoapAssertionUtil<RegisterResponse> response1 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         SoapAssertionUtil<RegisterResponse> response2 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         SoapAssertionUtil<RegisterResponse> response3 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
-        Assertions.assertNotNull(response.getResponse().getValue());
 
+        Assertions.assertNotNull(response.getResponse().getValue());
         Assertions.assertEquals(response.getResponse().getValue().getReturn(), response1.getResponse().getValue().getReturn());
         Assertions.assertEquals(response.getResponse().getValue().getReturn(), response2.getResponse().getValue().getReturn());
         Assertions.assertEquals(response.getResponse().getValue().getReturn(), response3.getResponse().getValue().getReturn());

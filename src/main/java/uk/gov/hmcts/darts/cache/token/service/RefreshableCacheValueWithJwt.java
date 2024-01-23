@@ -26,7 +26,7 @@ public class RefreshableCacheValueWithJwt extends ServiceContextCacheValue imple
         Optional<Token> newtoken = jwtCacheRegistrable.createToken(context);
 
         if (newtoken.isPresent()) {
-            Optional<String> tokenStr = newtoken.get().getToken();
+            Optional<String> tokenStr = newtoken.get().getToken(false);
             if (tokenStr.isPresent()) {
                 token = tokenStr.orElse(EMPTY_DOWN_STREAM_TOKEN);
             }
@@ -57,7 +57,7 @@ public class RefreshableCacheValueWithJwt extends ServiceContextCacheValue imple
         Optional<Token> token = jwtCacheRegistrable.createToken(getServiceContext());
 
         if (token.isPresent()) {
-            setDownstreamToken(token.get().getToken().orElse(EMPTY_DOWN_STREAM_TOKEN));
+            setDownstreamToken(token.get().getToken(false).orElse(EMPTY_DOWN_STREAM_TOKEN));
         } else {
             setDownstreamToken(EMPTY_DOWN_STREAM_TOKEN);
         }
