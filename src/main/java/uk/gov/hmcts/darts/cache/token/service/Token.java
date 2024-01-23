@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.cache.token;
+package uk.gov.hmcts.darts.cache.token.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.EqualsAndHashCode;
@@ -24,15 +24,15 @@ public class Token {
 
     public static final AtomicLong COUNTER = new AtomicLong();
 
-    private Predicate<Token> validate;
+    private Predicate<String> validate;
 
-    Token(String token,  Predicate<Token> validate) {
+    Token(String token,  Predicate<String> validate) {
         this.token = token;
         this.validate = validate;
     }
 
     public Optional<String> getToken() {
-        if (validate != null && !validate.test(this)) {
+        if (validate != null && !validate.test(token)) {
             return Optional.empty();
         }
 
@@ -44,17 +44,17 @@ public class Token {
     }
 
     public boolean valid() {
-        if (validate != null) {
-            return validate.test(this);
+        if (validate != null && !token.isEmpty()) {
+            return validate.test(token);
         }
-        return true;
+        return !token.isEmpty();
     }
 
     void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
-    public static Token readToken(String tokenStr, boolean mapToSession, Predicate<Token> validate) {
+    public static Token readToken(String tokenStr, boolean mapToSession, Predicate<String> validate) {
         Token token;
 
         token =  new Token(tokenStr, validate);
@@ -77,7 +77,7 @@ public class Token {
         }
     }
 
-    public static Token generateDocumentumToken(boolean mapToSession, Predicate<Token> validate) {
+    public static Token generateDocumentumToken(boolean mapToSession, Predicate<String> validate) {
         String machineIdentifier;
         try {
             machineIdentifier = InetAddress.getLocalHost().toString();

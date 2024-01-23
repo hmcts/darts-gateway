@@ -3,32 +3,32 @@ package uk.gov.hmcts.darts.cache.token.service.impl;
 import documentum.contextreg.ServiceContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
-import uk.gov.hmcts.darts.cache.token.AbstractTokenCache;
-import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
-import uk.gov.hmcts.darts.cache.token.RefreshableCacheValueWithJwt;
-import uk.gov.hmcts.darts.cache.token.Token;
-import uk.gov.hmcts.darts.cache.token.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
+import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
+import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValueWithJwt;
+import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class DocumentumIdToJwtCache extends AbstractTokenCache {
-    public static Predicate<Token> TOKEN_VALIDATION = token -> {
+public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
+    public static Predicate<String> TOKEN_VALIDATION = token -> {
         return true;
     };
 
     private final TokenGeneratable cache;
 
-    public DocumentumIdToJwtCache(RedisTemplate<String, Object> template, TokenGeneratable cache, CacheProperties properties,
-                                  LockRegistry registry) {
+    public TokenDocumentumIdToJwtCache(RedisTemplate<String, Object> template, TokenGeneratable cache, CacheProperties properties,
+                                       LockRegistry registry) {
         super(template, registry, properties);
         this.cache = cache;
     }
 
     @Override
-    protected Predicate<Token> getValidateToken() {
+    protected Predicate<String> getValidateToken() {
         return TOKEN_VALIDATION;
     }
 

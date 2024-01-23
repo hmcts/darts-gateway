@@ -6,12 +6,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
-import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -45,10 +48,15 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     private @Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs;
 
     @MockBean
-    private OauthTokenGenerator mockOauthTokenGenerator;
+    private TokenGenerator mockOauthTokenGenerator;
+
+    @MockBean
+    private TokenValidator tokenValidator;
 
     @BeforeEach
     public void before() {
+        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
+
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
     }

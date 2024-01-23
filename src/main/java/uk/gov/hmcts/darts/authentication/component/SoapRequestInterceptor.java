@@ -16,10 +16,10 @@ import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
-import uk.gov.hmcts.darts.cache.token.DownstreamTokenisable;
-import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
-import uk.gov.hmcts.darts.cache.token.Token;
-import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.token.service.DownstreamTokenisable;
+import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
+import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -72,24 +72,25 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         if (securityToken.hasNext()) {
             SoapHeaderElement securityTokenElement = securityToken.next();
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
-            Token foundTokenInCache = tokenRegisterable.getToken(tokenToReturn.orElse(""));
+            String specifiedtoken = tokenToReturn.orElse("N/K");
+            Token foundTokenInCache = tokenRegisterable.getToken(specifiedtoken);
             Optional<RefreshableCacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
 
             if (optRefreshableCacheValue.isEmpty()) {
-                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getToken().orElse(""));
+                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getToken().orElse(specifiedtoken));
             } else {
-                if (optRefreshableCacheValue.get() instanceof uk.gov.hmcts.darts.cache.token.DownstreamTokenisable) {
+                if (optRefreshableCacheValue.get() instanceof DownstreamTokenisable) {
                     Optional<Token> downstreamToken = ((DownstreamTokenisable)optRefreshableCacheValue.get()).getValidatedToken();
 
-                    if (downstreamToken.isPresent()) {
+                    if (downstreamToken.isPresent() && downstreamToken.get().getToken().isPresent()) {
                         new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                             downstreamToken.get().getToken().orElse(""));
                     } else {
-                        throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getToken().orElse(""));
+                        throw new DocumentumUnknownTokenSoapException(specifiedtoken);
                     }
                 }  else {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                        foundTokenInCache.getToken().orElse(""));
+                        specifiedtoken);
                 }
             }
         }
@@ -133,15 +134,15 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                             refreshableCacheValue = optRefreshableCacheValue.orElse(null);
                         }
 
-                        if (token.isPresent() && refreshableCacheValue instanceof uk.gov.hmcts.darts.cache.token.DownstreamTokenisable) {
+                        if (token.isPresent() && refreshableCacheValue instanceof DownstreamTokenisable) {
                             Optional<Token> tokenDownstream = ((DownstreamTokenisable) refreshableCacheValue).getValidatedToken();
-                            if (tokenDownstream.isEmpty()) {
+                            if (tokenDownstream.isEmpty() || tokenDownstream.get().getToken().isEmpty()) {
                                 throw new AuthenticationFailedException();
                             } else {
                                 new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                                     tokenDownstream.get().getToken().orElse(""));
                             }
-                        } else if (!token.isPresent()) {
+                        } else if (token.isEmpty() || token.get().getToken().isEmpty()) {
                             throw new AuthenticationFailedException();
                         } else {
                             new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(

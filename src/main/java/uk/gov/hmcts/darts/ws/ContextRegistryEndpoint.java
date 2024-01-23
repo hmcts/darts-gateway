@@ -11,9 +11,9 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
-import uk.gov.hmcts.darts.cache.token.Token;
-import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
+import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 
 import java.util.Optional;
 

@@ -1,11 +1,6 @@
-package uk.gov.hmcts.darts.authentication.component;
-
-import uk.gov.hmcts.darts.authentication.config.AuthConfigurationProperties;
-import uk.gov.hmcts.darts.authentication.config.AuthProviderConfigurationProperties;
-import uk.gov.hmcts.darts.authentication.model.JwtValidationResult;
+package uk.gov.hmcts.darts.cache.token.component;
 
 public interface TokenValidator {
 
-    JwtValidationResult validate(String accessToken, AuthProviderConfigurationProperties providerConfig, AuthConfigurationProperties configuration);
-
+    boolean validate(String accessToken);
 }

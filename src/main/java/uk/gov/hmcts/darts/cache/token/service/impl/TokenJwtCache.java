@@ -6,43 +6,43 @@ import documentum.contextreg.ServiceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
-import uk.gov.hmcts.darts.cache.token.AbstractTokenCache;
-import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
-import uk.gov.hmcts.darts.cache.token.ServiceContextCacheValue;
-import uk.gov.hmcts.darts.cache.token.Token;
-import uk.gov.hmcts.darts.cache.token.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
+import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
+import uk.gov.hmcts.darts.cache.token.service.ServiceContextCacheValue;
+import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
-import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
-public class JwtCache extends AbstractTokenCache implements TokenGeneratable {
-    public static Predicate<Token> TOKEN_VALIDATION = new Predicate<Token>() {
-        @Override
-        public boolean test(Token token) {
-
-            // TODO: Validate the jwt here is valid for the next few minutes i.e. enough to make the call
-
-            // validate the token and return a false or truth
-            return true;
-        }
-    };
+public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratable {
+    public Predicate<String> validationPredicate;
 
     @Override
-    protected Predicate<Token> getValidateToken() {
-        return TOKEN_VALIDATION;
+    protected Predicate<String> getValidateToken() {
+        if (validationPredicate == null) {
+            validationPredicate =  (token) -> validator.validate(token);
+        }
+
+        return validationPredicate;
     }
 
-    private final OauthTokenGenerator generator;
+    private final TokenGenerator generator;
 
-    public JwtCache(RedisTemplate<String, Object> template, OauthTokenGenerator generator,
-                    CacheProperties ctxtregproperties, LockRegistry registry) {
+    private final TokenValidator validator;
+
+    public TokenJwtCache(RedisTemplate<String, Object> template, TokenGenerator generator,
+                         CacheProperties ctxtregproperties, LockRegistry registry, TokenValidator validator) {
         super(template, registry, ctxtregproperties);
         this.generator = generator;
+        this.validator = validator;
     }
 
     @Override

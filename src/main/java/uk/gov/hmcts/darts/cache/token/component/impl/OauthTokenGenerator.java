@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.config;
+package uk.gov.hmcts.darts.cache.token.component.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,31 +10,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
-public class OauthTokenGenerator {
-    @Value("${azure-ad-ropc.token-uri}")
-    private String tokenUri;
-    @Value("${azure-ad-ropc.scope}")
-    private String scope;
-    @Value("${azure-ad-ropc.client-id}")
-    private String clientId;
+public class OauthTokenGenerator implements TokenGenerator {
+    private final SecurityProperties securityProperties;
 
     private final RestTemplate template;
 
     public String acquireNewToken(String username, String password) {
-        return template.exchange(tokenUri, HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
+        return template.exchange(securityProperties.getTokenUri(), HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
             .getBody().get("access_token").toString();
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {
         MultiValueMap<String, String> formValues = new LinkedMultiValueMap<>();
         formValues.add("grant_type", "password");
-        formValues.add("client_id", clientId);
-        formValues.add("scope", scope);
+        formValues.add("client_id", securityProperties.getClientId());
+        formValues.add("scope", securityProperties.getScope());
 
         if (username != null) {
             formValues.add("username", username);

@@ -3,11 +3,13 @@ package uk.gov.hmcts.darts.ws;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
 
@@ -26,12 +28,17 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     @Autowired
     private CacheProperties properties;
 
+    @MockBean
+    private TokenValidator tokenValidator;
+
     private static final int REGISTERED_USER_COUNT = 10;
 
     @BeforeEach
     public void before() {
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
+
+        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
             when(generator.acquireNewToken("user" + i, "pass")).thenReturn("test2");

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.cache.token;
+package uk.gov.hmcts.darts.cache.token.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;

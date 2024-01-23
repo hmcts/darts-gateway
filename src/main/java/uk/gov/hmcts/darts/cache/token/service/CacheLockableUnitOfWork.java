@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.cache.token;
+package uk.gov.hmcts.darts.cache.token.service;
 
 import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;

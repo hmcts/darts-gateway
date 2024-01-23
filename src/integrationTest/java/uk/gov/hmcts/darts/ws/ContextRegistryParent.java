@@ -26,7 +26,9 @@ import java.util.concurrent.TimeUnit;
 
 public class ContextRegistryParent extends IntegrationBase {
 
+    public static final String SERVICE_CONTEXT_USER = "user";
 
+    public static final String SERVICE_CONTEXT_PASSWORD = "pass";
 
     void executeTestGetContextRegistryWsdl() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -126,8 +128,8 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNull(response.getResponse().getValue().getReturn());
     }
 
-    private String registerToken(ContextRegistryClient client) throws Exception {
-        return registerToken(getGatewayUri(), client, "user0", "pass");
+    protected String registerToken(ContextRegistryClient client) throws Exception {
+        return registerToken(getGatewayUri(), client, SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
     }
 
     public static String registerToken(URL baseUrl, ContextRegistryClient client, String username, String password) throws Exception {

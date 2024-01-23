@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.cache.token;
+package uk.gov.hmcts.darts.cache.token.service;
 
 import documentum.contextreg.ServiceContext;
 import lombok.RequiredArgsConstructor;
@@ -104,7 +104,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 || (reuseTokenIfPossible != null && reuseTokenIfPossible);
     }
 
-    protected abstract Predicate<Token> getValidateToken();
+    protected abstract Predicate<String> getValidateToken();
 
     @Override
     public Token getToken(String token) {
