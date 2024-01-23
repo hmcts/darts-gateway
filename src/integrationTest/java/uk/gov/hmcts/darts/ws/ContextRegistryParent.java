@@ -26,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ContextRegistryParent extends IntegrationBase {
 
+
+
     void executeTestGetContextRegistryWsdl() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(getGatewayUri() + "runtime/ContextRegistryService?wsdl"))
@@ -41,12 +43,8 @@ public class ContextRegistryParent extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/register/requestHeaders.xml");
-
         soapRequestStr = soapRequestStr.replace("${USER}", "user1");
 
-        client.setHeaderBlock(header);
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue());
     }
@@ -55,12 +53,9 @@ public class ContextRegistryParent extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/register/requestHeaders.xml");
-
         soapRequestStr = soapRequestStr.replace("${USER}", "user1");
 
-        client.setHeaderBlock(header);
+
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         SoapAssertionUtil<RegisterResponse> response1 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         SoapAssertionUtil<RegisterResponse> response2 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
@@ -80,10 +75,6 @@ public class ContextRegistryParent extends IntegrationBase {
                 "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
         SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
     }
@@ -95,10 +86,6 @@ public class ContextRegistryParent extends IntegrationBase {
                 "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
         SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
 
@@ -115,10 +102,6 @@ public class ContextRegistryParent extends IntegrationBase {
                 "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
         SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
 
@@ -144,20 +127,17 @@ public class ContextRegistryParent extends IntegrationBase {
     }
 
     private String registerToken(ContextRegistryClient client) throws Exception {
-        return registerToken(client, "user0");
+        return registerToken(getGatewayUri(), client, "user0", "pass");
     }
 
-    private String registerToken(ContextRegistryClient client, String username) throws Exception {
+    public static String registerToken(URL baseUrl, ContextRegistryClient client, String username, String password) throws Exception {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
         soapRequestStr = soapRequestStr.replace("${USER}", username);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", password);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/register/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
-        SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+        SoapAssertionUtil<RegisterResponse> response = client.register(new URL(baseUrl + "ContextRegistryService?wsdl"), soapRequestStr);
         return response.getResponse().getValue().getReturn();
     }
 
@@ -210,10 +190,6 @@ public class ContextRegistryParent extends IntegrationBase {
                 "payloads/ctxtRegistry/unregister/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/unregister/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
         SoapAssertionUtil<UnregisterResponse> response = client.unregister(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse());
 
@@ -232,10 +208,6 @@ public class ContextRegistryParent extends IntegrationBase {
                 "payloads/ctxtRegistry/unregister/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/unregister/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
         SoapAssertionUtil<UnregisterResponse> response = client.unregister(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse());
 
@@ -251,10 +223,6 @@ public class ContextRegistryParent extends IntegrationBase {
                 "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
-        String header = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/requestHeaders.xml");
-
-        client.setHeaderBlock(header);
         SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         return response.getResponse().getValue();
     }

@@ -166,9 +166,27 @@ Here are some other functionalities it provides:
 If the tests fail for relating to a redis connection failure then please manually close down the running redis instance
 through task manager
 
-If we encounter a lock error message response please check that the redis server is accessible:-
+If we encounter a SOAP general error response (as shown below) please check that the redis server is accessible:-
 
-Failed to lock mutex at MY_REDIS_KEY:LOCK
+<code>
+&lt;SOAP-ENV:Envelope;&gt;
+    &lt;SOAP-ENV:Header/&gt;
+    &lt;SOAP-ENV:Body&gt;
+        &lt;SOAP-ENV:Fault&gt;
+            &lt;faultcode&gt;SOAP-ENV:Client&lt;/faultcode&gt;
+            &lt;faultstring xml:lang=&quot;en&quot;&gt;An unexpected service exception occurred please check logs&lt;/faultstring&gt;
+            &lt;detail&gt;
+                &lt;ns3:ServiceInvocationException
+                    xmlns:ns3=&quot;http://rt.fs.documentum.emc.com/&quot;&gt;
+                    &lt;messageId&gt;E_UNSUPPORTED_EXCEPTION&lt;/messageId&gt;
+                    &lt;message&gt;An unexpected service exception occurred please check logs&lt;/message&gt;
+                    &lt;exceptionType/&gt;
+                &lt;/ns3:ServiceInvocationException&gt;
+            &lt;/detail&gt;
+        &lt;/SOAP-ENV:Fault&gt;
+    &lt;/SOAP-ENV:Body&gt;
+&lt;/SOAP-ENV:Envelope&gt;
+</code>
 
 ## License
 

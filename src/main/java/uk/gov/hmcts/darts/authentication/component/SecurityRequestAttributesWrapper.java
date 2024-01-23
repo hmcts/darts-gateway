@@ -1,6 +1,8 @@
 package uk.gov.hmcts.darts.authentication.component;
 
 import org.springframework.web.context.request.RequestAttributes;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 
@@ -19,9 +21,7 @@ public class SecurityRequestAttributesWrapper {
         if (accessTokenObj instanceof String accessToken) {
             return accessToken;
         } else {
-            // TODO: Please comment this back in when the binary token mechanism is working (see DMP-1843)
-            //throw new DartsValidationException("Authorization Bearer Header missing JWT", CodeAndMessage.ERROR);
-            return "";
+            throw new DartsValidationException("Authorization Bearer Header missing JWT", CodeAndMessage.ERROR);
         }
     }
 

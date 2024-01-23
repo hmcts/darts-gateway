@@ -14,7 +14,6 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
-import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -49,122 +49,200 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken("some-user", "some-password"))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void routesGetCourtLogRequest(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void testRoutesGetCourtLogsRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
 
-        var dartsApiCourtLogsResponse = someListOfCourtLog(3);
-        courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenThrow(new RuntimeException());
 
-        SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(
-            getGatewayUri(),
-            getCourtLogs.getContentAsString(
-                Charset.defaultCharset())
-        );
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
+            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
-        com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
+            client.getCourtLogs(
+                getGatewayUri(),
+                getCourtLogs.getContentAsString(
+                   Charset.defaultCharset())
+            );
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        Assertions.assertEquals("200", actualResponse.getCode());
-        Assertions.assertEquals("OK", actualResponse.getMessage());
-        Assertions.assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
-        Assertions.assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
-        Assertions.assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
-        Assertions.assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
-        Assertions.assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesGetCasesRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
+
+        authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
+            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
+
+            client.getCourtLogs(
+                getGatewayUri(),
+                getCourtLogs.getContentAsString(
+                    Charset.defaultCharset())
+            );
+
+        });
+
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesGetCasesRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
+            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
+
+            client.getCourtLogs(
+                getGatewayUri(),
+                getCourtLogs.getContentAsString(
+                    Charset.defaultCharset())
+            );
+        });
+
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesGetCourtLogRequestWithAuthenticationToken(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithTokenHeader(client, () -> {
+            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
+
+            SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(
+                getGatewayUri(),
+                getCourtLogs.getContentAsString(
+                    Charset.defaultCharset())
+            );
+
+            com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
+
+            Assertions.assertEquals("200", actualResponse.getCode());
+            Assertions.assertEquals("OK", actualResponse.getMessage());
+            Assertions.assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
+            Assertions.assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
+            Assertions.assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
+            Assertions.assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
+            Assertions.assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
 
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesGetCourtLogRequest(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
+
+            SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(
+                getGatewayUri(),
+                getCourtLogs.getContentAsString(
+                    Charset.defaultCharset())
+            );
+
+            com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
+
+            Assertions.assertEquals("200", actualResponse.getCode());
+            Assertions.assertEquals("OK", actualResponse.getMessage());
+            Assertions.assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
+            Assertions.assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
+            Assertions.assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
+            Assertions.assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
+            Assertions.assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
+
+        verify(mockOauthTokenGenerator, times(1)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     @SuppressWarnings("PMD.LawOfDemeter")
-    void rejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void testRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
 
-        courtLogsApi.returnsCourtLogs(someListOfCourtLog(1));
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            courtLogsApi.returnsCourtLogs(someListOfCourtLog(1));
 
-        org.assertj.core.api.Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
-            Charset charset = Charset.defaultCharset();
-            String invalidMessage = invalidSoapMessage.getContentAsString(charset);
-            client.getCourtLogs(getGatewayUri(), invalidMessage);
-        });
-
+            org.assertj.core.api.Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
+                Charset charset = Charset.defaultCharset();
+                String invalidMessage = invalidSoapMessage.getContentAsString(charset);
+                client.getCourtLogs(getGatewayUri(), invalidMessage);
+            });
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
         courtLogsApi.verifyDoesntReceiveRequest();
 
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void postCourtLogsRoute(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void testPostCourtLogsRoute(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            postCourtLogsApi.returnsEventResponse();
+            client.postCourtLogs(getGatewayUri(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
 
-        postCourtLogsApi.returnsEventResponse();
-        client.postCourtLogs(getGatewayUri(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
+            postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testPostCourtLogsRouteFailOnInvalidServiceResponse(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            postCourtLogsApi.returnsFailureWhenAddingCourtLogs();
+
+            SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(
+                getGatewayUri(),
+                postCourtLogs.getContentAsString(Charset.defaultCharset())
+            );
+            SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found",
+                                                  response.getResponse().getValue().getReturn()
+            );
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
 
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    void postCourtLogsRouteFailOnInvalidServiceResponse(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
+    void testPostCourtLogsRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            postCourtLogsApi.returnsEventResponse();
 
-        postCourtLogsApi.returnsFailureWhenAddingCourtLogs();
-
-        SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(
-            getGatewayUri(),
-            postCourtLogs.getContentAsString(Charset.defaultCharset())
-        );
-        SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found",
-                                              response.getResponse().getValue().getReturn()
-        );
-
-        postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
-
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(DartsClientProvider.class)
-    void postCourtLogsRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
-        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
-            "payloads/soapHeaderServiceContext.xml");
-        client.setHeaderBlock(soapHeaderServiceContextStr);
-
-        postCourtLogsApi.returnsEventResponse();
-
-        SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(
-            getGatewayUri(),
-            invalidSoapMessage.getContentAsString(Charset.defaultCharset())
-        );
-        SoapAssertionUtil.assertErrorResponse("400", "Invalid XML Document",
-                                              response.getResponse().getValue().getReturn()
-        );
+            SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(
+                getGatewayUri(),
+                invalidSoapMessage.getContentAsString(Charset.defaultCharset())
+            );
+            SoapAssertionUtil.assertErrorResponse("400", "Invalid XML Document",
+                                                  response.getResponse().getValue().getReturn()
+            );
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         postCourtLogsApi.verifyDoesntReceiveRequest();
-        verify(mockOauthTokenGenerator).acquireNewToken("some-user", "some-password");
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 

@@ -153,7 +153,8 @@ jacocoTestReport {
 }
 
 project.tasks['sonarqube'].dependsOn jacocoTestReport
-project.tasks['check'].dependsOn integration
+project.tasks['check'].dependsOn classes
+project.tasks['test'].dependsOn integration
 
 def sonarExclusions = [
   '**/com/emc/**',

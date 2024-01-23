@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.utils;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -12,6 +13,8 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.utilities.XmlParser;
+import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -20,6 +23,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.Map;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
 @ComponentScan("uk.gov.hmcts.darts")
@@ -33,9 +37,20 @@ public class IntegrationBase {
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
+    protected AuthenticationAssertion authenticationStub = new AuthenticationAssertion();
+
+    protected static final String DEFAULT_USERNAME = "some-user";
+
+    protected static final String DEFAULT_PASSWORD = "password";
+
+    @Autowired
+    private Map<String, ContextRegistryClient> contextClients;
 
     @Autowired
     protected RedisTemplate<String, Object> template;
+
+    @Autowired
+    protected XmlParser parser;
 
     private static String localhost;
 
@@ -89,5 +104,13 @@ public class IntegrationBase {
         }
 
         return ipaddressStr;
+    }
+
+    protected ContextRegistryClient getContextClient() {
+        if (!contextClients.values().isEmpty()) {
+            return contextClients.values().iterator().next();
+        }
+
+        throw new AssertionFailedError("Don't have a context registry client!!!");
     }
 }
