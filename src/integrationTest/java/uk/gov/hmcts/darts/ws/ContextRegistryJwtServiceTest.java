@@ -12,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
@@ -38,7 +37,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     private static final int REGISTERED_USER_COUNT = 10;
 
-    private String ccntextRegToken = "testToken";
+    private static final String CONTEXT_REGISTRY_TOKEN = "testToken";
 
     @BeforeEach
     public void before() {
@@ -48,9 +47,9 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
         when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
 
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
-            .thenReturn(ccntextRegToken);
+            .thenReturn(CONTEXT_REGISTRY_TOKEN);
 
-        when(tokenValidator.validate(Mockito.eq(ccntextRegToken))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
 
@@ -164,7 +163,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleLookupTokenExpired(ContextRegistryClient client) throws Exception {
-        when(tokenValidator.validate(Mockito.eq(ccntextRegToken))).thenReturn(true,  false, false);
+        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, false, false);
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
 
@@ -176,7 +175,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
             SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
             Assertions.assertNull(response.getResponse().getValue().getReturn());
-            verify(tokenValidator, times(2)).validate(ccntextRegToken);
+            verify(tokenValidator, times(2)).validate(CONTEXT_REGISTRY_TOKEN);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 

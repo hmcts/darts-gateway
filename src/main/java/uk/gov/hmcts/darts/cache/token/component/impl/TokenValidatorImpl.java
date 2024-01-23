@@ -11,9 +11,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-
-import com.nimbusds.jwt.proc.JWTClaimsSetVerifier;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
@@ -30,8 +27,7 @@ public class TokenValidatorImpl implements TokenValidator {
 
     private final DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
 
-    public TokenValidatorImpl(SecurityProperties securityProperties)
-    throws MalformedURLException {
+    public TokenValidatorImpl(SecurityProperties securityProperties) throws MalformedURLException {
         JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(
             JWSAlgorithm.RS256,
             securityProperties.getJwkSource()

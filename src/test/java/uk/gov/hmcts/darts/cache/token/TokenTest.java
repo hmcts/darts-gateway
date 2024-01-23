@@ -64,7 +64,7 @@ class TokenTest {
     }
 
     @FunctionalInterface
-    interface ValidateToken extends Predicate<Token> {
+    interface ValidateToken extends Predicate<String> {
 
     }
 

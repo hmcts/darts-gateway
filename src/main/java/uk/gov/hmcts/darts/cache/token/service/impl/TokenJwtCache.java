@@ -8,14 +8,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
 import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
 import uk.gov.hmcts.darts.cache.token.service.ServiceContextCacheValue;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
-import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
-import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 
 import java.util.List;
 import java.util.Optional;

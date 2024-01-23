@@ -8,10 +8,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.impl.TokenValidatorImpl;
 import uk.gov.hmcts.darts.cache.token.config.impl.CachePropertiesImpl;
+import uk.gov.hmcts.darts.cache.token.config.impl.SecurityPropertiesImpl;
 import uk.gov.hmcts.darts.common.controllers.RootController;
 import uk.gov.hmcts.darts.config.CacheConfig;
-import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
 import uk.gov.hmcts.darts.event.config.DarNotifyEventConfiguration;
 import uk.gov.hmcts.darts.event.service.impl.DarNotifyEventServiceImpl;
@@ -22,7 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(RootController.class)
 @Import({DarNotifyEventConfiguration.class, DarNotifyEventClient.class,
-    DarNotifyEventServiceImpl.class, CachePropertiesImpl.class, CacheConfig.class, OauthTokenGenerator.class, RestTemplate.class})
+    DarNotifyEventServiceImpl.class, CachePropertiesImpl.class, CacheConfig.class,
+    SecurityPropertiesImpl.class, TokenValidatorImpl.class, OauthTokenGenerator.class, RestTemplate.class})
 class GetWelcomeTest {
 
     @Autowired

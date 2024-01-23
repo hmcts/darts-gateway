@@ -3,13 +3,13 @@ package uk.gov.hmcts.darts.cache.token.service.impl;
 import documentum.contextreg.ServiceContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
+import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
 import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
 import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValueWithJwt;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
-import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 
 import java.util.Optional;
 import java.util.function.Predicate;

@@ -36,9 +36,8 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
-import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
-import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.impl.TokenDocumentumIdToJwtCache;
 import uk.gov.hmcts.darts.cache.token.service.impl.TokenJwtCache;
 
