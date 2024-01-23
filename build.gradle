@@ -7,7 +7,7 @@ plugins {
   id "io.freefair.lombok" version "8.4"
   id 'io.spring.dependency-management' version '1.1.4'
   id 'org.springframework.boot' version '3.2.0'
-  id 'org.owasp.dependencycheck' version '9.0.8'
+  id 'org.owasp.dependencycheck' version '9.0.9'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'org.sonarqube' version '4.4.1.3373'
   id 'java-library'
@@ -377,7 +377,7 @@ dependencies {
   testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
   testImplementation 'org.testcontainers:testcontainers:1.19.3'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.3'
-  testImplementation 'it.ozimov:embedded-redis:0.7.2'
+  testImplementation 'it.ozimov:embedded-redis:0.7.3'
 
   openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
 
