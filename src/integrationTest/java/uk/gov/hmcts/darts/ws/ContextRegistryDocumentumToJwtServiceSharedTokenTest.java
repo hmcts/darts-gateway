@@ -31,10 +31,17 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     private static final int REGISTERED_USER_COUNT = 10;
 
+    private static final String CONTEXT_REGISTRY_TOKEN = "testToken";
+
     @BeforeEach
     public void before() {
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
+
+        when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
+            .thenReturn(CONTEXT_REGISTRY_TOKEN);
+
+        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
         when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
 
@@ -107,7 +114,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             executeHandleLookup(client);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(generator, times(3)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(generator, times(1)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);
     }
 
@@ -185,7 +192,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             executeTestHandleUnregister(client);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(generator, times(3)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(generator, times(1)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);
     }
 

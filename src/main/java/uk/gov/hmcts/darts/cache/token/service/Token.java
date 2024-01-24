@@ -39,7 +39,7 @@ public class Token {
         return Optional.of(token);
     }
 
-    Optional<String> getToken(boolean validateTokenBefore) {
+    public Optional<String> getToken(boolean validateTokenBefore) {
         if (validateTokenBefore) {
             if (validate != null && !validate.test(token)) {
                 return Optional.empty();

@@ -11,6 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
+import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 
 import java.util.Map;
 
@@ -22,8 +23,21 @@ public class OauthTokenGenerator implements TokenGenerator {
     private final RestTemplate template;
 
     public String acquireNewToken(String username, String password) {
-        return template.exchange(securityProperties.getTokenUri(), HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
-            .getBody().get("access_token").toString();
+        HttpEntity<MultiValueMap<String, String>> values = buildTokenRequestEntity(username, password);
+
+        Map<?,?> tokenMap = acquireToken(values, username, password);
+
+        if (tokenMap != null && tokenMap.containsKey("access_token")) {
+            return (String) tokenMap.get("access_token");
+        }
+
+        throw new CacheTokenValidationException("Token details not found");
+    }
+
+    Map<?,?> acquireToken(HttpEntity<MultiValueMap<String, String>> requestValues, String username, String password) {
+        Map<?,?> tokenMap = template.exchange(securityProperties.getTokenUri(), HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
+            .getBody();
+        return tokenMap;
     }
 
     private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {

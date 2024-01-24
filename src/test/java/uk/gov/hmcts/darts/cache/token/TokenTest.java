@@ -14,6 +14,8 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 
 import java.util.function.Predicate;
 
+import static org.mockito.Mockito.verify;
+
 class TokenTest {
 
     private static final String SESSION_ID = "testSession";
@@ -51,6 +53,8 @@ class TokenTest {
         Token token = Token.generateDocumentumToken(true, validate);
         Assertions.assertNotNull(token.getToken());
         Assertions.assertEquals(EXISTING_SESSION_ID, token.getSessionId());
+
+        verify(validate).test(Mockito.notNull());
     }
 
     @Test
@@ -78,7 +82,7 @@ class TokenTest {
         Assertions.assertEquals(tokenStr,token.getToken().get());
         Assertions.assertTrue(token.getSessionId().isEmpty());
 
-        Mockito.verify(validate).test(Mockito.notNull());
+        verify(validate).test(Mockito.notNull());
     }
 
     @Test
@@ -115,5 +119,35 @@ class TokenTest {
         Token token = Token.readToken(tokenStr, false, null);
         Assertions.assertEquals(tokenStr,token.getToken().get());
         Assertions.assertTrue(token.getSessionId().isEmpty());
+    }
+
+    @Test
+    void createTokenWithStringAndSessionNoValidation() {
+        String tokenStr = "token";
+        ValidateToken validate = Mockito.mock(ValidateToken.class);
+        Mockito.when(validate.test(Mockito.notNull())).thenReturn(false);
+        Token token = Token.readToken(tokenStr, true, validate);
+        Assertions.assertFalse(token.getSessionId().isEmpty());
+        Assertions.assertNotNull(token.getToken(false));
+
+        verify(validate, Mockito.times(0)).test(Mockito.notNull());
+    }
+
+    @Test
+    void validateTokenTrue() {
+        ValidateToken validate = Mockito.mock(ValidateToken.class);
+        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+        Token token = Token.generateDocumentumToken(true, validate);
+        Assertions.assertTrue(token.valid());
+        verify(validate, Mockito.times(1)).test(Mockito.notNull());
+    }
+
+    @Test
+    void validateTokenFalse() {
+        ValidateToken validate = Mockito.mock(ValidateToken.class);
+        Mockito.when(validate.test(Mockito.notNull())).thenReturn(false);
+        Token token = Token.generateDocumentumToken(true, validate);
+        Assertions.assertFalse(token.valid());
+        verify(validate, Mockito.times(1)).test(Mockito.notNull());
     }
 }

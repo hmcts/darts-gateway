@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.cache.token.service;
 
 import documentum.contextreg.ServiceContext;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,6 +9,8 @@ import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
+import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
+import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -29,15 +32,21 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return Duration.of(properties.getEntryTimeToIdleSeconds(), ChronoUnit.SECONDS);
     }
 
+    @PostConstruct
+    public void postConstruct() {
+        redisTemplate.setEnableTransactionSupport(true);
+    }
+
     @Override
     @Transactional
-    public Optional<Token> store(RefreshableCacheValue value) throws CacheException {
+    public Optional<Token> store(CacheValue value) throws CacheException {
         return store(value, null);
     }
 
     @Override
     @Transactional
-    public Optional<Token> store(RefreshableCacheValue value, Boolean reuseTokenIfPossible) throws CacheException {
+    @SuppressWarnings("java:S6809")
+    public Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible) throws CacheException {
 
         log.info("Storing the supplied value");
 
@@ -59,20 +68,18 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             }
 
             if (tokenToUse.isEmpty()) {
-                tokenToUse = createToken(value.getServiceContext());
+                tokenToUse = Optional.of(createToken(value.getServiceContext()));
 
                 log.info("Creating a new token");
 
-                if (tokenToUse.isPresent()) {
-                    CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
+                CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
-                    work.execute((t) -> {
-                        redisTemplate.opsForValue().set(t.getId(), value, getSecondsToExpire());
+                work.execute((t) -> {
+                    redisTemplate.opsForValue().set(t.getId(), value, getSecondsToExpire());
 
-                        redisTemplate.opsForValue().set(value.getId(), t.getToken(false).orElse(""), getSecondsToExpire());
+                    redisTemplate.opsForValue().set(value.getId(), t.getToken(false).orElse(""), getSecondsToExpire());
 
-                    }, tokenToUse.get());
-                }
+                }, tokenToUse.get());
             }
 
             return tokenToUse;
@@ -86,7 +93,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             // if we have a global token stored then make sure the token has the service context if
             // not add one
             work.execute((t) -> {
-                Optional<RefreshableCacheValue> concurrentValue = lookup(t);
+                Optional<CacheValue> concurrentValue = lookup(t);
                 if (concurrentValue.isEmpty()) {
                     redisTemplate.opsForValue()
                             .set(t.getId(), value, getSecondsToExpire());
@@ -111,15 +118,14 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return Token.readToken(token, properties.isMapTokenToSession(), getValidateToken());
     }
 
-    @Override
-    @Transactional
-    public Optional<Token> lookup(RefreshableCacheValue context) throws CacheException {
+    private Optional<Token> lookup(CacheValue context) throws CacheException {
         return read(context);
     }
 
     @Override
     @Transactional
-    public Optional<RefreshableCacheValue> lookup(Token holder) throws CacheException {
+    @SuppressWarnings("java:S6809")
+    public Optional<CacheValue> lookup(Token holder) throws CacheException {
 
         log.info("Looking up the token");
 
@@ -127,17 +133,17 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
         return work.executeForRefreshValueReturn((t) -> {
-            Optional<RefreshableCacheValue> val = getValue(holder);
+            Optional<CacheValue> val = getValue(holder);
 
             if (val.isPresent() && !holder.valid()) {
                 evict(holder);
                 val = Optional.empty();
                 log.info("Token manually removed as it is no longer valid");
             } else {
-                if (val.isPresent()) {
-                    if (val.get().refresh()) {
+                if (val.isPresent() && val.get() instanceof DownstreamTokenisableValue downstreamToken) {
+                    if (downstreamToken.refresh()) {
                         log.info("Token cache value needs refreshing");
-                        val.get().performRefresh();
+                        downstreamToken.performRefresh();
                         log.info("Token cache value has been refreshed");
 
                         redisTemplate.opsForValue().set(t.getId(), val.get(), getSecondsToExpire());
@@ -150,13 +156,13 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         }, holder);
     }
 
-    protected Optional<RefreshableCacheValue> getValue(Token holder) throws CacheException {
+    protected Optional<CacheValue> getValue(Token holder) throws CacheException {
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
         return work.executeForRefreshValueReturn(this::read, holder);
     }
 
-    protected abstract RefreshableCacheValue getValue(RefreshableCacheValue holder) throws CacheException;
+    protected abstract CacheValue getValue(CacheValue holder) throws CacheException;
 
     @Override
     @Transactional
@@ -177,26 +183,26 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         }, holder);
     }
 
-    private Optional<RefreshableCacheValue> read(Token holder) {
+    private Optional<CacheValue> read(Token holder) {
         return getRefreshValueWithResetExpiration(holder);
     }
 
-    private Optional<Token> read(RefreshableCacheValue holder) {
+    private Optional<Token> read(CacheValue holder) {
         return getTokenValueWithResetExpiration(holder);
     }
 
-    private Optional<RefreshableCacheValue> getRefreshValueWithResetExpiration(Token holder) {
+    private Optional<CacheValue> getRefreshValueWithResetExpiration(Token holder) {
         Object value = redisTemplate.opsForValue().get(holder.getId());
         redisTemplate.expire(holder.getId(), getSecondsToExpire());
 
         if (value != null) {
-            return Optional.of(getValue((RefreshableCacheValue) value));
+            return Optional.of(getValue((CacheValue) value));
         }
 
         return Optional.empty();
     }
 
-    private Optional<Token> getTokenValueWithResetExpiration(RefreshableCacheValue holder) {
+    private Optional<Token> getTokenValueWithResetExpiration(CacheValue holder) {
         Object value = redisTemplate.opsForValue().get(holder.getId());
         redisTemplate.expire(holder.getId(), getSecondsToExpire());
 
@@ -207,5 +213,5 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return Optional.empty();
     }
 
-    protected abstract Optional<Token> createToken(ServiceContext context) throws CacheException;
+    protected abstract Token createToken(ServiceContext context) throws CacheException;
 }

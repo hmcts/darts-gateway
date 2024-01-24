@@ -69,7 +69,7 @@ class ContextRegistryDocumentumToJwtServiceTest extends ContextRegistryParent {
             executeHandleRegister(client);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(generator,times(3)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(generator,times(1)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);
     }
 
@@ -95,7 +95,6 @@ class ContextRegistryDocumentumToJwtServiceTest extends ContextRegistryParent {
         verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);
     }
-
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
@@ -124,7 +123,7 @@ class ContextRegistryDocumentumToJwtServiceTest extends ContextRegistryParent {
             executeHandleLookup(client);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(generator, times(3)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(generator, times(1)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(generator);
     }
 

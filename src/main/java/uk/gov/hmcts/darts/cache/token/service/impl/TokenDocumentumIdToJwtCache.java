@@ -6,12 +6,11 @@ import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
-import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
-import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValueWithJwt;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
+import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
@@ -33,18 +32,18 @@ public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
     }
 
     @Override
-    protected Optional<Token> createToken(ServiceContext context) {
-        return Optional.of(Token.generateDocumentumToken(properties.isMapTokenToSession(), getValidateToken()));
+    protected Token createToken(ServiceContext context) {
+        return Token.generateDocumentumToken(properties.isMapTokenToSession(), getValidateToken());
     }
 
     @Override
-    public RefreshableCacheValueWithJwt createValue(ServiceContext context) throws CacheException {
-        return new RefreshableCacheValueWithJwt(context, cache);
+    public RefeshableTokenCacheValue createValue(ServiceContext context) throws CacheException {
+        return new RefeshableTokenCacheValue(context, cache);
     }
 
     @Override
-    protected RefreshableCacheValue getValue(RefreshableCacheValue holder) throws CacheException {
-        return new RefreshableCacheValueWithJwt((RefreshableCacheValueWithJwt) holder, cache);
+    protected CacheValue getValue(CacheValue holder) throws CacheException {
+        return new RefeshableTokenCacheValue((RefeshableTokenCacheValue) holder, cache);
     }
 
     @Override

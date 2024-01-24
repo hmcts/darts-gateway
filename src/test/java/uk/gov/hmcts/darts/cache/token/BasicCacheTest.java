@@ -18,11 +18,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
-import uk.gov.hmcts.darts.cache.token.service.DownstreamTokenisable;
-import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValue;
-import uk.gov.hmcts.darts.cache.token.service.RefreshableCacheValueWithJwt;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
+import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
+import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -111,17 +111,17 @@ class BasicCacheTest {
 
         String valueToken = "THIS IS MY VALUE TOKEN";
         ValidateToken validateToken = Mockito.mock(ValidateToken.class);
-        Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, validateToken));
+        Token returnToken = Token.readToken(valueToken, false, validateToken);
         Mockito.when(validateToken.test(Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
-        RefreshableCacheValue value = cache.createValue(context);
+        CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
         Assertions.assertEquals(TOKEN_STRING, token.get().getToken().get());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
         Assertions.assertNotNull(value.getServiceContext());
-        Assertions.assertEquals(valueToken, ((DownstreamTokenisable)value).getValidatedToken().get().getToken().get());
+        Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getValidatedToken().get().getToken().get());
     }
 
     @Test
@@ -134,12 +134,12 @@ class BasicCacheTest {
 
         String valueToken = "THIS IS MY VALUE TOKEN";
         ValidateToken valueValidateToken = (t) -> true;
-        Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, valueValidateToken));
+        Token returnToken = Token.readToken(valueToken, false, valueValidateToken);
         Mockito.when(validateToken.test(Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
-        RefreshableCacheValue value = cache.createValue(context);
+        CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
         Assertions.assertEquals(TOKEN_STRING, token.get().getToken().get());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
@@ -162,20 +162,20 @@ class BasicCacheTest {
 
         String valueToken = "THIS IS MY VALUE TOKEN";
         ValidateToken validateToken = Mockito.mock(ValidateToken.class);
-        Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, validateToken));
+        Token returnToken = Token.readToken(valueToken, false, validateToken);
         Mockito.when(validateToken.test(Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.notNull())).thenReturn(returnToken);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
-        RefreshableCacheValue value = cache.createValue(context);
+        CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
 
-        Optional<RefreshableCacheValue> refreshableCacheValue = cache.lookup(token.get());
+        Optional<CacheValue> refreshableCacheValue = cache.lookup(token.get());
 
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
         Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());
-        Assertions.assertEquals(valueToken, ((DownstreamTokenisable)value).getValidatedToken().get().getToken().get());
+        Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getValidatedToken().get().getToken().get());
     }
 
     @Test
@@ -190,15 +190,15 @@ class BasicCacheTest {
 
         String valueToken = "THIS IS MY VALUE TOKEN";
         ValidateToken validateToken = Mockito.mock(ValidateToken.class);
-        Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, validateToken));
+        Token returnToken = Token.readToken(valueToken, false, validateToken);
         Mockito.when(validateToken.test(Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
-        RefreshableCacheValue value = cache.createValue(context);
+        CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
 
-        Optional<RefreshableCacheValue> refreshableCacheValue = cache.lookup(token.get());
+        Optional<CacheValue> refreshableCacheValue = cache.lookup(token.get());
 
         Assertions.assertTrue(refreshableCacheValue.isEmpty());
     }
@@ -221,20 +221,20 @@ class BasicCacheTest {
         ValidateToken valueValidateToken = (t) -> true;
         ValidateToken valueValidateTokenFalse = (t) -> false;
 
-        Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, valueValidateToken));
+        Token returnToken = Token.readToken(valueToken, false, valueValidateToken);
         Optional<Token> returnTokenAlternative = Optional.of(Token.readToken(valueTokenAlternative, false, valueValidateTokenFalse));
 
         Mockito.when(generatable.createToken(Mockito.notNull())).thenReturn(returnToken).thenReturn(returnToken);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnTokenAlternative.get()).thenReturn(returnToken.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnTokenAlternative.get()).thenReturn(returnToken);
 
-        RefreshableCacheValue value = cache.createValue(context);
+        CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
 
-        Optional<RefreshableCacheValue> refreshableCacheValue = cache.lookup(token.get());
+        Optional<CacheValue> refreshableCacheValue = cache.lookup(token.get());
 
         Assertions.assertFalse(refreshableCacheValue.isEmpty());
 
-        DummyRefreshableCacheValueWithJwt dummyRefreshableCacheValueWithJwt = (DummyRefreshableCacheValueWithJwt)refreshableCacheValue.get();
+        DummyRefreshableCacheValueWithJwt dummyRefreshableCacheValueWithJwt = (DummyRefreshableCacheValueWithJwt) refreshableCacheValue.get();
         Assertions.assertEquals(valueToken, dummyRefreshableCacheValueWithJwt.getValidatedToken().get().getToken().get());
         Assertions.assertTrue(dummyRefreshableCacheValueWithJwt.hasRefreshed);
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
@@ -256,12 +256,12 @@ class BasicCacheTest {
         ValidateToken validateToken = Mockito.mock(ValidateToken.class);
         Mockito.when(validateToken.test(Mockito.notNull())).thenReturn(true);
 
-        Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, validateToken));
+        Token returnToken = Token.readToken(valueToken, false, validateToken);
 
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
-        RefreshableCacheValue value = cache.createValue(context);
+        CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
 
         cache.evict(token.get());
@@ -282,15 +282,15 @@ class BasicCacheTest {
         String valueToken = "THIS IS MY VALUE TOKEN";
 
         ValidateToken validateToken = Mockito.mock(ValidateToken.class);
-        Optional<Token> returnToken = Optional.of(Token.readToken(valueToken, false, validateToken));
+        Token returnToken = Token.readToken(valueToken, false, validateToken);
         Mockito.when(validateToken.test(Mockito.notNull())).thenReturn(true);
 
         // put the test into share mode
         Mockito.when(properties.isShareTokenForSameCredentials()).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
-        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken.get());
+        Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
-        RefreshableCacheValue value = cache.createValue(context);
+        CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
 
         cache.evict(token.get());
@@ -344,7 +344,7 @@ class BasicCacheTest {
         private final TokenGeneratable generatable;
 
         public DummyCache(RedisTemplate<String, Object> template, CacheProperties properties,
-                                      LockRegistry registry, ValidateToken validate, String token, TokenGeneratable generatable) {
+                          LockRegistry registry, ValidateToken validate, String token, TokenGeneratable generatable) {
             super(template, registry, properties);
             this.validate = validate;
             this.token = token;
@@ -357,18 +357,18 @@ class BasicCacheTest {
         }
 
         @Override
-        public Optional<Token> createToken(ServiceContext context) {
-            return Optional.of(Token.readToken(token, false, getValidateToken()));
+        public Token createToken(ServiceContext context) {
+            return Token.readToken(token, false, getValidateToken());
         }
 
         @Override
-        public RefreshableCacheValueWithJwt createValue(ServiceContext context) {
+        public RefeshableTokenCacheValue createValue(ServiceContext context) {
             return new DummyRefreshableCacheValueWithJwt(context, generatable);
         }
 
         @Override
-        protected RefreshableCacheValue getValue(RefreshableCacheValue holder) {
-            return new DummyRefreshableCacheValueWithJwt((DummyRefreshableCacheValueWithJwt)holder, generatable);
+        protected CacheValue getValue(CacheValue holder) {
+            return new DummyRefreshableCacheValueWithJwt((DummyRefreshableCacheValueWithJwt) holder, generatable);
         }
 
         @Override
@@ -377,10 +377,10 @@ class BasicCacheTest {
         }
     }
 
-    class DummyRefreshableCacheValueWithJwt extends RefreshableCacheValueWithJwt {
+    class DummyRefreshableCacheValueWithJwt extends RefeshableTokenCacheValue {
         boolean hasRefreshed;
 
-        public DummyRefreshableCacheValueWithJwt(ServiceContext context, TokenGeneratable registerable)  {
+        public DummyRefreshableCacheValueWithJwt(ServiceContext context, TokenGeneratable registerable) {
             super(context, registerable);
         }
 

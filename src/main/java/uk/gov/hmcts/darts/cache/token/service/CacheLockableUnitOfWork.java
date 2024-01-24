@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.cache.token.service;
 
 import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
+import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -26,17 +27,17 @@ public class CacheLockableUnitOfWork {
 
     @FunctionalInterface
     interface ExecuteValue {
-        void execute(RefreshableCacheValue value) throws CacheException;
+        void execute(CacheValue value) throws CacheException;
     }
 
     @FunctionalInterface
     interface ExecuteRefreshableValueReturn {
-        Optional<RefreshableCacheValue> execute(Token token) throws CacheException;
+        Optional<CacheValue> execute(Token token) throws CacheException;
     }
 
     @FunctionalInterface
     interface ExecuteTokenValueReturn {
-        Optional<Token> execute(RefreshableCacheValue refresh) throws CacheException;
+        Optional<Token> execute(CacheValue refresh) throws CacheException;
     }
 
     public void execute(Execute runnable, Token token) throws CacheException {
@@ -65,7 +66,7 @@ public class CacheLockableUnitOfWork {
         }
     }
 
-    public Optional<RefreshableCacheValue> executeForRefreshValueReturn(ExecuteRefreshableValueReturn runnable, Token token) throws CacheException {
+    public Optional<CacheValue> executeForRefreshValueReturn(ExecuteRefreshableValueReturn runnable, Token token) throws CacheException {
         Lock lock = lockRegistry.obtain(token.getId());
         lock.lock();
         try {
@@ -75,7 +76,7 @@ public class CacheLockableUnitOfWork {
         }
     }
 
-    public Optional<Token> executeForTokenReturn(ExecuteTokenValueReturn runnable, RefreshableCacheValue token) throws CacheException {
+    public Optional<Token> executeForTokenReturn(ExecuteTokenValueReturn runnable, CacheValue token) throws CacheException {
         Lock lock = lockRegistry.obtain(token.getId());
         lock.lock();
         try {

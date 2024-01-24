@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.cache.token.service;
+package uk.gov.hmcts.darts.cache.token.service.value.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -13,11 +13,12 @@ import  jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.springframework.xml.transform.StringSource;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
+import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 
 import java.io.StringWriter;
 
 @JsonTypeName("ServiceContextCacheValue")
-public class ServiceContextCacheValue implements RefreshableCacheValue {
+public class ServiceContextCacheValue implements CacheValue {
     private String contextStr;
 
     private String id;
@@ -85,17 +86,6 @@ public class ServiceContextCacheValue implements RefreshableCacheValue {
         }
 
         return context;
-    }
-
-    @Override
-    public boolean refresh() throws CacheException {
-        // do nothing by default
-        return false;
-    }
-
-    @Override
-    public void performRefresh() throws CacheException {
-
     }
 
     private String getUserName() throws CacheException {
