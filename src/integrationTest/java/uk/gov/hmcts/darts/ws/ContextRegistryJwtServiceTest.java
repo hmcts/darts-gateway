@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
 import documentum.contextreg.LookupResponse;
+import documentum.contextreg.RegisterResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
@@ -105,6 +107,22 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleRegisterFailure(ContextRegistryClient client) throws Exception {
+        when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
+            .thenThrow(new CacheTokenCreationException(""));
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/ctxtRegistry/register/soapRequest.xml");
+
+            soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
+            soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
+
+            SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+            Assertions.assertNull(response.getResponse().getValue().getReturn());
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)

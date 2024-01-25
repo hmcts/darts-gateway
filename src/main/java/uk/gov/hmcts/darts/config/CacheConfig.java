@@ -187,6 +187,7 @@ public class CacheConfig {
         return new TokenDocumentumIdToJwtCache(template, cache, properties, registry);
     }
 
+
     @Bean
     TokenGeneratable getTokenGeneratable(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
                                          CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {

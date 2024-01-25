@@ -150,4 +150,14 @@ class TokenTest {
         Assertions.assertFalse(token.valid());
         verify(validate, Mockito.times(1)).test(Mockito.notNull());
     }
+
+    @Test
+    void validateToken() {
+        ValidateToken validate = Mockito.mock(ValidateToken.class);
+        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+        Token token = Token.generateDocumentumToken(true, validate);
+        Assertions.assertTrue(token.valid());
+        verify(validate, Mockito.times(1)).test(Mockito.notNull());
+    }
+
 }

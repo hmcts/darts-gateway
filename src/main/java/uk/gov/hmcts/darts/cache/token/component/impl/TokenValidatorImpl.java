@@ -12,9 +12,11 @@ import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
+import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -25,9 +27,18 @@ import java.util.HashSet;
 @Slf4j
 public class TokenValidatorImpl implements TokenValidator {
 
-    private final DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
+    private DefaultJWTProcessor<SecurityContext> jwtProcessor;
 
-    public TokenValidatorImpl(SecurityProperties securityProperties) throws MalformedURLException {
+    private SecurityProperties securityProperties;
+
+    @Autowired
+    public TokenValidatorImpl(SecurityProperties securityProperties)  throws MalformedURLException {
+        this(securityProperties, new DefaultJWTProcessor<SecurityContext>());
+    }
+
+    public TokenValidatorImpl(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor) throws MalformedURLException {
+        this.securityProperties = securityProperties;
+        this.jwtProcessor = jwtProcessor;
         JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(
             JWSAlgorithm.RS256,
             securityProperties.getJwkSource()
@@ -63,8 +74,10 @@ public class TokenValidatorImpl implements TokenValidator {
         } catch (ParseException | JOSEException | BadJOSEException e) {
             log.error("JWT Token could not be validated", e);
             return false;
+        } catch (Exception e) {
+            log.error("Major token validation failure", e);
+            throw new CacheTokenValidationException("The token validation failed");
         }
-
         return true;
     }
 }

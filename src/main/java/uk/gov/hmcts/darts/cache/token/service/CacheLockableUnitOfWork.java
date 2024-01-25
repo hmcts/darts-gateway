@@ -75,14 +75,4 @@ public class CacheLockableUnitOfWork {
             lock.unlock();
         }
     }
-
-    public Optional<Token> executeForTokenReturn(ExecuteTokenValueReturn runnable, CacheValue token) throws CacheException {
-        Lock lock = lockRegistry.obtain(token.getId());
-        lock.lock();
-        try {
-            return runnable.execute(token);
-        } finally {
-            lock.unlock();
-        }
-    }
 }

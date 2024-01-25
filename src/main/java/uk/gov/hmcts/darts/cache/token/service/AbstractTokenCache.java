@@ -39,6 +39,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S6809")
     public Optional<Token> store(CacheValue value) throws CacheException {
         return store(value, null);
     }
