@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.cache.token.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -12,14 +11,11 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
-@EqualsAndHashCode
 @Getter
 public class Token {
 
-    @EqualsAndHashCode.Include
     private final String token;
 
-    @EqualsAndHashCode.Include
     private String sessionId = "";
 
     public static final AtomicLong COUNTER = new AtomicLong();

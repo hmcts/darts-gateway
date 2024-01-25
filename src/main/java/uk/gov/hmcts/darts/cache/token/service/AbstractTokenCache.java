@@ -152,7 +152,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 }
             }
 
-            log.info("Returning found value {}", holder.getId());
+            log.info("Returning found value");
             return val;
         }, holder);
     }
