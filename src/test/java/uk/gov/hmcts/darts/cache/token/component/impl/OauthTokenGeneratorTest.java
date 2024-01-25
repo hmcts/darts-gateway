@@ -9,7 +9,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
-import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
