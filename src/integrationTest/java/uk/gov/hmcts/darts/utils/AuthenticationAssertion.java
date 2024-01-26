@@ -118,7 +118,7 @@ public class AuthenticationAssertion {
         }
     }
 
-    public ServiceExceptionType getSoapFaultDetails(SoapFaultClientException exception) throws Exception {
+    public static ServiceExceptionType getSoapFaultDetails(SoapFaultClientException exception) throws Exception {
         SoapFaultDetailElement faultDetailElement = exception.getSoapFault().getFaultDetail().getDetailEntries().next();
         DOMResult result = (DOMResult) faultDetailElement.getResult();
 

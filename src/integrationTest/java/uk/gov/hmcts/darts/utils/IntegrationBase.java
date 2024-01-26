@@ -113,4 +113,12 @@ public class IntegrationBase {
 
         throw new AssertionFailedError("Don't have a context registry client!!!");
     }
+
+    protected void stopRedis() {
+        RedisConfiguration.REDISSERVER.stop();
+    }
+
+    protected void startRedis() {
+        RedisConfiguration.REDISSERVER.start();
+    }
 }
