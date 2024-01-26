@@ -249,8 +249,6 @@ class CasesWebServiceTest extends IntegrationBase {
 
             stubFor(post(urlPathEqualTo("/cases"))
                     .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
-            String expectedResponseStr = TestUtils.getContentsFromFile(
-                    "payloads/addCase/expectedResponse.xml");
 
             try {
                 // stop redis to force an error

@@ -160,6 +160,7 @@ class TokenValidatorImplTest {
             super(securityProperties, jwtProcessor);
         }
 
+        @Override
         boolean validateTheTokenExpiry(String accessToken) {
             // do not worry about validating the token for expiry directly
             return true;
