@@ -56,7 +56,6 @@ services:
     environment:
       - DAR_NOTIFY_DEFAULT_URL=http://darts-stub-services:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx
       - AAD_B2C_ROPC_CLIENT_ID_KEY
-      - DAR_NOTIFY_DEFAULT_URL
       - DARTS_API_URL
       - AAD_TENANT_ID
       - REDIS_CONNECTION_STRING

@@ -97,7 +97,7 @@ public class TokenValidatorImpl implements TokenValidator {
             Object expired = jwt.getJWTClaimsSet().getClaim("exp");
             if (expired != null) {
                 long expiry = ((Date) expired).getTime() - EXPIRE_JWT_MINUTES_BEFORE_TOKEN_EXPIRY * (1000 * 60);
-                long currentTime = Calendar.getInstance().getTime().getTime();
+                long currentTime = System.currentTimeMillis();
                 validated = currentTime < expiry;
 
                 if (validated) {
