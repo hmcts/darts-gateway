@@ -32,6 +32,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
@@ -172,7 +173,8 @@ public class CacheConfig {
             //.enableTimeToIdle()
             .entryTtl(Duration.ofSeconds(10))
             .disableCachingNullValues()
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()));
+            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()))
+            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
     }
 
     @ConditionalOnProperty(
@@ -209,6 +211,7 @@ public class CacheConfig {
         RedisTemplate<?, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         template.setValueSerializer(redisSerializer());
+        template.setKeySerializer(new StringRedisSerializer());
         return template;
     }
 

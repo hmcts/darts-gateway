@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.cache.token.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -12,9 +13,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 @Getter
+@EqualsAndHashCode
 public class Token {
 
-    private final String token;
+    private final String tokenString;
 
     private String sessionId = "";
 
@@ -23,37 +25,36 @@ public class Token {
     private Predicate<String> validate;
 
     Token(String token,  Predicate<String> validate) {
-        this.token = token;
+        this.tokenString = token;
         this.validate = validate;
     }
 
-    public Optional<String> getToken() {
-        if (validate != null && !validate.test(token)) {
+    public Optional<String> getTokenString() {
+        if (validate != null && !validate.test(tokenString)) {
             return Optional.empty();
         }
 
-        return Optional.of(token);
+        return Optional.of(tokenString);
     }
 
-    public Optional<String> getToken(boolean validateTokenBefore) {
-        if (validateTokenBefore) {
-            if (validate != null && !validate.test(token)) {
-                return Optional.empty();
-            }
+    public Optional<String> getTokenString(boolean validateTokenBefore) {
+        if (validateTokenBefore && validate != null && !validate.test(tokenString)) {
+            return Optional.empty();
         }
 
-        return Optional.of(token);
+        return Optional.of(tokenString);
     }
 
+    @EqualsAndHashCode.Include
     public String getId() {
-        return token + ":" + sessionId;
+        return TokenRegisterable.CACHE_PREFIX + ":" + tokenString + ":" + sessionId;
     }
 
     public boolean valid() {
-        if (validate != null && !token.isEmpty()) {
-            return validate.test(token);
+        if (validate != null && !tokenString.isEmpty()) {
+            return validate.test(tokenString);
         }
-        return !token.isEmpty();
+        return !tokenString.isEmpty();
     }
 
     void setSessionId(String sessionId) {

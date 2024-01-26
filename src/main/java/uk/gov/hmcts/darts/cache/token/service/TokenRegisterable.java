@@ -7,6 +7,9 @@ import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import java.util.Optional;
 
 public interface TokenRegisterable {
+
+    public static final String CACHE_PREFIX = "darts-gateway-token-service";
+
     Optional<Token> store(CacheValue value) throws CacheException;
 
     Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible) throws CacheException;

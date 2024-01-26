@@ -17,6 +17,7 @@ import org.springframework.xml.transform.StringSource;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 
 import java.util.function.Predicate;
 
@@ -56,7 +57,7 @@ class RefeshableTokenCacheValueTest {
         when(requestAttributes.getRequest()).thenReturn(request);
 
         String sessionId = "sessionId";
-        when(request.getSession(Mockito.eq(false))).thenReturn(null);
+        when(request.getSession(false)).thenReturn(null);
         when(request.getSession()).thenReturn(session);
         when(session.getId()).thenReturn(sessionId);
     }
@@ -81,8 +82,8 @@ class RefeshableTokenCacheValueTest {
         // run test
         RefeshableTokenCacheValue contextCacheValue = new RefeshableTokenCacheValue(context, generatable);
         Assertions.assertFalse(contextCacheValue.getContextString().isEmpty());
-        Assertions.assertEquals("${USER}:${PASSWORD}", contextCacheValue.getId());
-        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getToken());
+        Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":" + "${USER}:${PASSWORD}", contextCacheValue.getId());
+        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getTokenString());
     }
 
     @Test
@@ -94,8 +95,8 @@ class RefeshableTokenCacheValueTest {
         // run test
         RefeshableTokenCacheValue contextCacheValue = new RefeshableTokenCacheValue(context, generatable);
         Assertions.assertFalse(contextCacheValue.getContextString().isEmpty());
-        Assertions.assertEquals("${USER}:${PASSWORD}", contextCacheValue.getId());
-        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getToken());
+        Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":" + "${USER}:${PASSWORD}", contextCacheValue.getId());
+        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getTokenString());
 
         Assertions.assertFalse(contextCacheValue.refresh());
     }
@@ -103,17 +104,17 @@ class RefeshableTokenCacheValueTest {
     @Test
     void testRefreshToken() throws Exception {
         TokenGeneratable generatable = Mockito.mock(TokenGeneratable.class);
-        when(generatable.createToken(Mockito.eq(context))).thenReturn(token);
-        when(generatable.getToken(Mockito.eq(CACHED_TOKEN_STRING))).thenReturn(token);
+        when(generatable.createToken(context)).thenReturn(token);
+        when(generatable.getToken(CACHED_TOKEN_STRING)).thenReturn(token);
         when(generatable.createToken(Mockito.notNull())).thenReturn(token, replaceToken);
 
         // run test
         RefeshableTokenCacheValue contextCacheValue = new RefeshableTokenCacheValue(context, generatable);
         Assertions.assertFalse(contextCacheValue.getContextString().isEmpty());
-        Assertions.assertEquals("${USER}:${PASSWORD}", contextCacheValue.getId());
-        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getToken());
+        Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":" + "${USER}:${PASSWORD}", contextCacheValue.getId());
+        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getTokenString());
         Assertions.assertDoesNotThrow(() -> contextCacheValue.performRefresh());
-        Assertions.assertEquals(REPLACE_TOKEN_STRING, contextCacheValue.getToken());
+        Assertions.assertEquals(REPLACE_TOKEN_STRING, contextCacheValue.getTokenString());
     }
 
     @Test
@@ -125,9 +126,9 @@ class RefeshableTokenCacheValueTest {
         // run test
         RefeshableTokenCacheValue contextCacheValue = new RefeshableTokenCacheValue(context, generatable);
         Assertions.assertFalse(contextCacheValue.getContextString().isEmpty());
-        Assertions.assertEquals("${USER}:${PASSWORD}", contextCacheValue.getId());
-        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getToken());
+        Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":" + "${USER}:${PASSWORD}", contextCacheValue.getId());
+        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getTokenString());
         contextCacheValue.performRefresh();
-        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getToken());
+        Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getTokenString());
     }
 }

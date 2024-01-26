@@ -51,7 +51,7 @@ class TokenTest {
         ValidateToken validate = Mockito.mock(ValidateToken.class);
         Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(true, validate);
-        Assertions.assertNotNull(token.getToken());
+        Assertions.assertNotNull(token.getTokenString());
         Assertions.assertEquals(EXISTING_SESSION_ID, token.getSessionId());
 
         verify(validate).test(Mockito.notNull());
@@ -63,7 +63,7 @@ class TokenTest {
         ValidateToken validate = Mockito.mock(ValidateToken.class);
         Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(false, validate);
-        Assertions.assertNotNull(token.getToken());
+        Assertions.assertNotNull(token.getTokenString());
         Assertions.assertTrue(token.getSessionId().isEmpty());
     }
 
@@ -79,7 +79,7 @@ class TokenTest {
         Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
 
         Token token = Token.readToken(tokenStr, false, validate);
-        Assertions.assertEquals(tokenStr,token.getToken().get());
+        Assertions.assertEquals(tokenStr,token.getTokenString().get());
         Assertions.assertTrue(token.getSessionId().isEmpty());
 
         verify(validate).test(Mockito.notNull());
@@ -92,7 +92,7 @@ class TokenTest {
         Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
         Token token = Token.readToken(tokenStr, true, validate);
         Assertions.assertFalse(token.getSessionId().isEmpty());
-        Assertions.assertNotNull(token.getToken());
+        Assertions.assertNotNull(token.getTokenString());
     }
 
     @Test
@@ -102,14 +102,14 @@ class TokenTest {
         Mockito.when(validate.test(Mockito.notNull())).thenReturn(false);
         Token token = Token.readToken(tokenStr, true, validate);
         Assertions.assertFalse(token.getSessionId().isEmpty());
-        Assertions.assertTrue(token.getToken().isEmpty());
+        Assertions.assertTrue(token.getTokenString().isEmpty());
     }
 
     @Test
     void readTokenWithSession() {
         String tokenStr = "token";
         Token token = Token.readToken(tokenStr, true, null);
-        Assertions.assertEquals(tokenStr,token.getToken().get());
+        Assertions.assertEquals(tokenStr,token.getTokenString().get());
         Assertions.assertEquals(EXISTING_SESSION_ID, token.getSessionId());
     }
 
@@ -117,7 +117,7 @@ class TokenTest {
     void readTokenWithNoSession() {
         String tokenStr = "token";
         Token token = Token.readToken(tokenStr, false, null);
-        Assertions.assertEquals(tokenStr,token.getToken().get());
+        Assertions.assertEquals(tokenStr,token.getTokenString().get());
         Assertions.assertTrue(token.getSessionId().isEmpty());
     }
 
@@ -128,7 +128,7 @@ class TokenTest {
         Mockito.when(validate.test(Mockito.notNull())).thenReturn(false);
         Token token = Token.readToken(tokenStr, true, validate);
         Assertions.assertFalse(token.getSessionId().isEmpty());
-        Assertions.assertNotNull(token.getToken(false));
+        Assertions.assertNotNull(token.getTokenString(false));
 
         verify(validate, Mockito.times(0)).test(Mockito.notNull());
     }

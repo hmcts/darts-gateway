@@ -118,10 +118,10 @@ class BasicCacheTest {
 
         CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
-        Assertions.assertEquals(TOKEN_STRING, token.get().getToken().get());
+        Assertions.assertEquals(TOKEN_STRING, token.get().getTokenString().get());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
         Assertions.assertNotNull(value.getServiceContext());
-        Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getValidatedToken().get().getToken().get());
+        Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getValidatedToken().get().getTokenString().get());
     }
 
     @Test
@@ -141,7 +141,7 @@ class BasicCacheTest {
 
         CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
-        Assertions.assertEquals(TOKEN_STRING, token.get().getToken().get());
+        Assertions.assertEquals(TOKEN_STRING, token.get().getTokenString().get());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
 
         Mockito.when(properties.isShareTokenForSameCredentials()).thenReturn(true);
@@ -175,7 +175,7 @@ class BasicCacheTest {
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
         Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
         Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());
-        Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getValidatedToken().get().getToken().get());
+        Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getValidatedToken().get().getTokenString().get());
     }
 
     @Test
@@ -235,7 +235,7 @@ class BasicCacheTest {
         Assertions.assertFalse(refreshableCacheValue.isEmpty());
 
         DummyRefreshableCacheValueWithJwt dummyRefreshableCacheValueWithJwt = (DummyRefreshableCacheValueWithJwt) refreshableCacheValue.get();
-        Assertions.assertEquals(valueToken, dummyRefreshableCacheValueWithJwt.getValidatedToken().get().getToken().get());
+        Assertions.assertEquals(valueToken, dummyRefreshableCacheValueWithJwt.getValidatedToken().get().getTokenString().get());
         Assertions.assertTrue(dummyRefreshableCacheValueWithJwt.hasRefreshed);
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
         Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());

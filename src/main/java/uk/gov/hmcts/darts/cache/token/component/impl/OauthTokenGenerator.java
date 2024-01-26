@@ -1,62 +1,88 @@
 package uk.gov.hmcts.darts.cache.token.component.impl;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
 public class OauthTokenGenerator implements TokenGenerator {
     private final SecurityProperties securityProperties;
 
-    private final RestTemplate template;
+    public static final String CLIENT_ID_PARAMETER_KEY = "client_id";
+    public static final String SCOPE_PARAMETER_KEY = "scope";
+    public static final String GRANT_TYPE_PARAMETER_KEY = "grant_type";
+    public static final String USERNAME_PARAMETER_KEY = "username";
+    public static final String PASSWORD_PARAMETER_KEY = "password";
 
+
+    @SneakyThrows
     public String acquireNewToken(String username, String password) {
-        HttpEntity<MultiValueMap<String, String>> values = buildTokenRequestEntity(username, password);
+        Map<String, String> params = Map.of(CLIENT_ID_PARAMETER_KEY, securityProperties.getClientId(),
+                SCOPE_PARAMETER_KEY, securityProperties.getScope(),
+                GRANT_TYPE_PARAMETER_KEY, "password",
+                USERNAME_PARAMETER_KEY, username,
+                PASSWORD_PARAMETER_KEY, password
+        );
 
-        Map tokenMap = acquireToken(values, username, password);
+        String response = makeCall(URI.create(securityProperties.getTokenUri()), params);
 
-        if (tokenMap != null && tokenMap.containsKey("access_token")) {
-            return (String) tokenMap.get("access_token");
+        TokenResponse tokenResponse;
+        if (response != null && !response.isEmpty()) {
+            tokenResponse = new ObjectMapper()
+                    .readValue(response, TokenResponse.class);
+
+            if (tokenResponse.accessToken() == null) {
+                throw new CacheTokenCreationException("No token found for user name and password");
+            }
+        } else {
+            throw new CacheTokenCreationException("No token found for user name and password");
         }
 
-        throw new CacheTokenCreationException("Token details not found");
+        return tokenResponse.accessToken();
     }
 
-    Map<?,?> acquireToken(HttpEntity<MultiValueMap<String, String>> requestValues, String username, String password) {
-        Map<?,?> tokenMap = template.exchange(securityProperties.getTokenUri(), HttpMethod.POST, buildTokenRequestEntity(username, password), Map.class)
-            .getBody();
-        return tokenMap;
+    @SuppressWarnings("PMD.LawOfDemeter")
+    private HttpRequest.BodyPublisher encode(Map<String, String> params) {
+        String urlEncoded = params.entrySet()
+                .stream()
+                .map(entry -> new StringJoiner("=")
+                        .add(entry.getKey())
+                        .add(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
+                        .toString())
+                .collect(Collectors.joining("&"));
+
+        return HttpRequest.BodyPublishers.ofString(urlEncoded);
     }
 
-    private HttpEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String username, String password) {
-        MultiValueMap<String, String> formValues = new LinkedMultiValueMap<>();
-        formValues.add("grant_type", "password");
-        formValues.add("client_id", securityProperties.getClientId());
-        formValues.add("scope", securityProperties.getScope());
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private record TokenResponse(@JsonProperty("access_token") String accessToken) {}
 
-        if (username != null) {
-            formValues.add("username", username);
-        }
+    @SneakyThrows
+    protected String makeCall(URI url, Map<String, String> params) {
+        HttpRequest request = HttpRequest.newBuilder(url)
+                .POST(encode(params))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .build();
 
-        if (password != null) {
-            formValues.add("password", password);
-        }
-
-        var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        return new HttpEntity<>(formValues, headers);
+        return HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString())
+                .body();
     }
 }

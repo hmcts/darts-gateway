@@ -27,7 +27,7 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
     @Override
     protected Predicate<String> getValidateToken() {
         if (validationPredicate == null) {
-            validationPredicate =  (token) -> validator.validate(token);
+            validationPredicate = validator::validate;
         }
 
         return validationPredicate;

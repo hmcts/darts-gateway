@@ -18,7 +18,7 @@ import java.util.Optional;
 public class RefeshableTokenCacheValue extends ServiceContextCacheValue implements DownstreamTokenisableValue {
 
     @Getter
-    private String token;
+    private String tokenString;
 
     @JsonIgnore
     private TokenGeneratable jwtCacheRegistrable;
@@ -28,13 +28,13 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
 
         jwtCacheRegistrable = registerable;
         Token newtoken = jwtCacheRegistrable.createToken(context);
-        token = newtoken.getToken(false).orElse(EMPTY_DOWN_STREAM_TOKEN);
+        tokenString = newtoken.getTokenString(false).orElse(EMPTY_DOWN_STREAM_TOKEN);
     }
 
     public RefeshableTokenCacheValue(RefeshableTokenCacheValue context, TokenGeneratable registerable) throws CacheException {
         super(context);
         jwtCacheRegistrable = registerable;
-        this.token = context.token;
+        this.tokenString = context.tokenString;
     }
 
     public RefeshableTokenCacheValue() {
@@ -53,28 +53,27 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
         try {
             Token token = jwtCacheRegistrable.createToken(getServiceContext());
 
-            setDownstreamToken(token.getToken(false).orElse(EMPTY_DOWN_STREAM_TOKEN));
+            setDownstreamToken(token.getTokenString(false).orElse(EMPTY_DOWN_STREAM_TOKEN));
         } catch (CacheTokenCreationException e) {
             log.warn("Failure in refreshing a token continuing to use existing one");
         }
     }
 
-    @Override
     @JsonIgnore
     public Optional<Token> getValidatedToken() {
-        if (!token.equals(EMPTY_DOWN_STREAM_TOKEN)) {
-            return Optional.of(jwtCacheRegistrable.getToken(token));
+        if (!tokenString.equals(EMPTY_DOWN_STREAM_TOKEN)) {
+            return Optional.of(jwtCacheRegistrable.getToken(tokenString));
         }
 
         return Optional.empty();
     }
 
     public void setDownstreamToken(String token) {
-        this.token = token;
+        this.tokenString = token;
     }
 
     @Override
     public String getDownstreamToken() {
-        return token;
+        return tokenString;
     }
 }

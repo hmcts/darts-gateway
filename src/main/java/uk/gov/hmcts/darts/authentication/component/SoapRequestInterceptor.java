@@ -78,14 +78,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
 
             if (optRefreshableCacheValue.isEmpty()) {
-                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getToken().orElse(specifiedtoken));
+                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getTokenString().orElse(specifiedtoken));
             } else {
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
                     Optional<Token> downstreamToken = downstreamTokenisable.getValidatedToken();
 
-                    if (downstreamToken.isPresent() && downstreamToken.get().getToken().isPresent()) {
+                    if (downstreamToken.isPresent() && downstreamToken.get().getTokenString().isPresent()) {
                         new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                            downstreamToken.get().getToken().orElse(""));
+                            downstreamToken.get().getTokenString().orElse(""));
                     } else {
                         throw new DocumentumUnknownTokenSoapException(specifiedtoken);
                     }
@@ -137,17 +137,17 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
                             if (token.isPresent() && refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
                                 Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
-                                if (tokenDownstream.isEmpty() || tokenDownstream.get().getToken().isEmpty()) {
+                                if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
                                     throw new AuthenticationFailedException();
                                 } else {
                                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                        tokenDownstream.get().getToken().orElse(""));
+                                        tokenDownstream.get().getTokenString().orElse(""));
                                 }
-                            } else if (token.isEmpty() || token.get().getToken().isEmpty()) {
+                            } else if (token.isEmpty() || token.get().getTokenString().isEmpty()) {
                                 throw new AuthenticationFailedException();
                             } else {
                                 new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                    token.get().getToken().orElse(""));
+                                    token.get().getTokenString().orElse(""));
                             }
                         } else {
                             throw new NoIdentitiesFoundException();

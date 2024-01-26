@@ -75,10 +75,10 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
                 CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
-                work.execute((t) -> {
+                work.execute(t -> {
                     redisTemplate.opsForValue().set(t.getId(), value, getSecondsToExpire());
 
-                    redisTemplate.opsForValue().set(value.getId(), t.getToken(false).orElse(""), getSecondsToExpire());
+                    redisTemplate.opsForValue().set(value.getId(), t.getTokenString(false).orElse(""), getSecondsToExpire());
 
                 }, tokenToUse.get());
             }
@@ -93,7 +93,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             // if we have a global token stored then make sure the token has the service context if
             // not add one
-            work.execute((t) -> {
+            work.execute(t -> {
                 Optional<CacheValue> concurrentValue = lookup(t);
                 if (concurrentValue.isEmpty()) {
                     redisTemplate.opsForValue()
@@ -133,7 +133,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         // if the token is not valid then
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
-        return work.executeForRefreshValueReturn((t) -> {
+        return work.executeForRefreshValueReturn(t -> {
             Optional<CacheValue> val = getValue(holder);
 
             if (val.isPresent() && !holder.valid()) {
@@ -141,14 +141,12 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 val = Optional.empty();
                 log.info("Token manually removed as it is no longer valid");
             } else {
-                if (val.isPresent() && val.get() instanceof DownstreamTokenisableValue downstreamToken) {
-                    if (downstreamToken.refresh()) {
-                        log.info("Token cache value needs refreshing");
-                        downstreamToken.performRefresh();
-                        log.info("Token cache value has been refreshed");
+                if (val.isPresent() && val.get() instanceof DownstreamTokenisableValue downstreamToken && downstreamToken.refresh()) {
+                    log.info("Token cache value needs refreshing");
+                    downstreamToken.performRefresh();
+                    log.info("Token cache value has been refreshed");
 
-                        redisTemplate.opsForValue().set(t.getId(), val.get(), getSecondsToExpire());
-                    }
+                    redisTemplate.opsForValue().set(t.getId(), val.get(), getSecondsToExpire());
                 }
             }
 
@@ -170,7 +168,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     public void evict(Token holder) throws CacheException {
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
-        work.execute((t) -> {
+        work.execute(t -> {
             log.info("Evicting the token");
 
             if (!properties.isShareTokenForSameCredentials()) {

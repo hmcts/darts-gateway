@@ -14,9 +14,7 @@ import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheVal
 import java.util.function.Predicate;
 
 public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
-    public static Predicate<String> TOKEN_VALIDATION = token -> {
-        return true;
-    };
+    public static final Predicate<String> TOKEN_VALIDATION = token -> true;
 
     private final TokenGeneratable cache;
 

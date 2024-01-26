@@ -1,91 +1,95 @@
 package uk.gov.hmcts.darts.cache.token.component.impl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.http.HttpEntity;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 
-import java.util.HashMap;
+import java.net.URI;
 import java.util.Map;
 
+@ExtendWith(MockitoExtension.class)
 class OauthTokenGeneratorTest {
+
+    @Mock
+    private SecurityProperties securityProperties;
+
+    static final String TOKEN_URI = "http://tokenurl";
+    static final String SCOPE = "scope";
+    static final String CLIENT_ID = "clientid";
+
+    @BeforeEach
+    public void befoerTest() {
+        Mockito.when(securityProperties.getTokenUri()).thenReturn(TOKEN_URI);
+        Mockito.when(securityProperties.getClientId()).thenReturn(CLIENT_ID);
+        Mockito.when(securityProperties.getScope()).thenReturn(SCOPE);
+    }
+
     @Test
     void testAcquireTokenValid() {
-        SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
-        String tokenKey = "access_token";
-        String tokenValue = "actual token";
+        String tokenValue = """
+            {"access_token":"token"}
+            """;
 
-        Map<String, String> responseMap = new HashMap<>();
-        responseMap.put(tokenKey, tokenValue);
-
-        OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, new RestTemplate(), responseMap);
-        generatorCustom.response = responseMap;
-
-        String tokenuri = "token url";
-        String scope = "scope";
-        String clientid = "clientid";
-
-        Mockito.when(securityProperties.getTokenUri()).thenReturn(tokenuri);
-        Mockito.when(securityProperties.getClientId()).thenReturn(clientid);
-        Mockito.when(securityProperties.getScope()).thenReturn(scope);
+        OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, tokenValue);
 
         String username = "username";
         String password = "password";
 
-        String token = generatorCustom.acquireNewToken(username, password);
-        Assertions.assertEquals(clientid, generatorCustom.getParameters().get("client_id").get(0));
-        Assertions.assertEquals(scope, generatorCustom.getParameters().get("scope").get(0));
-        Assertions.assertEquals(username, generatorCustom.getParameters().get("username").get(0));
-        Assertions.assertEquals(password, generatorCustom.getParameters().get("password").get(0));
-        Assertions.assertEquals(token, tokenValue);
+        Assertions.assertEquals("token", generatorCustom.acquireNewToken(username, password));
+        Assertions.assertEquals(5, generatorCustom.parameters.size());
+        Assertions.assertEquals(TOKEN_URI, generatorCustom.uriSpecified.toString());
+        Assertions.assertEquals("password", generatorCustom.parameters.get(OauthTokenGenerator.GRANT_TYPE_PARAMETER_KEY));
+        Assertions.assertEquals(password, generatorCustom.parameters.get(OauthTokenGenerator.PASSWORD_PARAMETER_KEY));
+        Assertions.assertEquals(username, generatorCustom.parameters.get(OauthTokenGenerator.USERNAME_PARAMETER_KEY));
+        Assertions.assertEquals(SCOPE, generatorCustom.parameters.get(OauthTokenGenerator.SCOPE_PARAMETER_KEY));
+        Assertions.assertEquals(CLIENT_ID, generatorCustom.parameters.get(OauthTokenGenerator.CLIENT_ID_PARAMETER_KEY));
+
     }
 
     @Test
-    void testAcquireTokenInvalid() {
-        SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
-        String tokenKey = "access_token invalid";
-        String tokenValue = "actual token";
-
-        Map<String, String> responseMap = new HashMap<>();
-        responseMap.put(tokenKey, tokenValue);
-
-        OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, new RestTemplate(), responseMap);
-        generatorCustom.response = responseMap;
-
-        String tokenuri = "token url";
-        String scope = "scope";
-        String clientid = "clientid";
-
-        Mockito.when(securityProperties.getTokenUri()).thenReturn(tokenuri);
-        Mockito.when(securityProperties.getClientId()).thenReturn(clientid);
-        Mockito.when(securityProperties.getScope()).thenReturn(scope);
+    void testAcquireTokenInvalidToken() {
+        OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, "");
 
         String username = "username";
         String password = "password";
 
         Assertions.assertThrows(CacheTokenCreationException.class, () -> generatorCustom.acquireNewToken(username, password));
+        Assertions.assertEquals(5, generatorCustom.parameters.size());
+        Assertions.assertEquals(TOKEN_URI, generatorCustom.uriSpecified.toString());
+        Assertions.assertEquals("password", generatorCustom.parameters.get(OauthTokenGenerator.GRANT_TYPE_PARAMETER_KEY));
+        Assertions.assertEquals(password, generatorCustom.parameters.get(OauthTokenGenerator.PASSWORD_PARAMETER_KEY));
+        Assertions.assertEquals(username, generatorCustom.parameters.get(OauthTokenGenerator.USERNAME_PARAMETER_KEY));
+        Assertions.assertEquals(SCOPE, generatorCustom.parameters.get(OauthTokenGenerator.SCOPE_PARAMETER_KEY));
+        Assertions.assertEquals(CLIENT_ID, generatorCustom.parameters.get(OauthTokenGenerator.CLIENT_ID_PARAMETER_KEY));
     }
 
+    @Setter
     class OauthTokenGeneratorCustom extends OauthTokenGenerator {
 
-        private Map<?, ?> response;
+        private String response;
+
+        private URI uriSpecified;
 
         @Getter
-        private MultiValueMap<String, String> parameters;
+        private Map<String, String> parameters;
 
-        public OauthTokenGeneratorCustom(SecurityProperties securityProperties, RestTemplate template, Map<?, ?> response) {
-            super(securityProperties, template);
-            this.response = response;
+        public OauthTokenGeneratorCustom(SecurityProperties securityProperties, String token) {
+            super(securityProperties);
+            this.response = token;
         }
 
         @Override
-        Map<?, ?> acquireToken(HttpEntity<MultiValueMap<String, String>> requestValues, String username, String password) {
-            parameters = requestValues.getBody();
+        protected String makeCall(URI url, Map<String, String> params) {
+            uriSpecified = url;
+            parameters = params;
             return response;
         }
     }

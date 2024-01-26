@@ -13,6 +13,7 @@ import  jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.springframework.xml.transform.StringSource;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
+import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 
 import java.io.StringWriter;
@@ -30,11 +31,6 @@ public class ServiceContextCacheValue implements CacheValue {
     private JAXBContext jaxbContext;
 
     public ServiceContextCacheValue() throws CacheException {
-        try {
-            jaxbContext = JAXBContext.newInstance(ServiceContext.class);
-        } catch (JAXBException e) {
-            throw new CacheException(e);
-        }
     }
 
     public ServiceContextCacheValue(ServiceContext context) throws CacheException {
@@ -111,7 +107,7 @@ public class ServiceContextCacheValue implements CacheValue {
     @Override
     public String getId() throws CacheException {
         if (id == null) {
-            id = getUserName() + ":" + getPassword();
+            id = TokenRegisterable.CACHE_PREFIX + ":" + getUserName() + ":" + getPassword();
         }
         return id;
     }

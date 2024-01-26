@@ -38,7 +38,7 @@ public class ContextRegistryEndpoint {
             Optional<Token> token = registerable.store(registerable.createValue(addDocument.getValue().getContext()));
 
             // for now return a documentum id
-            token.ifPresent(value -> registerResponse.setReturn(value.getToken().orElse("")));
+            token.ifPresent(value -> registerResponse.setReturn(value.getTokenString().orElse("")));
         } catch (CacheTokenCreationException cte) {
             log.warn("Failed creation of token", cte);
         }

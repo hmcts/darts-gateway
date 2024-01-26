@@ -33,19 +33,16 @@ public class TokenValidatorImpl implements TokenValidator {
 
     private DefaultJWTProcessor<SecurityContext> jwtProcessor;
 
-    private SecurityProperties securityProperties;
-
     // Lets give our system a chance to refresh the cached token before official token expiry to avoid
     // expiry in transit
     private static final int EXPIRE_JWT_MINUTES_BEFORE_TOKEN_EXPIRY = 5;
 
     @Autowired
     public TokenValidatorImpl(SecurityProperties securityProperties)  throws MalformedURLException {
-        this(securityProperties, new DefaultJWTProcessor<SecurityContext>());
+        this(securityProperties, new DefaultJWTProcessor<>());
     }
 
     public TokenValidatorImpl(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor) throws MalformedURLException {
-        this.securityProperties = securityProperties;
         this.jwtProcessor = jwtProcessor;
         JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(
             JWSAlgorithm.RS256,
@@ -77,13 +74,7 @@ public class TokenValidatorImpl implements TokenValidator {
         log.debug("Validating JWT: {}", accessToken);
         boolean validated = false;
         try {
-            JWT jwt = SignedJWT.parse(accessToken);
-            Object expired = jwt.getJWTClaimsSet().getClaim("exp");
-            if (expired != null) {
-                long expiry = ((Date) expired).getTime() - EXPIRE_JWT_MINUTES_BEFORE_TOKEN_EXPIRY * (1000 * 60);
-                long currentTime = Calendar.getInstance().getTime().getTime();
-                validated = currentTime < expiry;
-            }
+            validated = validateTheTokenExpiry(accessToken);
 
             if (validated) {
                 jwtProcessor.process(accessToken, null);
@@ -96,6 +87,28 @@ public class TokenValidatorImpl implements TokenValidator {
             log.error("Major token validation failure", e);
             throw new CacheTokenValidationException("The token validation failed");
         }
+        return validated;
+    }
+
+    boolean validateTheTokenExpiry(String accessToken) {
+        boolean validated = false;
+        try {
+            JWT jwt = SignedJWT.parse(accessToken);
+            Object expired = jwt.getJWTClaimsSet().getClaim("exp");
+            if (expired != null) {
+                long expiry = ((Date) expired).getTime() - EXPIRE_JWT_MINUTES_BEFORE_TOKEN_EXPIRY * (1000 * 60);
+                long currentTime = Calendar.getInstance().getTime().getTime();
+                validated = currentTime < expiry;
+
+                if (validated) {
+                    log.info("Detected a token expiry");
+                }
+            }
+        } catch (ParseException e) {
+            log.error("JWT Token could not be validated", e);
+            validated = false;
+        }
+
         return validated;
     }
 }
