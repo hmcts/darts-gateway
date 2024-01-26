@@ -18,6 +18,6 @@ public class ProblemResponseMapping<T> {
     }
 
     public boolean match(String code) {
-        return code.toString().equals(problem.toString());
+        return code.equals(problem.toString());
     }
 }
