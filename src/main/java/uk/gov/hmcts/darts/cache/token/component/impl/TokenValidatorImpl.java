@@ -23,7 +23,6 @@ import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -100,7 +99,7 @@ public class TokenValidatorImpl implements TokenValidator {
                 long currentTime = System.currentTimeMillis();
                 validated = currentTime < expiry;
 
-                if (validated) {
+                if (!validated) {
                     log.info("Detected a token expiry");
                 }
             }
