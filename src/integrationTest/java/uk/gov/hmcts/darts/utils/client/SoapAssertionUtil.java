@@ -30,4 +30,9 @@ public class SoapAssertionUtil<O> {
         Assertions.assertEquals(code, response.getCode(), "Expected code to be equal");
         Assertions.assertEquals(message, response.getMessage(), "Expected message to be equal");
     }
+
+    public static void assertErrorResponse(String code, DARTSResponse response)
+            throws Exception {
+        Assertions.assertEquals(code, response.getCode(), "Expected code to be equal");
+    }
 }

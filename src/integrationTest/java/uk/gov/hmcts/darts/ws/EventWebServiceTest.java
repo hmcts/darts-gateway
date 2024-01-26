@@ -1,7 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -10,7 +10,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
+import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
@@ -36,6 +39,9 @@ class EventWebServiceTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/invalid-dailyList.xml") Resource invalidDailyListRequest;
     private @Value("classpath:payloads/events/invalid-dailyList-response.xml") Resource expectedResponse;
+
+    private static final DailyListAPIProblemResponseMapper
+        DAILY_LIST_API_PROBLEM_RESPONSE_MAPPER = new DailyListAPIProblemResponseMapper();
 
     @MockBean
     private OauthTokenGenerator mockOauthTokenGenerator;
@@ -174,7 +180,7 @@ class EventWebServiceTest extends IntegrationBase {
 
             theEventApi.willRespondSuccessfully();
 
-            Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
+            Assertions.assertThrows(SoapFaultClientException.class, () -> {
                 client.send(getGatewayUri(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
             });
             theEventApi.verifyDoesntReceiveEvent();
@@ -221,7 +227,7 @@ class EventWebServiceTest extends IntegrationBase {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.returnsFailureWhenPostingDailyList();
 
-            Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
+            org.assertj.core.api.Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
                 client.addDocument(getGatewayUri(), validDlEventResponse.getContentAsString(Charset.defaultCharset()));
             });
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
@@ -236,16 +242,37 @@ class EventWebServiceTest extends IntegrationBase {
         DartsGatewayClient client
     ) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-            dailyListApiStub.willRespondSuccessfully();
+            dailyListApiStub.returnsFailureWhenPostingDailyList();
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                    getGatewayUri(),
-                   invalidDailyListRequest.getContentAsString(
-                       Charset.defaultCharset())
+                    validDlEvent.getContentAsString(Charset.defaultCharset())
                );
-            response.assertIdenticalResponse(client.convertData(
-                   expectedResponse.getContentAsString(Charset.defaultCharset()),
-                   AddDocumentResponse.class
-               ).getValue());
+
+            ProblemResponseMapping<?> op = getSpecificSoapErrorCode(PostDailyListErrorCode.DAILYLIST_PROCESSOR_NOT_FOUND.getValue(),
+                                                                    DAILY_LIST_API_PROBLEM_RESPONSE_MAPPER
+            );
+
+            SoapAssertionUtil.assertErrorResponse(op.getMessage().getCode(), op.getMessage().getMessage(), response.getResponse().getValue().getReturn());
+
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesInvalidDailyListPayloadNoDartsAPIProblemBody(
+            DartsGatewayClient client
+    ) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            dailyListApiStub.returnsFailureWhenPostingDailyList(false);
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                    getGatewayUri(),
+                    validDlEvent.getContentAsString(Charset.defaultCharset())
+            );
+
+            SoapAssertionUtil.assertErrorResponse(String.valueOf(500), response.getResponse().getValue().getReturn());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);

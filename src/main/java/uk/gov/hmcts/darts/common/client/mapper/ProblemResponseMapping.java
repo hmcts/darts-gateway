@@ -16,4 +16,8 @@ public class ProblemResponseMapping<T> {
     public boolean match(Problem problemToMatch) {
         return problemToMatch.getType().toString().equals(problem.toString());
     }
+
+    public boolean match(String code) {
+        return code.toString().equals(problem.toString());
+    }
 }

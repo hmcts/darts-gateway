@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
+import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMappingOperation;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 
@@ -23,6 +27,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
@@ -104,6 +109,16 @@ public class IntegrationBase {
         }
 
         return ipaddressStr;
+    }
+
+    protected ProblemResponseMapping<?> getSpecificSoapErrorCode(String soapToExpect, APIProblemResponseMapper mapper) {
+        List<ProblemResponseMappingOperation<?>> responseMappingOperations =
+                mapper.getResponseMappings().stream().filter(httpResponseCode -> httpResponseCode.getProblemResponseMappingList()
+                        .stream().anyMatch(mapperEntry -> mapperEntry.match(soapToExpect))).toList();
+
+        Assertions.assertEquals(1, responseMappingOperations.size());
+        return responseMappingOperations.get(0).getProblemResponseMappingList().stream().filter(entry ->
+                entry.match(soapToExpect)).findFirst().get();
     }
 
     protected ContextRegistryClient getContextClient() {
