@@ -89,7 +89,7 @@ class RefeshableTokenCacheValueTest {
     @Test
     void testNeedRefreshing() throws Exception {
         TokenGeneratable generatable = Mockito.mock(TokenGeneratable.class);
-        when(generatable.getToken(Mockito.eq(CACHED_TOKEN_STRING))).thenReturn(token);
+        when(generatable.getToken(CACHED_TOKEN_STRING)).thenReturn(token);
         when(generatable.createToken(Mockito.notNull())).thenReturn(token);
 
         // run test
@@ -120,7 +120,7 @@ class RefeshableTokenCacheValueTest {
     @Test
     void testRefreshTokenFailure() throws Exception {
         TokenGeneratable generatable = Mockito.mock(TokenGeneratable.class);
-        when(generatable.getToken(Mockito.eq(CACHED_TOKEN_STRING))).thenReturn(token);
+        when(generatable.getToken(CACHED_TOKEN_STRING)).thenReturn(token);
         when(generatable.createToken(Mockito.notNull())).thenReturn(token).thenThrow(new CacheTokenCreationException(""));
 
         // run test
