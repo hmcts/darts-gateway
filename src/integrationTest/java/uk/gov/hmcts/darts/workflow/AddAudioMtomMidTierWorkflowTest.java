@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
@@ -26,11 +27,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
 class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @MockBean
-    private OauthTokenGenerator generator;
+    private TokenGenerator generator;
+
+    @MockBean
+    private TokenValidator validator;
 
     @BeforeEach
     void before() throws Exception {
         Mockito.when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
+        Mockito.when(validator.validate(Mockito.anyString())).thenReturn(true);
 
         AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
                 AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE);

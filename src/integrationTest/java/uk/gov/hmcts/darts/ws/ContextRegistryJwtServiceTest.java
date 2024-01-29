@@ -1,15 +1,25 @@
 package uk.gov.hmcts.darts.ws;
 
+import documentum.contextreg.LookupResponse;
+import documentum.contextreg.RegisterResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
+import uk.gov.hmcts.darts.utils.TestUtils;
+import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
+
+import java.net.URL;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,20 +29,34 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("int-test-jwt-token")
 class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @MockBean
-    private OauthTokenGenerator generator;
+    private TokenGenerator generator;
 
     @Autowired
     private CacheProperties properties;
 
+    @MockBean
+    private TokenValidator tokenValidator;
+
     private static final int REGISTERED_USER_COUNT = 10;
+
+    private static final String CONTEXT_REGISTRY_TOKEN = "testToken";
 
     @BeforeEach
     public void before() {
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
 
+        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
+
+        when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
+            .thenReturn(CONTEXT_REGISTRY_TOKEN);
+
+        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
-            when(generator.acquireNewToken("user" + i, "pass")).thenReturn("test2");
+
+            when(tokenValidator.validate(Mockito.eq("test2"))).thenReturn(true);
+            when(generator.acquireNewToken(Mockito.eq("user" + i), Mockito.eq("pass"))).thenReturn("test2");
         }
     }
 
@@ -80,6 +104,23 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     void testHandleRegister(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleRegister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleRegisterFailure(ContextRegistryClient client) throws Exception {
+        when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
+            .thenThrow(new CacheTokenCreationException(""));
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/ctxtRegistry/register/soapRequest.xml");
+
+            soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
+            soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
+
+            SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+            Assertions.assertNull(response.getResponse().getValue().getReturn());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
@@ -134,6 +175,25 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     void testHandleLookup(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleLookup(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleLookupTokenExpired(ContextRegistryClient client) throws Exception {
+        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, false, false);
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+
+            String token = registerToken(client);
+
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/ctxtRegistry/lookup/soapRequest.xml");
+            soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
+
+            SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+            Assertions.assertNull(response.getResponse().getValue().getReturn());
+            verify(tokenValidator, times(2)).validate(CONTEXT_REGISTRY_TOKEN);
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 

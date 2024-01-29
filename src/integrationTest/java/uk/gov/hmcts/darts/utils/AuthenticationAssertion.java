@@ -116,10 +116,9 @@ public class AuthenticationAssertion {
             Assertions.assertEquals(FaultErrorCodes.E_UNKNOWN_TOKEN, FaultErrorCodes.valueOf(type.getMessageId()));
             Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), invalidToken), type.getMessage());
         }
-
     }
 
-    public ServiceExceptionType getSoapFaultDetails(SoapFaultClientException exception) throws Exception {
+    public static ServiceExceptionType getSoapFaultDetails(SoapFaultClientException exception) throws Exception {
         SoapFaultDetailElement faultDetailElement = exception.getSoapFault().getFaultDetail().getDetailEntries().next();
         DOMResult result = (DOMResult) faultDetailElement.getResult();
 

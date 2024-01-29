@@ -18,6 +18,8 @@ java:
           alias: MAX_FILE_UPLOAD_SIZE_MEGABYTES
         - name: redis-connection-string
           alias: REDIS_CONNECTION_STRING
+        - name: AzureAdB2CTenantId
+          alias: AAD_B2C_TENANT_ID_KEY
   environment:
     DAR_NOTIFY_DEFAULT_URL: https://darts-stub-services.staging.platform.hmcts.net/VIQDARNotifyEvent/DARNotifyEvent.asmx
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net

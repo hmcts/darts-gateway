@@ -32,12 +32,15 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
-import uk.gov.hmcts.darts.cache.token.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.documentum.DocumentumIdToJwtCache;
-import uk.gov.hmcts.darts.cache.token.jwt.JwtCache;
+import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.service.impl.TokenDocumentumIdToJwtCache;
+import uk.gov.hmcts.darts.cache.token.service.impl.TokenJwtCache;
 
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -170,7 +173,8 @@ public class CacheConfig {
             //.enableTimeToIdle()
             .entryTtl(Duration.ofSeconds(10))
             .disableCachingNullValues()
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()));
+            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()))
+            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
     }
 
     @ConditionalOnProperty(
@@ -178,17 +182,18 @@ public class CacheConfig {
         havingValue = "documentum-to-jwt",
         matchIfMissing = true)
     @Bean(value = "primarycache")
-    DocumentumIdToJwtCache getDefaultTokenCache(RedisTemplate<String, Object> template,
-                                                CacheProperties properties,
-                                                TokenGeneratable cache,
-                                                OauthTokenGenerator jwtGenerator, LockRegistry registry) {
-        return new DocumentumIdToJwtCache(template, cache, properties, registry);
+    TokenDocumentumIdToJwtCache getDefaultTokenCache(RedisTemplate<String, Object> template,
+                                                     CacheProperties properties,
+                                                     TokenGeneratable cache,
+                                                     LockRegistry registry) {
+        return new TokenDocumentumIdToJwtCache(template, cache, properties, registry);
     }
 
+
     @Bean
-    TokenGeneratable getTokenGeneratable(RedisTemplate<String, Object> template,  OauthTokenGenerator jwtGenerator,
-                                         CacheProperties cxtProperties, LockRegistry registry) {
-        return new JwtCache(template, jwtGenerator, cxtProperties, registry);
+    TokenGeneratable getTokenGeneratable(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
+                                         CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
+        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
     }
 
     @ConditionalOnProperty(
@@ -196,9 +201,9 @@ public class CacheConfig {
         havingValue = "jwt",
         matchIfMissing = false)
     @Bean(value = "primarycache")
-    JwtCache getJwtTokenCache(RedisTemplate<String, Object> template, OauthTokenGenerator jwtGenerator,
-                              CacheProperties cxtProperties, LockRegistry registry) {
-        return new JwtCache(template, jwtGenerator, cxtProperties, registry);
+    TokenJwtCache getJwtTokenCache(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
+                                   CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
+        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
     }
 
     @Bean
@@ -206,6 +211,7 @@ public class CacheConfig {
         RedisTemplate<?, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         template.setValueSerializer(redisSerializer());
+        template.setKeySerializer(new StringRedisSerializer());
         return template;
     }
 

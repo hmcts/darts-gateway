@@ -153,8 +153,7 @@ jacocoTestReport {
 }
 
 project.tasks['sonarqube'].dependsOn jacocoTestReport
-project.tasks['check'].dependsOn classes
-project.tasks['test'].dependsOn integration
+project.tasks['check'].dependsOn classes,integration
 
 def sonarExclusions = [
   '**/com/emc/**',
@@ -303,6 +302,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
   implementation group: 'org.springframework', name: 'spring-context'
   implementation 'org.springframework.integration:spring-integration-redis:6.2.1'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
 
   implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
