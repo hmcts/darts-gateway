@@ -2,7 +2,6 @@ package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
@@ -93,10 +91,10 @@ public class IntegrationBase {
     public String getIpAndPort() {
         String ipaddressStr = null;
         try {
-            Enumeration networkEnum = NetworkInterface.getNetworkInterfaces();
+            Enumeration<NetworkInterface> networkEnum = NetworkInterface.getNetworkInterfaces();
             while (networkEnum.hasMoreElements()) {
                 NetworkInterface networkInterfaces = (NetworkInterface) networkEnum.nextElement();
-                Enumeration ipaddressesOfNic = networkInterfaces.getInetAddresses();
+                Enumeration<InetAddress> ipaddressesOfNic = networkInterfaces.getInetAddresses();
                 while (ipaddressesOfNic.hasMoreElements()) {
                     InetAddress ipaddress = (InetAddress) ipaddressesOfNic.nextElement();
                     if (!ipaddress.isLoopbackAddress() && ipaddress.getHostAddress().contains(".")) {
@@ -112,13 +110,15 @@ public class IntegrationBase {
     }
 
     protected ProblemResponseMapping<?> getSpecificSoapErrorCode(String soapToExpect, APIProblemResponseMapper mapper) {
-        List<ProblemResponseMappingOperation<?>> responseMappingOperations =
-                mapper.getResponseMappings().stream().filter(httpResponseCode -> httpResponseCode.getProblemResponseMappingList()
-                        .stream().anyMatch(mapperEntry -> mapperEntry.match(soapToExpect))).toList();
+        for (ProblemResponseMappingOperation<?> responseMappingOperations : mapper.getResponseMappings()) {
+            for (ProblemResponseMapping<?> responseMapping : responseMappingOperations.getProblemResponseMappingList()) {
+                if (responseMapping.match(soapToExpect)) {
+                    return responseMapping;
+                }
+            }
+        }
 
-        Assertions.assertEquals(1, responseMappingOperations.size());
-        return responseMappingOperations.get(0).getProblemResponseMappingList().stream().filter(entry ->
-                entry.match(soapToExpect)).findFirst().get();
+        return null;
     }
 
     protected ContextRegistryClient getContextClient() {

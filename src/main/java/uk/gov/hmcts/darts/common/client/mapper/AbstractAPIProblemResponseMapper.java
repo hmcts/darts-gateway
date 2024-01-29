@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractAPIProblemResponseMapper implements APIProblemResponseMapper {
-    private final List<ProblemResponseMappingOperation<?>> operationErrorResponseMappingList = Collections.synchronizedList(
+    private final List<ProblemResponseMappingOperation> operationErrorResponseMappingList = Collections.synchronizedList(
         new ArrayList<>());
 
     @Override
@@ -17,7 +17,7 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
         operationErrorResponseMappingList.add(operation);
     }
 
-    public List<ProblemResponseMappingOperation<?>> getResponseMappings() {
+    public List<ProblemResponseMappingOperation> getResponseMappings() {
         return operationErrorResponseMappingList;
     }
 
