@@ -36,7 +36,7 @@ public class OauthTokenGenerator implements TokenGenerator {
     public String acquireNewToken(String username, String password) {
         Map<String, String> params = Map.of(CLIENT_ID_PARAMETER_KEY, securityProperties.getClientId(),
                 SCOPE_PARAMETER_KEY, securityProperties.getScope(),
-                GRANT_TYPE_PARAMETER_KEY, "password",
+                GRANT_TYPE_PARAMETER_KEY, PASSWORD_PARAMETER_KEY,
                 USERNAME_PARAMETER_KEY, username,
                 PASSWORD_PARAMETER_KEY, password
         );
@@ -59,7 +59,7 @@ public class OauthTokenGenerator implements TokenGenerator {
     }
 
     @SuppressWarnings("PMD.LawOfDemeter")
-    private HttpRequest.BodyPublisher encode(Map<String, String> params) {
+    public static String encode(Map<String, String> params) {
         String urlEncoded = params.entrySet()
                 .stream()
                 .map(entry -> new StringJoiner("=")
@@ -68,7 +68,7 @@ public class OauthTokenGenerator implements TokenGenerator {
                         .toString())
                 .collect(Collectors.joining("&"));
 
-        return HttpRequest.BodyPublishers.ofString(urlEncoded);
+        return urlEncoded;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -76,8 +76,9 @@ public class OauthTokenGenerator implements TokenGenerator {
 
     @SneakyThrows
     protected String makeCall(URI url, Map<String, String> params) {
+        HttpRequest.BodyPublisher parametersToSend = HttpRequest.BodyPublishers.ofString(encode(params));
         HttpRequest request = HttpRequest.newBuilder(url)
-                .POST(encode(params))
+                .POST(parametersToSend)
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
 

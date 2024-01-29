@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 
 @Slf4j
 public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratable {
-    public Predicate<String> validationPredicate;
+    private static Predicate<String> validationPredicate;
 
     @Override
     protected Predicate<String> getValidateToken() {
