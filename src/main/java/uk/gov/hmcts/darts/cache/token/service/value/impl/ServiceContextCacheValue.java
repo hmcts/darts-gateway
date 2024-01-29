@@ -28,17 +28,19 @@ public class ServiceContextCacheValue implements CacheValue {
 
     protected static final String EMPTY_DOWN_STREAM_TOKEN = "";
 
+    private JAXBContext jaxbContext;
+
     public ServiceContextCacheValue() throws CacheException {
     }
 
     public ServiceContextCacheValue(ServiceContext context) throws CacheException {
 
         try {
-            JAXBElement<ServiceContext> servicecontext =  new ObjectFactory().createServiceContext(context);
+            JAXBElement<ServiceContext> scontext =  new ObjectFactory().createServiceContext(context);
             StringWriter sw = new StringWriter();
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceContext.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbMarshaller.marshal(servicecontext, sw);
+            jaxbMarshaller.marshal(scontext, sw);
             contextStr = sw.toString();
         } catch (JAXBException e) {
             throw new CacheException(e);
@@ -46,8 +48,14 @@ public class ServiceContextCacheValue implements CacheValue {
     }
 
     public ServiceContextCacheValue(ServiceContextCacheValue value) {
+        try {
+            jaxbContext = JAXBContext.newInstance(ServiceContext.class);
+        } catch (JAXBException e) {
+            throw new CacheException(e);
+        }
         setId(value.getId());
         setContextString(value.getContextString());
+
     }
 
 
@@ -77,8 +85,8 @@ public class ServiceContextCacheValue implements CacheValue {
     }
 
     private String getUserName() throws CacheException {
-        ServiceContext serviceContext = getServiceContext();
-        Identity identity = serviceContext.getIdentities().get(0);
+        ServiceContext context = getServiceContext();
+        Identity identity = context.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getUserName();
         }
@@ -87,8 +95,8 @@ public class ServiceContextCacheValue implements CacheValue {
     }
 
     private String getPassword() throws CacheException {
-        ServiceContext serviceContext = getServiceContext();
-        Identity identity = serviceContext.getIdentities().get(0);
+        ServiceContext context = getServiceContext();
+        Identity identity = context.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getPassword();
         }
