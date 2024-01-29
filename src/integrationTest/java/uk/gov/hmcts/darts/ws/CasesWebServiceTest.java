@@ -6,10 +6,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
-import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
+import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
+import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
+import uk.gov.hmcts.darts.utils.AuthenticationAssertion;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -31,12 +37,17 @@ import static org.mockito.Mockito.when;
 class CasesWebServiceTest extends IntegrationBase {
 
     @MockBean
-    private OauthTokenGenerator mockOauthTokenGenerator;
+    private TokenGenerator mockOauthTokenGenerator;
+
+    @MockBean
+    private TokenValidator tokenValidator;
 
     @BeforeEach
     public void before() {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
+
+        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
     }
 
     @ParameterizedTest
@@ -225,4 +236,36 @@ class CasesWebServiceTest extends IntegrationBase {
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testHandlesAddCaseWithRedisNotStartedUnknownFailure(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                    "payloads/addCase/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                    "payloads/addCase/dartsApiResponse.json");
+
+            stubFor(post(urlPathEqualTo("/cases"))
+                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+
+            try {
+                // stop redis to force an error
+                stopRedis();
+                client.addCases(getGatewayUri(), soapRequestStr);
+                Assertions.fail();
+            } catch (SoapFaultClientException e) {
+                ServiceExceptionType type = AuthenticationAssertion.getSoapFaultDetails(e);
+                Assertions.assertEquals(FaultErrorCodes.E_UNSUPPORTED_EXCEPTION, FaultErrorCodes.valueOf(type.getMessageId()));
+                Assertions.assertEquals(
+                        SoapFaultServiceException.getMessage(FaultErrorCodes.E_UNSUPPORTED_EXCEPTION.name()),
+                        type.getMessage()
+                );
+            } finally {
+                // start redis
+                startRedis();
+            }
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
 }

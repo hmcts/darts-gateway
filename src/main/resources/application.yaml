@@ -1,6 +1,8 @@
 server:
   port: 8070
 
+
+
 management:
   endpoint:
     health:
@@ -16,6 +18,9 @@ springdoc:
 
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
+  banner:
+    location=banner.txt
+
   config:
     import: "optional:configtree:/mnt/secrets/darts/"
   application:
@@ -61,12 +66,16 @@ darts-gateway:
   redis:
     connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
     ssl-enabled: ${REDIS_SSL_ENABLED:true}
-
-azure-ad-ropc:
-  token-uri: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token
-  scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_ROPC_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Functional.Test
-  client-id: ${AAD_B2C_ROPC_CLIENT_ID_KEY:#{null}}
-
+  security:
+    base-uri: https://hmctsstgextid.b2clogin.com
+    auth-uri: ${darts-gateway.security.base-uri}/hmctsstgextid.onmicrosoft.com
+    token-uri: ${darts-gateway.security.auth-uri}/${darts-gateway.security.signin-policy}/oauth2/v2.0/token
+    scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_ROPC_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Functional.Test
+    client-id: ${AAD_B2C_ROPC_CLIENT_ID_KEY:#{null}}
+    jwk-set-uri: ${darts-gateway.security.auth-uri}/${darts-gateway.security.signin-policy}/discovery/v2.0/keys
+    sign-in-policy: B2C_1_ropc_darts_signin
+    issuer-uri: ${darts-gateway.security.base-uri}/${AAD_B2C_TENANT_ID_KEY:00000000-0000-0000-0000-000000000000}/v2.0/
+    claims: emails
 logging:
   level:
     uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}

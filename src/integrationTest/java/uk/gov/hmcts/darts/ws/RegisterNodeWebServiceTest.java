@@ -5,10 +5,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
-import uk.gov.hmcts.darts.config.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -28,10 +30,15 @@ import static org.mockito.Mockito.when;
 class RegisterNodeWebServiceTest extends IntegrationBase {
 
     @MockBean
-    private OauthTokenGenerator mockOauthTokenGenerator;
+    private TokenGenerator mockOauthTokenGenerator;
+
+    @MockBean
+    private TokenValidator tokenValidator;
 
     @BeforeEach
     public void before() {
+        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
+
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
     }

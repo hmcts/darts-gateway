@@ -3,10 +3,14 @@
 # SoapUI
 
 * [SoapUI](https://www.soapui.org/downloads/soapui/) can be used for "Try it out" functionality
-  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER).
-* **IMPORTANT! The property values will need to be updated to suit your test user, remembering not to commit them if you make any changes!**
-* Go to the top level project folder in SoapUI and choose Custom Properties to change them.
-* See https://www.soapui.org/docs/soap-and-wsdl/
+  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
+following properties within SoapUI
+
+  *  username - The user to authenticate with
+  *  password - The password to authenticate with
+  *  token - The token (either jwt or documentum) to authenticate with
+
+* **IMPORTANT! Do not add the properties as project properties as they will be saved back to the committed xml files. Instead set them as global properties. See https://www.soapui.org/docs/soap-and-wsdl/**
 
 ## DARTSService SoapUI
 
@@ -14,7 +18,7 @@
   * http://localhost:8070/service/darts/DARTSService?wsdl
 * Import SOAP Project [README-DARTSService](README-DARTSService-soapui-project.xml) with
   initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
-* Sample requests for all operations have been created. Initial requests e.g. addCase will use the ServiceContext Soap Header with some custom project
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g. addCase will use the ServiceContext Soap Header with some custom project
   properties: `userName="${#Project#userName}" password="${#Project#password}"`
 * When testing the add audio endpoint make sure to change the properties to support MTOM and Multipart. Additionally, attach an mp2 file
 
@@ -24,7 +28,7 @@
   * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
 * Import SOAP Project [README-ContextRegistryService](README-ContextRegistryService-soapui-project.xml) with
   initial [ContextRegistryService WSDL](context/src/main/resources/ws/ContextRegistryService.wsdl).
-* Sample requests for all operations have been created. Initial requests e.g. register will use the ServiceContext Soap Header with some custom project
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g. register will use the ServiceContext Soap Header with some custom project
   properties: `userName="${#Project#userName}" password="${#Project#password}"`
 * Requests for lookup / unregister operations use the JWT token property provided in the Soap Body, so you will need to remember to update it using the register
   response: `<token>${#Project#token}</token>`
@@ -46,13 +50,73 @@ To build the project execute the following command:
 ### Prerequisites
 
 For this project to build successfully and run against the local darts api code you need the darts open api artifact in the local
-maven repository. To do this then follow these steps:-
+maven repository. To do this manually then follow these steps:-
 
 1) Checkout https://github.com/hmcts/darts-api
 2) Run publishToMavenLocal to install the openapi artifact into the local maven repository
 
 ```bash
   ./gradlew build
+```
+
+### Environment variables
+
+To run the service locally, you must set the following environment variables on your machine.
+The required value of each variable is stored in Azure Key Vault as a Secret.
+
+| Environment Variable Name            | Corresponding Azure Key Vault Secret Name            |
+|--------------------------------------|------------------------------------------------------|
+| AAD_B2C_TENANT_ID_KEY                | AzureAdB2CTenantId                                   |
+| REDIS_CONNECTION_STRING              | redis-connection-string (local Redis uri by default) |
+| MAX_FILE_UPLOAD_SIZE_MEGABYTES       | MaxFileUploadSizeInMegabytes (350mb by default)      |
+| AAD_B2C_ROPC_CLIENT_ID_KEY           | AzureAdB2CFuncTestROPCClientId                       |
+| DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD | darts-gateway-DarNotifyEventSecurementPassword       |
+| DAR_NOTIFY_EVENT_SECUREMENT_USERNAME | darts-gateway-DarNotifyEventSecurementUsername       |
+| DAR_NOTIFY_DEFAULT_URL               | N/A (local darts notify url by default               |
+| DARTS_API_URL                        | N/A (local darts uri by default)                     |
+| REDIS_SSL_ENABLED                    | N/A (true by default)                                |
+
+To obtain the secret value, you may retrieve the keys from the Azure Vault by running the `az keyvault secret show`
+command in the terminal. E.g. to obtain the value for `GOVUK_NOTIFY_API_KEY`, you should run:
+
+```
+az keyvault secret show --name GovukNotifyTestApiKey --vault-name darts-stg
+```
+
+and inspect the `"value"` field of the response.
+
+Alternatively, you can log into the [Azure home page](https://portal.azure.com/#home), and navigate to
+`Key Vault -> darts-stg -> Secrets`. Note in your Portal Settings you must have the `CJS Common Platform` directory
+active for the secrets to be visible.
+
+Once you have obtained the values, set the environment variables on your system. E.g. On Mac, you may run this command
+in the terminal, replacing `<<env var name>>` and `<<secret value>>` as necessary:
+
+```
+launchctl setenv <<env var name>> <<secret value>>
+```
+
+> Note: there is also a convenient script for exporting all these secret values from the key-vault, ensure you have the Azure CLI, `az`, installed and have run `az login`.
+> ```bash
+> source bin/secrets-stg.sh
+> ```
+
+You will then need to restart intellij/terminal windows for it to take effect.
+
+to make the changes permanent, make a `.zshrc` file in your users folder and populate it with this and their values:
+
+```
+export GOVUK_NOTIFY_API_KEY=
+export AAD_B2C_TENANT_ID_KEY=
+export REDIS_CONNECTION_STRING=
+export MAX_FILE_UPLOAD_SIZE_MEGABYTES=
+export AAD_B2C_ROPC_CLIENT_ID_KEY=
+export DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD=
+export DAR_NOTIFY_EVENT_SECUREMENT_USERNAME=
+export DAR_NOTIFY_DEFAULT_URL=
+export DARTS_API_URL=
+export REDIS_SSL_ENABLED=
+
 ```
 
 ### Running the application
@@ -163,7 +227,7 @@ Here are some other functionalities it provides:
 
 ### Troubleshooting
 
-If the tests fail for relating to a redis connection failure then please manually close down the running redis instance
+If the integration tests fail relating to a redis connection failure then please manually close down the running redis instance
 through task manager
 
 If we encounter a SOAP general error response (as shown below) please check that the redis server is accessible:-

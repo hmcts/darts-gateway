@@ -11,9 +11,10 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import uk.gov.hmcts.darts.cache.token.RefreshableCacheValue;
-import uk.gov.hmcts.darts.cache.token.Token;
-import uk.gov.hmcts.darts.cache.token.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
+import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 
 import java.util.Optional;
 
@@ -32,12 +33,15 @@ public class ContextRegistryEndpoint {
     public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<documentum.contextreg.Register> addDocument) {
         RegisterResponse registerResponse = new RegisterResponse();
 
-        // create a session as the client needs this
-        Optional<Token> token = registerable.store(registerable.createValue(addDocument.getValue().getContext()));
+        try {
+            // create a session as the client needs this
+            Optional<Token> token = registerable.store(registerable.createValue(addDocument.getValue().getContext()));
 
-        // for now return a documentum id
-        token.ifPresent(value -> registerResponse.setReturn(value.getToken().orElse("")));
-
+            // for now return a documentum id
+            token.ifPresent(value -> registerResponse.setReturn(value.getTokenString().orElse("")));
+        } catch (CacheTokenCreationException cte) {
+            log.warn("Failed creation of token", cte);
+        }
         return new ObjectFactory().createRegisterResponse(registerResponse);
     }
 
@@ -59,7 +63,7 @@ public class ContextRegistryEndpoint {
         LookupResponse lookupResponse = new LookupResponse();
         Token token = registerable.getToken(lookup.getValue().getToken());
 
-        Optional<RefreshableCacheValue> value = registerable.lookup(token);
+        Optional<CacheValue> value = registerable.lookup(token);
         value.ifPresent(refreshableCacheValue -> lookupResponse.setReturn(refreshableCacheValue.getServiceContext()));
 
         return new ObjectFactory().createLookupResponse(lookupResponse);

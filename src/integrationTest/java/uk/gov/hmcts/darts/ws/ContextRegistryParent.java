@@ -26,7 +26,9 @@ import java.util.concurrent.TimeUnit;
 
 public class ContextRegistryParent extends IntegrationBase {
 
+    public static final String SERVICE_CONTEXT_USER = "user";
 
+    public static final String SERVICE_CONTEXT_PASSWORD = "pass";
 
     void executeTestGetContextRegistryWsdl() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
@@ -43,7 +45,8 @@ public class ContextRegistryParent extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
-        soapRequestStr = soapRequestStr.replace("${USER}", "user1");
+        soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
 
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue());
@@ -53,15 +56,16 @@ public class ContextRegistryParent extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
-        soapRequestStr = soapRequestStr.replace("${USER}", "user1");
-
+        soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
 
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+        Assertions.assertNotNull(response.getResponse().getValue().getReturn());
         SoapAssertionUtil<RegisterResponse> response1 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         SoapAssertionUtil<RegisterResponse> response2 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         SoapAssertionUtil<RegisterResponse> response3 = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
-        Assertions.assertNotNull(response.getResponse().getValue());
 
+        Assertions.assertNotNull(response.getResponse().getValue());
         Assertions.assertEquals(response.getResponse().getValue().getReturn(), response1.getResponse().getValue().getReturn());
         Assertions.assertEquals(response.getResponse().getValue().getReturn(), response2.getResponse().getValue().getReturn());
         Assertions.assertEquals(response.getResponse().getValue().getReturn(), response3.getResponse().getValue().getReturn());
@@ -126,8 +130,8 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNull(response.getResponse().getValue().getReturn());
     }
 
-    private String registerToken(ContextRegistryClient client) throws Exception {
-        return registerToken(getGatewayUri(), client, "user0", "pass");
+    protected String registerToken(ContextRegistryClient client) throws Exception {
+        return registerToken(getGatewayUri(), client, SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
     }
 
     public static String registerToken(URL baseUrl, ContextRegistryClient client, String username, String password) throws Exception {
