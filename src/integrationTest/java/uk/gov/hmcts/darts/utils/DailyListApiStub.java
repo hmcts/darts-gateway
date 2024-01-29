@@ -59,13 +59,24 @@ public class DailyListApiStub extends DartsApiStub {
     }
 
     public void returnsFailureWhenPostingDailyList() throws JsonProcessingException, IOException {
+        returnsFailureWhenPostingDailyList(true);
+    }
+
+    public void returnsFailureWhenPostingDailyList(boolean withBody) throws JsonProcessingException, IOException {
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/events/problemDailyListResponse.json");
 
-        stubFor(post(urlPathEqualTo(DAILY_LIST_API_PATH))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(404)
-                        .withBody(dartsApiResponseStr)));
+        if (withBody) {
+            stubFor(post(urlPathEqualTo(DAILY_LIST_API_PATH))
+                    .willReturn(aResponse()
+                            .withHeader("Content-Type", "application/json")
+                            .withStatus(404)
+                            .withBody(dartsApiResponseStr)));
+        } else {
+            stubFor(post(urlPathEqualTo(DAILY_LIST_API_PATH))
+                    .willReturn(aResponse()
+                            .withStatus(404)
+                            .withHeader("Content-Type", "application/json")));
+        }
     }
 }

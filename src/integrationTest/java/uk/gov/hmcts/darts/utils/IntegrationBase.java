@@ -13,6 +13,9 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
+import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMappingOperation;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 
@@ -88,10 +91,10 @@ public class IntegrationBase {
     public String getIpAndPort() {
         String ipaddressStr = null;
         try {
-            Enumeration networkEnum = NetworkInterface.getNetworkInterfaces();
+            Enumeration<NetworkInterface> networkEnum = NetworkInterface.getNetworkInterfaces();
             while (networkEnum.hasMoreElements()) {
                 NetworkInterface networkInterfaces = (NetworkInterface) networkEnum.nextElement();
-                Enumeration ipaddressesOfNic = networkInterfaces.getInetAddresses();
+                Enumeration<InetAddress> ipaddressesOfNic = networkInterfaces.getInetAddresses();
                 while (ipaddressesOfNic.hasMoreElements()) {
                     InetAddress ipaddress = (InetAddress) ipaddressesOfNic.nextElement();
                     if (!ipaddress.isLoopbackAddress() && ipaddress.getHostAddress().contains(".")) {
@@ -104,6 +107,18 @@ public class IntegrationBase {
         }
 
         return ipaddressStr;
+    }
+
+    protected ProblemResponseMapping<?> getSpecificSoapErrorCode(String soapToExpect, APIProblemResponseMapper mapper) {
+        for (ProblemResponseMappingOperation<?> responseMappingOperations : mapper.getResponseMappings()) {
+            for (ProblemResponseMapping<?> responseMapping : responseMappingOperations.getProblemResponseMappingList()) {
+                if (responseMapping.match(soapToExpect)) {
+                    return responseMapping;
+                }
+            }
+        }
+
+        return null;
     }
 
     protected ContextRegistryClient getContextClient() {

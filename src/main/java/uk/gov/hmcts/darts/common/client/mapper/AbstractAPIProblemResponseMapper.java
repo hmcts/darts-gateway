@@ -9,12 +9,16 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractAPIProblemResponseMapper implements APIProblemResponseMapper {
-    private final List<ProblemResponseMappingOperation<?>> operationErrorResponseMappingList = Collections.synchronizedList(
+    private final List<ProblemResponseMappingOperation> operationErrorResponseMappingList = Collections.synchronizedList(
         new ArrayList<>());
 
     @Override
     public <T> void addOperationMappings(ProblemResponseMappingOperation<T> operation) {
         operationErrorResponseMappingList.add(operation);
+    }
+
+    public List<ProblemResponseMappingOperation> getResponseMappings() {
+        return operationErrorResponseMappingList;
     }
 
     @Override

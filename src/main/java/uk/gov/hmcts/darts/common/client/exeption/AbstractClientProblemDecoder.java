@@ -26,7 +26,7 @@ public abstract class AbstractClientProblemDecoder {
         try (InputStream is = response.body().asInputStream()) {
             Problem problem = getProblem(is);
             returnEx = getExceptionForProblem(problem);
-        } catch (IOException ioEx) {
+        } catch (Exception ioEx) {
             log.error("Failed to read the problem json", ioEx);
             returnEx = new DartsException(ioEx, CodeAndMessage.ERROR);
         }
@@ -38,7 +38,7 @@ public abstract class AbstractClientProblemDecoder {
         try (ByteArrayInputStream is = new ByteArrayInputStream(response.getResponseBodyAsByteArray())) {
             Problem problem = getProblem(is);
             return getExceptionForProblem(problem);
-        } catch (IOException ioEx) {
+        } catch (Exception ioEx) {
             log.error("Failed to read the problem json", ioEx);
             return new DartsException(ioEx, CodeAndMessage.ERROR);
         }
