@@ -1,0 +1,14 @@
+{
+  "message_id": "12345",
+  "type": "21300",
+  "sub_type": "21300",
+  "event_id": "0",
+  "event_text": "test",
+  "courthouse": "SNARESBROOK mu",
+  "courtroom": "7",
+  "case_numbers": [
+    "T20190441"
+  ],
+  "date_time": "2019-10-24T15:52:41Z",
+  "is_mid_tier" : false
+}

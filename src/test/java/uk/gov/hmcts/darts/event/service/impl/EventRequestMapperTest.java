@@ -32,6 +32,7 @@ class EventRequestMapperTest {
         uk.gov.hmcts.darts.model.event.DartsEvent eventRequest = mapper.toNewApi(
             legacyDartsEvent, "some-message-id", "some-type", "some-sub-type");
 
+        assertThat(eventRequest.getEventId()).isEqualTo(String.valueOf(ONE));
         assertThat(eventRequest.getCaseNumbers()).containsExactly("1", "2", "3");
         assertThat(eventRequest.getEventText()).isEqualTo("some-event-text");
         assertThat(eventRequest.getCourthouse()).isEqualTo("some-court-house");

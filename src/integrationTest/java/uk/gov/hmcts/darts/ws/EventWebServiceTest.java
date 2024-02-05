@@ -158,7 +158,7 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        theEventApi.verifyReceivedEventWithMessageId("12345");
+        theEventApi.verifyPostRequest();
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -194,8 +194,6 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        theEventApi.verifyReceivedEventWithMessageId("12345");
-
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
                             .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
 
@@ -227,6 +225,8 @@ class EventWebServiceTest extends IntegrationBase {
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        theEventApi.verifyPostRequest();
+
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 

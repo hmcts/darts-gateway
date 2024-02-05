@@ -15,6 +15,7 @@ public class EventRequestMapper {
 
     public uk.gov.hmcts.darts.model.event.DartsEvent toNewApi(DartsEvent dartsEvent, String messageId, String type, String subType) {
         uk.gov.hmcts.darts.model.event.DartsEvent event = new uk.gov.hmcts.darts.model.event.DartsEvent();
+        event.setEventId(String.valueOf(dartsEvent.getID()));
         event.setMessageId(messageId);
         event.setType(type);
         event.setSubType(subType);
