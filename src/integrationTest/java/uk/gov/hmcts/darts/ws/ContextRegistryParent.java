@@ -41,7 +41,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNotNull(response.body());
     }
 
-    void executeHandleRegister(ContextRegistryClient client) throws Exception {
+    String executeHandleRegister(ContextRegistryClient client) throws Exception {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
@@ -50,6 +50,8 @@ public class ContextRegistryParent extends IntegrationBase {
 
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue());
+
+        return response.getResponse().getValue().getReturn();
     }
 
     void executeHandleRegisterWithSharing(ContextRegistryClient client) throws Exception {

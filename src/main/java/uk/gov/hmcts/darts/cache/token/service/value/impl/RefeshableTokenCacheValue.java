@@ -13,6 +13,10 @@ import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
 import java.util.Optional;
 
+/**
+ * A default implementation of the {@link DownstreamTokenisableValue} that uses {@link TokenGeneratable} to generate
+ * tokens
+ */
 @Slf4j
 @JsonTypeName("RefreshableCacheValueWithJwt")
 public class RefeshableTokenCacheValue extends ServiceContextCacheValue implements DownstreamTokenisableValue {
@@ -45,7 +49,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
         Optional<Token> downstream = getValidatedToken();
 
         return EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken()) || (!EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken())
-            && downstream.isPresent() && !downstream.get().valid());
+            && downstream.isPresent() && !downstream.get().valid(true));
     }
 
     @Override

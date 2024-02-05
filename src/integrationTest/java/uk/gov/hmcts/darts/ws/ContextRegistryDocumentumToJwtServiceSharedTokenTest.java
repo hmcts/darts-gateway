@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -10,8 +11,11 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.utils.CacheUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
+
+import java.net.URL;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,15 +42,21 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
 
+        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
+
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
             .thenReturn(CONTEXT_REGISTRY_TOKEN);
 
-        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
-
-        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
-            when(generator.acquireNewToken("user" + i, "pass")).thenReturn("test2");
+
+            when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test2"))).thenReturn(true);
+            when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test2"))).thenReturn(true);
+
+            when(generator.acquireNewToken(Mockito.eq("user" + i), Mockito.eq("pass"))).thenReturn("test2");
         }
     }
 
@@ -92,6 +102,23 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testHandleRegister(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleRegister(client);
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testHandleRegisterExpiry(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String originalToken = executeHandleRegister(client);
+
+            int secondUntilExpiry = (int)properties.getEntryTimeToIdleSeconds();
+
+            // take us to seconds after expiry
+            Thread.sleep(CacheUtil.getMillisForSeconds(secondUntilExpiry + 1));
+
+            String newOriginalToken = executeHandleRegister(client);
+            Assertions.assertNotEquals(originalToken, newOriginalToken);
+
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 

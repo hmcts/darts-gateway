@@ -6,21 +6,79 @@ import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 
 import java.util.Optional;
 
+/**
+ * This is a token registerable implementation (effectively a cache implementation) that allows us to set and get
+ * values {@link uk.gov.hmcts.darts.cache.token.service.value.CacheValue} from the cache
+ */
 public interface TokenRegisterable {
 
-    public static final String CACHE_PREFIX = "darts-gateway-token-service";
+    String CACHE_PREFIX = "darts-gateway-token-service";
 
-    Optional<Token> store(CacheValue value) throws CacheException;
+    /**
+     * Stores a cache value into he cache
+     * @return The token in which the cache value is mapped against
+     */
+    Optional<Token> store(CacheValue value);
 
-    Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible) throws CacheException;
+    /**
+     * Stores a cache value into the store. If the cache value is already mapped into the cache we can
+     * return the same id if we choose to.
+     *
+     * This method should ensure the token is valid
+     * (whatever that may mean) before it is returned. Clients can validate the tokens at any time thereafter
+     * by calling {@link Token#valid()}
+     * @param reuseTokenIfPossible If set to true we reuse the token else we create a new one
+     */
+    Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible);
 
+    /**
+     * lookup the token value
+     * @param holder The token
+     * @return The value. If the token could not be found or the existing token is found
+     * but it is invalid (whatever that means) we should return an empty value (no exception should be thrown)
+     * @return The cache value
+     */
     Optional<CacheValue> lookup(Token holder) throws CacheException;
 
-    void evict(Token holder) throws CacheException;
+    /**
+     * This method takes the service context and works out whether it needs to generate a new token ot not
+     *
+     * If a token does exists but it is invalid then a new token is expected to be generated
+     *
+     * @param reuseTokenIfPossible The token to reuse if found. if false a new token is always generated
+     * for the same service context
+     *
+     * @return The token to be returned
+     */
+    Optional<Token> store(ServiceContext context, Boolean reuseTokenIfPossible) throws CacheException;
 
-    Token getToken(String token) throws CacheException;
+    /**
+     * This method takes the service context to generate a new token
+     *
+     * @return The token to be returned
+     */
+    Optional<Token> store(ServiceContext context) throws CacheException;
 
-    CacheValue createValue(ServiceContext serviceContext) throws CacheException;
+    /**
+     * This evicts a token from the cache. No errors are expected. After this call {@link #lookup(Token)} should return empty,
+     * except for the  case where we are sharing tokens
+     * @param token The token
+     */
+    void evict(Token token);
 
+
+    /**
+     * Gets a token
+     * @param token
+     * @return The token
+     */
+    Token getToken(String token);
+
+    /**
+     * creates a value to be stored
+     * @param serviceContext The service context
+     * @return The value sub type to be stored
+     */
+    CacheValue createValue(ServiceContext serviceContext);
 
 }

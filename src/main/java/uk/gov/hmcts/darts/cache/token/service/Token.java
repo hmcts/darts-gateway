@@ -5,11 +5,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Getter
@@ -22,15 +24,15 @@ public class Token {
 
     public static final AtomicLong COUNTER = new AtomicLong();
 
-    private Predicate<String> validate;
+    private TokenValidator validate;
 
-    Token(String token,  Predicate<String> validate) {
+    Token(String token,  TokenValidator validate) {
         this.tokenString = token;
         this.validate = validate;
     }
 
     public Optional<String> getTokenString() {
-        if (validate != null && !validate.test(tokenString)) {
+        if (validate != null && !valid()) {
             return Optional.empty();
         }
 
@@ -38,7 +40,7 @@ public class Token {
     }
 
     public Optional<String> getTokenString(boolean validateTokenBefore) {
-        if (validateTokenBefore && validate != null && !validate.test(tokenString)) {
+        if (validateTokenBefore && validate != null && !valid()) {
             return Optional.empty();
         }
 
@@ -50,18 +52,26 @@ public class Token {
         return TokenRegisterable.CACHE_PREFIX + ":" + tokenString + ":" + sessionId;
     }
 
-    public boolean valid() {
-        if (validate != null && !tokenString.isEmpty()) {
-            return validate.test(tokenString);
+    public boolean valid(boolean applyExpiryOffset) {
+        return valid(applyExpiryOffset, tokenString);
+    }
+
+    private boolean valid(boolean applyExpiryOffset, String token) {
+        if (validate != null && !token.isEmpty()) {
+            return validate.validate(applyExpiryOffset, token);
         }
-        return !tokenString.isEmpty();
+        return !token.isEmpty();
+    }
+
+    public boolean valid() {
+        return valid(false);
     }
 
     void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
-    public static Token readToken(String tokenStr, boolean mapToSession, Predicate<String> validate) {
+    public static Token readToken(String tokenStr, boolean mapToSession, TokenValidator validate) {
         Token token;
 
         token =  new Token(tokenStr, validate);
@@ -84,7 +94,7 @@ public class Token {
         }
     }
 
-    public static Token generateDocumentumToken(boolean mapToSession, Predicate<String> validate) {
+    public static Token generateDocumentumToken(boolean mapToSession, TokenValidator validate) {
         String machineIdentifier;
         try {
             machineIdentifier = InetAddress.getLocalHost().toString();

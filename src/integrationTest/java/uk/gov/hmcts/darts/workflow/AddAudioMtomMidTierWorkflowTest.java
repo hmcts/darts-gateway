@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.workflow;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.mockito.Mockito.times;
 
 @ActiveProfiles("int-test-jwt-token")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
@@ -35,7 +38,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @BeforeEach
     void before() throws Exception {
         Mockito.when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
-        Mockito.when(validator.validate(Mockito.anyString())).thenReturn(true);
+        Mockito.when(validator.validate(Mockito.eq(true), Mockito.anyString())).thenReturn(true);
+        Mockito.when(validator.validate(Mockito.eq(false), Mockito.anyString())).thenReturn(true);
 
         AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
                 AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE);
@@ -44,7 +48,6 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
 
     @Test
     void addAudioTest() throws Exception {
-
         File homeDirForTempFiles = new File(System.getProperty("user.home"));
         final int fileCountBefore = Objects.requireNonNull(homeDirForTempFiles.list()).length;
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
@@ -63,5 +66,11 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
 
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                 .withRequestBody(new MultipartDartsProxyContentPattern()));
+
+        Mockito.verify(validator, times(6)).validate(Mockito.eq(false), Mockito.anyString());
+        Mockito.verify(validator, times(4)).validate(Mockito.eq(true), Mockito.anyString());
+
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/audios"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
     }
 }

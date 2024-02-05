@@ -76,8 +76,8 @@ public class ServiceContextCacheValue implements CacheValue {
         return context;
     }
 
-    private String getUserName() throws CacheException {
-        ServiceContext serviceContext = getServiceContext();
+    private static String getUserName(ServiceContext context) throws CacheException {
+        ServiceContext serviceContext = context;
         Identity identity = serviceContext.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getUserName();
@@ -86,8 +86,8 @@ public class ServiceContextCacheValue implements CacheValue {
         throw new CacheException("Do not understand the service context");
     }
 
-    private String getPassword() throws CacheException {
-        ServiceContext serviceContext = getServiceContext();
+    private static String getPassword(ServiceContext context) throws CacheException {
+        ServiceContext serviceContext = context;
         Identity identity = serviceContext.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getPassword();
@@ -99,12 +99,16 @@ public class ServiceContextCacheValue implements CacheValue {
     @Override
     public String getId() throws CacheException {
         if (id == null) {
-            id = TokenRegisterable.CACHE_PREFIX + ":" + getUserName() + ":" + getPassword();
+            id = getId(getServiceContext());
         }
         return id;
     }
 
     public void setId(String id) throws CacheException {
         this.id = id;
+    }
+
+    public static String getId(ServiceContext context) {
+        return TokenRegisterable.CACHE_PREFIX + ":" + getUserName(context) + ":" + getPassword(context);
     }
 }

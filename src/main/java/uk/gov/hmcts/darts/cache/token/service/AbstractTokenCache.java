@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
@@ -15,8 +16,24 @@ import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * An abstract redis based cache implementation that is driven off the spring configuration defined
+ * {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties}
+ *
+ * This implementation ensures that Redis locking is in place for token sharing:-
+ * - When sharing tokens we minimise communicating with the idp
+ * - Keep token allocation as atomic as possible between clients to avoid inconsistent redis data
+ *
+ * By default when allocating shared tokens we expire tokens x minutes before they need to be. This ensures the returned tokens have
+ * some life in them for the calling client to then leverage
+ *
+ * This implementation supports the use of cache values that implement {@link uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue}
+ * On lookup of a cache value we ensure that the internal token is valid before returning.
+ *
+ */
 @RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractTokenCache implements TokenRegisterable {
@@ -61,7 +78,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
                 tokenToUse = lookup(value);
 
-                if (tokenToUse.isPresent() && !tokenToUse.get().valid()) {
+                if (tokenToUse.isPresent() && !tokenToUse.get().valid(true)) {
                     tokenToUse = Optional.empty();
                 }
 
@@ -112,15 +129,82 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 || (reuseTokenIfPossible != null && reuseTokenIfPossible);
     }
 
-    protected abstract Predicate<String> getValidateToken();
+    private Optional<Token> lookup(CacheValue context) throws CacheException {
+        return read(context);
+    }
+
+    protected abstract TokenValidator getValidateToken();
 
     @Override
     public Token getToken(String token) {
         return Token.readToken(token, properties.isMapTokenToSession(), getValidateToken());
     }
 
-    private Optional<Token> lookup(CacheValue context) throws CacheException {
-        return read(context);
+    @Override
+    @Transactional
+    public Optional<Token> store(ServiceContext context) throws CacheException {
+        return store(context, false);
+    }
+
+    @Override
+    @Transactional
+    public Optional<Token> store(ServiceContext context, Boolean reuseTokenIfPossible) throws CacheException {
+        Optional<Token> foundToken = Optional.empty();
+
+        if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
+            log.info("Looking for the shared token configuration");
+
+            CacheLockableUnitOfWork distributedLockWork = new CacheLockableUnitOfWork(lockRegistry);
+            String sharedId = getIdForServiceContext(context);
+            foundToken = distributedLockWork.execute(() -> {
+                Optional<Token> foundTokenForSharedId = Optional.empty();
+                Object sharedToken = redisTemplate.opsForValue().get(sharedId);
+
+                if (sharedToken != null) {
+                    redisTemplate.expire(sharedId, getSecondsToExpire());
+
+                    CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
+
+                    Token token = Token.readToken((String) sharedToken, properties.isMapTokenToSession(),
+                                                  getValidateToken()
+                    );
+
+                    boolean applicable = work.executeIsApplicable(t -> {
+                        Optional<CacheValue> tokenValue = lookup(token);
+
+                        if (!token.valid(true)) {
+                            tokenValue = Optional.empty();
+                        }
+
+                        if (tokenValue.isPresent()) {
+                            redisTemplate.expire(t.getId(), getSecondsToExpire());
+                        }
+
+                        return tokenValue.isPresent();
+                    }, token);
+
+                    if (applicable) {
+                        foundTokenForSharedId = Optional.of(token);
+
+                        log.info("Found the token for the shared credentials");
+                    }
+                    else {
+                        foundTokenForSharedId = store(createValue(context), reuseTokenIfPossible);
+                        log.info("Not found the token for the shared credentials");
+                    }
+                } else {
+                    foundTokenForSharedId = store(createValue(context), reuseTokenIfPossible);
+                }
+
+                return foundTokenForSharedId;
+            }, sharedId);
+        }
+        else {
+            log.info("Not looking up shared token either turned off or not forced");
+            foundToken = store(createValue(context), reuseTokenIfPossible);
+        }
+
+        return foundToken;
     }
 
     @Override
@@ -213,4 +297,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     }
 
     protected abstract Token createToken(ServiceContext context) throws CacheException;
+
+    protected abstract String getIdForServiceContext(ServiceContext context) throws CacheException;
+
 }

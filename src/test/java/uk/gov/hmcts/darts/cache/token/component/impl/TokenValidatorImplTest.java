@@ -42,7 +42,28 @@ class TokenValidatorImplTest {
         TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom);
 
         String token = "token to validate";
-        Assertions.assertTrue(validator.validate(token));
+        Assertions.assertTrue(validator.validate(true, token));
+    }
+
+    @Test
+    void testBasicValidationExpiryInvalid() throws Exception {
+        DefaultJwtProcessorCustom custom = new DefaultJwtProcessorCustom();
+        SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
+
+        URL jwksUrl = new URL(jwksUri);
+        JWKSource<SecurityContext> source = JWKSourceBuilder.create(jwksUrl).build();
+
+        Mockito.when(securityProperties.getTokenUri()).thenReturn(tokenuri);
+        Mockito.when(securityProperties.getClientId()).thenReturn(clientid);
+        Mockito.when(securityProperties.getScope()).thenReturn(scope);
+        Mockito.when(securityProperties.getIssuerUri()).thenReturn(issuerUri);
+        Mockito.when(securityProperties.getJwkSetUri()).thenReturn(jwksUri);
+        Mockito.when(securityProperties.getJwkSource()).thenReturn(source);
+
+        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, false);
+
+        String token = "token to validate";
+        Assertions.assertFalse(validator.validate(true, token));
     }
 
     @Test
@@ -63,12 +84,12 @@ class TokenValidatorImplTest {
         TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom);
 
         String token = "token to validate";
-        Assertions.assertFalse(validator.validate(token));
+        Assertions.assertFalse(validator.validate(true, token));
     }
 
     @Test
     void testBasicValidationFailure() throws Exception {
-        DefaultJwtProcessorThrowable custom = new DefaultJwtProcessorThrowable();
+        DefaultJwtProcessorThrows custom = new DefaultJwtProcessorThrows();
         SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
 
         URL jwksUrl = new URL(jwksUri);
@@ -84,12 +105,12 @@ class TokenValidatorImplTest {
         TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom);
 
         String token = "token to validate";
-        Assertions.assertThrows(CacheTokenValidationException.class, () -> validator.validate(token));
+        Assertions.assertThrows(CacheTokenValidationException.class, () -> validator.validate(true, token));
     }
 
     @Test
     void testValidateTokenExpiry() throws Exception {
-        DefaultJwtProcessorThrowable custom = new DefaultJwtProcessorThrowable();
+        DefaultJwtProcessorCustom custom = new DefaultJwtProcessorCustom();
         SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
 
         URL jwksUrl = new URL(jwksUri);
@@ -104,7 +125,7 @@ class TokenValidatorImplTest {
 
         TokenValidatorImpl validator = new TokenValidatorImpl(securityProperties, custom);
 
-        Assertions.assertFalse(validator.validateTheTokenExpiry("""
+        Assertions.assertFalse(validator.validateTheTokenExpiry( """
                 eyJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsiLCJ0eXAiOiJKV1
                 QifQ.eyJpZHAiOiJMb2NhbEFjY291bnQiLCJvaWQiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJzdW
                 IiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJnaXZlbl9uYW1lIjoiWGhpYml0IiwiZmFtaWx5X25hbW
@@ -124,10 +145,12 @@ class TokenValidatorImplTest {
         public JWTClaimsSet process(String jwtString, SecurityContext context) throws ParseException, BadJOSEException, JOSEException {
             return super.process(jwtString, context);
         }
+    }
 
-        boolean validateTheTokenExpiry(String accessToken) {
-            // do not worry about validating the token for expiry directly
-            return true;
+    class DefaultJwtProcessorThrows extends DefaultJWTProcessor<SecurityContext> {
+        @Override
+        public JWTClaimsSet process(String jwtString, SecurityContext context) throws ParseException, BadJOSEException, JOSEException {
+            throw new RuntimeException("error for test");
         }
     }
 
@@ -136,34 +159,27 @@ class TokenValidatorImplTest {
         public JWTClaimsSet process(String jwtString, SecurityContext context) throws ParseException, BadJOSEException, JOSEException {
             return null;
         }
-
-        boolean validateTheTokenExpiry(String accessToken) {
-            // do not worry about validating the token for expiry directly
-            return true;
-        }
-    }
-
-    class DefaultJwtProcessorThrowable extends DefaultJWTProcessor<SecurityContext> {
-        @Override
-        public JWTClaimsSet process(String jwtString, SecurityContext context) throws ParseException, BadJOSEException, JOSEException {
-            throw new UnsupportedOperationException("", null);
-        }
     }
 
     class TokenValidatorImplCustom extends TokenValidatorImpl {
+        private boolean tokenExpiryOffsetCheck = true;
 
-        public TokenValidatorImplCustom(SecurityProperties securityProperties) throws MalformedURLException {
-            super(securityProperties);
+
+        public TokenValidatorImplCustom(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor,
+                                        boolean tokenExpiryOffsetCheck) throws MalformedURLException {
+            super(securityProperties, jwtProcessor);
+            this.tokenExpiryOffsetCheck = tokenExpiryOffsetCheck;
         }
 
-        public TokenValidatorImplCustom(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor) throws MalformedURLException {
-            super(securityProperties, jwtProcessor);
+        public TokenValidatorImplCustom(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor)
+            throws MalformedURLException {
+            this(securityProperties, jwtProcessor, true);
         }
 
         @Override
         boolean validateTheTokenExpiry(String accessToken) {
             // do not worry about validating the token for expiry directly
-            return true;
+            return tokenExpiryOffsetCheck;
         }
     }
 }

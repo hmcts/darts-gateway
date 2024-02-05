@@ -15,23 +15,19 @@ import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
+import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.impl.ServiceContextCacheValue;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
+/**
+ * A jwt token cache that maps to {@link uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue} which itself
+ * stores and manages a downstream jwt token
+ */
 @Slf4j
 public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratable {
-    private Predicate<String> validationPredicate;
-
-    @Override
-    protected Predicate<String> getValidateToken() {
-        if (validationPredicate == null) {
-            validationPredicate = validator::validate;
-        }
-
-        return validationPredicate;
-    }
 
     private final TokenGenerator generator;
 
@@ -45,13 +41,18 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
     }
 
     @Override
+    protected TokenValidator getValidateToken() {
+        return validator;
+    }
+
+    @Override
     public CacheValue createValue(ServiceContext serviceContext) throws CacheException {
-        return new ServiceContextCacheValue(serviceContext);
+        return new RefeshableTokenCacheValue(serviceContext, this);
     }
 
     @Override
     protected CacheValue getValue(CacheValue holder) throws CacheException {
-        return holder;
+        return new RefeshableTokenCacheValue((RefeshableTokenCacheValue) holder, this);
     }
 
     @Override
@@ -80,4 +81,9 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
         return Token.readToken(jwtToken, properties.isMapTokenToSession(), getValidateToken());
     }
 
+
+    @Override
+    public String getIdForServiceContext(ServiceContext serviceContext) throws CacheException {
+        return RefeshableTokenCacheValue.getId(serviceContext);
+    }
 }

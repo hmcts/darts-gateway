@@ -46,15 +46,20 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
 
-        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
 
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
             .thenReturn(CONTEXT_REGISTRY_TOKEN);
 
-        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
-            when(tokenValidator.validate(Mockito.eq("test2"))).thenReturn(true);
+
+            when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test2"))).thenReturn(true);
+            when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test2"))).thenReturn(true);
+
             when(generator.acquireNewToken(Mockito.eq("user" + i), Mockito.eq("pass"))).thenReturn("test2");
         }
     }
@@ -108,24 +113,29 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleRegisterExpiry(ContextRegistryClient client) throws Exception {
-        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, true, true, true, true, false, true, true);
+        when(tokenValidator.validate(Mockito.anyBoolean(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
         String refreshedToken = "refreshToken";
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
-            .thenReturn(CONTEXT_REGISTRY_TOKEN, refreshedToken);
+            .thenReturn(CONTEXT_REGISTRY_TOKEN, CONTEXT_REGISTRY_TOKEN, refreshedToken, refreshedToken);
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String token = registerToken(client);
+
             String token2 = registerToken(client);
 
             // ensure we are returning the same token string
             Assertions.assertEquals(token, token2);
 
-            token2 = registerToken(client);
-            Assertions.assertNotEquals(token, token2);
-            Assertions.assertNotEquals(refreshedToken, token2);
+            when(tokenValidator.validate(Mockito.anyBoolean(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(false);
+            when(tokenValidator.validate(Mockito.anyBoolean(), Mockito.eq(refreshedToken))).thenReturn(true);
 
-            verify(tokenValidator, times(6)).validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN));
+            token2 = registerToken(client);
+
+            Assertions.assertNotEquals(token, token2);
+            Assertions.assertEquals(refreshedToken, token2);
+
+            verify(tokenValidator, times(10)).validate(Mockito.anyBoolean(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
@@ -168,7 +178,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleLookupTokenExpired(ContextRegistryClient client) throws Exception {
-        when(tokenValidator.validate(Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, true, false);
+        when(tokenValidator.validate(Mockito.anyBoolean(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, true, true, false);
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
 
@@ -180,7 +190,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
 
             SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
             Assertions.assertNull(response.getResponse().getValue().getReturn());
-            verify(tokenValidator, times(3)).validate(CONTEXT_REGISTRY_TOKEN);
+            verify(tokenValidator, times(4)).validate(Mockito.anyBoolean(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
