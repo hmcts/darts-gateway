@@ -13,8 +13,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 
-import java.util.function.Predicate;
-
 import static org.mockito.Mockito.verify;
 
 class TokenTest {

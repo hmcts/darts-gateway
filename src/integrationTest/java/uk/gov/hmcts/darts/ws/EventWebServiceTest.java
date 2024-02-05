@@ -25,7 +25,6 @@ import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import java.nio.charset.Charset;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.mockito.Mockito.times;
@@ -175,7 +174,7 @@ class EventWebServiceTest extends IntegrationBase {
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
-            .thenReturn( "downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
+            .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
 
         authenticationStub.assertWithTokenHeader(client, () -> {
             theEventApi.willRespondSuccessfully();

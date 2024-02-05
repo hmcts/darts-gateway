@@ -375,7 +375,7 @@ class BasicCacheTest {
         }
 
         @Override
-        public String getIdForServiceContext(ServiceContext serviceContext) throws CacheException {
+        public String getIdForServiceContext(ServiceContext serviceContext) {
             return RefeshableTokenCacheValue.getId(serviceContext);
         }
     }

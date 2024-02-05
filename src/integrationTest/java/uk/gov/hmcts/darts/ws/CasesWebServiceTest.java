@@ -23,14 +23,12 @@ import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
-import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.mockito.Mockito.times;
@@ -146,11 +144,10 @@ class CasesWebServiceTest extends IntegrationBase {
 
         // setup the tokens so that we refresh the backend token before making the restful darts calls
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
-            .thenReturn( "downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
+            .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
 
         authenticationStub.assertWithTokenHeader(client, () -> {
-            String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/getCases/soapRequest.xml");
+            String soapRequestStr = TestUtils.getContentsFromFile("payloads/getCases/soapRequest.xml");
 
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/dartsApiResponse.json");

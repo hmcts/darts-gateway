@@ -16,15 +16,12 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
-import uk.gov.hmcts.darts.cache.token.service.value.impl.ServiceContextCacheValue;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * A jwt token cache that maps to {@link uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue} which itself
- * stores and manages a downstream jwt token
+ * stores and manages a downstream jwt token.
  */
 @Slf4j
 public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratable {

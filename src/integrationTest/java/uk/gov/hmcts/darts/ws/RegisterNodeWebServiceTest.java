@@ -168,7 +168,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
-            .thenReturn( "downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
+            .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
 
         authenticationStub.assertWithTokenHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(

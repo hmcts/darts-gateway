@@ -73,18 +73,16 @@ public class CacheLockableUnitOfWork {
     }
 
     public boolean executeIsApplicable(ExecuteForBoolean runnable,  Token id) throws CacheException {
-
-            Lock lock = lockRegistry.obtain(id.getId());
-            lock.lock();
-            try {
-                return runnable.execute(id);
-            } finally {
-                lock.unlock();
-            }
-
+        Lock lock = lockRegistry.obtain(id.getId());
+        lock.lock();
+        try {
+            return runnable.execute(id);
+        } finally {
+            lock.unlock();
+        }
     }
 
-    public Optional<CacheValue> executeForRefreshValueReturn(ExecuteRefreshableValueReturn runnable, Token token) throws CacheException {
+    public Optional<CacheValue> executeForValueReturn(ExecuteRefreshableValueReturn runnable, Token token) throws CacheException {
         Lock lock = lockRegistry.obtain(token.getId());
         lock.lock();
         try {

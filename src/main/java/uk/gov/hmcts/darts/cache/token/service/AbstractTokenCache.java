@@ -16,20 +16,15 @@ import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * An abstract redis based cache implementation that is driven off the spring configuration defined
- * {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties}
- *
+ * {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties}.
  * This implementation ensures that Redis locking is in place for token sharing:-
  * - When sharing tokens we minimise communicating with the idp
  * - Keep token allocation as atomic as possible between clients to avoid inconsistent redis data
- *
  * By default when allocating shared tokens we expire tokens x minutes before they need to be. This ensures the returned tokens have
  * some life in them for the calling client to then leverage
- *
  * This implementation supports the use of cache values that implement {@link uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue}
  * On lookup of a cache value we ensure that the internal token is valid before returning.
  *
@@ -124,22 +119,6 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return token;
     }
 
-    private boolean reuseTokenBasedOnCredentials(Boolean reuseTokenIfPossible) {
-        return properties.isShareTokenForSameCredentials()
-                || (reuseTokenIfPossible != null && reuseTokenIfPossible);
-    }
-
-    private Optional<Token> lookup(CacheValue context) throws CacheException {
-        return read(context);
-    }
-
-    protected abstract TokenValidator getValidateToken();
-
-    @Override
-    public Token getToken(String token) {
-        return Token.readToken(token, properties.isMapTokenToSession(), getValidateToken());
-    }
-
     @Override
     @Transactional
     public Optional<Token> store(ServiceContext context) throws CacheException {
@@ -187,8 +166,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                         foundTokenForSharedId = Optional.of(token);
 
                         log.info("Found the token for the shared credentials");
-                    }
-                    else {
+                    } else {
                         foundTokenForSharedId = store(createValue(context), reuseTokenIfPossible);
                         log.info("Not found the token for the shared credentials");
                     }
@@ -198,13 +176,21 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
                 return foundTokenForSharedId;
             }, sharedId);
-        }
-        else {
+        } else {
             log.info("Not looking up shared token either turned off or not forced");
             foundToken = store(createValue(context), reuseTokenIfPossible);
         }
 
         return foundToken;
+    }
+
+    private boolean reuseTokenBasedOnCredentials(Boolean reuseTokenIfPossible) {
+        return properties.isShareTokenForSameCredentials()
+                || (reuseTokenIfPossible != null && reuseTokenIfPossible);
+    }
+
+    private Optional<Token> lookup(CacheValue context) throws CacheException {
+        return read(context);
     }
 
     @Override
@@ -217,7 +203,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         // if the token is not valid then
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
-        return work.executeForRefreshValueReturn(t -> {
+        return work.executeForValueReturn(t -> {
             Optional<CacheValue> val = getValue(holder);
 
             if (val.isPresent() && !holder.valid()) {
@@ -242,10 +228,17 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     protected Optional<CacheValue> getValue(Token holder) throws CacheException {
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
-        return work.executeForRefreshValueReturn(this::read, holder);
+        return work.executeForValueReturn(this::read, holder);
     }
 
     protected abstract CacheValue getValue(CacheValue holder) throws CacheException;
+
+    protected abstract TokenValidator getValidateToken();
+
+    @Override
+    public Token getToken(String token) {
+        return Token.readToken(token, properties.isMapTokenToSession(), getValidateToken());
+    }
 
     @Override
     @Transactional

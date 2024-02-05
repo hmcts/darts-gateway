@@ -20,8 +20,6 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 
-import java.util.function.Predicate;
-
 import static org.mockito.Mockito.when;
 
 class RefreshableTokenCacheValueTest {
@@ -71,7 +69,7 @@ class RefreshableTokenCacheValueTest {
         context = jaxbMarshaller.unmarshal(ss, ServiceContext.class).getValue();
 
         TokenValidator validate = Mockito.mock(TokenValidator.class);
-        Mockito.when(validate.validate(Mockito.eq(true), Mockito.notNull())).thenReturn(true);
+        when(validate.validate(Mockito.eq(true), Mockito.notNull())).thenReturn(true);
         token = Token.readToken(CACHED_TOKEN_STRING, false, validate);
         replaceToken = Token.readToken(REPLACE_TOKEN_STRING, false, validate);
     }

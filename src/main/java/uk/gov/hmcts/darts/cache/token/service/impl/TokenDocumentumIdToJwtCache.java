@@ -12,14 +12,12 @@ import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
 
-import java.util.function.Predicate;
-
 /**
  * A documentum token cache that maps to {@link uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue} which itself
- * stores and manages a downstream jwt token
+ * stores and manages a downstream jwt token.
  */
 public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
-    public final TokenValidator TOKEN_VALIDATION = (expiryBefore, token) -> true;
+    public final TokenValidator validator = (expiryBefore, token) -> true;
 
     private final TokenGeneratable cache;
 
@@ -31,7 +29,7 @@ public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
 
     @Override
     protected TokenValidator getValidateToken() {
-        return TOKEN_VALIDATION;
+        return validator;
     }
 
     @Override
@@ -51,7 +49,7 @@ public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
 
     @Override
     public Token getToken(String token) {
-        return Token.readToken(token, properties.isMapTokenToSession(), TOKEN_VALIDATION);
+        return Token.readToken(token, properties.isMapTokenToSession(), validator);
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -125,7 +126,7 @@ class TokenValidatorImplTest {
 
         TokenValidatorImpl validator = new TokenValidatorImpl(securityProperties, custom);
 
-        Assertions.assertFalse(validator.validateTheTokenExpiry( """
+        Assertions.assertFalse(validator.validateTheTokenExpiry("""
                 eyJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsiLCJ0eXAiOiJKV1
                 QifQ.eyJpZHAiOiJMb2NhbEFjY291bnQiLCJvaWQiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJzdW
                 IiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJnaXZlbl9uYW1lIjoiWGhpYml0IiwiZmFtaWx5X25hbW
@@ -150,7 +151,7 @@ class TokenValidatorImplTest {
     class DefaultJwtProcessorThrows extends DefaultJWTProcessor<SecurityContext> {
         @Override
         public JWTClaimsSet process(String jwtString, SecurityContext context) throws ParseException, BadJOSEException, JOSEException {
-            throw new RuntimeException("error for test");
+            throw new UnsupportedOperationException("error for test");
         }
     }
 
@@ -162,7 +163,7 @@ class TokenValidatorImplTest {
     }
 
     class TokenValidatorImplCustom extends TokenValidatorImpl {
-        private boolean tokenExpiryOffsetCheck = true;
+        private final boolean tokenExpiryOffsetCheck;
 
 
         public TokenValidatorImplCustom(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor,

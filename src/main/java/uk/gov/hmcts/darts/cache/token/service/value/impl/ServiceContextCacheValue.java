@@ -104,11 +104,12 @@ public class ServiceContextCacheValue implements CacheValue {
         return id;
     }
 
-    public void setId(String id) throws CacheException {
-        this.id = id;
-    }
 
     public static String getId(ServiceContext context) {
         return TokenRegisterable.CACHE_PREFIX + ":" + getUserName(context) + ":" + getPassword(context);
+    }
+
+    public void setId(String id) throws CacheException {
+        this.id = id;
     }
 }

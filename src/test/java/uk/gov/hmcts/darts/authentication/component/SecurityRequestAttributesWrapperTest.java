@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.web.context.request.RequestAttributes;
 import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
-public class SecurityRequestAttributesWrapperTest {
+class SecurityRequestAttributesWrapperTest {
 
     private SecurityRequestAttributesWrapper securityRequestAttributesWrapper;
 
@@ -20,7 +20,7 @@ public class SecurityRequestAttributesWrapperTest {
     }
 
     @Test
-    public void testGettingADownstreamTokenForRefresh() {
+    void testGettingADownstreamTokenForRefresh() {
         DownstreamTokenisableValue downstreamTokenisableValue = Mockito.mock(DownstreamTokenisableValue.class);
 
         String downstreamToken = "refreshedToken";
@@ -36,7 +36,7 @@ public class SecurityRequestAttributesWrapperTest {
     }
 
     @Test
-    public void testGettingADownstreamTokenNoNeedToRefresh() {
+    void testGettingADownstreamTokenNoNeedToRefresh() {
         DownstreamTokenisableValue downstreamTokenisableValue = Mockito.mock(DownstreamTokenisableValue.class);
 
         String downstreamToken = "refreshedToken";
@@ -52,7 +52,7 @@ public class SecurityRequestAttributesWrapperTest {
     }
 
     @Test
-    public void testGettingToken() {
+    void testGettingToken() {
         String downstreamToken = "refreshedToken";
 
         Mockito.when(atts.getAttribute(SecurityRequestAttributesWrapper.ACCESS_TOKEN_REQUEST_ATTR, 0))

@@ -2,7 +2,6 @@ package uk.gov.hmcts.darts.authentication.component;
 
 import org.springframework.web.context.request.RequestAttributes;
 import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
-import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
@@ -28,12 +27,10 @@ public class SecurityRequestAttributesWrapper {
             if (tokenCacheValue.refresh()) {
                 tokenCacheValue.performRefresh();
                 tokenToReturn = tokenCacheValue.getDownstreamToken();
-            }
-            else {
+            } else {
                 tokenToReturn = tokenCacheValue.getDownstreamToken();
             }
-        }
-        else if (accessTokenObj instanceof String accessToken) {
+        } else if (accessTokenObj instanceof String accessToken) {
             tokenToReturn = accessToken;
         } else {
             throw new DartsValidationException("Authorization Bearer Header missing JWT", CodeAndMessage.ERROR);

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 /**
  * A default implementation of the {@link DownstreamTokenisableValue} that uses {@link TokenGeneratable} to generate
- * tokens
+ * tokens.
  */
 @Slf4j
 @JsonTypeName("RefreshableCacheValueWithJwt")
