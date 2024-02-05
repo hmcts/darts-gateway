@@ -32,7 +32,7 @@ import java.util.Map;
 @ComponentScan("uk.gov.hmcts.darts")
 @ActiveProfiles("int-test")
 @AutoConfigureWireMock(port = 8090)
-@SpringBootTest(classes = RedisConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = RedisConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class IntegrationBase {
 
     protected EventApiStub theEventApi = new EventApiStub();
@@ -45,6 +45,9 @@ public class IntegrationBase {
     protected static final String DEFAULT_USERNAME = "some-user";
 
     protected static final String DEFAULT_PASSWORD = "password";
+
+    @Value("${local.server.port}")
+    private int port;
 
     @Autowired
     private Map<String, ContextRegistryClient> contextClients;
@@ -65,9 +68,6 @@ public class IntegrationBase {
         }
     }
 
-    @Value("${server.port}")
-    private int serverPort;
-
     @BeforeEach
     void clearStubs() {
         WireMock.reset();
@@ -82,7 +82,7 @@ public class IntegrationBase {
     public URL getGatewayUri() throws MalformedURLException {
         String url = System.getenv("TEST_URL");
         if (System.getenv("TEST_URL") == null) {
-            return new URL("http://localhost:" + serverPort + "/service/darts/");
+            return new URL("http://localhost:" + port + "/service/darts/");
         } else {
             return new URL(url);
         }
@@ -98,12 +98,12 @@ public class IntegrationBase {
                 while (ipaddressesOfNic.hasMoreElements()) {
                     InetAddress ipaddress = (InetAddress) ipaddressesOfNic.nextElement();
                     if (!ipaddress.isLoopbackAddress() && ipaddress.getHostAddress().contains(".")) {
-                        ipaddressStr = ipaddress.getHostAddress() + ":" + serverPort;
+                        ipaddressStr = ipaddress.getHostAddress() + ":" + port;
                     }
                 }
             }
         } catch (SocketException s) {
-            ipaddressStr = localhost + ":" + serverPort;
+            ipaddressStr = localhost + ":" + port;
         }
 
         return ipaddressStr;
