@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.ws;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
 import org.junit.jupiter.api.Assertions;
@@ -207,7 +206,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
         }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        WireMock.verify(postRequestedFor(urlPathEqualTo("/audios"))
+        verify(postRequestedFor(urlPathEqualTo("/audios"))
                             .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
         Mockito.verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }

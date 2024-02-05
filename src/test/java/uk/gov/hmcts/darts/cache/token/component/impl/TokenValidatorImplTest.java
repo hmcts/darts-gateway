@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;

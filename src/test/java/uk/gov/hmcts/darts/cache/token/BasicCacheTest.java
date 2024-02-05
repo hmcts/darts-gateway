@@ -18,7 +18,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;

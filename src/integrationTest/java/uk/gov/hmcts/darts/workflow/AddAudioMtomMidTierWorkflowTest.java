@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.workflow;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +69,7 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         Mockito.verify(validator, times(6)).validate(Mockito.eq(false), Mockito.anyString());
         Mockito.verify(validator, times(4)).validate(Mockito.eq(true), Mockito.anyString());
 
-        WireMock.verify(postRequestedFor(urlPathEqualTo("/audios"))
+        verify(postRequestedFor(urlPathEqualTo("/audios"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
     }
 }
