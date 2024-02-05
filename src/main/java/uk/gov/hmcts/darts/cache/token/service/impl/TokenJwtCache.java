@@ -16,6 +16,7 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
+import uk.gov.hmcts.darts.cache.token.service.value.impl.ServiceContextCacheValue;
 
 import java.util.List;
 
@@ -81,6 +82,6 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
 
     @Override
     public String getIdForServiceContext(ServiceContext serviceContext) throws CacheException {
-        return RefeshableTokenCacheValue.getId(serviceContext);
+        return ServiceContextCacheValue.getId(serviceContext);
     }
 }

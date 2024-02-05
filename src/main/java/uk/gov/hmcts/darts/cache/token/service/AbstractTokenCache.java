@@ -121,14 +121,16 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S6809")
     public Optional<Token> store(ServiceContext context) throws CacheException {
         return store(context, false);
     }
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S6809")
     public Optional<Token> store(ServiceContext context, Boolean reuseTokenIfPossible) throws CacheException {
-        Optional<Token> foundToken = Optional.empty();
+        Optional<Token> foundToken;
 
         if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
             log.info("Looking for the shared token configuration");
