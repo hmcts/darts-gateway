@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "7e51b04b-c0b0-4678-8299-d90a8ce895d4",
-		"name": "DARTSService",
+		"_postman_id": "8db4c728-f5f5-455f-bf79-07b136f54285",
+		"name": "DARTSService Copy",
 		"description": "@author ewingsg",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15829068",
-		"_collection_link": "https://speeding-resonance-716248.postman.co/workspace/darts-gateway~2dacd0ff-d9b8-4288-9aba-128732a590f2/collection/15829068-7e51b04b-c0b0-4678-8299-d90a8ce895d4?action=share&source=collection_link&creator=15829068"
+		"_collection_link": "https://speeding-resonance-716248.postman.co/workspace/darts-gateway~2dacd0ff-d9b8-4288-9aba-128732a590f2/collection/15829068-8db4c728-f5f5-455f-bf79-07b136f54285?action=share&source=collection_link&creator=15829068"
 	},
 	"item": [
 		{
@@ -28,20 +28,9 @@
 					}
 				},
 				"url": {
-					"raw": "https://darts-gateway.staging.platform.hmcts.net/service/darts/runtime/ContextRegistryService",
-					"protocol": "https",
+					"raw": "{{DARTSServicePortBaseUrl}}",
 					"host": [
-						"darts-gateway",
-						"staging",
-						"platform",
-						"hmcts",
-						"net"
-					],
-					"path": [
-						"service",
-						"darts",
-						"runtime",
-						"ContextRegistryService"
+						"{{DARTSServicePortBaseUrl}}"
 					]
 				}
 			},
@@ -67,20 +56,9 @@
 					}
 				},
 				"url": {
-					"raw": "https://darts-gateway.staging.platform.hmcts.net/service/darts/runtime/ContextRegistryService",
-					"protocol": "https",
+					"raw": "{{DARTSServicePortBaseUrl}}",
 					"host": [
-						"darts-gateway",
-						"staging",
-						"platform",
-						"hmcts",
-						"net"
-					],
-					"path": [
-						"service",
-						"darts",
-						"runtime",
-						"ContextRegistryService"
+						"{{DARTSServicePortBaseUrl}}"
 					]
 				}
 			},
