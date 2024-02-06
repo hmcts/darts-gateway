@@ -85,6 +85,15 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
     }
 
+    void executeHandleLookupForToken(ContextRegistryClient client, String token) throws Exception {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "payloads/ctxtRegistry/lookup/soapRequest.xml");
+        soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
+
+        SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+        Assertions.assertNotNull(response.getResponse().getValue().getReturn());
+    }
+
     void executeTestTimeToLive(ContextRegistryClient client, CacheProperties properties) throws Exception {
         String token = registerToken(client);
 

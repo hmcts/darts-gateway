@@ -12,6 +12,7 @@ darts-gateway:
     map-token-to-session: false
     share-token-for-same-credentials: false
     entry-time-to-idle-seconds: 1
+    share-token-allocation-early-expiration-minutes: 300
   darts-api:
     base-url: http://localhost:8090
   ws:

@@ -10,6 +10,7 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 
@@ -28,6 +29,8 @@ class TokenValidatorImplTest {
     void testBasicValidation() throws Exception {
         DefaultJwtProcessorCustomValid custom = new DefaultJwtProcessorCustomValid();
         SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
+        CacheProperties cacheProperties = Mockito.mock(CacheProperties.class);
+
 
         URL jwksUrl = new URL(jwksUri);
         JWKSource<SecurityContext> source = JWKSourceBuilder.create(jwksUrl).build();
@@ -39,7 +42,7 @@ class TokenValidatorImplTest {
         Mockito.when(securityProperties.getJwkSetUri()).thenReturn(jwksUri);
         Mockito.when(securityProperties.getJwkSource()).thenReturn(source);
 
-        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom);
+        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, cacheProperties);
 
         String token = "token to validate";
         Assertions.assertTrue(validator.validate(true, token));
@@ -49,6 +52,7 @@ class TokenValidatorImplTest {
     void testBasicValidationExpiryInvalid() throws Exception {
         DefaultJwtProcessorCustom custom = new DefaultJwtProcessorCustom();
         SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
+        CacheProperties cacheProperties = Mockito.mock(CacheProperties.class);
 
         URL jwksUrl = new URL(jwksUri);
         JWKSource<SecurityContext> source = JWKSourceBuilder.create(jwksUrl).build();
@@ -58,9 +62,10 @@ class TokenValidatorImplTest {
         Mockito.when(securityProperties.getScope()).thenReturn(scope);
         Mockito.when(securityProperties.getIssuerUri()).thenReturn(issuerUri);
         Mockito.when(securityProperties.getJwkSetUri()).thenReturn(jwksUri);
+
         Mockito.when(securityProperties.getJwkSource()).thenReturn(source);
 
-        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, false);
+        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, false, cacheProperties);
 
         String token = "token to validate";
         Assertions.assertFalse(validator.validate(true, token));
@@ -70,6 +75,7 @@ class TokenValidatorImplTest {
     void testBasicValidationFalse() throws Exception {
         DefaultJwtProcessorCustom custom = new DefaultJwtProcessorCustom();
         SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
+        CacheProperties cacheProperties = Mockito.mock(CacheProperties.class);
 
         URL jwksUrl = new URL(jwksUri);
         JWKSource<SecurityContext> source = JWKSourceBuilder.create(jwksUrl).build();
@@ -81,7 +87,7 @@ class TokenValidatorImplTest {
         Mockito.when(securityProperties.getJwkSetUri()).thenReturn(jwksUri);
         Mockito.when(securityProperties.getJwkSource()).thenReturn(source);
 
-        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom);
+        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, cacheProperties);
 
         String token = "token to validate";
         Assertions.assertFalse(validator.validate(true, token));
@@ -91,6 +97,7 @@ class TokenValidatorImplTest {
     void testBasicValidationFailure() throws Exception {
         DefaultJwtProcessorThrows custom = new DefaultJwtProcessorThrows();
         SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
+        CacheProperties cacheProperties = Mockito.mock(CacheProperties.class);
 
         URL jwksUrl = new URL(jwksUri);
         JWKSource<SecurityContext> source = JWKSourceBuilder.create(jwksUrl).build();
@@ -102,7 +109,7 @@ class TokenValidatorImplTest {
         Mockito.when(securityProperties.getJwkSetUri()).thenReturn(jwksUri);
         Mockito.when(securityProperties.getJwkSource()).thenReturn(source);
 
-        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom);
+        TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, cacheProperties);
 
         String token = "token to validate";
         Assertions.assertThrows(CacheTokenValidationException.class, () -> validator.validate(true, token));
@@ -112,6 +119,7 @@ class TokenValidatorImplTest {
     void testValidateTokenExpiry() throws Exception {
         DefaultJwtProcessorCustom custom = new DefaultJwtProcessorCustom();
         SecurityProperties securityProperties = Mockito.mock(SecurityProperties.class);
+        CacheProperties cacheProperties = Mockito.mock(CacheProperties.class);
 
         URL jwksUrl = new URL(jwksUri);
         JWKSource<SecurityContext> source = JWKSourceBuilder.create(jwksUrl).build();
@@ -123,7 +131,7 @@ class TokenValidatorImplTest {
         Mockito.when(securityProperties.getJwkSetUri()).thenReturn(jwksUri);
         Mockito.when(securityProperties.getJwkSource()).thenReturn(source);
 
-        TokenValidatorImpl validator = new TokenValidatorImpl(securityProperties, custom);
+        TokenValidatorImpl validator = new TokenValidatorImpl(securityProperties, custom, cacheProperties);
 
         Assertions.assertFalse(validator.validateTheTokenExpiry("""
                 eyJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsiLCJ0eXAiOiJKV1
@@ -166,14 +174,15 @@ class TokenValidatorImplTest {
 
 
         public TokenValidatorImplCustom(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor,
-                                        boolean tokenExpiryOffsetCheck) throws MalformedURLException {
-            super(securityProperties, jwtProcessor);
+                                        boolean tokenExpiryOffsetCheck, CacheProperties cacheProperties) throws MalformedURLException {
+            super(securityProperties, jwtProcessor, cacheProperties);
             this.tokenExpiryOffsetCheck = tokenExpiryOffsetCheck;
         }
 
-        public TokenValidatorImplCustom(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor)
+        public TokenValidatorImplCustom(SecurityProperties securityProperties,
+                                        DefaultJWTProcessor<SecurityContext> jwtProcessor, CacheProperties cacheProperties)
             throws MalformedURLException {
-            this(securityProperties, jwtProcessor, true);
+            this(securityProperties, jwtProcessor, true, cacheProperties);
         }
 
         @Override

@@ -13,10 +13,12 @@ import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 
@@ -27,22 +29,23 @@ import java.util.Date;
 import java.util.HashSet;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class TokenValidatorImpl implements TokenValidator {
 
     private DefaultJWTProcessor<SecurityContext> jwtProcessor;
 
-    // Lets give our system a chance to refresh the cached token before official token expiry to avoid
-    // expiry in transit
-    private static final int EXPIRE_JWT_MINUTES_BEFORE_TOKEN_EXPIRY = 5;
+    private final CacheProperties cacheProperties;
 
     @Autowired
-    public TokenValidatorImpl(SecurityProperties securityProperties)  throws MalformedURLException {
-        this(securityProperties, new DefaultJWTProcessor<>());
+    public TokenValidatorImpl(SecurityProperties securityProperties, CacheProperties properties)  throws MalformedURLException {
+        this(securityProperties, new DefaultJWTProcessor<>(), properties);
     }
 
-    public TokenValidatorImpl(SecurityProperties securityProperties, DefaultJWTProcessor<SecurityContext> jwtProcessor) throws MalformedURLException {
+    public TokenValidatorImpl(SecurityProperties securityProperties,
+                              DefaultJWTProcessor<SecurityContext> jwtProcessor, CacheProperties cacheProperties) throws MalformedURLException {
         this.jwtProcessor = jwtProcessor;
+        this.cacheProperties = cacheProperties;
         JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(
             JWSAlgorithm.RS256,
             securityProperties.getJwkSource()
@@ -95,7 +98,7 @@ public class TokenValidatorImpl implements TokenValidator {
             JWT jwt = SignedJWT.parse(accessToken);
             Object expired = jwt.getJWTClaimsSet().getClaim("exp");
             if (expired != null) {
-                long expiry = ((Date) expired).getTime() - EXPIRE_JWT_MINUTES_BEFORE_TOKEN_EXPIRY * (1000 * 60);
+                long expiry = ((Date) expired).getTime() - cacheProperties.getShareTokenAllocationEarlyExpirationMinutes() * (1000 * 60);
                 long currentTime = System.currentTimeMillis();
                 validated = currentTime < expiry;
 
