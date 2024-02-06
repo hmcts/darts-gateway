@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,7 +97,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
-         new JavaMailXmlWithFileMultiPartRequest(request);
+        new JavaMailXmlWithFileMultiPartRequest(request);
     }
 
     @Test
@@ -142,7 +141,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
         // run the test
-       new JavaMailXmlWithFileMultiPartRequest(request);
+        new JavaMailXmlWithFileMultiPartRequest(request);
     }
 
     class DefaultInputServletStream extends ServletInputStream {
