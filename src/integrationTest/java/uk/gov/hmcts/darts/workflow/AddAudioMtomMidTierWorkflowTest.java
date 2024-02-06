@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.workflow;
 
+import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,6 +63,7 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         Assertions.assertEquals(fileCountBefore, fileCountAfter);
 
         verify(postRequestedFor(urlPathEqualTo("/audios"))
+                   .withHeader("Authorization", new RegexPattern("Bearer test"))
                 .withRequestBody(new MultipartDartsProxyContentPattern()));
     }
 }
