@@ -98,7 +98,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
         try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
-            // do nothing here
+            Assertions.assertTrue(mtomRequest.getInputStream().readAllBytes().length > 0);
         }
     }
 
@@ -122,7 +122,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
 
         // run the test
         try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
-            // do nothing here
+            Assertions.assertTrue(mtomRequest.getInputStream().readAllBytes().length > 0);
         }
     }
 
@@ -146,7 +146,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
 
         // run the test
         try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
-            // do nothing here
+            Assertions.assertTrue(mtomRequest.getInputStream().readAllBytes().length > 0);
         }
     }
 
