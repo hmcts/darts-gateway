@@ -97,7 +97,9 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
-        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {}
+        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
+            // do nothing here
+        }
     }
 
     @Test
@@ -119,7 +121,9 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
         // run the test
-        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {}
+        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
+            // do nothing here
+        }
     }
 
     @Test
@@ -141,7 +145,9 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
         // run the test
-        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {}
+        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
+            // do nothing here
+        }
     }
 
     class DefaultInputServletStream extends ServletInputStream {
