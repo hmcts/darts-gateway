@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
@@ -25,6 +27,9 @@ import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.utils.multipart.DummyXmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -337,5 +342,70 @@ class AddAudioWebServiceTest extends IntegrationBase {
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @Test
+    void testAddAudioMtomNoXmlBody() throws Exception {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "payloads/addAudio/register/soapRequestMTOMErrorNoXMLBody.txt");
+
+        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_USERNAME);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_PASSWORD);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .header("Content-Type", "multipart/related;boundary=\"uuid:b93ca7c1-d42d-4acd-aa56-3c9db058d44f\";")
+            .uri(getGatewayUri().toURI())
+            .POST(HttpRequest.BodyPublishers.ofString(soapRequestStr))
+            .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> response;
+
+        response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertTrue(response.body().contains(FaultErrorCodes.E_UNSUPPORTED_EXCEPTION.name()));
+    }
+
+    @Test
+    void testAddAudioMtomNoXmlPart() throws Exception {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "payloads/addAudio/register/soapRequestMTOMFailureBadRequestNoXMLPart.txt");
+
+        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_USERNAME);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_PASSWORD);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .header("Content-Type", "multipart/related;boundary=\"uuid:b93ca7c1-d42d-4acd-aa56-3c9db058d44f\";")
+            .uri(getGatewayUri().toURI())
+            .POST(HttpRequest.BodyPublishers.ofString(soapRequestStr))
+            .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> response;
+
+        response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(400, response.statusCode());
+        Assertions.assertTrue(response.body().isEmpty());
+    }
+
+    @Test
+    void testAddAudioMtomNoXmlContent() throws Exception {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "payloads/addAudio/register/soapRequestMTOMFailureBadRequestNoXMLContent.txt");
+
+        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_USERNAME);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_PASSWORD);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .header("Content-Type", "multipart/related;boundary=\"uuid:b93ca7c1-d42d-4acd-aa56-3c9db058d44f\";")
+            .uri(getGatewayUri().toURI())
+            .POST(HttpRequest.BodyPublishers.ofString(soapRequestStr))
+            .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> response;
+
+        response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(400, response.statusCode());
+        Assertions.assertTrue(response.body().isEmpty());
     }
 }

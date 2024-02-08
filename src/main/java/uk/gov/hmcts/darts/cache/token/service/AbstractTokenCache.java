@@ -150,19 +150,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                                                   getValidateToken()
                     );
 
-                    boolean applicable = work.executeIsApplicable(t -> {
-                        Optional<CacheValue> tokenValue = lookup(token);
-
-                        if (!token.valid(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY)) {
-                            tokenValue = Optional.empty();
-                        }
-
-                        if (tokenValue.isPresent()) {
-                            redisTemplate.expire(t.getId(), getSecondsToExpire());
-                        }
-
-                        return tokenValue.isPresent();
-                    }, token);
+                    boolean applicable = work.executeIsApplicable(t -> touchToken(t).isPresent(), token);
 
                     if (applicable) {
                         foundTokenForSharedId = Optional.of(token);
@@ -184,6 +172,20 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         }
 
         return foundToken;
+    }
+
+    private Optional<CacheValue> touchToken(Token token) {
+        Optional<CacheValue> tokenValue = lookup(token);
+
+        if (!token.valid(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY)) {
+            tokenValue = Optional.empty();
+        }
+
+        if (tokenValue.isPresent()) {
+            redisTemplate.expire(token.getId(), getSecondsToExpire());
+        }
+
+        return tokenValue;
     }
 
     private boolean reuseTokenBasedOnCredentials(Boolean reuseTokenIfPossible) {

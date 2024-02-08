@@ -1,0 +1,5 @@
+--uuid:2a2cdaa0-950d-4811-891b-2e1da0579ad3
+Content-Id: <657040d3-11e7-41ab-9f03-21836fa7b7ae@example.jaxws.sun.com>
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: binary
+--uuid:2a2cdaa0-950d-4811-891b-2e1da0579ad3--

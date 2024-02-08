@@ -4,9 +4,7 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.function.ConsumerWithIoException;
-import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.Closeable;
 import java.io.File;
@@ -35,34 +33,39 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     private static final int MAXIMUM_PARTS = 2;
 
+    private MimeMultipart mimeMultipart;
+
+    private boolean parseFailure = false;
+
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public JavaMailXmlWithFileMultiPartRequest(HttpServletRequest request) {
         super(request);
-        parse(request);
-    }
 
-    private void parse(HttpServletRequest request) {
         try {
             source = new HttpRequestDataSource(request);
-            MimeMultipart mimeMultipart = new MimeMultipart(source);
-
-            if (mimeMultipart.getCount() > MAXIMUM_PARTS) {
-                log.error("Error due to too many binary files");
-                throw new DartsException("Too many binary files", CodeAndMessage.ERROR);
-            }
-
-            BodyPart xmlPayload = MultiPartUtil.getXml(mimeMultipart);
-            if (xmlPayload == null) {
-                log.error("Error due to no XML being found for request");
-                throw new DartsException((Throwable) null, CodeAndMessage.ERROR);
-            }
-
-            BodyPart binary = MultiPartUtil.getBinary(mimeMultipart);
-
-            parsedData = new XmlFileUploadPart(xmlPayload, binary);
+            mimeMultipart = new MimeMultipart(source);
+            parse(request);
         } catch (IOException | MessagingException e) {
+            log.warn("Invalid payload, forcing a payload error for Spring ws to handle");
+        }
+    }
+
+    private void parse(HttpServletRequest request) throws IOException {
+        try {
+            BodyPart xmlPayload = MultiPartUtil.getXml(mimeMultipart);
+
+            // if we see no xml then mark as parse failure
+            if (xmlPayload == null) {
+                parseFailure = true;
+                log.warn("Invalid payload no xml. We always need xml");
+            } else {
+                BodyPart binary = MultiPartUtil.getBinary(mimeMultipart);
+
+                parsedData = new XmlFileUploadPart(xmlPayload, binary);
+            }
+        } catch (MessagingException e) {
             log.error("Multipart parsing problem", e);
-            throw new DartsException(e, CodeAndMessage.ERROR);
+            parseFailure = true;
         }
     }
 
@@ -174,11 +177,17 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
     @Override
     public ServletInputStream getInputStream() throws IOException {
         try {
-            String removedIncludeForxml = removeIncludeInXml();
-            if (removedIncludeForxml != null) {
-                return new BodyPartServletInputStream(removedIncludeForxml);
+
+            if (!parseFailure) {
+                String removedIncludeForxml = removeIncludeInXml();
+                if (removedIncludeForxml != null) {
+                    return new BodyPartServletInputStream(removedIncludeForxml);
+                } else {
+                    return new BodyPartServletInputStream(parsedData.getXmlPart());
+                }
             } else {
-                return new BodyPartServletInputStream(parsedData.getXmlPart());
+                // write an empty string which will fail further down the line i.e. spring
+                return new BodyPartServletInputStream("this will fail to process");
             }
         } catch (MessagingException ex) {
             log.error("Problem consuming input stream", ex);
@@ -198,7 +207,13 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     @Override
     public void close() throws IOException {
-        parsedData.cleanup();
-        source.close();
+
+        if (!parseFailure) {
+            parsedData.cleanup();
+        }
+
+        if (source != null) {
+            source.close();
+        }
     }
 }
