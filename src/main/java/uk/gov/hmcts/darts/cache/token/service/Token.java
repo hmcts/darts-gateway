@@ -22,7 +22,9 @@ public class Token {
 
     public static final AtomicLong COUNTER = new AtomicLong();
 
-    public enum TOKEN_EXPIRY_MODE { DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, APPLY_EARLY_TOKEN_EXPIRY};
+    public enum TokenExpiryEnum {
+        DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, APPLY_EARLY_TOKEN_EXPIRY
+    }
 
     private TokenValidator validate;
 
@@ -40,7 +42,7 @@ public class Token {
     }
 
     /**
-     * Gets a token and applies validation
+     * Gets a token and applies validation.
      * @param validateTokenBefore Whether to validate the token
      * @return The optional token based on whether it has expired or not
      */
@@ -64,7 +66,7 @@ public class Token {
      * {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties#getSharedTokenEarlyExpirationMinutes()}
      * @param applyExpiryOffset Take into account the expiry of the token
      */
-    public boolean valid(TOKEN_EXPIRY_MODE applyExpiryOffset) {
+    public boolean valid(TokenExpiryEnum applyExpiryOffset) {
         if (validate != null && !tokenString.isEmpty()) {
             return validate.validate(applyExpiryOffset, tokenString);
         }
@@ -72,7 +74,7 @@ public class Token {
     }
 
     public boolean valid() {
-        return valid(TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY);
+        return valid(TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY);
     }
 
     void setSessionId(String sessionId) {

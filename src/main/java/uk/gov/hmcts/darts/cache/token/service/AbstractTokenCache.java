@@ -73,7 +73,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
                 tokenToUse = lookup(value);
 
-                if (tokenToUse.isPresent() && !tokenToUse.get().valid(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY)) {
+                if (tokenToUse.isPresent() && !tokenToUse.get().valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
                     tokenToUse = Optional.empty();
                 }
 
@@ -177,7 +177,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     private Optional<CacheValue> touchToken(Token token) {
         Optional<CacheValue> tokenValue = lookup(token);
 
-        if (!token.valid(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY)) {
+        if (!token.valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
             tokenValue = Optional.empty();
         }
 

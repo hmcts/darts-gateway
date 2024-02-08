@@ -11,5 +11,5 @@ public interface TokenValidator {
      * @param accessToken The token to validate
      * @return Whether validation had succeeded or not
      */
-    boolean validate(Token.TOKEN_EXPIRY_MODE validateUsingExpiryOffset, String accessToken);
+    boolean validate(Token.TokenExpiryEnum validateUsingExpiryOffset, String accessToken);
 }

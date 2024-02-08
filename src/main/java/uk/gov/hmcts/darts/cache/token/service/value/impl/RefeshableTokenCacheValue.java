@@ -49,7 +49,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
         Optional<Token> downstream = getValidatedToken();
 
         return EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken()) || (!EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken())
-            && downstream.isPresent() && !downstream.get().valid(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY));
+            && downstream.isPresent() && !downstream.get().valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY));
     }
 
     @Override
