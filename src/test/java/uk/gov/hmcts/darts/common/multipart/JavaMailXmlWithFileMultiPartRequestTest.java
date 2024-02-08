@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +83,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
     }
 
     @Test
-    void testNoXmlExistingFailure() throws Exception {
+    void testNoXmlExistingFailureAndDoesNotFail() throws Exception {
         File multipartFile = new File(JavaMailXmlWithFileMultiPartRequestTest
                                           .class.getClassLoader().getResource("tests/multipart/httpmultipartuploadfailnoxml.txt").getFile());
         File payloadFileUploadContents = new File(JavaMailXmlWithFileMultiPartRequestTest
@@ -98,12 +97,13 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
-        Assertions.assertThrows(DartsException.class, () ->
-                requestUnderTest = new JavaMailXmlWithFileMultiPartRequest(request));
+        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
+            Assertions.assertTrue(mtomRequest.getInputStream().readAllBytes().length > 0);
+        }
     }
 
     @Test
-    void testParseWithMultipleBinaryParts() throws Exception {
+    void testParseWithMultipleBinaryPartsAndDoesNotFail() throws Exception {
         File multipartFile = new File(JavaMailXmlWithFileMultiPartRequestTest
                 .class.getClassLoader().getResource("tests/multipart/httpmultipartuploadmorethanonebinary.txt").getFile());
         File payloadFileUploadContents = new File(
@@ -121,13 +121,13 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
         // run the test
-        Throwable throwable = Assertions.assertThrows(DartsException.class, () ->
-                requestUnderTest = new JavaMailXmlWithFileMultiPartRequest(request));
-        Assertions.assertEquals("Too many binary files", throwable.getMessage());
+        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
+            Assertions.assertTrue(mtomRequest.getInputStream().readAllBytes().length > 0);
+        }
     }
 
     @Test
-    void testParseWithMultipleBinaryPartMisFormatted() throws Exception {
+    void testParseWithMultipleBinaryPartMisFormattedAndDoesNotFail() throws Exception {
         File multipartFile = new File(JavaMailXmlWithFileMultiPartRequestTest
                 .class.getClassLoader().getResource("tests/multipart/httpmultipartuploadmisformatted.txt").getFile());
         File payloadFileUploadContents = new File(
@@ -145,8 +145,9 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
         // run the test
-        Assertions.assertThrows(DartsException.class, () ->
-                requestUnderTest = new JavaMailXmlWithFileMultiPartRequest(request));
+        try (JavaMailXmlWithFileMultiPartRequest mtomRequest = new JavaMailXmlWithFileMultiPartRequest(request)) {
+            Assertions.assertTrue(mtomRequest.getInputStream().readAllBytes().length > 0);
+        }
     }
 
     class DefaultInputServletStream extends ServletInputStream {
