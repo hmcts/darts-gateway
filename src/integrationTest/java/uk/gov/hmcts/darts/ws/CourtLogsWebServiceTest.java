@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -58,8 +59,9 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
     }
@@ -158,7 +160,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequestWithAuthenticationTokenRefresh(DartsGatewayClient client) throws Exception {
 
-        when(tokenValidator.validate(Mockito.anyBoolean(),
+        when(tokenValidator.validate(Mockito.any(),
                                 Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
@@ -169,7 +171,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             var dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
-            when(tokenValidator.validate(Mockito.anyBoolean(),
+            when(tokenValidator.validate(Mockito.any(),
                                          Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(

@@ -24,7 +24,7 @@ public class SecurityRequestAttributesWrapper {
 
         // if we have a token that can be refreshed and it needs refreshing then refresh it
         if (accessTokenObj instanceof DownstreamTokenisableValue tokenCacheValue) {
-            if (tokenCacheValue.refresh()) {
+            if (tokenCacheValue.doesRequireRefresh()) {
                 tokenCacheValue.performRefresh();
                 tokenToReturn = tokenCacheValue.getDownstreamToken();
             } else {

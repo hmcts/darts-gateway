@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
@@ -57,8 +58,8 @@ class EventWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
@@ -141,9 +142,6 @@ class EventWebServiceTest extends IntegrationBase {
     void testRoutesValidEventPayloadWithAuthenticationToken(
         DartsGatewayClient client
     ) throws Exception {
-
-        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
-
         authenticationStub.assertWithTokenHeader(client, () -> {
             theEventApi.willRespondSuccessfully();
 
@@ -170,7 +168,7 @@ class EventWebServiceTest extends IntegrationBase {
         DartsGatewayClient client
     ) throws Exception {
 
-        when(tokenValidator.validate(Mockito.anyBoolean(),
+        when(tokenValidator.validate(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
@@ -179,7 +177,7 @@ class EventWebServiceTest extends IntegrationBase {
         authenticationStub.assertWithTokenHeader(client, () -> {
             theEventApi.willRespondSuccessfully();
 
-            when(tokenValidator.validate(Mockito.anyBoolean(),
+            when(tokenValidator.validate(Mockito.any(),
                                          Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(

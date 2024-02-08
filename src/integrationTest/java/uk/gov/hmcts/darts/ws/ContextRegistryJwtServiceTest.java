@@ -14,6 +14,7 @@ import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
@@ -46,19 +47,19 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
         when(generator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
 
-        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
             .thenReturn(CONTEXT_REGISTRY_TOKEN);
 
-        when(tokenValidator.validate(Mockito.eq(true), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
-        when(tokenValidator.validate(Mockito.eq(false), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
 
-            when(tokenValidator.validate(Mockito.eq(true), Mockito.eq("test2"))).thenReturn(true);
-            when(tokenValidator.validate(Mockito.eq(false), Mockito.eq("test2"))).thenReturn(true);
+            when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
+            when(tokenValidator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
 
             when(generator.acquireNewToken(Mockito.eq("user" + i), Mockito.eq("pass"))).thenReturn("test2");
         }
@@ -185,7 +186,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleLookupTokenExpired(ContextRegistryClient client) throws Exception {
-        when(tokenValidator.validate(Mockito.anyBoolean(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, false, false);
+        when(tokenValidator.validate(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, false, false);
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
 
@@ -197,7 +198,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
             SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
             Assertions.assertNull(response.getResponse().getValue().getReturn());
-            verify(tokenValidator, times(2)).validate(Mockito.anyBoolean(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
+            verify(tokenValidator, times(2)).validate(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 

@@ -61,7 +61,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     @SuppressWarnings("java:S6809")
     public Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible) throws CacheException {
 
-        log.info("Storing the supplied value");
+        log.debug("Storing the supplied value");
 
         CacheLockableUnitOfWork distributedLockWork = new CacheLockableUnitOfWork(lockRegistry);
         Optional<Token> token = distributedLockWork.execute(() -> {
@@ -69,21 +69,21 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             // if we have found a token but it is invalid then invalid it and force a new token to be created
             if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
-                log.info("Looking up token for the same credentials");
+                log.debug("Looking up token for the same credentials");
 
                 tokenToUse = lookup(value);
 
-                if (tokenToUse.isPresent() && !tokenToUse.get().valid(true)) {
+                if (tokenToUse.isPresent() && !tokenToUse.get().valid(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY)) {
                     tokenToUse = Optional.empty();
                 }
 
-                log.info("Found the token for the credentials");
+                log.debug("Found the token for the credentials");
             }
 
             if (tokenToUse.isEmpty()) {
                 tokenToUse = Optional.of(createToken(value.getServiceContext()));
 
-                log.info("Creating a new token");
+                log.debug("Creating a new token");
 
                 CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
@@ -98,7 +98,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             return tokenToUse;
         }, reuseTokenBasedOnCredentials(reuseTokenIfPossible), value.getId());
 
-        log.info("Token value stored in cache");
+        log.debug("Token value stored in cache");
 
         if (token.isPresent() && reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
             CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
@@ -133,7 +133,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         Optional<Token> foundToken;
 
         if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
-            log.info("Looking for the shared token configuration");
+            log.debug("Looking for the shared token configuration");
 
             CacheLockableUnitOfWork distributedLockWork = new CacheLockableUnitOfWork(lockRegistry);
             String sharedId = getIdForServiceContext(context);
@@ -153,7 +153,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                     boolean applicable = work.executeIsApplicable(t -> {
                         Optional<CacheValue> tokenValue = lookup(token);
 
-                        if (!token.valid(true)) {
+                        if (!token.valid(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY)) {
                             tokenValue = Optional.empty();
                         }
 
@@ -167,10 +167,10 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                     if (applicable) {
                         foundTokenForSharedId = Optional.of(token);
 
-                        log.info("Found the token for the shared credentials");
+                        log.debug("Found the token for the shared credentials");
                     } else {
                         foundTokenForSharedId = store(createValue(context), reuseTokenIfPossible);
-                        log.info("Not found the token for the shared credentials");
+                        log.debug("Not found the token for the shared credentials");
                     }
                 } else {
                     foundTokenForSharedId = store(createValue(context), reuseTokenIfPossible);
@@ -179,7 +179,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 return foundTokenForSharedId;
             }, sharedId);
         } else {
-            log.info("Not looking up shared token either turned off or not forced");
+            log.debug("Not looking up shared token either turned off or not forced");
             foundToken = store(createValue(context), reuseTokenIfPossible);
         }
 
@@ -200,7 +200,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     @SuppressWarnings("java:S6809")
     public Optional<CacheValue> lookup(Token holder) throws CacheException {
 
-        log.info("Looking up the token");
+        log.debug("Looking up the token");
 
         // if the token is not valid then
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
@@ -211,18 +211,18 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             if (val.isPresent() && !holder.valid()) {
                 evict(holder);
                 val = Optional.empty();
-                log.info("Token manually removed as it is no longer valid");
+                log.debug("Token manually removed as it is no longer valid");
             } else {
-                if (val.isPresent() && val.get() instanceof DownstreamTokenisableValue downstreamToken && downstreamToken.refresh()) {
-                    log.info("Token cache value needs refreshing");
+                if (val.isPresent() && val.get() instanceof DownstreamTokenisableValue downstreamToken && downstreamToken.doesRequireRefresh()) {
+                    log.debug("Token cache value needs refreshing");
                     downstreamToken.performRefresh();
-                    log.info("Token cache value has been refreshed");
+                    log.debug("Token cache value has been refreshed");
 
                     redisTemplate.opsForValue().set(t.getId(), val.get(), getSecondsToExpire());
                 }
             }
 
-            log.info("Returning found value");
+            log.debug("Returning found value");
             return val;
         }, holder);
     }
@@ -248,15 +248,15 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
         work.execute(t -> {
-            log.info("Evicting the token");
+            log.debug("Evicting the token");
 
             if (!properties.isShareTokenForSameCredentials()) {
 
                 redisTemplate.delete(t.getId());
 
-                log.info("Evicted the token");
+                log.debug("Evicted the token");
             } else {
-                log.info("Token was not evicted as it can be shared. The token expiration timeout is still applicable");
+                log.debug("Token was not evicted as it can be shared. The token expiration timeout is still applicable");
             }
         }, holder);
     }

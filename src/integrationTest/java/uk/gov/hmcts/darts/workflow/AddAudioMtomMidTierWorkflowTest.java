@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
@@ -24,6 +25,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
@@ -37,8 +39,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @BeforeEach
     void before() throws Exception {
         Mockito.when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
-        Mockito.when(validator.validate(Mockito.eq(true), Mockito.anyString())).thenReturn(true);
-        Mockito.when(validator.validate(Mockito.eq(false), Mockito.anyString())).thenReturn(true);
+        when(validator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(validator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
                 AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE);
@@ -66,8 +68,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                 .withRequestBody(new MultipartDartsProxyContentPattern()));
 
-        Mockito.verify(validator, times(6)).validate(Mockito.eq(false), Mockito.anyString());
-        Mockito.verify(validator, times(4)).validate(Mockito.eq(true), Mockito.anyString());
+        Mockito.verify(validator, times(6)).validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(4)).validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
 
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));

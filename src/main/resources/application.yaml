@@ -36,7 +36,7 @@ darts-gateway:
     map-token-to-session: false
     share-token-for-same-credentials: true
     entry-time-to-idle-seconds: 3600
-    share-token-allocation-early-expiration-minutes: 300
+    shared-token-early-expiration-minutes: 5
   ws:
     request-validation: true
     response-validation: false

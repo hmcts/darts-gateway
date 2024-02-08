@@ -25,7 +25,7 @@ class SecurityRequestAttributesWrapperTest {
 
         String downstreamToken = "refreshedToken";
         Mockito.when(downstreamTokenisableValue.getDownstreamToken()).thenReturn(downstreamToken);
-        Mockito.when(downstreamTokenisableValue.refresh()).thenReturn(true);
+        Mockito.when(downstreamTokenisableValue.doesRequireRefresh()).thenReturn(true);
 
         Mockito.when(atts.getAttribute(SecurityRequestAttributesWrapper.ACCESS_TOKEN_REQUEST_ATTR, 0))
             .thenReturn(downstreamTokenisableValue);
@@ -41,7 +41,7 @@ class SecurityRequestAttributesWrapperTest {
 
         String downstreamToken = "refreshedToken";
         Mockito.when(downstreamTokenisableValue.getDownstreamToken()).thenReturn(downstreamToken);
-        Mockito.when(downstreamTokenisableValue.refresh()).thenReturn(false);
+        Mockito.when(downstreamTokenisableValue.doesRequireRefresh()).thenReturn(false);
 
         Mockito.when(atts.getAttribute(SecurityRequestAttributesWrapper.ACCESS_TOKEN_REQUEST_ATTR, 0))
             .thenReturn(downstreamTokenisableValue);

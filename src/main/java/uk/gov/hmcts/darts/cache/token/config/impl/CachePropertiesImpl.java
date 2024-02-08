@@ -19,5 +19,5 @@ public class CachePropertiesImpl implements CacheProperties {
 
     private long entryTimeToIdleSeconds;
 
-    private int shareTokenAllocationEarlyExpirationMinutes;
+    private int sharedTokenEarlyExpirationMinutes;
 }

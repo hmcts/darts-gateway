@@ -7,7 +7,7 @@ import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import java.util.Optional;
 
 /**
- * This is a token registerable implementation (effectively a cache implementation) that allows us to set and get
+ * This is a token registration interface that represents a token cache that allows us to set and get
  * values {@link uk.gov.hmcts.darts.cache.token.service.value.CacheValue} from the cache.
  */
 public interface TokenRegisterable {
@@ -31,10 +31,11 @@ public interface TokenRegisterable {
     Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible);
 
     /**
-     * This method takes the service context and works out whether it needs to generate a new token ot not.
+     * This method takes the service context and works out whether it needs to generate a new token or not.
      * If a token does exists but it is invalid then a new token is expected to be generated
      *
-     * @param reuseTokenIfPossible The token to reuse if found. if false a new token is always generated for the same service context.
+     * @param context The context to store
+     * @param reuseTokenIfPossible Enables reuse of a preexisting token if found. If false a new token is always generated for the same service context.
      *
      * @return The token to be returned.
      */
@@ -42,7 +43,7 @@ public interface TokenRegisterable {
 
     /**
      * This method takes the service context to generate a new token.
-     *
+     * @param context The service context to store
      * @return The token to be returned
      */
     Optional<Token> store(ServiceContext context) throws CacheException;

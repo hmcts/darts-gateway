@@ -93,7 +93,7 @@ class BasicCacheTest {
         Mockito.when(registry.obtain(Mockito.notNull())).thenReturn(lock);
 
         validateToken = Mockito.mock(TokenValidator.class);
-        Mockito.when(validateToken.validate(Mockito.eq(false), Mockito.notNull())).thenReturn(true);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
 
         generatable = Mockito.mock(TokenGeneratable.class);
 
@@ -114,7 +114,7 @@ class BasicCacheTest {
         String valueToken = "THIS IS MY VALUE TOKEN";
         TokenValidator validateToken = Mockito.mock(TokenValidator.class);
         Token returnToken = Token.readToken(valueToken, false, validateToken);
-        Mockito.when(validateToken.validate(Mockito.eq(false), Mockito.notNull())).thenReturn(true);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
         Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
@@ -137,7 +137,7 @@ class BasicCacheTest {
         String valueToken = "THIS IS MY VALUE TOKEN";
         TokenValidator valueValidateToken = (expireBefore, t) -> true;
         Token returnToken = Token.readToken(valueToken, false, valueValidateToken);
-        Mockito.when(validateToken.validate(Mockito.eq(true), Mockito.notNull())).thenReturn(true);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
         Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
@@ -165,7 +165,7 @@ class BasicCacheTest {
         String valueToken = "THIS IS MY VALUE TOKEN";
         TokenValidator validateToken = Mockito.mock(TokenValidator.class);
         Token returnToken = Token.readToken(valueToken, false, validateToken);
-        Mockito.when(validateToken.validate(Mockito.eq(false), Mockito.notNull())).thenReturn(true);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.notNull())).thenReturn(returnToken);
         Mockito.when(generatable.getToken(Mockito.notNull())).thenReturn(returnToken);
 
@@ -182,7 +182,7 @@ class BasicCacheTest {
 
     @Test
     void testLookupWithEvictionDueToInvalidToken() {
-        Mockito.when(validateToken.validate(Mockito.eq(false), Mockito.notNull())).thenReturn(false);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(false);
 
         ServiceContext context = new ServiceContext();
         BasicIdentity basicIdentity = new BasicIdentity();
@@ -206,7 +206,7 @@ class BasicCacheTest {
 
     @Test
     void testLookupWithValueRefresh() {
-        Mockito.when(validateToken.validate(Mockito.eq(true), Mockito.notNull())).thenReturn(true);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
 
         ServiceContext context = new ServiceContext();
         BasicIdentity basicIdentity = new BasicIdentity();
@@ -246,7 +246,7 @@ class BasicCacheTest {
 
     @Test
     void testEvict() {
-        Mockito.when(validateToken.validate(Mockito.eq(false), Mockito.notNull())).thenReturn(true);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
 
         ServiceContext context = new ServiceContext();
         BasicIdentity basicIdentity = new BasicIdentity();
@@ -271,7 +271,7 @@ class BasicCacheTest {
 
     @Test
     void testNoEvictOfSharedToken() {
-        Mockito.when(validateToken.validate(Mockito.eq(false), Mockito.notNull())).thenReturn(true);
+        Mockito.when(validateToken.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
 
         ServiceContext context = new ServiceContext();
         BasicIdentity basicIdentity = new BasicIdentity();

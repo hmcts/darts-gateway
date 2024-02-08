@@ -30,13 +30,13 @@ public class ContextRegistryEndpoint {
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
-    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<documentum.contextreg.Register> addDocument) {
+    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<documentum.contextreg.Register> register) {
         RegisterResponse registerResponse = new RegisterResponse();
 
         try {
 
             // create a session as the client needs this
-            Optional<Token> cacheValue = registerable.store(addDocument.getValue().getContext());
+            Optional<Token> cacheValue = registerable.store(register.getValue().getContext());
 
             // for now return a documentum id
             cacheValue.ifPresent(value -> registerResponse.setReturn(value.getTokenString().orElse("")));

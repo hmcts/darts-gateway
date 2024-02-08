@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
@@ -60,8 +61,8 @@ class AddAudioWebServiceTest extends IntegrationBase {
     public void before() {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
-        when(validator.validate(Mockito.eq(true), Mockito.eq("test"))).thenReturn(true);
-        when(validator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
+        when(validator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(validator.validate(Mockito.eq(Token.TOKEN_EXPIRY_MODE.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
             .thenReturn("test");
@@ -145,7 +146,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioWithAuthenticationToken(DartsGatewayClient client) throws Exception {
-        when(validator.validate(Mockito.eq(false), Mockito.eq("test"))).thenReturn(true);
         authenticationStub.assertWithTokenHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
@@ -174,7 +174,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesAddAudioWithAuthenticationTokenWithRefresh(DartsGatewayClient client) throws Exception {
 
-        when(validator.validate(Mockito.anyBoolean(),
+        when(validator.validate(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
@@ -196,7 +196,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            when(validator.validate(Mockito.anyBoolean(),
+            when(validator.validate(Mockito.any(),
                                          Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);

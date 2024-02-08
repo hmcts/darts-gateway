@@ -22,6 +22,8 @@ public class Token {
 
     public static final AtomicLong COUNTER = new AtomicLong();
 
+    public enum TOKEN_EXPIRY_MODE { DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, APPLY_EARLY_TOKEN_EXPIRY};
+
     private TokenValidator validate;
 
     Token(String token,  TokenValidator validate) {
@@ -37,6 +39,11 @@ public class Token {
         return Optional.of(tokenString);
     }
 
+    /**
+     * Gets a token and applies validation
+     * @param validateTokenBefore Whether to validate the token
+     * @return The optional token based on whether it has expired or not
+     */
     public Optional<String> getTokenString(boolean validateTokenBefore) {
         if (validateTokenBefore && validate != null && !valid()) {
             return Optional.empty();
@@ -50,19 +57,22 @@ public class Token {
         return TokenRegisterable.CACHE_PREFIX + ":" + tokenString + ":" + sessionId;
     }
 
-    public boolean valid(boolean applyExpiryOffset) {
-        return valid(applyExpiryOffset, tokenString);
-    }
 
-    private boolean valid(boolean applyExpiryOffset, String token) {
-        if (validate != null && !token.isEmpty()) {
-            return validate.validate(applyExpiryOffset, token);
+    /**Ω
+     * validates token taking into account the expiry offset if it is enabled.
+     * See {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties#isShareTokenForSameCredentials()} and
+     * {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties#getSharedTokenEarlyExpirationMinutes()}
+     * @param applyExpiryOffset Take into account the expiry of the token
+     */
+    public boolean valid(TOKEN_EXPIRY_MODE applyExpiryOffset) {
+        if (validate != null && !tokenString.isEmpty()) {
+            return validate.validate(applyExpiryOffset, tokenString);
         }
-        return !token.isEmpty();
+        return !tokenString.isEmpty();
     }
 
     public boolean valid() {
-        return valid(false);
+        return valid(TOKEN_EXPIRY_MODE.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY);
     }
 
     void setSessionId(String sessionId) {

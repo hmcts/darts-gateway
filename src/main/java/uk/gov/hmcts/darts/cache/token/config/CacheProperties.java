@@ -7,6 +7,5 @@ public interface CacheProperties {
 
     long getEntryTimeToIdleSeconds();
 
-    int getShareTokenAllocationEarlyExpirationMinutes();
-
+    int getSharedTokenEarlyExpirationMinutes();
 }

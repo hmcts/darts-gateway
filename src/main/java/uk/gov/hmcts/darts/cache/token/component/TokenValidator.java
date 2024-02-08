@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.cache.token.component;
 
+import uk.gov.hmcts.darts.cache.token.service.Token;
+
 @FunctionalInterface
 public interface TokenValidator {
 
@@ -9,5 +11,5 @@ public interface TokenValidator {
      * @param accessToken The token to validate
      * @return Whether validation had succeeded or not
      */
-    boolean validate(boolean validateUsingExpiryOffset, String accessToken);
+    boolean validate(Token.TOKEN_EXPIRY_MODE validateUsingExpiryOffset, String accessToken);
 }

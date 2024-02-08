@@ -28,7 +28,7 @@ public interface DownstreamTokenisableValue extends CacheValue {
      * Determine if the internal downstream token is in need of a refresh i.e. it has expired.
      * @return True or false
      */
-    boolean refresh() throws CacheException;
+    boolean doesRequireRefresh() throws CacheException;
 
     /**
      * performs the internal refresh of the downstream token.
