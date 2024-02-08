@@ -44,14 +44,14 @@ following properties within SoapUI
   *  tokenToUse - The token (jwt by default) to authenticate with
   *  gatewayurl - The gateway url to use
 
-## DARTSService SoapUI
+## DARTSService Postman
 
 * To View the application SOAP Web Services:
   * http://localhost:8070/service/darts/DARTSService?wsdl
 * Import  Project [README-DARTSService](README-DARTSService-postman-project.json)
 * Sample requests for all operations have been created (using both user name and password authentication as well as token authentication)`
 
-## ContextRegistryService SoapUI
+## ContextRegistryService Postman
 
 * To View the application SOAP Web Services:
   * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
