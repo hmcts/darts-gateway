@@ -50,8 +50,8 @@ class CasesWebServiceTest extends IntegrationBase {
     public void before() {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
-        when(tokenValidator.validate(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.validate(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
             .thenReturn("test");
@@ -137,7 +137,7 @@ class CasesWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCasesWithAuthenticationTokenWithRefresh(DartsGatewayClient client) throws Exception {
 
-        when(tokenValidator.validate(Mockito.any(),
+        when(tokenValidator.test(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         // setup the tokens so that we refresh the backend token before making the restful darts calls
@@ -159,7 +159,7 @@ class CasesWebServiceTest extends IntegrationBase {
             String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/expectedResponse.xml");
 
-            when(tokenValidator.validate(Mockito.any(),
+            when(tokenValidator.test(Mockito.any(),
                                          Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);

@@ -41,8 +41,8 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(tokenValidator.validate(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.validate(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
@@ -164,7 +164,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void handlesRegisterNodeWithAuthenticationTokenRefresh(DartsGatewayClient client) throws Exception {
 
-        when(tokenValidator.validate(Mockito.any(),
+        when(tokenValidator.test(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
@@ -183,7 +183,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/expectedResponse.xml");
 
-            when(tokenValidator.validate(Mockito.any(),
+            when(tokenValidator.test(Mockito.any(),
                                          Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);

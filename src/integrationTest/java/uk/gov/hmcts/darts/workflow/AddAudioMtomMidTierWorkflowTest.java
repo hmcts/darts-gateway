@@ -39,8 +39,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @BeforeEach
     void before() throws Exception {
         when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
-        when(validator.validate(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(validator.validate(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(validator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
                 AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE);
@@ -69,8 +69,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
                    .withHeader("Authorization", new RegexPattern("Bearer test"))
                 .withRequestBody(new MultipartDartsProxyContentPattern()));
 
-        Mockito.verify(validator, times(6)).validate(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
-        Mockito.verify(validator, times(4)).validate(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(6)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(4)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
 
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));

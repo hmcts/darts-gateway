@@ -58,8 +58,8 @@ class EventWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(tokenValidator.validate(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.validate(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
@@ -168,7 +168,7 @@ class EventWebServiceTest extends IntegrationBase {
         DartsGatewayClient client
     ) throws Exception {
 
-        when(tokenValidator.validate(Mockito.any(),
+        when(tokenValidator.test(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
@@ -177,7 +177,7 @@ class EventWebServiceTest extends IntegrationBase {
         authenticationStub.assertWithTokenHeader(client, () -> {
             theEventApi.willRespondSuccessfully();
 
-            when(tokenValidator.validate(Mockito.any(),
+            when(tokenValidator.test(Mockito.any(),
                                          Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(

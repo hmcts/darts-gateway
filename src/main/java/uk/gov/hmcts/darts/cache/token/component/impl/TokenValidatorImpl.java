@@ -72,8 +72,9 @@ public class TokenValidatorImpl implements TokenValidator {
         jwtProcessor.setJWTClaimsSetVerifier(claimsVerifier);
     }
 
+
     @Override
-    public boolean validate(Token.TokenExpiryEnum useExpiryOffset, String accessToken) {
+    public boolean test(Token.TokenExpiryEnum useExpiryOffset, String accessToken) {
         log.debug("Validating JWT: {}", accessToken);
         boolean validated = false;
         try {

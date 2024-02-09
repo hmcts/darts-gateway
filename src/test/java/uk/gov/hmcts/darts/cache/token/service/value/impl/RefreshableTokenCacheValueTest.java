@@ -69,7 +69,7 @@ class RefreshableTokenCacheValueTest {
         context = jaxbMarshaller.unmarshal(ss, ServiceContext.class).getValue();
 
         TokenValidator validate = Mockito.mock(TokenValidator.class);
-        when(validate.validate(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
+        when(validate.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         token = Token.readToken(CACHED_TOKEN_STRING, false, validate);
         replaceToken = Token.readToken(REPLACE_TOKEN_STRING, false, validate);
     }

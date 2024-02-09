@@ -46,7 +46,7 @@ class TokenValidatorImplTest {
         TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, cacheProperties);
 
         String token = "token to validate";
-        Assertions.assertTrue(validator.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
+        Assertions.assertTrue(validator.test(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
     }
 
     @Test
@@ -69,7 +69,7 @@ class TokenValidatorImplTest {
         TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, false, cacheProperties);
 
         String token = "token to validate";
-        Assertions.assertFalse(validator.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
+        Assertions.assertFalse(validator.test(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
     }
 
     @Test
@@ -91,7 +91,7 @@ class TokenValidatorImplTest {
         TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, cacheProperties);
 
         String token = "token to validate";
-        Assertions.assertFalse(validator.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
+        Assertions.assertFalse(validator.test(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
     }
 
     @Test
@@ -113,7 +113,7 @@ class TokenValidatorImplTest {
         TokenValidatorImpl validator = new TokenValidatorImplCustom(securityProperties, custom, cacheProperties);
 
         String token = "token to validate";
-        Assertions.assertThrows(CacheTokenValidationException.class, () -> validator.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
+        Assertions.assertThrows(CacheTokenValidationException.class, () -> validator.test(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, token));
     }
 
     @Test
@@ -134,7 +134,7 @@ class TokenValidatorImplTest {
 
         TokenValidatorImpl validator = new TokenValidatorImpl(securityProperties, custom, cacheProperties);
 
-        Assertions.assertFalse(validator.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, """
+        Assertions.assertFalse(validator.test(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY, """
                 eyJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsiLCJ0eXAiOiJKV1
                 QifQ.eyJpZHAiOiJMb2NhbEFjY291bnQiLCJvaWQiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJzdW
                 IiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJnaXZlbl9uYW1lIjoiWGhpYml0IiwiZmFtaWx5X25hbW
@@ -167,7 +167,7 @@ class TokenValidatorImplTest {
 
         TokenValidatorImpl validator = new TokenValidatorImpl(securityProperties, custom, cacheProperties);
 
-        Assertions.assertTrue(validator.validate(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, """
+        Assertions.assertTrue(validator.test(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, """
                 eyJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsiLCJ0eXAiOiJKV1
                 QifQ.eyJpZHAiOiJMb2NhbEFjY291bnQiLCJvaWQiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJzdW
                 IiOiJkMDQwZTQxMy1mMWFjLTQ5MDItYjM0Ny0zNjlmNmU1ODI1NTkiLCJnaXZlbl9uYW1lIjoiWGhpYml0IiwiZmFtaWx5X25hbW

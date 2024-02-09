@@ -2,8 +2,9 @@ package uk.gov.hmcts.darts.cache.token.component;
 
 import uk.gov.hmcts.darts.cache.token.service.Token;
 
-@FunctionalInterface
-public interface TokenValidator {
+import java.util.function.BiPredicate;
+
+public interface TokenValidator extends BiPredicate<Token.TokenExpiryEnum, String> {
 
     /**
      * validates a token.
@@ -11,5 +12,5 @@ public interface TokenValidator {
      * @param accessToken The token to validate
      * @return Whether validation had succeeded or not
      */
-    boolean validate(Token.TokenExpiryEnum validateUsingExpiryOffset, String accessToken);
+    boolean test(Token.TokenExpiryEnum validateUsingExpiryOffset, String accessToken);
 }

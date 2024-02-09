@@ -68,7 +68,7 @@ public class Token {
      */
     public boolean valid(TokenExpiryEnum applyExpiryOffset) {
         if (validate != null && !tokenString.isEmpty()) {
-            return validate.validate(applyExpiryOffset, tokenString);
+            return validate.test(applyExpiryOffset, tokenString);
         }
         return !tokenString.isEmpty();
     }
