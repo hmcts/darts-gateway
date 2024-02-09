@@ -14,16 +14,15 @@ import org.mockito.Mockito;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.xml.transform.StringSource;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 
-import java.util.function.Predicate;
-
 import static org.mockito.Mockito.when;
 
-class RefeshableTokenCacheValueTest {
+class RefreshableTokenCacheValueTest {
     private static final String SERVICE_CONTEXT_UNDER_TEST = """
       <context xmlns:ns4="http://profiles.core.datamodel.fs.documentum.emc.com/"    xmlns:ns2="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:ns3="http://properties.core.datamodel.fs.documentum.emc.com/" ><ns2:Identities
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="${PASSWORD}" userName="${USER}">
@@ -69,9 +68,10 @@ class RefeshableTokenCacheValueTest {
         StringSource ss = new StringSource(SERVICE_CONTEXT_UNDER_TEST);
         context = jaxbMarshaller.unmarshal(ss, ServiceContext.class).getValue();
 
-        Predicate<String> mypredicate = (p) -> true;
-        token = Token.readToken(CACHED_TOKEN_STRING, false, mypredicate);
-        replaceToken = Token.readToken(REPLACE_TOKEN_STRING, false, mypredicate);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        when(validate.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
+        token = Token.readToken(CACHED_TOKEN_STRING, false, validate);
+        replaceToken = Token.readToken(REPLACE_TOKEN_STRING, false, validate);
     }
 
     @Test
@@ -98,7 +98,7 @@ class RefeshableTokenCacheValueTest {
         Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":" + "${USER}:${PASSWORD}", contextCacheValue.getId());
         Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getTokenString());
 
-        Assertions.assertFalse(contextCacheValue.refresh());
+        Assertions.assertFalse(contextCacheValue.doesRequireRefresh());
     }
 
     @Test

@@ -81,14 +81,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                 throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getTokenString().orElse(specifiedtoken));
             } else {
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
-                    Optional<Token> downstreamToken = downstreamTokenisable.getValidatedToken();
-
-                    if (downstreamToken.isPresent() && downstreamToken.get().getTokenString().isPresent()) {
-                        new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                            downstreamToken.get().getTokenString().orElse(""));
-                    } else {
-                        throw new DocumentumUnknownTokenSoapException(specifiedtoken);
-                    }
+                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                        downstreamTokenisable);
                 }  else {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         specifiedtoken);
@@ -127,13 +121,11 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                             .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
                             .findFirst();
                         if (basicIdentityOptional.isPresent()) {
-                            CacheValue refreshableCacheValue = tokenRegisterable.createValue(serviceContext);
-                            Optional<Token> token = tokenRegisterable.store(refreshableCacheValue, true);
+                            // always reuse the token in the case of authentication
+                            Optional<Token> token = tokenRegisterable.store(serviceContext, true);
 
-                            if (token.isPresent()) {
-                                Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token.get());
-                                refreshableCacheValue = optRefreshableCacheValue.orElse(null);
-                            }
+                            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token.get());
+                            CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
 
                             if (token.isPresent() && refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
                                 Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();

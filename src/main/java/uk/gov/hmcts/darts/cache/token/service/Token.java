@@ -5,12 +5,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Predicate;
 
 @Getter
 @EqualsAndHashCode
@@ -22,23 +22,32 @@ public class Token {
 
     public static final AtomicLong COUNTER = new AtomicLong();
 
-    private Predicate<String> validate;
+    public enum TokenExpiryEnum {
+        DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, APPLY_EARLY_TOKEN_EXPIRY
+    }
 
-    Token(String token,  Predicate<String> validate) {
+    private TokenValidator validate;
+
+    Token(String token,  TokenValidator validate) {
         this.tokenString = token;
         this.validate = validate;
     }
 
     public Optional<String> getTokenString() {
-        if (validate != null && !validate.test(tokenString)) {
+        if (validate != null && !valid()) {
             return Optional.empty();
         }
 
         return Optional.of(tokenString);
     }
 
+    /**
+     * Gets a token and applies validation.
+     * @param validateTokenBefore Whether to validate the token
+     * @return The optional token based on whether it has expired or not
+     */
     public Optional<String> getTokenString(boolean validateTokenBefore) {
-        if (validateTokenBefore && validate != null && !validate.test(tokenString)) {
+        if (validateTokenBefore && validate != null && !valid()) {
             return Optional.empty();
         }
 
@@ -50,18 +59,29 @@ public class Token {
         return TokenRegisterable.CACHE_PREFIX + ":" + tokenString + ":" + sessionId;
     }
 
-    public boolean valid() {
+
+    /**Ω
+     * validates token taking into account the expiry offset if it is enabled.
+     * See {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties#isShareTokenForSameCredentials()} and
+     * {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties#getSharedTokenEarlyExpirationMinutes()}
+     * @param applyExpiryOffset Take into account the expiry of the token
+     */
+    public boolean valid(TokenExpiryEnum applyExpiryOffset) {
         if (validate != null && !tokenString.isEmpty()) {
-            return validate.test(tokenString);
+            return validate.test(applyExpiryOffset, tokenString);
         }
         return !tokenString.isEmpty();
+    }
+
+    public boolean valid() {
+        return valid(TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY);
     }
 
     void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
-    public static Token readToken(String tokenStr, boolean mapToSession, Predicate<String> validate) {
+    public static Token readToken(String tokenStr, boolean mapToSession, TokenValidator validate) {
         Token token;
 
         token =  new Token(tokenStr, validate);
@@ -84,7 +104,7 @@ public class Token {
         }
     }
 
-    public static Token generateDocumentumToken(boolean mapToSession, Predicate<String> validate) {
+    public static Token generateDocumentumToken(boolean mapToSession, TokenValidator validate) {
         String machineIdentifier;
         try {
             machineIdentifier = InetAddress.getLocalHost().toString();

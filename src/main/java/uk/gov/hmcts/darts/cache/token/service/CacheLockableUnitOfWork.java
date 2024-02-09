@@ -26,18 +26,14 @@ public class CacheLockableUnitOfWork {
     }
 
     @FunctionalInterface
-    interface ExecuteValue {
-        void execute(CacheValue value) throws CacheException;
+    interface ExecuteForBoolean {
+        boolean execute(Token token) throws CacheException;
     }
+
 
     @FunctionalInterface
     interface ExecuteRefreshableValueReturn {
         Optional<CacheValue> execute(Token token) throws CacheException;
-    }
-
-    @FunctionalInterface
-    interface ExecuteTokenValueReturn {
-        Optional<Token> execute(CacheValue refresh) throws CacheException;
     }
 
     public void execute(Execute runnable, Token token) throws CacheException {
@@ -66,7 +62,27 @@ public class CacheLockableUnitOfWork {
         }
     }
 
-    public Optional<CacheValue> executeForRefreshValueReturn(ExecuteRefreshableValueReturn runnable, Token token) throws CacheException {
+    public Optional<Token> execute(ExecuteForToken runnable, String id) throws CacheException {
+        Lock lock = lockRegistry.obtain(id);
+        lock.lock();
+        try {
+            return runnable.execute();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean executeIsApplicable(ExecuteForBoolean runnable,  Token id) throws CacheException {
+        Lock lock = lockRegistry.obtain(id.getId());
+        lock.lock();
+        try {
+            return runnable.execute(id);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Optional<CacheValue> executeForValueReturn(ExecuteRefreshableValueReturn runnable, Token token) throws CacheException {
         Lock lock = lockRegistry.obtain(token.getId());
         lock.lock();
         try {

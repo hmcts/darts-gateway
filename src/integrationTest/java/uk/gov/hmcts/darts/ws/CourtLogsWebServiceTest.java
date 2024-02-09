@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import org.junit.jupiter.api.Assertions;
@@ -14,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -25,13 +28,15 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("int-test-jwt-token")
+@ActiveProfiles("int-test-jwt-token-shared")
 class CourtLogsWebServiceTest extends IntegrationBase {
 
     private static final String VALID_GET_COURTLOGS_XML = "classpath:payloads/courtlogs/valid-get-courtlogs.xml";
@@ -54,7 +59,8 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
@@ -152,6 +158,50 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesGetCourtLogRequestWithAuthenticationTokenRefresh(DartsGatewayClient client) throws Exception {
+
+        when(tokenValidator.test(Mockito.any(),
+                                Mockito.eq("downstreamtoken"))).thenReturn(true);
+
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
+
+
+        authenticationStub.assertWithTokenHeader(client, () -> {
+            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
+
+            when(tokenValidator.test(Mockito.any(),
+                                         Mockito.eq("downstreamtoken"))).thenReturn(false);
+
+            SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(
+                getGatewayUri(),
+                getCourtLogs.getContentAsString(
+                    Charset.defaultCharset())
+            );
+
+            com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
+
+            Assertions.assertEquals("200", actualResponse.getCode());
+            Assertions.assertEquals("OK", actualResponse.getMessage());
+            Assertions.assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
+            Assertions.assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
+            Assertions.assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
+            Assertions.assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
+            Assertions.assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
+
+        WireMock.verify(getRequestedFor(urlMatching("/courtlogs.*"))
+                            .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
+
+        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequest(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             var dartsApiCourtLogsResponse = someListOfCourtLog(3);
@@ -175,7 +225,10 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
 
-        verify(mockOauthTokenGenerator, times(1)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        WireMock.verify(getRequestedFor(urlMatching("/courtlogs.*"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -195,7 +248,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
         courtLogsApi.verifyDoesntReceiveRequest();
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -209,7 +262,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -229,7 +282,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -249,7 +302,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         postCourtLogsApi.verifyDoesntReceiveRequest();
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 

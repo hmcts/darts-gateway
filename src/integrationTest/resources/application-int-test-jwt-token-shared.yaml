@@ -1,6 +1,6 @@
 # Override properties in application.yaml for integration tests
 server:
-  port: 8070
+  port: 0
 
 logging:
   level:
@@ -12,6 +12,7 @@ darts-gateway:
     map-token-to-session: false
     share-token-for-same-credentials: true
     entry-time-to-idle-seconds: 15
+    shared-token-early-expiration-minutes: 5
   darts-api:
     base-url: http://localhost:8090
   ws:
@@ -22,5 +23,5 @@ darts-gateway:
   events:
     validate: true
   redis:
-    connection-string: redis://localhost:6379
+    connection-string: redis://localhost:6380
     ssl-enabled: false
