@@ -1,0 +1,11 @@
+--uuid:2a2cdaa0-950d-4811-891b-2e1da0579ad3
+Content-Id: <rootpart*2a2cdaa0-950d-4811-891b-2e1da0579ad3@example.jaxws.sun.com>
+Content-Type: application/xop+xml;charset=utf-8;type="text/xml"
+Content-Transfer-Encoding: binary
+
+<?xml version="1.0" ?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"></S:Envelope>
+--uuid:2a2cdaa0-950d-4811-891b-2e1da0579ad3
+Content-Id: <657040d3-11e7-41ab-9f03-21836fa7b7ae@example.jaxws.sun.com>
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: binary
+--uuid:2a2cdaa0-950d-4811-891b-2e1da0579ad3--
