@@ -33,6 +33,31 @@ following properties within SoapUI
 * Requests for lookup / unregister operations use the JWT token property provided in the Soap Body, so you will need to remember to update it using the register
   response: `<token>${#Project#token}</token>`
 
+# Postman
+
+* [Postman](https://www.postman.com/)  can be used for "Try it out" functionality
+  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
+  following properties within Postman NOTE: This excludes the add audio test. SoapUi must be used in the case of addaudio
+
+  *  userToUse - The user to authenticate with
+  *  passwordToUse - The password to authenticate with
+  *  tokenToUse - The token (jwt by default) to authenticate with
+  *  gatewayurl - The gateway url to use
+
+## DARTSService Postman
+
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/DARTSService?wsdl
+* Import  Project [README-DARTSService](README-DARTSService-postman-project.json)
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication)`
+
+## ContextRegistryService Postman
+
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
+* Import Postman Project [README-ContextRegistryService](README-ContextRegistryService-postman-project.json)
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication).
+
 ## Building and deploying the application
 
 External dependencies:-
