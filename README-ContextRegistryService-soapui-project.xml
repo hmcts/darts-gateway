@@ -763,36 +763,36 @@
 </wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://test</con:endpoint></con:endpoints><con:operation id="0e980b48-a1d6-4d81-bd59-b83766e53f82" isOneWay="false" action="" name="lookup" bindingOperationName="lookup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="985fbf21-47b5-4101-aea8-20a26dfe92be" name="lookupWithUserAndPassword"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8070/service/darts/runtime/ContextRegistryService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.rt.fs.documentum.emc.com/">
    <soapenv:Header>
       <ServiceContext token="temporary/127.0.0.1-1700061962100--7690714146928305881" xmlns="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:ns3="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:ns4="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:ns5="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:ns6="http://core.datamodel.fs.documentum.emc.com/">
-         <Identities password="${#Project#password}" repositoryName="moj_darts" userName="${#Project#userName}" xsi:type="RepositoryIdentity" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Identities>
+         <Identities password="${password}" repositoryName="moj_darts" userName="${userName}" xsi:type="RepositoryIdentity" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Identities>
          <Profiles allowAsyncContentTransfer="false" allowCachedContentTransfer="false" isProcessOLELinks="false" transferMode="MTOM" xsi:type="ns3:ContentTransferProfile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Profiles>
       </ServiceContext>
    </soapenv:Header>
    <soapenv:Body>
       <ser:lookup>
-         <token>${#Project#token}</token>
+         <token>${token}</token>
       </ser:lookup>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://services.rt.fs.documentum.emc.com/ContextRegistryServicePort/lookupRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="9561e0e4-3744-494d-8998-347b2635a556" name="lookupWithToken"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8070/service/darts/runtime/ContextRegistryService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.rt.fs.documentum.emc.com/">
    <soapenv:Header>
-      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsse:BinarySecurityToken QualificationValueType="http://schemas.emc.com/documentum#ResourceAccessToken" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="RAD">${#Project#token}</wsse:BinarySecurityToken></wsse:Security>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsse:BinarySecurityToken QualificationValueType="http://schemas.emc.com/documentum#ResourceAccessToken" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="RAD">${token}</wsse:BinarySecurityToken></wsse:Security>
    </soapenv:Header>
    <soapenv:Body>
       <ser:lookup>
-         <token>${#Project#token}</token>
+         <token>${token}</token>
       </ser:lookup>
    </soapenv:Body>
 </soapenv:Envelope>
-]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://services.rt.fs.documentum.emc.com/ContextRegistryServicePort/lookupRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="2e1a9614-14cd-41f8-bd6e-c42040d0ad25" isOneWay="false" action="" name="register" bindingOperationName="register" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d435e900-8f3a-4269-a995-d6f2427b6696" name="registerWithUsernameAndPassword"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8070/service/darts/runtime/ContextRegistryService</con:endpoint><con:request><![CDATA[<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://services.rt.fs.documentum.emc.com/ContextRegistryServicePort/lookupRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="2e1a9614-14cd-41f8-bd6e-c42040d0ad25" isOneWay="false" action="" name="register" bindingOperationName="register" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d435e900-8f3a-4269-a995-d6f2427b6696" name="registerWithUsernameAndPassword"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8070/service/darts</con:endpoint><con:request><![CDATA[<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
    <S:Header>
       <ServiceContext token="temporary/127.0.0.1-1700061962100--7690714146928305881" xmlns="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:ns3="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:ns4="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:ns5="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:ns6="http://core.datamodel.fs.documentum.emc.com/">
-         <Identities password="${#Project#password}" repositoryName="moj_darts" userName="${#Project#userName}" xsi:type="RepositoryIdentity" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Identities>
+         <Identities password="${password}" repositoryName="moj_darts" userName="${userName}" xsi:type="RepositoryIdentity" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Identities>
          <Profiles allowAsyncContentTransfer="false" allowCachedContentTransfer="false" isProcessOLELinks="false" transferMode="MTOM" xsi:type="ns3:ContentTransferProfile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Profiles>
       </ServiceContext>
    </S:Header>
    <S:Body>
       <ns8:register xmlns:ns8="http://services.rt.fs.documentum.emc.com/" xmlns:ns7="http://core.datamodel.fs.documentum.emc.com/" xmlns:ns6="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:ns5="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:ns4="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:ns3="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://context.core.datamodel.fs.documentum.emc.com/">
          <context>
-            <ns2:Identities xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="${#Project#password}" userName="${#Project#userName}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></ns2:Identities>
+            <ns2:Identities xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="${password}" userName="${userName}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></ns2:Identities>
             <ns2:Profiles xsi:type="ns4:ContentTransferProfile" isProcessOLELinks="false" allowAsyncContentTransfer="false" allowCachedContentTransfer="false" transferMode="MTOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></ns2:Profiles>
          </context>
          <host>http://localhost:8070/service/darts/</host>
@@ -805,7 +805,7 @@
    	<S:Body>
      <ns8:register xmlns:ns8="http://services.rt.fs.documentum.emc.com/" xmlns:ns7="http://core.datamodel.fs.documentum.emc.com/" xmlns:ns6="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:ns5="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:ns4="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:ns3="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://context.core.datamodel.fs.documentum.emc.com/">
          <context>
-            <ns2:Identities xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="${#Project#password}" userName="${#Project#userName}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></ns2:Identities>
+            <ns2:Identities xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="${password}" userName="${userName}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></ns2:Identities>
             <ns2:Profiles xsi:type="ns4:ContentTransferProfile" isProcessOLELinks="false" allowAsyncContentTransfer="false" allowCachedContentTransfer="false" transferMode="MTOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></ns2:Profiles>
          </context>
          <host>http://localhost:8070/service/darts/</host>
@@ -820,16 +820,16 @@
    </soapenv:Header>
    <soapenv:Body>
       <ser:unregister>
-         <token>${#Project#token}</token>
+         <token>${token}</token>
       </ser:unregister>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://services.rt.fs.documentum.emc.com/ContextRegistryServicePort/unregisterRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="3799abc1-ee17-40d9-bc15-46f97b1a9e6a" name="unregisterWithToken"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8070/service/darts/runtime/ContextRegistryService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.rt.fs.documentum.emc.com/">
    <soapenv:Header>
-      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsse:BinarySecurityToken QualificationValueType="http://schemas.emc.com/documentum#ResourceAccessToken" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="RAD">${#Project#token}</wsse:BinarySecurityToken></wsse:Security>
+      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsse:BinarySecurityToken QualificationValueType="http://schemas.emc.com/documentum#ResourceAccessToken" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="RAD">${token}</wsse:BinarySecurityToken></wsse:Security>
    </soapenv:Header>
    <soapenv:Body>
       <ser:unregister>
-         <token>${#Project#token}</token>
+         <token>${token}</token>
       </ser:unregister>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://services.rt.fs.documentum.emc.com/ContextRegistryServicePort/unregisterRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
