@@ -152,8 +152,10 @@ jacocoTestReport {
   }
 }
 
+
 project.tasks['sonarqube'].dependsOn jacocoTestReport
-project.tasks['check'].dependsOn classes,integration
+project.tasks['check'].finalizedBy integration
+
 
 def sonarExclusions = [
   '**/com/emc/**',
@@ -332,7 +334,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.14'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.14'
 
-  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.2'
+  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.2.1'
   constraints {
     implementation('com.squareup.okio:okio:3.7.0') {
       because 'version 3.0.0 has vulnerability CVE-2023-3635'

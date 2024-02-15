@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +10,11 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
@@ -36,7 +39,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -44,6 +46,7 @@ import static org.mockito.Mockito.when;
 
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+@ActiveProfiles("int-test-jwt-token-shared")
 class AddAudioWebServiceTest extends IntegrationBase {
 
     @MockBean
@@ -63,7 +66,11 @@ class AddAudioWebServiceTest extends IntegrationBase {
     public void before() {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
-        when(validator.validate(eq("test"))).thenReturn(true);
+        when(validator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+
+        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
+            .thenReturn("test");
     }
 
     @ParameterizedTest
@@ -166,6 +173,47 @@ class AddAudioWebServiceTest extends IntegrationBase {
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
         }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testHandlesAddAudioWithAuthenticationTokenWithRefresh(DartsGatewayClient client) throws Exception {
+
+        when(validator.test(Mockito.any(),
+                                     Mockito.eq("downstreamtoken"))).thenReturn(true);
+
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
+
+        authenticationStub.assertWithTokenHeader(client, () -> {
+            final String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsApiResponse.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+
+            String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/expectedResponse.xml");
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            when(validator.test(Mockito.any(),
+                                         Mockito.eq("downstreamtoken"))).thenReturn(false);
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+
+            verify(postRequestedFor(urlPathEqualTo("/audios"))
+                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(postRequestedFor(urlPathEqualTo("/audios"))
+                            .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
+        Mockito.verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
     @ParameterizedTest

@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
@@ -23,6 +24,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
@@ -35,8 +38,9 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
 
     @BeforeEach
     void before() throws Exception {
-        Mockito.when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
-        Mockito.when(validator.validate(Mockito.anyString())).thenReturn(true);
+        when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
+        when(validator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
                 AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE);
@@ -45,7 +49,6 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
 
     @Test
     void addAudioTest() throws Exception {
-
         File homeDirForTempFiles = new File(System.getProperty("user.home"));
         final int fileCountBefore = Objects.requireNonNull(homeDirForTempFiles.list()).length;
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
@@ -65,5 +68,11 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                    .withHeader("Authorization", new RegexPattern("Bearer test"))
                 .withRequestBody(new MultipartDartsProxyContentPattern()));
+
+        Mockito.verify(validator, times(6)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(4)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+
+        verify(postRequestedFor(urlPathEqualTo("/audios"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
     }
 }

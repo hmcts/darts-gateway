@@ -28,15 +28,17 @@ public class ServiceContextCacheValue implements CacheValue {
 
     protected static final String EMPTY_DOWN_STREAM_TOKEN = "";
 
+    protected JAXBContext jaxbContext;
+
     public ServiceContextCacheValue() throws CacheException {
     }
 
     public ServiceContextCacheValue(ServiceContext context) throws CacheException {
 
         try {
+            jaxbContext = JAXBContext.newInstance(ServiceContext.class);
             JAXBElement<ServiceContext> servicecontext =  new ObjectFactory().createServiceContext(context);
             StringWriter sw = new StringWriter();
-            JAXBContext jaxbContext = JAXBContext.newInstance(ServiceContext.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.marshal(servicecontext, sw);
             contextStr = sw.toString();
@@ -45,9 +47,14 @@ public class ServiceContextCacheValue implements CacheValue {
         }
     }
 
-    public ServiceContextCacheValue(ServiceContextCacheValue value) {
-        setId(value.getId());
-        setContextString(value.getContextString());
+    public ServiceContextCacheValue(ServiceContextCacheValue value) throws CacheException {
+        try {
+            jaxbContext = JAXBContext.newInstance(ServiceContext.class);
+            setId(value.getId());
+            setContextString(value.getContextString());
+        } catch (JAXBException e) {
+            throw new CacheException(e);
+        }
     }
 
 
@@ -64,7 +71,6 @@ public class ServiceContextCacheValue implements CacheValue {
 
         if (context == null) {
             try {
-                JAXBContext jaxbContext = JAXBContext.newInstance(ServiceContext.class);
                 Unmarshaller jaxbMarshaller = jaxbContext.createUnmarshaller();
                 StringSource ss = new StringSource(getContextString());
                 context = jaxbMarshaller.unmarshal(ss, ServiceContext.class).getValue();
@@ -76,8 +82,7 @@ public class ServiceContextCacheValue implements CacheValue {
         return context;
     }
 
-    private String getUserName() throws CacheException {
-        ServiceContext serviceContext = getServiceContext();
+    private static String getUserName(ServiceContext serviceContext) throws CacheException {
         Identity identity = serviceContext.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getUserName();
@@ -86,8 +91,7 @@ public class ServiceContextCacheValue implements CacheValue {
         throw new CacheException("Do not understand the service context");
     }
 
-    private String getPassword() throws CacheException {
-        ServiceContext serviceContext = getServiceContext();
+    private static String getPassword(ServiceContext serviceContext) throws CacheException {
         Identity identity = serviceContext.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getPassword();
@@ -99,9 +103,14 @@ public class ServiceContextCacheValue implements CacheValue {
     @Override
     public String getId() throws CacheException {
         if (id == null) {
-            id = TokenRegisterable.CACHE_PREFIX + ":" + getUserName() + ":" + getPassword();
+            id = getId(getServiceContext());
         }
         return id;
+    }
+
+
+    public static String getId(ServiceContext context) {
+        return TokenRegisterable.CACHE_PREFIX + ":" + getUserName(context) + ":" + getPassword(context);
     }
 
     public void setId(String id) throws CacheException {

@@ -10,9 +10,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-
-import java.util.function.Predicate;
 
 import static org.mockito.Mockito.verify;
 
@@ -48,48 +47,43 @@ class TokenTest {
 
     @Test
     void createTokenWithSession() {
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(true, validate);
         Assertions.assertNotNull(token.getTokenString());
         Assertions.assertEquals(EXISTING_SESSION_ID, token.getSessionId());
 
-        verify(validate).test(Mockito.notNull());
+        verify(validate).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
     @Test
     void createTokenWithNoSession() {
 
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(false, validate);
         Assertions.assertNotNull(token.getTokenString());
         Assertions.assertTrue(token.getSessionId().isEmpty());
     }
 
-    @FunctionalInterface
-    interface ValidateToken extends Predicate<String> {
-
-    }
-
     @Test
     void createTokenWithStringAndNoSession() {
         String tokenStr = "token";
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, tokenStr)).thenReturn(true);
 
         Token token = Token.readToken(tokenStr, false, validate);
         Assertions.assertEquals(tokenStr,token.getTokenString().get());
         Assertions.assertTrue(token.getSessionId().isEmpty());
 
-        verify(validate).test(Mockito.notNull());
+        verify(validate).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
     @Test
     void createTokenWithStringAndSession() {
         String tokenStr = "token";
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, tokenStr)).thenReturn(true);
         Token token = Token.readToken(tokenStr, true, validate);
         Assertions.assertFalse(token.getSessionId().isEmpty());
         Assertions.assertNotNull(token.getTokenString());
@@ -98,8 +92,8 @@ class TokenTest {
     @Test
     void createTokenWithStringAndSessionValidateFalse() {
         String tokenStr = "token";
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(false);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, tokenStr)).thenReturn(false);
         Token token = Token.readToken(tokenStr, true, validate);
         Assertions.assertFalse(token.getSessionId().isEmpty());
         Assertions.assertTrue(token.getTokenString().isEmpty());
@@ -124,40 +118,40 @@ class TokenTest {
     @Test
     void createTokenWithStringAndSessionNoValidation() {
         String tokenStr = "token";
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(false);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, tokenStr)).thenReturn(true);
         Token token = Token.readToken(tokenStr, true, validate);
         Assertions.assertFalse(token.getSessionId().isEmpty());
         Assertions.assertNotNull(token.getTokenString(false));
 
-        verify(validate, Mockito.times(0)).test(Mockito.notNull());
+        verify(validate, Mockito.times(0)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
     @Test
     void validateTokenTrue() {
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(true, validate);
         Assertions.assertTrue(token.valid());
-        verify(validate, Mockito.times(1)).test(Mockito.notNull());
+        verify(validate, Mockito.times(1)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
     @Test
     void validateTokenFalse() {
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(false);
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(false);
         Token token = Token.generateDocumentumToken(true, validate);
         Assertions.assertFalse(token.valid());
-        verify(validate, Mockito.times(1)).test(Mockito.notNull());
+        verify(validate, Mockito.times(1)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
     @Test
-    void validateToken() {
-        ValidateToken validate = Mockito.mock(ValidateToken.class);
-        Mockito.when(validate.test(Mockito.notNull())).thenReturn(true);
+    void validateTokenWithOffset() {
+        TokenValidator validate = Mockito.mock(TokenValidator.class);
+        Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(true, validate);
-        Assertions.assertTrue(token.valid());
-        verify(validate, Mockito.times(1)).test(Mockito.notNull());
+        Assertions.assertTrue(token.valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY));
+        verify(validate, Mockito.times(1)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
 }

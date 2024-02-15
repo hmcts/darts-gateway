@@ -18,4 +18,6 @@ public class CachePropertiesImpl implements CacheProperties {
     private boolean shareTokenForSameCredentials;
 
     private long entryTimeToIdleSeconds;
+
+    private int sharedTokenEarlyExpirationMinutes;
 }

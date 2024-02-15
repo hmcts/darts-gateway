@@ -13,6 +13,10 @@ import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
 import java.util.Optional;
 
+/**
+ * A default implementation of the {@link DownstreamTokenisableValue} that uses {@link TokenGeneratable} to generate
+ * tokens.
+ */
 @Slf4j
 @JsonTypeName("RefreshableCacheValueWithJwt")
 public class RefeshableTokenCacheValue extends ServiceContextCacheValue implements DownstreamTokenisableValue {
@@ -21,19 +25,19 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     private String tokenString;
 
     @JsonIgnore
-    private TokenGeneratable jwtCacheRegistrable;
+    private TokenGeneratable jwtCacheRegisterable;
 
     public RefeshableTokenCacheValue(ServiceContext context, TokenGeneratable registerable) throws CacheException {
         super(context);
 
-        jwtCacheRegistrable = registerable;
-        Token newtoken = jwtCacheRegistrable.createToken(context);
+        jwtCacheRegisterable = registerable;
+        Token newtoken = jwtCacheRegisterable.createToken(context);
         tokenString = newtoken.getTokenString(false).orElse(EMPTY_DOWN_STREAM_TOKEN);
     }
 
     public RefeshableTokenCacheValue(RefeshableTokenCacheValue context, TokenGeneratable registerable) throws CacheException {
         super(context);
-        jwtCacheRegistrable = registerable;
+        jwtCacheRegisterable = registerable;
         this.tokenString = context.tokenString;
     }
 
@@ -41,17 +45,17 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     }
 
     @Override
-    public boolean refresh() throws CacheException {
+    public boolean doesRequireRefresh() throws CacheException {
         Optional<Token> downstream = getValidatedToken();
 
         return EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken()) || (!EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken())
-            && downstream.isPresent() && !downstream.get().valid());
+            && downstream.isPresent() && !downstream.get().valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY));
     }
 
     @Override
     public void performRefresh() throws CacheException {
         try {
-            Token token = jwtCacheRegistrable.createToken(getServiceContext());
+            Token token = jwtCacheRegisterable.createToken(getServiceContext());
 
             setDownstreamToken(token.getTokenString(false).orElse(EMPTY_DOWN_STREAM_TOKEN));
         } catch (CacheTokenCreationException e) {
@@ -62,7 +66,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     @JsonIgnore
     public Optional<Token> getValidatedToken() {
         if (!tokenString.equals(EMPTY_DOWN_STREAM_TOKEN)) {
-            return Optional.of(jwtCacheRegistrable.getToken(tokenString));
+            return Optional.of(jwtCacheRegisterable.getToken(tokenString));
         }
 
         return Optional.empty();

@@ -7,7 +7,7 @@ import redis.embedded.RedisServer;
 
 @TestConfiguration
 class RedisConfiguration {
-    public static final RedisServer REDISSERVER = new RedisServer();
+    public static final RedisServer REDISSERVER = new RedisServer(6380);
 
     @PostConstruct
     public void postConstruct() {

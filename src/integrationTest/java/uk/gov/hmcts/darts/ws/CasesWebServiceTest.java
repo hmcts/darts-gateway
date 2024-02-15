@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
+import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
@@ -24,6 +27,7 @@ import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -33,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("int-test-jwt-token")
+@ActiveProfiles("int-test-jwt-token-shared")
 class CasesWebServiceTest extends IntegrationBase {
 
     @MockBean
@@ -46,14 +50,16 @@ class CasesWebServiceTest extends IntegrationBase {
     public void before() {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
-        when(tokenValidator.validate(Mockito.eq("test"))).thenReturn(true);
+        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
+            .thenReturn("test");
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
@@ -129,6 +135,46 @@ class CasesWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+    void testHandlesGetCasesWithAuthenticationTokenWithRefresh(DartsGatewayClient client) throws Exception {
+
+        when(tokenValidator.test(Mockito.any(),
+                                     Mockito.eq("downstreamtoken"))).thenReturn(true);
+
+        // setup the tokens so that we refresh the backend token before making the restful darts calls
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+            .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
+
+        authenticationStub.assertWithTokenHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile("payloads/getCases/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/dartsApiResponse.json");
+
+            // assert the refreshed token is passed through to the darts api call
+            stubFor(get(urlPathEqualTo("/cases"))
+                        .willReturn(aResponse()
+                                        .withHeader("Content-Type", "application/json")
+                                        .withBody(dartsApiResponseStr)));
+
+            String expectedResponseStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/expectedResponse.xml");
+
+            when(tokenValidator.test(Mockito.any(),
+                                         Mockito.eq("downstreamtoken"))).thenReturn(false);
+
+            SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
+        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
+                            .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
+
+        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCases(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
@@ -149,9 +195,13 @@ class CasesWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator, times(1)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
+        WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
     }
+
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
@@ -165,7 +215,7 @@ class CasesWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -189,7 +239,7 @@ class CasesWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -209,7 +259,7 @@ class CasesWebServiceTest extends IntegrationBase {
                 client.addCases(getGatewayUri(), soapRequestStr);
             });
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -232,7 +282,7 @@ class CasesWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
