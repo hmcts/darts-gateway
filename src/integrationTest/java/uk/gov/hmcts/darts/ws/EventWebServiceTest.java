@@ -19,7 +19,6 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.model.dailylist.DailyListErrorCode;
-import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
