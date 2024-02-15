@@ -1,34 +1,25 @@
 package uk.gov.hmcts.darts.common.client.mapper;
 
-import uk.gov.hmcts.darts.common.client.exeption.dailylist.DailyListAPIAddException;
-import uk.gov.hmcts.darts.model.dailylist.PostDailyListErrorCode;
+import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
+import uk.gov.hmcts.darts.model.dailylist.DailyListErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 @SuppressWarnings("unchecked")
 public class DailyListAPIProblemResponseMapper extends AbstractAPIProblemResponseMapper {
     {
         var opmapping = new ProblemResponseMappingOperation
-            . ProblemResponseMappingOperationBuilder<PostDailyListErrorCode>()
-            .operation(PostDailyListErrorCode.class)
-            .exception(this::createPostDailyListException).build();
+            . ProblemResponseMappingOperationBuilder<DailyListErrorCode>()
+            .operation(DailyListErrorCode.class)
+            .exception(this::createException).build();
 
         opmapping.addMapping(opmapping.createProblemResponseMapping()
-                       .problem(PostDailyListErrorCode.DAILYLIST_DOCUMENT_CANT_BE_PARSED)
-                       .message(CodeAndMessage.INVALID_XML).build());
-
-        opmapping.addMapping(opmapping.createProblemResponseMapping()
-                                 .problem(PostDailyListErrorCode.DAILYLIST_PROCESSOR_NOT_FOUND)
+                                 .problem(DailyListErrorCode.FAILED_TO_PROCESS_DAILYLIST)
                                  .message(CodeAndMessage.NOT_FOUND_HANLDER).build());
-
-        opmapping.addMapping(opmapping.createProblemResponseMapping()
-                                 .problem(PostDailyListErrorCode.DAILYLIST_COURT_HOUSE_NOT_FOUND)
-                                 .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
 
         addOperationMappings(opmapping);
     }
 
-    private DailyListAPIAddException createPostDailyListException(ProblemAndMapping problemAndMapping) {
-        return new DailyListAPIAddException(
-            (ProblemResponseMapping<PostDailyListErrorCode>) problemAndMapping.getMapping(), problemAndMapping.getProblem());
+    private ClientProblemException createException(ProblemAndMapping problemAndMapping) {
+        return new ClientProblemException(problemAndMapping.getMapping().getMessage(), problemAndMapping.getProblem());
     }
 }
