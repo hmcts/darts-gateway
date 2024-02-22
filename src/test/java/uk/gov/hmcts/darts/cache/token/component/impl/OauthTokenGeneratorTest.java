@@ -9,10 +9,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
+import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,28 +30,89 @@ class OauthTokenGeneratorTest {
 
     @Test
     void testAcquireTokenValid() {
+        Mockito.when(securityProperties.getTokenUri()).thenReturn(TOKEN_URI);
+        Mockito.when(securityProperties.getClientId()).thenReturn(CLIENT_ID);
+        Mockito.when(securityProperties.getScope()).thenReturn(SCOPE);
+        Mockito.when(securityProperties.isUserExternalInternalMappingsEnabled()).thenReturn(true);
+
+        List<ExternalUserToInternalUserMappingImpl> mappingList = new ArrayList<>();
+        ExternalUserToInternalUserMappingImpl mapping = new ExternalUserToInternalUserMappingImpl();
+        mappingList.add(mapping);
+
+        String username = "viqUser";
+        mapping.setUserName(username);
+
+        String externalViqPassword = "viqExternalPassword";
+        mapping.setExternalPassword(externalViqPassword);
+
+        String internalViqPassword = "viqInternalPassword";
+        mapping.setInternalPassword(internalViqPassword);
+
+
+        Mockito.when(securityProperties.getUserExternalInternalMappings()).thenReturn(mappingList);
+
         String tokenValue = """
             {"access_token":"token"}
             """;
 
-        Mockito.when(securityProperties.getTokenUri()).thenReturn(TOKEN_URI);
-        Mockito.when(securityProperties.getClientId()).thenReturn(CLIENT_ID);
-        Mockito.when(securityProperties.getScope()).thenReturn(SCOPE);
-
         OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, tokenValue);
 
-        String username = "username";
-        String password = "password";
-
-        Assertions.assertEquals("token", generatorCustom.acquireNewToken(username, password));
+        Assertions.assertEquals("token", generatorCustom.acquireNewToken(username, externalViqPassword));
         Assertions.assertEquals(5, generatorCustom.parameters.size());
         Assertions.assertEquals(TOKEN_URI, generatorCustom.uriSpecified.toString());
         Assertions.assertEquals("password", generatorCustom.parameters.get(OauthTokenGenerator.GRANT_TYPE_PARAMETER_KEY));
-        Assertions.assertEquals(password, generatorCustom.parameters.get(OauthTokenGenerator.PASSWORD_PARAMETER_KEY));
+        Assertions.assertEquals(internalViqPassword, generatorCustom.parameters.get(OauthTokenGenerator.PASSWORD_PARAMETER_KEY));
         Assertions.assertEquals(username, generatorCustom.parameters.get(OauthTokenGenerator.USERNAME_PARAMETER_KEY));
         Assertions.assertEquals(SCOPE, generatorCustom.parameters.get(OauthTokenGenerator.SCOPE_PARAMETER_KEY));
         Assertions.assertEquals(CLIENT_ID, generatorCustom.parameters.get(OauthTokenGenerator.CLIENT_ID_PARAMETER_KEY));
+    }
 
+    @Test
+    void testAcquireTokenInvalidUserAccordingToMapping() {
+        Mockito.when(securityProperties.isUserExternalInternalMappingsEnabled()).thenReturn(true);
+
+        String username = "viqUser";
+
+        List<ExternalUserToInternalUserMappingImpl> mappingList = new ArrayList<>();
+        ExternalUserToInternalUserMappingImpl mapping = new ExternalUserToInternalUserMappingImpl();
+        mapping.setUserName(username);
+        mappingList.add(mapping);
+        Mockito.when(securityProperties.getUserExternalInternalMappings()).thenReturn(mappingList);
+
+        String tokenValue = """
+            {"access_token":"token"}
+            """;
+
+        OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, tokenValue);
+
+        String invalidUserName = "invalidviqUser";
+        String externalViqPassword = "viqExternalPassword";
+        Assertions.assertThrows(CacheTokenCreationException.class, () -> generatorCustom.acquireNewToken(invalidUserName, externalViqPassword));
+    }
+
+    @Test
+    void testAcquireTokenInvalidPasswordAccordingToMapping() {
+        Mockito.when(securityProperties.isUserExternalInternalMappingsEnabled()).thenReturn(true);
+
+        String username = "viqUser";
+        String externalViqPassword = "viqExternalPassword";
+
+        List<ExternalUserToInternalUserMappingImpl> mappingList = new ArrayList<>();
+        ExternalUserToInternalUserMappingImpl mapping = new ExternalUserToInternalUserMappingImpl();
+        mapping.setUserName(username);
+        mapping.setExternalPassword(externalViqPassword);
+
+        mappingList.add(mapping);
+        Mockito.when(securityProperties.getUserExternalInternalMappings()).thenReturn(mappingList);
+
+        String tokenValue = """
+            {"access_token":"token"}
+            """;
+
+        OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, tokenValue);
+
+        String invalidExternalViqPassword = "viqExternalPassword";
+        Assertions.assertThrows(CacheTokenCreationException.class, () -> generatorCustom.acquireNewToken(username, invalidExternalViqPassword));
     }
 
     @Test

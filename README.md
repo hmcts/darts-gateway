@@ -89,17 +89,26 @@ maven repository. To do this manually then follow these steps:-
 To run the service locally, you must set the following environment variables on your machine.
 The required value of each variable is stored in Azure Key Vault as a Secret.
 
-| Environment Variable Name            | Corresponding Azure Key Vault Secret Name            |
-|--------------------------------------|------------------------------------------------------|
-| AAD_B2C_TENANT_ID_KEY                | AzureAdB2CTenantId                                   |
-| REDIS_CONNECTION_STRING              | redis-connection-string (local Redis uri by default) |
-| MAX_FILE_UPLOAD_SIZE_MEGABYTES       | MaxFileUploadSizeInMegabytes (350mb by default)      |
-| AAD_B2C_ROPC_CLIENT_ID_KEY           | AzureAdB2CFuncTestROPCClientId                       |
-| DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD | darts-gateway-DarNotifyEventSecurementPassword       |
-| DAR_NOTIFY_EVENT_SECUREMENT_USERNAME | darts-gateway-DarNotifyEventSecurementUsername       |
-| DAR_NOTIFY_DEFAULT_URL               | N/A (local darts notify url by default               |
-| DARTS_API_URL                        | N/A (local darts uri by default)                     |
-| REDIS_SSL_ENABLED                    | N/A (true by default)                                |
+| Environment Variable Name           | Corresponding Azure Key Vault Secret Name                                                                      |
+|-------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| AAD_B2C_TENANT_ID_KEY               | AzureAdB2CTenantId                                                                                             |
+| REDIS_CONNECTION_STRING             | redis-connection-string (local Redis uri by default)                                                           |
+| MAX_FILE_UPLOAD_SIZE_MEGABYTES      | MaxFileUploadSizeInMegabytes (350mb by default)                                                                |
+| AAD_B2C_ROPC_CLIENT_ID_KEY          | AzureAdB2CFuncTestROPCClientId                                                                                 |
+| DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD | darts-gateway-DarNotifyEventSecurementPassword                                                                 |
+| DAR_NOTIFY_EVENT_SECUREMENT_USERNAME | darts-gateway-DarNotifyEventSecurementUsername                                                                 |
+| DAR_NOTIFY_DEFAULT_URL              | N/A (local darts notify url by default                                                                         |
+| DARTS_API_URL                       | N/A (local darts uri by default)                                                                               |
+| REDIS_SSL_ENABLED                   | N/A (true by default)                                                                                          |
+| VIQ_EXTERNAL_USER_NAME              | The VIQ username                                                                                               |
+| VIQ_EXTERNAL_PASSWORD               | The VIQ external facing password i.e. used by the client                                                       |
+| VIQ_INTERNAL_PASSWORD               | The VIQ internal facing password i.e. used by the gateway to talk to the Idp for token acquisition             |
+| XHIBIT_EXTERNAL_USER_NAME           | The XHIBIT username                                                                                            |
+| XHIBIT_EXTERNAL_PASSWORD            | The XHIBIT external facing password i.e. used by the client                                                    |
+| XHIBIT_INTERNAL_PASSWORD            | The XHIBIT internal facing password i.e. used by the gateway to talk to the Idp for token acquisition          |
+| CP_EXTERNAL_USER_NAME               | The common platform username                                                                                   |
+| CP_EXTERNAL_PASSWORD                | The common platform facing password i.e. used by the client                                                    |
+| CP_INTERNAL_PASSWORD                | The common platform facing password i.e. used by the gateway to talk to the Idp for token acquisition |
 
 To obtain the secret value, you may retrieve the keys from the Azure Vault by running the `az keyvault secret show`
 command in the terminal. E.g. to obtain the value for `GOVUK_NOTIFY_API_KEY`, you should run:

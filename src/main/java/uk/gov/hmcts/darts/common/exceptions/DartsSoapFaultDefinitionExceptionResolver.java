@@ -27,7 +27,7 @@ import javax.xml.transform.Result;
 @Component
 public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointExceptionResolver {
 
-    private static final QName _ServiceType_QNAME = new QName("http://rt.fs.documentum.emc.com/", "ServiceInvocationException");
+    private static final QName _ServiceType_QNAME = new QName("http://rt.fs.documentum.emc.com/", "ServiceException");
 
     @Override
     protected boolean resolveExceptionInternal(MessageContext messageContext, Object endpoint, Exception ex) {

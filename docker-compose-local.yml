@@ -56,10 +56,19 @@ services:
     environment:
       - DAR_NOTIFY_DEFAULT_URL=http://darts-stub-services:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx
       - AAD_B2C_ROPC_CLIENT_ID_KEY
-      - DARTS_API_URL
+      - DARTS_API_URL=http://darts-api:4550
       - AAD_TENANT_ID
       - REDIS_CONNECTION_STRING
       - REDIS_SSL_ENABLED
+      - VIQ_EXTERNAL_USER_NAME
+      - VIQ_EXTERNAL_PASSWORD
+      - VIQ_INTERNAL_PASSWORD
+      - XHIBIT_EXTERNAL_USER_NAME
+      - XHIBIT_EXTERNAL_PASSWORD
+      - XHIBIT_INTERNAL_PASSWORD
+      - CP_EXTERNAL_USER_NAME
+      - CP_EXTERNAL_PASSWORD
+      - CP_INTERNAL_PASSWORD
     ports:
       - "8070:8070"
     networks:
