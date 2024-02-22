@@ -20,6 +20,24 @@ java:
           alias: REDIS_CONNECTION_STRING
         - name: AzureAdB2CTenantId
           alias: AAD_B2C_TENANT_ID_KEY
+        - name: ViQExternalUserName
+          alias: VIQ_EXTERNAL_USER_NAME
+        - name: ViQExternalPassword
+          alias: VIQ_EXTERNAL_PASSWORD
+        - name: ViQInternalPassword
+          alias: VIQ_INTERNAL_PASSWORD
+        - name: XhibitExternalUserName
+          alias: XHIBIT_EXTERNAL_USER_NAME
+        - name: XhibitExternalPassword
+          alias: XHIBIT_EXTERNAL_PASSWORD
+        - name: XhibitInternalPassword
+          alias: XHIBIT_INTERNAL_PASSWORD
+        - name: CPExternalUserName
+          alias: CP_EXTERNAL_USER_NAME
+        - name: CPExternalPassword
+          alias: CP_EXTERNAL_PASSWORD
+        - name: CPInternalPassword
+          alias: CP_INTERNAL_PASSWORD
   environment:
     DAR_NOTIFY_DEFAULT_URL: https://darts-stub-services.staging.platform.hmcts.net/VIQDARNotifyEvent/DARNotifyEvent.asmx
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net

@@ -11,7 +11,7 @@ import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 import java.util.ResourceBundle;
 
 @XmlType(
-    name = "ServiceInvocationException",
+    name = "ServiceException",
     namespace = "http://rt.fs.documentum.emc.com/"
 )
 @XmlAccessorType(XmlAccessType.FIELD)
