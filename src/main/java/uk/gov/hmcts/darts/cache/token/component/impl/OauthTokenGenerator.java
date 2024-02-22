@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
+import uk.gov.hmcts.darts.cache.token.config.ExternalUserToInternalUserMapping;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
+import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 
 import java.net.URI;
@@ -17,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,16 @@ public class OauthTokenGenerator implements TokenGenerator {
 
     @SneakyThrows
     public String acquireNewToken(String username, String password) {
+
+        // if the internal to external mapping is enabled then throw an error if we cant find an internal password
+        if (securityProperties.isUserExternalInternalMappingsEnabled()) {
+            Optional<String> fndPassword = findInternalUserPassword(username, password);
+            if (fndPassword.isEmpty()) {
+                throw new CacheTokenCreationException("No token found for user name and password");
+            }
+            password = fndPassword.get();
+        }
+
         Map<String, String> params = Map.of(CLIENT_ID_PARAMETER_KEY, securityProperties.getClientId(),
                 SCOPE_PARAMETER_KEY, securityProperties.getScope(),
                 GRANT_TYPE_PARAMETER_KEY, PASSWORD_PARAMETER_KEY,
@@ -56,6 +69,15 @@ public class OauthTokenGenerator implements TokenGenerator {
         }
 
         return tokenResponse.accessToken();
+    }
+
+    private Optional<String> findInternalUserPassword(String userName, String externalPassword) {
+        Optional<ExternalUserToInternalUserMappingImpl> externalUserToInternalUserMapping
+            = securityProperties.getUserExternalInternalMappings()
+            .stream().filter(mapping -> mapping.getUserName().equals(userName)
+                && mapping.getExternalPassword().equals(externalPassword)).findFirst();
+
+        return externalUserToInternalUserMapping.map(ExternalUserToInternalUserMapping::getInternalPassword);
     }
 
     @SuppressWarnings("PMD.LawOfDemeter")

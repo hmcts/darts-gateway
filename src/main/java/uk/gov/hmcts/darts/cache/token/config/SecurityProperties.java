@@ -3,9 +3,11 @@ package uk.gov.hmcts.darts.cache.token.config;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
 import com.nimbusds.jose.proc.SecurityContext;
+import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public interface SecurityProperties {
     String getTokenUri();
@@ -21,6 +23,10 @@ public interface SecurityProperties {
     String getIssuerUri();
 
     String getClaims();
+
+    boolean isUserExternalInternalMappingsEnabled();
+
+    List<ExternalUserToInternalUserMappingImpl> getUserExternalInternalMappings();
 
     default JWKSource<SecurityContext> getJwkSource() throws MalformedURLException {
         URL jwksUrl = new URL(getJwkSetUri());
