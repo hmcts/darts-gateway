@@ -1,25 +1,24 @@
 package uk.gov.hmcts.darts.utils;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import org.springframework.boot.test.context.TestConfiguration;
-import redis.embedded.RedisServer;
+import uk.gov.hmcts.darts.workflow.command.DeployRedisCommand;
+
+import java.io.IOException;
 
 @TestConfiguration
 class RedisConfiguration {
-    public static final RedisServer REDISSERVER = new RedisServer(6380);
+    public static final DeployRedisCommand REDIS_COMMAND = new DeployRedisCommand();
+
+    private int port;
+
 
     @PostConstruct
-    public void postConstruct() {
-        if (!REDISSERVER.isActive()) {
-            REDISSERVER.start();
-        }
+    public void postConstruct() throws IOException {
+        REDIS_COMMAND.executeWithDocker();
     }
 
-    @PreDestroy
-    public void preDestroy() {
-        if (REDISSERVER.isActive()) {
-            REDISSERVER.stop();
-        }
+    public static DeployRedisCommand getDeployRedisCommand() {
+        return REDIS_COMMAND;
     }
 }

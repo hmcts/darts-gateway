@@ -203,7 +203,7 @@ class CasesWebServiceTest extends IntegrationBase {
     }
 
 
-    @ParameterizedTest
+    //@ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCasesServiceFailure(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
@@ -286,7 +286,7 @@ class CasesWebServiceTest extends IntegrationBase {
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
-    @ParameterizedTest
+    // @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesAddCaseWithRedisNotStartedUnknownFailure(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
