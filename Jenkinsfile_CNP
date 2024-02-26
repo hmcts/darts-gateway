@@ -10,7 +10,8 @@ def branchesToSync = ['demo' ,'perftest']
 
 def secrets = [
   'darts-${env}': [
-    secret('app-insights-connection-string', 'app-insights-connection-string')
+    secret('app-insights-connection-string', 'app-insights-connection-string'),
+    secret('AzureAdB2CClientId', 'AAD_B2C_CLIENT_ID_KEY'),
   ],
 ]
 
