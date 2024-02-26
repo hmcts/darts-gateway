@@ -71,8 +71,8 @@ darts-gateway:
     base-uri: https://hmctsstgextid.b2clogin.com
     auth-uri: ${darts-gateway.security.base-uri}/hmctsstgextid.onmicrosoft.com
     token-uri: ${darts-gateway.security.auth-uri}/${darts-gateway.security.signin-policy}/oauth2/v2.0/token
-    scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_ROPC_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Functional.Test
-    client-id: ${AAD_B2C_ROPC_CLIENT_ID_KEY:#{null}}
+    scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Darts.ExternalService
+    client-id: ${AAD_B2C_CLIENT_ID_KEY:#{null}}
     jwk-set-uri: ${darts-gateway.security.auth-uri}/${darts-gateway.security.signin-policy}/discovery/v2.0/keys
     sign-in-policy: B2C_1_ropc_darts_signin
     issuer-uri: ${darts-gateway.security.base-uri}/${AAD_B2C_TENANT_ID_KEY:00000000-0000-0000-0000-000000000000}/v2.0/
