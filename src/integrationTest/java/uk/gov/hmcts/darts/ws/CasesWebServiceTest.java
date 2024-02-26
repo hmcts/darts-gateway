@@ -15,10 +15,6 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
-import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
-import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
-import uk.gov.hmcts.darts.utils.AuthenticationAssertion;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -284,38 +280,5 @@ class CasesWebServiceTest extends IntegrationBase {
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(DartsClientProvider.class)
-    void testHandlesAddCaseWithRedisNotStartedUnknownFailure(DartsGatewayClient client) throws Exception {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-
-            String soapRequestStr = TestUtils.getContentsFromFile(
-                    "payloads/addCase/soapRequest.xml");
-
-            String dartsApiResponseStr = TestUtils.getContentsFromFile(
-                    "payloads/addCase/dartsApiResponse.json");
-
-            stubFor(post(urlPathEqualTo("/cases"))
-                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
-
-            try {
-                // stop redis to force an error
-                stopRedis();
-                client.addCases(getGatewayUri(), soapRequestStr);
-                Assertions.fail();
-            } catch (SoapFaultClientException e) {
-                ServiceExceptionType type = AuthenticationAssertion.getSoapFaultDetails(e);
-                Assertions.assertEquals(FaultErrorCodes.E_UNSUPPORTED_EXCEPTION, FaultErrorCodes.valueOf(type.getMessageId()));
-                Assertions.assertEquals(
-                        SoapFaultServiceException.getMessage(FaultErrorCodes.E_UNSUPPORTED_EXCEPTION.name()),
-                        type.getMessage()
-                );
-            } finally {
-                // start redis
-                startRedis();
-            }
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 }

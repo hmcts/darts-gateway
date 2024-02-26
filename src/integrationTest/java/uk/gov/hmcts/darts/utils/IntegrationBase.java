@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,9 @@ import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMappingOperation;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.workflow.command.Command;
+import uk.gov.hmcts.darts.workflow.command.CommandHolder;
+import uk.gov.hmcts.darts.workflow.command.DeployRedisCommand;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -33,7 +35,8 @@ import java.util.Map;
 @ActiveProfiles("int-test")
 @AutoConfigureWireMock(port = 8090)
 @SpringBootTest(classes = RedisConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class IntegrationBase {
+@org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
+public class IntegrationBase implements CommandHolder {
 
     protected EventApiStub theEventApi = new EventApiStub();
     protected DailyListApiStub dailyListApiStub = new DailyListApiStub();
@@ -53,12 +56,12 @@ public class IntegrationBase {
     private Map<String, ContextRegistryClient> contextClients;
 
     @Autowired
-    protected RedisTemplate<String, Object> template;
-
-    @Autowired
     protected XmlParser parser;
 
     private static String localhost;
+
+    @Autowired
+    protected RedisTemplate<String, Object> template;
 
     static {
         try {
@@ -69,14 +72,9 @@ public class IntegrationBase {
     }
 
     @BeforeEach
-    void clearStubs() {
+    void clearStubs() throws Exception {
+        template.getConnectionFactory().getConnection().flushAll();
         WireMock.reset();
-        template.getConnectionFactory().getConnection().serverCommands().flushAll();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        RedisConfiguration.REDISSERVER.stop();
     }
 
     public URL getGatewayUri() throws MalformedURLException {
@@ -130,10 +128,20 @@ public class IntegrationBase {
     }
 
     protected void stopRedis() {
-        RedisConfiguration.REDISSERVER.stop();
+        RedisConfiguration.getDeployRedisCommand().cleanupResources();
     }
 
-    protected void startRedis() {
-        RedisConfiguration.REDISSERVER.start();
+    protected void startRedis() throws Exception {
+        RedisConfiguration.getDeployRedisCommand().executeWithDocker();
+    }
+
+    @Override
+    public Command getCommand() {
+        return new DeployRedisCommand();
+    }
+
+    @Override
+    public void setCommand(Command command) {
+
     }
 }

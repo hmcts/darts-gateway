@@ -22,6 +22,3 @@ darts-gateway:
     validate: true
   events:
     validate: true
-  redis:
-    connection-string: redis://localhost:6380
-    ssl-enabled: false
