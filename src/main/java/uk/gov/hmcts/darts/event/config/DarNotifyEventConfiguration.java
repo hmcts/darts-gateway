@@ -9,6 +9,9 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
+import uk.gov.hmcts.darts.log.api.LogApi;
+import uk.gov.hmcts.darts.log.api.impl.LogApiImpl;
+import uk.gov.hmcts.darts.log.service.impl.DarNotificationLoggerServiceImpl;
 
 @Configuration
 @EnableConfigurationProperties(DarNotifyEventConfigurationProperties.class)
@@ -30,9 +33,9 @@ public class DarNotifyEventConfiguration {
     @Bean
     @Primary
     public WebServiceTemplate darNotifyEventWebServiceTemplate(
-          DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties,
-          Jaxb2Marshaller marshaller,
-          Wss4jSecurityInterceptor securityInterceptor) {
+        DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties,
+        Jaxb2Marshaller marshaller,
+        Wss4jSecurityInterceptor securityInterceptor) {
 
         var webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setDefaultUri(darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toString());
@@ -45,12 +48,18 @@ public class DarNotifyEventConfiguration {
 
     @Bean
     public Wss4jSecurityInterceptor securityInterceptor(
-          DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties) {
+        DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties) {
         var securityInterceptor = new Wss4jSecurityInterceptor();
         securityInterceptor.setSecurementActions(darNotifyEventConfigurationProperties.getSecurementActions());
         securityInterceptor.setSecurementUsername(darNotifyEventConfigurationProperties.getSecurementUsername());
         securityInterceptor.setSecurementPassword(darNotifyEventConfigurationProperties.getSecurementPassword());
         return securityInterceptor;
+    }
+
+    @Bean
+    public LogApi logApi() {
+        return new LogApiImpl(
+            new DarNotificationLoggerServiceImpl());
     }
 
 }

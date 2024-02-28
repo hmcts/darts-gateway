@@ -15,6 +15,8 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
+import uk.gov.hmcts.darts.log.api.impl.LogApiImpl;
+import uk.gov.hmcts.darts.log.service.impl.DarNotificationLoggerServiceImpl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -72,9 +74,11 @@ class DarNotifyEventClientTest {
         request = convertToXmlDarNotifyEvent(darNotifyEvent);
         response = factory.createDARNotifyEventResponse();
 
+        var logApi = new LogApiImpl(new DarNotificationLoggerServiceImpl());
         darNotifyEventClient = new DarNotifyEventClient(
-            darNotifyEventConfigurationProperties,
-            mockWebServiceTemplate
+                darNotifyEventConfigurationProperties,
+                mockWebServiceTemplate,
+                logApi
         );
     }
 
