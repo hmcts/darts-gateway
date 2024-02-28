@@ -47,15 +47,12 @@ class DarNotifyEventClientTest {
     private DARNotifyEvent request;
     private DARNotifyEventResponse response;
 
-    private DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties;
     private final WebServiceTemplate mockWebServiceTemplate = mock(WebServiceTemplate.class);
     private DarNotifyEventClient darNotifyEventClient;
 
     @BeforeAll
     void beforeAll() throws MalformedURLException {
-        darNotifyEventConfigurationProperties = new DarNotifyEventConfigurationProperties();
-        darNotifyEventConfigurationProperties.setDefaultNotificationUrl(new URL(
-            "http://localhost:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx"));
+        var darNotifyEventConfigurationProperties = new DarNotifyEventConfigurationProperties();
         darNotifyEventConfigurationProperties.setSoapAction(new URL("http://www.VIQSoultions.com/DARNotifyEvent"));
         darNotifyEventConfigurationProperties.setSecurementActions("UsernameToken");
         darNotifyEventConfigurationProperties.setSecurementUsername("secure_user");
@@ -76,22 +73,9 @@ class DarNotifyEventClientTest {
 
         var logApi = new LogApiImpl(new DarNotificationLoggerServiceImpl());
         darNotifyEventClient = new DarNotifyEventClient(
-                darNotifyEventConfigurationProperties,
-                mockWebServiceTemplate,
-                logApi
-        );
-    }
-
-    @Test
-    void shouldHandleDefaultNotificationUrl() {
-        response.setDARNotifyEventResult(OK.getResult());
-        when(mockWebServiceTemplate.marshalSendAndReceive(
-            eq(darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toExternalForm()),
-            any(DARNotifyEvent.class),
-            any(SoapActionCallback.class)
-        )).thenReturn(response);
-
-        assertTrue(darNotifyEventClient.darNotifyEvent(null, request));
+            darNotifyEventConfigurationProperties,
+            mockWebServiceTemplate,
+            logApi);
     }
 
     @Test

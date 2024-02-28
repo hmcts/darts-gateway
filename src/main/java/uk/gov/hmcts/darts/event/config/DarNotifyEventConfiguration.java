@@ -33,12 +33,10 @@ public class DarNotifyEventConfiguration {
     @Bean
     @Primary
     public WebServiceTemplate darNotifyEventWebServiceTemplate(
-        DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties,
         Jaxb2Marshaller marshaller,
         Wss4jSecurityInterceptor securityInterceptor) {
 
         var webServiceTemplate = new WebServiceTemplate();
-        webServiceTemplate.setDefaultUri(darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toString());
         webServiceTemplate.setMarshaller(marshaller);
         webServiceTemplate.setUnmarshaller(marshaller);
         webServiceTemplate.setInterceptors(new ClientInterceptor[]{securityInterceptor});

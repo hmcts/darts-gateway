@@ -30,10 +30,9 @@ public class DarNotifyEventClient {
     private final LogApi logApi;
 
     // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
-    public boolean darNotifyEvent(String darNotificationUrl, DARNotifyEvent request) {
+    public boolean darNotifyEvent(String uri, DARNotifyEvent request) {
         boolean successful = false;
 
-        var uri = darNotificationUrl != null ? darNotificationUrl : darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toExternalForm();
         var caseNumber = request.getXMLEventDocument().getEvent().getCaseNumbers().getCaseNumber().toString();
         var event = request.getXMLEventDocument().getEvent();
 

@@ -44,7 +44,6 @@ darts-gateway:
     validate: false
     schema: "src/main/resources/schemas/darts-event.xsd"
     dar-notify-event:
-      default-notification-url: ${DAR_NOTIFY_DEFAULT_URL:http://localhost:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx}
       soap-action: http://www.VIQSoultions.com/DARNotifyEvent
       securement-actions: UsernameToken
       securement-username: ${DAR_NOTIFY_EVENT_SECUREMENT_USERNAME:<username>}
