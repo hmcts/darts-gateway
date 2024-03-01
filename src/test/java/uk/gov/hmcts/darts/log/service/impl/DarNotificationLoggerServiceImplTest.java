@@ -27,12 +27,12 @@ import static org.slf4j.event.Level.WARN;
 
 class DarNotificationLoggerServiceImplTest {
 
-    public static final Map<Level, Supplier<List<String>>> LOG_LEVEL_TO_CAPTURED_LOGS = new HashMap<>();
+    private static final Map<Level, Supplier<List<String>>> LOG_LEVEL_TO_CAPTURED_LOGS = new HashMap<>();
     private static final OffsetDateTime SOME_TS = OffsetDateTime.parse("2021-01-01T02:00:00Z");
-    public static final String SOME_URI = "some-uri";
-    public static final String SOME_COURTHOUSE = "some-courthouse";
-    public static final String SOME_COURTROOM = "some-courtroom";
-    public static final String SOME_CASE_NUMBER = "some-case-number";
+    private static final String SOME_URI = "some-uri";
+    private static final String SOME_COURTHOUSE = "some-courthouse";
+    private static final String SOME_COURTROOM = "some-courtroom";
+    private static final String SOME_CASE_NUMBER = "some-case-number";
 
     private static LogCaptor logCaptor;
 
