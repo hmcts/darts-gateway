@@ -13,13 +13,10 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.log.api.impl.LogApiImpl;
 import uk.gov.hmcts.darts.log.service.impl.DarNotificationLoggerServiceImpl;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -51,12 +48,7 @@ class DarNotifyEventClientTest {
     private DarNotifyEventClient darNotifyEventClient;
 
     @BeforeAll
-    void beforeAll() throws MalformedURLException {
-        var darNotifyEventConfigurationProperties = new DarNotifyEventConfigurationProperties();
-        darNotifyEventConfigurationProperties.setSoapAction(new URL("http://www.VIQSoultions.com/DARNotifyEvent"));
-        darNotifyEventConfigurationProperties.setSecurementActions("UsernameToken");
-        darNotifyEventConfigurationProperties.setSecurementUsername("secure_user");
-        darNotifyEventConfigurationProperties.setSecurementPassword("secure_password");
+    void beforeAll() {
 
         darNotifyEvent = DarNotifyEvent.builder()
             .notificationUrl("http://192.168.0.1:8080/VIQDARNotifyEvent/DARNotifyEvent.asmx")
@@ -73,7 +65,7 @@ class DarNotifyEventClientTest {
 
         var logApi = new LogApiImpl(new DarNotificationLoggerServiceImpl());
         darNotifyEventClient = new DarNotifyEventClient(
-            darNotifyEventConfigurationProperties,
+            "http://www.viqsoultions.com/DARNotifyEvent",
             mockWebServiceTemplate,
             logApi);
     }
