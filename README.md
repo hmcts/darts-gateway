@@ -98,7 +98,6 @@ The required value of each variable is stored in Azure Key Vault as a Secret.
 | AAD_B2C_CLIENT_ID_KEY               | AzureAdB2CClientId.                                                                                            |
 | DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD | darts-gateway-DarNotifyEventSecurementPassword                                                                 |
 | DAR_NOTIFY_EVENT_SECUREMENT_USERNAME | darts-gateway-DarNotifyEventSecurementUsername                                                                 |
-| DAR_NOTIFY_DEFAULT_URL              | N/A (local darts notify url by default                                                                         |
 | DARTS_API_URL                       | N/A (local darts uri by default)                                                                               |
 | REDIS_SSL_ENABLED                   | N/A (true by default)                                                                                          |
 | VIQ_EXTERNAL_USER_NAME              | The VIQ username                                                                                               |
@@ -148,7 +147,6 @@ export MAX_FILE_UPLOAD_SIZE_MEGABYTES=
 export AAD_B2C_ROPC_CLIENT_ID_KEY=
 export DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD=
 export DAR_NOTIFY_EVENT_SECUREMENT_USERNAME=
-export DAR_NOTIFY_DEFAULT_URL=
 export DARTS_API_URL=
 export REDIS_SSL_ENABLED=
 export AAD_B2C_CLIENT_ID_KEY=

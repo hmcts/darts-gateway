@@ -18,8 +18,6 @@ import java.net.URL;
 public class DarNotifyEventConfigurationProperties {
 
     @NotNull
-    private URL defaultNotificationUrl;
-    @NotNull
     private URL soapAction;
     @NotEmpty
     private String securementActions;

@@ -54,7 +54,6 @@ services:
     container_name: darts-gateway
     image: darts-gateway:master
     environment:
-      - DAR_NOTIFY_DEFAULT_URL=http://darts-stub-services:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx
       - AAD_B2C_ROPC_CLIENT_ID_KEY
       - AAD_B2C_CLIENT_ID_KEY
       - DARTS_API_URL=http://darts-api:4550

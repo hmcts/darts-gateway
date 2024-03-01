@@ -41,5 +41,4 @@ java:
         - name: CPInternalPassword
           alias: CP_INTERNAL_PASSWORD
   environment:
-    DAR_NOTIFY_DEFAULT_URL: https://darts-stub-services.staging.platform.hmcts.net/VIQDARNotifyEvent/DARNotifyEvent.asmx
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
 import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 import uk.gov.hmcts.darts.log.api.LogApi;
 
@@ -25,21 +24,19 @@ import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.OK;
 @RequiredArgsConstructor
 public class DarNotifyEventClient {
 
-    private final DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties;
+    private final String soapAction;
     private final WebServiceTemplate webServiceTemplate;
     private final LogApi logApi;
 
     // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
-    public boolean darNotifyEvent(String darNotificationUrl, DARNotifyEvent request) {
+    public boolean darNotifyEvent(String uri, DARNotifyEvent request) {
         boolean successful = false;
 
-        var uri = darNotificationUrl != null ? darNotificationUrl : darNotifyEventConfigurationProperties.getDefaultNotificationUrl().toExternalForm();
         var caseNumber = request.getXMLEventDocument().getEvent().getCaseNumbers().getCaseNumber().toString();
         var event = request.getXMLEventDocument().getEvent();
 
         try {
-            Object responseObj = webServiceTemplate.marshalSendAndReceive(
-                    uri, request, new SoapActionCallback(darNotifyEventConfigurationProperties.getSoapAction().toExternalForm()));
+            Object responseObj = webServiceTemplate.marshalSendAndReceive(uri, request, new SoapActionCallback(soapAction));
             if (responseObj instanceof DARNotifyEventResponse) {
                 DARNotifyEventResponse response = (DARNotifyEventResponse) responseObj;
                 DarNotifyEventResult result = DarNotifyEventResult.valueOfResult(response.getDARNotifyEventResult());
