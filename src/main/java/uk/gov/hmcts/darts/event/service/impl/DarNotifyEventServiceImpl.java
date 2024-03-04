@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
-import uk.gov.hmcts.darts.event.config.DarNotifyEventConfigurationProperties;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.event.service.DarNotifyEventService;
 
@@ -23,7 +22,6 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
 
     private static final String EVENT_DATE_TIME_ATTRIBUTE = "%d";
 
-    private final DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties;
     private final DarNotifyEventClient darNotifyEventClient;
 
     @Override

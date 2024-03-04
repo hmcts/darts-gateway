@@ -24,12 +24,12 @@ public class EventRequestMapper {
         event.setCourtroom(dartsEvent.getCourtRoom());
         event.setCaseNumbers(dartsEvent.getCaseNumbers().getCaseNumber());
         event.setEventText(dartsEvent.getEventText());
-        event.setDateTime(toLocalDateTime(dartsEvent));
+        event.setDateTime(toOffsetDateTime(dartsEvent));
 
         return event;
     }
 
-    private static OffsetDateTime toLocalDateTime(DartsEvent dartsEvent) {
+    private static OffsetDateTime toOffsetDateTime(DartsEvent dartsEvent) {
         return OffsetDateTime.of(LocalDateTime.of(
             dartsEvent.getY().intValue(),
             Month.of(dartsEvent.getM().intValue()),

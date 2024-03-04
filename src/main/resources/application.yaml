@@ -26,6 +26,10 @@ spring:
   application:
     name: Darts Gateway
 
+  # To be removed before go-live
+  mvc:
+    log-request-details: true
+
 azure:
   application-insights:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
@@ -44,7 +48,6 @@ darts-gateway:
     validate: false
     schema: "src/main/resources/schemas/darts-event.xsd"
     dar-notify-event:
-      default-notification-url: ${DAR_NOTIFY_DEFAULT_URL:http://localhost:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx}
       soap-action: http://www.VIQSoultions.com/DARNotifyEvent
       securement-actions: UsernameToken
       securement-username: ${DAR_NOTIFY_EVENT_SECUREMENT_USERNAME:<username>}
@@ -91,3 +94,8 @@ darts-gateway:
 logging:
   level:
     uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}
+    org:
+      springframework:
+        ws:
+          server:
+            MessageTracing: trace

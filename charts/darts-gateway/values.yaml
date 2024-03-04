@@ -14,8 +14,8 @@ java:
           alias: AAD_B2C_ROPC_CLIENT_ID_KEY
         - name: AzureAdB2CClientId
           alias: AAD_B2C_CLIENT_ID_KEY
-        - name: AppInsightsInstrumentationKey
-          alias: azure.application-insights.instrumentation-key
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
         - name: MaxFileUploadSizeInMegabytes
           alias: MAX_FILE_UPLOAD_SIZE_MEGABYTES
         - name: redis-connection-string
@@ -41,5 +41,4 @@ java:
         - name: CPInternalPassword
           alias: CP_INTERNAL_PASSWORD
   environment:
-    DAR_NOTIFY_DEFAULT_URL: https://darts-stub-services.staging.platform.hmcts.net/VIQDARNotifyEvent/DARNotifyEvent.asmx
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net

@@ -47,6 +47,7 @@ public class DartsEndpoint {
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addDocument")
     @ResponsePayload
     public JAXBElement<AddDocumentResponse> addDocument(@RequestPayload JAXBElement<AddDocument> addDocument) {
+        log.trace("addDocument: {}", addDocument.getValue()); // to be removed
         AddDocumentResponse documentResponse = ResponseFactory.getAddDocumentResponse();
         documentResponse.setReturn(endpointHandler.makeAPICall(
             "addDocument",

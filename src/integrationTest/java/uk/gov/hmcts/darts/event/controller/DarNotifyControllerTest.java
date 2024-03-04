@@ -84,6 +84,7 @@ class DarNotifyControllerTest {
     void shouldSendDarNotifyEventSoapAction() throws Exception {
         String requestBody = """
                 {
+                  "notification_url": "some-dar-pc-url",
                   "notification_type": "3",
                   "timestamp": "2023-06-19T14:52:40.637Z",
                   "courthouse": "Test Court",
@@ -101,7 +102,7 @@ class DarNotifyControllerTest {
 
         assertThat(response.getResponse().getContentAsString()).isEqualTo("");
         Mockito.verify(mockWebServiceTemplate).marshalSendAndReceive(
-                eq("http://localhost:4551/VIQDARNotifyEvent/DARNotifyEvent.asmx"),
+                eq("some-dar-pc-url"),
                 any(DARNotifyEvent.class),
                 any(SoapActionCallback.class)
         );
