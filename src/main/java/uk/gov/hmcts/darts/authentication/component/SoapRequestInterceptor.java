@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Optional;
 import javax.xml.namespace.QName;
@@ -37,6 +39,10 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     private final SoapHeaderConverter soapHeaderConverter;
     private final TokenRegisterable tokenRegisterable;
 
+    private static final String NEW_LINE = System.getProperty("line.separator");
+
+    private static final String MESSAGE_SEPERATOR = "----------------------------";
+
     @Override
     public boolean understands(SoapHeaderElement header) {
         return true;
@@ -44,6 +50,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     @Override
     public boolean handleRequest(MessageContext messageContext, Object endpoint) {
+        logPayloadMessage("REQUEST PAYLOAD IS {}", messageContext.getRequest());
+
         SaajSoapMessage message = (SaajSoapMessage) messageContext.getRequest();
         handleServiceContextSoapHeader(message.getSoapHeader());
         return true; // continue processing of the request interceptor chain
@@ -150,7 +158,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                 throw new NoIdentitiesFoundException();
             }
         } catch (CacheTokenCreationException tokenCreationException) {
-            throw new AuthenticationFailedException();
+            throw new AuthenticationFailedException(tokenCreationException);
         }
         return true;
     }
@@ -164,11 +172,13 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     @Override
     public boolean handleResponse(MessageContext messageContext, Object endpoint) {
+        logPayloadMessage("RESPONSE PAYLOAD IS {}", messageContext.getResponse());
         return true;
     }
 
     @Override
     public boolean handleFault(MessageContext messageContext, Object endpoint) {
+        logPayloadMessage("FAULTY PAYLOAD IS {}", messageContext.getResponse());
         return true;
     }
 
@@ -177,4 +187,19 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     }
 
+    private void logPayloadMessage(String messagePrefix, WebServiceMessage message) {
+        try {
+            ByteArrayTransportOutputStream byteArrayTransportOutputStream =
+                new ByteArrayTransportOutputStream();
+            message.writeTo(byteArrayTransportOutputStream);
+
+            String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
+                + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
+                + MESSAGE_SEPERATOR + NEW_LINE;
+
+            log.trace(messagePrefix, payloadMessage);
+        } catch (IOException ex) {
+            log.error("Failed to write SOAP message", ex);
+        }
+    }
 }
