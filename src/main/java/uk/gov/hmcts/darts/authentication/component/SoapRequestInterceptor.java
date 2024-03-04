@@ -61,8 +61,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private boolean isTokenAuthentication(SoapHeader soapHeader) {
         Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
-            QName.valueOf(SERVICE_CONTEXT_HEADER));
-        return !serviceContextSoapHeaderElementIt.hasNext();
+            QName.valueOf(SECURITY_HEADER));
+        return serviceContextSoapHeaderElementIt.hasNext();
     }
 
     private boolean authenticateToken(SoapHeader soapHeader) {
