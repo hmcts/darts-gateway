@@ -90,3 +90,8 @@ darts-gateway:
 logging:
   level:
     uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}
+    org:
+      springframework:
+        ws:
+          server:
+            MessageTracing: trace
