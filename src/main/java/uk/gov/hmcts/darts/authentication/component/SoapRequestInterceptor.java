@@ -178,7 +178,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     @Override
     public boolean handleFault(MessageContext messageContext, Object endpoint) {
-        logPayloadMessage("FAULTY PAYLOAD IS {}", messageContext.getResponse());
+        logPayloadMessage("FAULT PAYLOAD IS {}", messageContext.getResponse());
         return true;
     }
 

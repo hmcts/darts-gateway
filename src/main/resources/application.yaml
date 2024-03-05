@@ -101,3 +101,5 @@ logging:
             authentication:
               component:
                 SoapRequestInterceptor : trace
+            common:
+              client: debug
