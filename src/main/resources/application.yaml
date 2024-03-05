@@ -52,6 +52,7 @@ darts-gateway:
       securement-actions: UsernameToken
       securement-username: ${DAR_NOTIFY_EVENT_SECUREMENT_USERNAME:<username>}
       securement-password: ${DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD:<password>}
+      enabled: ${DAR_NOTIFY_ENABLED:true}
   addcase:
     schema: "src/main/resources/schemas/darts-addcase.xsd"
     validate: false
