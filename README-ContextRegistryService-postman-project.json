@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "ddd82b4a-91c3-45af-8c63-6cf858dc7996",
+		"_postman_id": "a9d6ecf6-0617-4c37-845c-40ee8516957c",
 		"name": "ContextRegistryService",
 		"description": "\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15829068",
-		"_collection_link": "https://speeding-resonance-716248.postman.co/workspace/darts-gateway~2dacd0ff-d9b8-4288-9aba-128732a590f2/collection/15829068-ddd82b4a-91c3-45af-8c63-6cf858dc7996?action=share&source=collection_link&creator=15829068"
+		"_collection_link": "https://speeding-resonance-716248.postman.co/workspace/darts-gateway~2dacd0ff-d9b8-4288-9aba-128732a590f2/collection/15829068-a9d6ecf6-0617-4c37-845c-40ee8516957c?action=share&source=collection_link&creator=15829068"
 	},
 	"item": [
 		{
@@ -30,6 +30,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -72,6 +77,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -100,6 +110,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -128,6 +143,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -156,6 +176,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -184,6 +209,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {

@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "8db4c728-f5f5-455f-bf79-07b136f54285",
+		"_postman_id": "82e06121-ca57-43dc-b7f7-ad6e0a79afe4",
 		"name": "DARTSService Copy",
 		"description": "@author ewingsg",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15829068",
-		"_collection_link": "https://speeding-resonance-716248.postman.co/workspace/darts-gateway~2dacd0ff-d9b8-4288-9aba-128732a590f2/collection/15829068-8db4c728-f5f5-455f-bf79-07b136f54285?action=share&source=collection_link&creator=15829068"
+		"_collection_link": "https://speeding-resonance-716248.postman.co/workspace/darts-gateway~2dacd0ff-d9b8-4288-9aba-128732a590f2/collection/15829068-82e06121-ca57-43dc-b7f7-ad6e0a79afe4?action=share&source=collection_link&creator=15829068"
 	},
 	"item": [
 		{
@@ -16,6 +16,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -44,6 +49,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -72,6 +82,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -100,6 +115,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -128,6 +148,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -156,6 +181,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -184,6 +214,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -212,6 +247,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -240,6 +280,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -268,6 +313,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -296,6 +346,11 @@
 					{
 						"key": "Content-Type",
 						"value": "text/xml; charset=utf-8"
+					},
+					{
+						"key": "Client-Type",
+						"value": "Postman Gateway Suite",
+						"type": "text"
 					}
 				],
 				"body": {
