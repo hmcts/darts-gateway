@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.utils;
 
+import com.emc.documentum.fs.rt.DfsAttributeHolder;
+import com.emc.documentum.fs.rt.DfsExceptionHolder;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.darts.ws.ContextRegistryParent;
 
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.List;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -71,12 +74,7 @@ public class AuthenticationAssertion {
         try {
             runnable.run();
         } catch (SoapFaultClientException e) {
-            ServiceExceptionType type = getSoapFaultDetails(e);
-            Assertions.assertEquals(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, FaultErrorCodes.valueOf(type.getMessageId()));
-            Assertions.assertEquals(
-                SoapFaultServiceException.getMessage(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES.name()),
-                type.getMessage()
-            );
+            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, "");
         }
     }
 
@@ -94,10 +92,45 @@ public class AuthenticationAssertion {
             runnable.run();
             Assertions.fail("Never expect to get here");
         } catch (SoapFaultClientException e) {
-            ServiceExceptionType type = getSoapFaultDetails(e);
-            Assertions.assertEquals(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.valueOf(type.getMessageId()));
-            Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED.name()), type.getMessage());
+            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, "");
         }
+    }
+
+    private void assertErrorResponse(SoapFaultClientException faultClientException, FaultErrorCodes code, String messageArgs) throws Exception {
+        ServiceExceptionType type = getSoapFaultDetails(faultClientException);
+        Assertions.assertEquals(faultClientException.getMessage(), type.getMessage());
+        Assertions.assertEquals(SoapFaultServiceException.getMessage(code.name(), messageArgs), type.getMessage());
+        Assertions.assertEquals(code, FaultErrorCodes.valueOf(type.getMessageId()));
+        Assertions.assertEquals(1, type.getExceptionBean().size());
+        Assertions.assertNotNull(type.getStackTraceAsString());
+
+        // assert the exception block
+        DfsExceptionHolder exceptionHolder = type.getExceptionBean().get(0);
+        Assertions.assertEquals(type.getMessageId(), exceptionHolder.getMessageId());
+        Assertions.assertEquals(faultClientException.getMessage(), exceptionHolder.getMessage());
+        Assertions.assertEquals(Exception.class.getCanonicalName(), exceptionHolder.getGenericType());
+        Assertions.assertEquals(ServiceExceptionType.class.getCanonicalName(), exceptionHolder.getExceptionClass());
+
+        // assert the three core attributes
+        assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
+                             String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute());
+        assertAttributeValue(ServiceExceptionType.ATTRIBUTE_EXCEPTION_TYPE,
+                             String.class.getCanonicalName(), ServiceExceptionType.class.getCanonicalName(), exceptionHolder.getAttribute());
+        assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ARGS,
+                             String.class.getCanonicalName(), type.getMessageArgs().get(0).toString(), exceptionHolder.getAttribute());
+    }
+
+    private void assertAttributeValue(String name, String assertType, String assertValue, List<DfsAttributeHolder> atts) {
+        boolean found = false;
+        for (DfsAttributeHolder att : atts) {
+            if (att.getName().equals(name)) {
+                Assertions.assertEquals(assertType, att.getType());
+                Assertions.assertEquals(assertValue, att.getValue());
+                found = true;
+            }
+        }
+
+        Assertions.assertTrue(found);
     }
 
     public void assertFailBasedOnNotAuthenticatedToken(SoapTestClient client, GeneralRunnableOperationWithException runnable) throws Exception {
@@ -112,9 +145,7 @@ public class AuthenticationAssertion {
             runnable.run();
             Assertions.fail("Never expect to get here");
         } catch (SoapFaultClientException e) {
-            ServiceExceptionType type = getSoapFaultDetails(e);
-            Assertions.assertEquals(FaultErrorCodes.E_UNKNOWN_TOKEN, FaultErrorCodes.valueOf(type.getMessageId()));
-            Assertions.assertEquals(SoapFaultServiceException.getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), invalidToken), type.getMessage());
+            assertErrorResponse(e, FaultErrorCodes.E_UNKNOWN_TOKEN, invalidToken);
         }
     }
 
