@@ -45,10 +45,10 @@ public class EventRequestMapper {
         if (eventResponse.getCode().equals("201")) {
             dartsResponse.setCode(CodeAndMessage.OK.getCode());
             dartsResponse.setMessage(CodeAndMessage.OK.getMessage());
+        } else {
+            dartsResponse.setMessage(eventResponse.getMessage());
+            dartsResponse.setCode(eventResponse.getCode());
         }
-
-        dartsResponse.setMessage(eventResponse.getMessage());
-        dartsResponse.setCode(eventResponse.getCode());
 
         return dartsResponse;
     }
