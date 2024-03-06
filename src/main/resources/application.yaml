@@ -26,6 +26,10 @@ spring:
   application:
     name: Darts Gateway
 
+  # To be removed before go-live
+  mvc:
+    log-request-details: true
+
 azure:
   application-insights:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
@@ -90,8 +94,12 @@ darts-gateway:
 logging:
   level:
     uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}
-    org:
-      springframework:
-        ws:
-          server:
-            MessageTracing: trace
+    uk:
+      gov:
+        hmcts:
+          darts:
+            authentication:
+              component:
+                SoapRequestInterceptor : trace
+            common:
+              client: debug
