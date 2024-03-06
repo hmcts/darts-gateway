@@ -96,9 +96,9 @@ public class AuthenticationAssertion {
         }
     }
 
-    private void assertErrorResponse(SoapFaultClientException e, FaultErrorCodes code, String messageArgs) throws Exception {
-        ServiceExceptionType type = getSoapFaultDetails(e);
-        Assertions.assertEquals(e.getMessage(), type.getMessage());
+    private void assertErrorResponse(SoapFaultClientException faultClientException, FaultErrorCodes code, String messageArgs) throws Exception {
+        ServiceExceptionType type = getSoapFaultDetails(faultClientException);
+        Assertions.assertEquals(faultClientException.getMessage(), type.getMessage());
         Assertions.assertEquals(SoapFaultServiceException.getMessage(code.name(), messageArgs), type.getMessage());
         Assertions.assertEquals(code, FaultErrorCodes.valueOf(type.getMessageId()));
         Assertions.assertEquals(1, type.getExceptionBean().size());
@@ -107,7 +107,7 @@ public class AuthenticationAssertion {
         // assert the exception block
         DfsExceptionHolder exceptionHolder = type.getExceptionBean().get(0);
         Assertions.assertEquals(type.getMessageId(), exceptionHolder.getMessageId());
-        Assertions.assertEquals(e.getMessage(), exceptionHolder.getMessage());
+        Assertions.assertEquals(faultClientException.getMessage(), exceptionHolder.getMessage());
         Assertions.assertEquals(Exception.class.getCanonicalName(), exceptionHolder.getGenericType());
         Assertions.assertEquals(ServiceExceptionType.class.getCanonicalName(), exceptionHolder.getExceptionClass());
 

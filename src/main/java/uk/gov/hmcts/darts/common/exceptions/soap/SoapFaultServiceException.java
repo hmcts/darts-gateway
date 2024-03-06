@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.common.exceptions.soap;
 
-import com.emc.documentum.fs.rt.ServiceException;
 import lombok.Getter;
 import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
 

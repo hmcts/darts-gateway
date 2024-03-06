@@ -34,7 +34,7 @@ public class ServiceExceptionType extends ServiceException {
             cause.printStackTrace(pw);
             String stackTrace = sw.toString(); // stack trace as a string
             setStackTraceAsString(stackTrace);
-        }else {
+        } else {
             setStackTraceAsString("");
         }
 
