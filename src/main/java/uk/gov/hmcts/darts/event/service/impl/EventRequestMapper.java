@@ -4,6 +4,7 @@ import com.synapps.moj.dfs.response.DARTSResponse;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
 import uk.gov.hmcts.darts.model.event.EventsResponse;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -41,6 +42,11 @@ public class EventRequestMapper {
 
     public DARTSResponse toLegacyAddDocumentResponse(EventsResponse eventResponse) {
         var dartsResponse = new DARTSResponse();
+        if (eventResponse.getCode().equals("201")) {
+            dartsResponse.setCode(CodeAndMessage.OK.getCode());
+            dartsResponse.setMessage(CodeAndMessage.OK.getMessage());
+        }
+
         dartsResponse.setMessage(eventResponse.getMessage());
         dartsResponse.setCode(eventResponse.getCode());
 
