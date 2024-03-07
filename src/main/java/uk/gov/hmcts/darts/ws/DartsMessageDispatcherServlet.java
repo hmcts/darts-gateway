@@ -5,8 +5,12 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import uk.gov.hmcts.darts.common.multipart.JavaMailXmlWithFileMultiPartRequestFactory;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
@@ -26,6 +30,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @MultipartConfig
+@Slf4j
 public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
 
     private final List<EndpointMetaData> endpointMetaDataList;
@@ -46,7 +51,7 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
                 try {
                     super.service(req, res);
                 } catch (Exception e) {
-                    logger.error("An error occurred", e);
+                    log.error("An error occurred", e);
                 }
             }
         }
@@ -60,6 +65,7 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
             for (EndpointMetaData metaData : endpointMetaDataList) {
                 String query = req.getQueryString();
                 if ("wsdl".equalsIgnoreCase(query) && metaData.getEndpointMatcher().asMatchPredicate().test(req.getRequestURI())) {
+                    log.trace("GET wsdl call made on URL {}", getCalledUrl(req));
                     try (InputStream wsdlInputStream = metaData.getConsolidatedWsdlStream().getInputStream()) {
                         writeWsdlStreamToResponse(wsdlInputStream, res);
 
@@ -73,12 +79,13 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
             }
 
             if (fndMetaData == null) {
+                log.trace("GET call made but no WSDL found on URL {}", getCalledUrl(req));
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
             } else {
                 try {
                     super.service(req, res);
                 } catch (Exception e) {
-                    logger.error("An error occurred", e);
+                    log.error("An error occurred", e);
                 }
             }
         }
@@ -86,8 +93,22 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
         return processed;
     }
 
+    private String getCalledUrl(HttpServletRequest request) {
+        return request.getQueryString() == null ? request.getQueryString() : request.getRequestURI()
+            + "?" + request.getQueryString();
+    }
+
     private void writeWsdlStreamToResponse(InputStream wsdlInputStream, HttpServletResponse response) throws IOException {
         String wsdlText = new String(wsdlInputStream.readAllBytes(), StandardCharsets.UTF_8);
         response.getWriter().write(wsdlText);
+    }
+
+    @Controller
+    static class FaviconController {
+        @GetMapping("favicon.ico")
+        @ResponseBody
+        void returnNoFavicon() {
+            // Disable the favicon to prevent log exception on browser access the URL
+        }
     }
 }
