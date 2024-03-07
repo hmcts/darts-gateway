@@ -15,20 +15,20 @@ class WsdlTest extends IntegrationBase {
     private RestTemplate template;
 
     @Test
-    public void testDartsWsdlSuccess() throws Exception {
+    void testDartsWsdlSuccess() throws Exception {
         String content = template.getForObject(getGatewayUri() + "/DARTSService?wsdl", String.class);
         Assertions.assertNotNull(content);
     }
 
     @Test
-    public void testContextRegistryWsdlSuccess() throws Exception {
+    void testContextRegistryWsdlSuccess() throws Exception {
         String content = template.getForObject(
             getGatewayUri() + "/runtime/ContextRegistryService?wsdl", String.class);
         Assertions.assertNotNull(content);
     }
 
     @Test
-    public void testWsdlFail() {
+    void testWsdlFail() {
         Assertions.assertThrows(HttpServerErrorException.InternalServerError.class, () -> {
             template.getForObject(getGatewayUri() + "/DARTSServiceUnknown?wsdl", String.class);
         });
