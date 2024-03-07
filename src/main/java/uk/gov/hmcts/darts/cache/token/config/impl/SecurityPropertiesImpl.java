@@ -23,4 +23,5 @@ public class SecurityPropertiesImpl implements SecurityProperties {
 
     private boolean userExternalInternalMappingsEnabled;
     private List<ExternalUserToInternalUserMappingImpl> userExternalInternalMappings;
+    private List<String> externalServiceBasicAuthorisationWhitelist;
 }

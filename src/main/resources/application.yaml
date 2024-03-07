@@ -92,6 +92,7 @@ darts-gateway:
       - username: ${XHIBIT_EXTERNAL_USER_NAME:#{null}}
         external-password: ${XHIBIT_EXTERNAL_PASSWORD:#{null}}
         internal-password: ${XHIBIT_INTERNAL_PASSWORD:#{null}}
+    external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
 logging:
   level:
     uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}

@@ -66,6 +66,17 @@ sourceSets {
   }
 }
 
+idea {
+  module {
+    testSources.from(sourceSets.integrationTest.allSource.srcDirs)
+    testResources.from(sourceSets.integrationTest.resources.srcDirs)
+    testSources.from(sourceSets.functionalTest.allSource.srcDirs)
+    testResources.from(sourceSets.functionalTest.resources.srcDirs)
+    testSources.from(sourceSets.smokeTest.allSource.srcDirs)
+    testResources.from(sourceSets.smokeTest.resources.srcDirs)
+  }
+}
+
 configurations {
   functionalTestImplementation.extendsFrom testImplementation
   functionalTestRuntimeOnly.extendsFrom runtimeOnly
