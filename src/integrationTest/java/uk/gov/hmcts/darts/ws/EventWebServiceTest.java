@@ -44,8 +44,7 @@ class EventWebServiceTest extends IntegrationBase {
     private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
 
-    private @Value("classpath:payloads/events/invalid-dailyList.xml") Resource invalidDailyListRequest;
-    private @Value("classpath:payloads/events/invalid-dailyList-response.xml") Resource expectedResponse;
+    private @Value("classpath:payloads/events/valid-dailyList-with-line-breaks.xml") Resource dailyListWithLineBreak;
 
     private static final DailyListAPIProblemResponseMapper
         DAILY_LIST_API_PROBLEM_RESPONSE_MAPPER = new DailyListAPIProblemResponseMapper();
@@ -330,6 +329,34 @@ class EventWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil.assertErrorResponse(String.valueOf(500), response.getResponse().getValue().getReturn());
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void removesLineBreaksFromDailyListXml(
+        DartsGatewayClient client
+    ) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            dailyListApiStub.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                dailyListWithLineBreak.getContentAsString(Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validDlEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+
+            dailyListApiStub.verifyPostRequestWithoutLineBreaks();
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        dailyListApiStub.verifyPostRequestWithoutLineBreaks();
+//        dailyListApiStub.verifyPatchRequest();
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
