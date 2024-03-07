@@ -317,7 +317,7 @@ dependencies {
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.4')
-  jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.4')
+  jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.5')
 
   // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
   implementation 'com.fasterxml.jackson.core:jackson-databind'
