@@ -144,7 +144,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                             .findFirst();
                         if (basicIdentityOptional.isPresent()) {
 
-                            validateBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
+                            verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
 
                             // always reuse the token in the case of authentication
                             Optional<Token> token = tokenRegisterable.store(serviceContext, true);
@@ -219,7 +219,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
     }
 
-    private void validateBasicAuthorisationRequestIsAllowed(String userName, SaajSoapMessage message) {
+    private void verifyBasicAuthorisationRequestIsAllowed(String userName, SaajSoapMessage message) {
         if (isContextRegistryRequest(message)) {
             return;
         }
