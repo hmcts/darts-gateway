@@ -356,7 +356,6 @@ class EventWebServiceTest extends IntegrationBase {
         }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
         dailyListApiStub.verifyPostRequestWithoutLineBreaks();
-//        dailyListApiStub.verifyPatchRequest();
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
