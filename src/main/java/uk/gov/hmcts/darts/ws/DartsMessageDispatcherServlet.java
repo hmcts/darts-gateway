@@ -77,6 +77,7 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
             if (fndMetaData == null) {
                 log.trace("GET call made but no WSDL found on URL {}", getCalledUrl(req));
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                processed = true;
             } else {
                 super.service(req, res);
             }
