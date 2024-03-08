@@ -15,4 +15,8 @@ public class PostDailyListRequest {
     String publishedTs;
     String dailyListXml;
     String dailyListJson;
+
+    public void setDailyListXml(String dailyListXml) {
+        this.dailyListXml = dailyListXml.replaceAll("\\r\\n|\\r|\\n", "");
+    }
 }
