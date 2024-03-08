@@ -12,6 +12,7 @@ def secrets = [
   'darts-${env}': [
     secret('app-insights-connection-string', 'app-insights-connection-string'),
     secret('AzureAdB2CClientId', 'AAD_B2C_CLIENT_ID_KEY'),
+    secret('ExternalServiceBasicAuthorisationWhitelist', 'EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST'),
   ],
 ]
 

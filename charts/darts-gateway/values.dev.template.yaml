@@ -13,5 +13,7 @@ java:
           alias: AAD_B2C_CLIENT_ID_KEY
         - name: redis-connection-string
           alias: REDIS_CONNECTION_STRING
+        - name: ExternalServiceBasicAuthorisationWhitelist
+          alias: EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
   environment:
     DARTS_API_URL: https://darts-api.staging.platform.hmcts.net
