@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import uk.gov.hmcts.darts.common.multipart.JavaMailXmlWithFileMultiPartRequestFactory;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
@@ -48,11 +48,7 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
                     super.service(request, res);
                 }
             } else {
-                try {
-                    super.service(req, res);
-                } catch (Exception e) {
-                    log.error("An error occurred", e);
-                }
+                super.service(req, res);
             }
         }
     }
@@ -82,11 +78,7 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
                 log.trace("GET call made but no WSDL found on URL {}", getCalledUrl(req));
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
             } else {
-                try {
-                    super.service(req, res);
-                } catch (Exception e) {
-                    log.error("An error occurred", e);
-                }
+                super.service(req, res);
             }
         }
 
@@ -103,7 +95,7 @@ public class DartsMessageDispatcherServlet extends MessageDispatcherServlet {
         response.getWriter().write(wsdlText);
     }
 
-    @Controller
+    @RestController
     static class FaviconController {
         @GetMapping("favicon.ico")
         @ResponseBody
