@@ -101,5 +101,8 @@ logging:
             authentication:
               component:
                 SoapRequestInterceptor : trace
+
+            ws:
+              DartsMessageDispatcherServlet : trace
             common:
               client: debug
