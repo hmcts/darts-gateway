@@ -7,6 +7,7 @@ import com.viqsoultions.ObjectFactory;
 import com.viqsoultions.XMLEventDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
@@ -24,10 +25,15 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
 
     private final DarNotifyEventClient darNotifyEventClient;
 
+    @Value("${darts-gateway.events.dar-notify-event.enabled}")
+    boolean enableDarNotify;
+
     @Override
     public void darNotify(DarNotifyEvent darNotifyEvent) {
-        DARNotifyEvent xmlDarNotifyEvent = convertToXmlDarNotifyEvent(darNotifyEvent);
-        darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), xmlDarNotifyEvent);
+        if (enableDarNotify) {
+            DARNotifyEvent xmlDarNotifyEvent = convertToXmlDarNotifyEvent(darNotifyEvent);
+            darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), xmlDarNotifyEvent);
+        }
     }
 
     private DARNotifyEvent convertToXmlDarNotifyEvent(DarNotifyEvent darNotifyEvent) {
