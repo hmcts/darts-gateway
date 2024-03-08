@@ -316,8 +316,8 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.77'
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
-  jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.4')
-  jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.4')
+  jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.5')
+  jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.5')
 
   // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
   implementation 'com.fasterxml.jackson.core:jackson-databind'
@@ -397,15 +397,6 @@ bootJar {
     attributes('Implementation-Version': project.version.toString())
   }
 
-  /*
-  Temporary fix to allow Spring Boot 3.2 upgrade.
-  spring-boot 3.2 new Nested Jar Support breaks Spring WS.
-  Temporarily reverting to old code for "Uber Jar" loading until the issue is fixed
-  See:
-    https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2.0-Release-Notes/0e643bbde530fc680c1dad11eeb58ab966582ee8#nested-jar-support
-    https://github.com/spring-projects/spring-ws/issues/1393
-  */
-  loaderImplementation = org.springframework.boot.loader.tools.LoaderImplementation.CLASSIC
 }
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083

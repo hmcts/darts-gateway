@@ -50,7 +50,7 @@ public class IntegrationBase implements CommandHolder {
     protected static final String DEFAULT_PASSWORD = "password";
 
     @Value("${local.server.port}")
-    private int port;
+    protected int port;
 
     @Autowired
     private Map<String, ContextRegistryClient> contextClients;
