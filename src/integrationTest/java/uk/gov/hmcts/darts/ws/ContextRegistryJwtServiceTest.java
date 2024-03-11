@@ -92,6 +92,19 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
         verifyNoMoreInteractions(generator);
     }
 
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRegisterWithInvalidIdentities(ContextRegistryClient client) throws Exception {
+
+        authenticationStub.assertFailBasedOnInvalidIdentities(client, () -> {
+            executeHandleRegister(client);
+        });
+
+        verify(generator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verifyNoMoreInteractions(generator);
+    }
+
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRoutesRegisterWithAuthenticatiooTokenFailure(ContextRegistryClient client) throws Exception {

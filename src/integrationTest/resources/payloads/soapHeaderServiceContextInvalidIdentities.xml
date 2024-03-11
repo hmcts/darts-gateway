@@ -1,0 +1,6 @@
+<ServiceContext token="temporary/127.0.0.1-1694086218480-789961425" xmlns="http://context.core.datamodel.fs.documentum.emc.com/">
+  <Identities xsi:type="RepositoryIdentity" user-name="${USER}" password="${PASSWORD}" repositoryName="moj_darts" domain=""
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+  <RuntimeProperties/>
+</ServiceContext>
+
