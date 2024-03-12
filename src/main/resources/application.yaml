@@ -4,7 +4,7 @@ server:
     session:
       store-type: redis
       redis:
-        namespace: darts-gateway-session
+        namespace: darts-gateway:sessions
       cookie:
         name: JSESSIONID
 
