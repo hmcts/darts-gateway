@@ -49,7 +49,6 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     }
 
     @Test
-    @Disabled
     void addAudioTest() throws Exception {
         File homeDirForTempFiles = new File(System.getProperty("user.home"));
         final int fileCountBefore = Objects.requireNonNull(homeDirForTempFiles.list()).length;

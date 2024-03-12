@@ -1,5 +1,6 @@
 java:
   # Don't modify below here
+  replicas: 3
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   keyVaults:
