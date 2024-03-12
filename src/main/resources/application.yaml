@@ -3,8 +3,6 @@ server:
   servlet:
     session:
       store-type: redis
-      redis:
-        namespace: darts-gateway:sessions
       cookie:
         name: JSESSIONID
 
@@ -30,6 +28,9 @@ spring:
     import: "optional:configtree:/mnt/secrets/darts/"
   application:
     name: Darts Gateway
+  session:
+    redis:
+      namespace: darts-gateway
 
   # To be removed before go-live
   mvc:
