@@ -8,7 +8,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 import uk.gov.hmcts.darts.cache.token.config.KeyConfiguration;
 
 @SpringBootApplication
-@EnableRedisHttpSession
+@EnableRedisHttpSession(redisNamespace = "darts-gateway-session")
 @EnableFeignClients
 @EnableRedisRepositories (keyspaceConfiguration = KeyConfiguration.class)
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
