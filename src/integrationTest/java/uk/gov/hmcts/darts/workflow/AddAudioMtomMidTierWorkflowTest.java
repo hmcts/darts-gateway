@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.workflow;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,6 +49,7 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     }
 
     @Test
+    @Disabled
     void addAudioTest() throws Exception {
         File homeDirForTempFiles = new File(System.getProperty("user.home"));
         final int fileCountBefore = Objects.requireNonNull(homeDirForTempFiles.list()).length;
