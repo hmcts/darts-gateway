@@ -1,7 +1,12 @@
 server:
   port: 8070
-
-
+  servlet:
+    session:
+      store-type: redis
+      redis:
+        namespace: darts-gateway:sessions
+      cookie:
+        name: JSESSIONID
 
 management:
   endpoint:
