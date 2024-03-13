@@ -224,7 +224,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             return;
         }
 
-        if (!securityProperties.getExternalServiceBasicAuthorisationWhitelist().contains(userName)) {
+        if (!securityProperties.isUserWhitelisted(userName)) {
             throw new AuthenticationFailedException();
         }
     }
