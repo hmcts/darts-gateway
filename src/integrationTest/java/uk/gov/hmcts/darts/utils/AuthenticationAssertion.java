@@ -162,9 +162,9 @@ public class AuthenticationAssertion {
         }
     }
 
-    public void assertFailBasedOnBasicAuthorisationError(SoapTestClient client,
-                                                         GeneralRunnableOperationWithException runnable,
-                                                         String username, String password) throws Exception {
+    public void assertFailsWithServiceAuthorisationFailedError(SoapTestClient client,
+                                                               GeneralRunnableOperationWithException runnable,
+                                                               String username, String password) throws Exception {
 
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile("payloads/soapHeaderServiceContext.xml");
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${USER}", username);
@@ -175,7 +175,7 @@ public class AuthenticationAssertion {
             runnable.run();
             Assertions.fail("Never expect to get here");
         } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, FaultErrorCodes.E_BASIC_AUTHORISATION_FAILED, username);
+            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, username);
         }
     }
 

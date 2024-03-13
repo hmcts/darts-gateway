@@ -11,8 +11,9 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.TestUtils;
+import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-class BasicAuthorisationTest extends IntegrationBase {
+class BasicAuthorisationTest extends ContextRegistryParent {
 
     @MockBean
     private TokenGenerator mockOauthTokenGenerator;
@@ -47,10 +48,18 @@ class BasicAuthorisationTest extends IntegrationBase {
     }
 
     @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testBasicAuthorisationRequestFromNotWhitelistedServiceSucceedsForContextRegistryCall(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            executeHandleRegister(client);
+        }, "not_whitelisted_service", DEFAULT_PASSWORD);
+    }
+
+    @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testBasicAuthorisationRequestFromNotWhitelistedServiceFails(DartsGatewayClient client) throws Exception {
 
-        authenticationStub.assertFailBasedOnBasicAuthorisationError(client, () -> {
+        authenticationStub.assertFailsWithServiceAuthorisationFailedError(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile("payloads/getCases/soapRequest.xml");
 
             client.getCases(getGatewayUri(), soapRequestStr);

@@ -22,7 +22,6 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
-import uk.gov.hmcts.darts.authentication.exception.BasicAuthorisationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
@@ -226,7 +225,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
 
         if (!securityProperties.getExternalServiceBasicAuthorisationWhitelist().contains(userName)) {
-            throw new BasicAuthorisationFailedException(userName);
+            throw new AuthenticationFailedException();
         }
     }
 
