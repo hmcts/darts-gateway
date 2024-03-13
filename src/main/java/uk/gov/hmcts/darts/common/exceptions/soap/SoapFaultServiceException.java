@@ -15,14 +15,9 @@ public class SoapFaultServiceException extends RuntimeException {
     public SoapFaultServiceException() {
     }
 
-    public SoapFaultServiceException(FaultErrorCodes code, String type, Throwable cause, String... args) {
-        super(getMessage(code.name(), args), cause);
-        serviceExceptionType = new ServiceExceptionType(code.name(), type, args);
-    }
-
-    public SoapFaultServiceException(FaultErrorCodes code, String... args) {
-        super(getMessage(code.name(), args));
-        serviceExceptionType = new ServiceExceptionType(code.name(), "", args);
+    public SoapFaultServiceException(FaultErrorCodes code, Throwable cause, String arg) {
+        super(getMessage(code.name(), arg), cause);
+        serviceExceptionType = new ServiceExceptionType(code.name(), cause, arg);
     }
 
     public static String getMessage(String key, String... args) {

@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToXml;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
@@ -45,6 +46,19 @@ public class DailyListApiStub extends DartsApiStub {
             .withQueryParam("unique_id", equalTo("CSDDL000000000576147"))
             .withQueryParam("published_ts", equalTo("2010-02-17T16:16:50Z"))
             .withHeader("xml_document", equalTo(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
+        );
+    }
+
+    public void verifyPostRequestWithoutLineBreaks() throws IOException {
+        String dailyListXmlString = TestUtils.getContentsFromFile(
+            "payloads/events/dailyList-api-request-with-lb-removed.xml");
+        verify(exactly(1), postRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
+            .withQueryParam("source_system", equalTo("CPP"))
+            .withQueryParam("courthouse", equalTo("YORK"))
+            .withQueryParam("hearing_date", equalTo("2024-03-06"))
+            .withQueryParam("unique_id", equalTo("CSDDL1709741907143"))
+            .withQueryParam("published_ts", equalTo("2024-03-06T16:18:25.108Z"))
+            .withHeader("xml_document", equalToXml(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
         );
     }
 

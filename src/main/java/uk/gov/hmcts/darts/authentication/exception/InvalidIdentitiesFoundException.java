@@ -5,8 +5,8 @@ import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 
 @XmlRootElement
-public class NoIdentitiesFoundException extends SoapFaultServiceException {
-    public NoIdentitiesFoundException() {
-        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_NO_IDENTITIES, null, "");
+public class InvalidIdentitiesFoundException extends SoapFaultServiceException {
+    public InvalidIdentitiesFoundException() {
+        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, null, "");
     }
 }

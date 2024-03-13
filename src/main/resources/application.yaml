@@ -1,7 +1,10 @@
 server:
   port: 8070
-
-
+  servlet:
+    session:
+      store-type: redis
+      cookie:
+        name: JSESSIONID
 
 management:
   endpoint:
@@ -25,6 +28,9 @@ spring:
     import: "optional:configtree:/mnt/secrets/darts/"
   application:
     name: Darts Gateway
+  session:
+    redis:
+      namespace: darts-gateway
 
   # To be removed before go-live
   mvc:
@@ -52,6 +58,7 @@ darts-gateway:
       securement-actions: UsernameToken
       securement-username: ${DAR_NOTIFY_EVENT_SECUREMENT_USERNAME:<username>}
       securement-password: ${DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD:<password>}
+      enabled: ${DAR_NOTIFY_ENABLED:true}
   addcase:
     schema: "src/main/resources/schemas/darts-addcase.xsd"
     validate: false
@@ -101,5 +108,8 @@ logging:
             authentication:
               component:
                 SoapRequestInterceptor : trace
+
+            ws:
+              DartsMessageDispatcherServlet : trace
             common:
               client: debug
