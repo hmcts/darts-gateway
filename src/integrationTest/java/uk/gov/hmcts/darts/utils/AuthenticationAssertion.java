@@ -74,6 +74,19 @@ public class AuthenticationAssertion {
         try {
             runnable.run();
         } catch (SoapFaultClientException e) {
+            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_NO_IDENTITIES, "");
+        }
+    }
+
+    public void assertFailBasedOnInvalidIdentities(SoapTestClient client,
+                                              GeneralRunnableOperationWithException runnable) throws Exception {
+        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
+            "payloads/soapHeaderServiceContextInvalidIdentities.xml");
+        client.setHeaderBlock(soapHeaderServiceContextStr);
+
+        try {
+            runnable.run();
+        } catch (SoapFaultClientException e) {
             assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, "");
         }
     }

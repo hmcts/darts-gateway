@@ -1,6 +1,9 @@
 # Override properties in application.yaml for integration tests
 server:
   port: 0
+  servlet:
+    session:
+      store-type: memory
 
 logging:
   level:

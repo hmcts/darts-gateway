@@ -24,6 +24,7 @@ import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.BasicAuthorisationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
+import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
@@ -167,7 +168,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                                     token.get().getTokenString().orElse(""));
                             }
                         } else {
-                            throw new NoIdentitiesFoundException();
+                            throw new InvalidIdentitiesFoundException();
                         }
                     });
                 }

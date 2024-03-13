@@ -95,7 +95,7 @@ The required value of each variable is stored in Azure Key Vault as a Secret.
 | REDIS_CONNECTION_STRING             | redis-connection-string (local Redis uri by default)                                                           |
 | MAX_FILE_UPLOAD_SIZE_MEGABYTES      | MaxFileUploadSizeInMegabytes (350mb by default)                                                                |
 | AAD_B2C_ROPC_CLIENT_ID_KEY          | AzureAdB2CFuncTestROPCClientId                                                                                 |
-| AAD_B2C_CLIENT_ID_KEY               | AzureAdB2CClientId.                                                                                            |
+| AAD_B2C_CLIENT_ID_KEY               | AzureAdB2CClientId                                                                                             |
 | DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD | darts-gateway-DarNotifyEventSecurementPassword                                                                 |
 | DAR_NOTIFY_EVENT_SECUREMENT_USERNAME | darts-gateway-DarNotifyEventSecurementUsername                                                                 |
 | DARTS_API_URL                       | N/A (local darts uri by default)                                                                               |
