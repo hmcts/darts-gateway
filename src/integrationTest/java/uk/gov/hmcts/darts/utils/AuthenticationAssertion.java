@@ -122,7 +122,7 @@ public class AuthenticationAssertion {
         Assertions.assertEquals(type.getMessageId(), exceptionHolder.getMessageId());
         Assertions.assertEquals(faultClientException.getMessage(), exceptionHolder.getMessage());
         Assertions.assertEquals(Exception.class.getCanonicalName(), exceptionHolder.getGenericType());
-        Assertions.assertEquals(ServiceExceptionType.class.getCanonicalName(), exceptionHolder.getExceptionClass());
+        Assertions.assertEquals("com.emc.documentum.fs.rt.ServiceContextLookupException", exceptionHolder.getExceptionClass());
 
         // assert the three core attributes
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,

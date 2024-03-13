@@ -55,7 +55,7 @@ public class ServiceExceptionType extends ServiceException {
 
         // add one exception
         DfsExceptionHolder holder = new DfsExceptionHolder();
-        holder.setExceptionClass(ServiceExceptionType.class.getCanonicalName());
+        holder.setExceptionClass("com.emc.documentum.fs.rt.ServiceContextLookupException");
         holder.setGenericType(Exception.class.getCanonicalName());
         holder.setMessage(getMessage());
         holder.setMessageId(getMessageId());
