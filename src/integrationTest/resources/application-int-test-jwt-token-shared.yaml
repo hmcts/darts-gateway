@@ -25,3 +25,5 @@ darts-gateway:
     validate: true
   events:
     validate: true
+  security:
+    external-service-basic-authorisation-whitelist: some-user, some-user2

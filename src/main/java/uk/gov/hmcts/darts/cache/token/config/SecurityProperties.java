@@ -28,6 +28,10 @@ public interface SecurityProperties {
 
     List<ExternalUserToInternalUserMappingImpl> getUserExternalInternalMappings();
 
+    List<String> getExternalServiceBasicAuthorisationWhitelist();
+
+    boolean isUserWhitelisted(String userName);
+
     default JWKSource<SecurityContext> getJwkSource() throws MalformedURLException {
         URL jwksUrl = new URL(getJwkSetUri());
         return JWKSourceBuilder.create(jwksUrl).build();

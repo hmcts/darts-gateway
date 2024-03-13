@@ -69,6 +69,7 @@ services:
       - CP_EXTERNAL_USER_NAME
       - CP_EXTERNAL_PASSWORD
       - CP_INTERNAL_PASSWORD
+      - EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
     ports:
       - "8070:8070"
     networks:

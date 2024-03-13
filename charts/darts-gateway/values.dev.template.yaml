@@ -39,5 +39,7 @@ java:
           alias: CP_EXTERNAL_PASSWORD
         - name: CPInternalPassword
           alias: CP_INTERNAL_PASSWORD
+        - name: ExternalServiceBasicAuthorisationWhitelist
+          alias: EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
   environment:
     DARTS_API_URL: https://darts-api.staging.platform.hmcts.net
