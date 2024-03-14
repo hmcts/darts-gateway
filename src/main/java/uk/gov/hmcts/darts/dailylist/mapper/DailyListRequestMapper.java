@@ -127,6 +127,9 @@ public interface DailyListRequestMapper {
         return CollectionUtils.emptyIfNull(defendants.getDefendant()).stream().map(this::map).toList();
     }
 
+    @Mappings({
+        @Mapping(source = "URN", target = "urn")
+    })
     Defendant map(DefendantStructure defendant);
 
     default List<Charge> map(DefendantStructure.Charges charges) {

@@ -93,7 +93,8 @@
                       "indictment_count_number": 0,
                       "offence_statement": "tba"
                     }
-                  ]
+                  ],
+                  "urn": "C1_589_5"
                 }
               ]
             },
@@ -142,6 +143,7 @@
                       "is_masked": true
                     }
                   ],
+                  "urn": "11BD041180_4",
                   "charges": [
                     {
                       "indictment_count_number": 0,
@@ -241,7 +243,8 @@
                       "indictment_count_number": 0,
                       "offence_statement": "tba"
                     }
-                  ]
+                  ],
+                  "urn": "BD417304"
                 }
               ]
             },

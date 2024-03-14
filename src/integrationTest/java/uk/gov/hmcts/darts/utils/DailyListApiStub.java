@@ -72,6 +72,15 @@ public class DailyListApiStub extends DartsApiStub {
         );
     }
 
+    public void verifyCppPatchRequest() throws IOException {
+        String dailyListJsonString = TestUtils.getContentsFromFile("payloads/events/dailyList-CPP-api-request.json");
+
+        verify(exactly(1), patchRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
+            .withQueryParam("dal_id", equalTo("1"))
+            .withHeader("json_string", equalTo(dailyListJsonString.trim()))
+        );
+    }
+
     public void returnsFailureWhenPostingDailyList() throws JsonProcessingException, IOException {
         returnsFailureWhenPostingDailyList(true);
     }
