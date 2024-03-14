@@ -38,12 +38,9 @@ class EventWebServiceTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-event.xml") Resource validEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validEventResponse;
-
     private @Value("classpath:payloads/events/invalid-soap-message.xml") Resource invalidSoapMessage;
-
     private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
-
     private @Value("classpath:payloads/events/valid-dailyList-with-line-breaks.xml") Resource dailyListWithLineBreak;
 
     private static final DailyListAPIProblemResponseMapper
@@ -359,5 +356,27 @@ class EventWebServiceTest extends IntegrationBase {
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void cppDailyListMapsUrnToDefendantInJson(
+        DartsGatewayClient client
+    ) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            dailyListApiStub.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                dailyListWithLineBreak.getContentAsString(Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validDlEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+
+        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+
+        dailyListApiStub.verifyCppPatchRequest();
     }
 }
