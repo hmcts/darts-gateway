@@ -43,7 +43,6 @@ public class ServiceExceptionType extends ServiceException {
         DfsAttributeHolder exceptionTypeAttribute = new DfsAttributeHolder();
         exceptionTypeAttribute.setName(ATTRIBUTE_EXCEPTION_TYPE);
         exceptionTypeAttribute.setType(String.class.getName());
-        exceptionTypeAttribute.setValue(DOCUMENTUM_SERVICE_CONTEXT_EXCEPTION_NAME);
 
         DfsAttributeHolder messageArgsAttribute = new DfsAttributeHolder();
         messageArgsAttribute.setName(ATTRIBUTE_MESSAGE_ARGS);
