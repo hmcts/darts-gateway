@@ -86,7 +86,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testRoutesRegisterWithAuthenticatiooTokenFailure(ContextRegistryClient client) throws Exception {
+    void testRoutesRegisterWithAuthenticationTokenFailure(ContextRegistryClient client) throws Exception {
         authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
             executeHandleRegister(client);
         });

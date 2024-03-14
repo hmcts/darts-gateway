@@ -127,8 +127,6 @@ public class AuthenticationAssertion {
         // assert the three core attributes
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
                              String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute());
-        assertAttributeValue(ServiceExceptionType.ATTRIBUTE_EXCEPTION_TYPE,
-                             String.class.getCanonicalName(), ServiceExceptionType.class.getCanonicalName(), exceptionHolder.getAttribute());
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ARGS,
                              String.class.getCanonicalName(), type.getMessageArgs().get(0).toString(), exceptionHolder.getAttribute());
     }

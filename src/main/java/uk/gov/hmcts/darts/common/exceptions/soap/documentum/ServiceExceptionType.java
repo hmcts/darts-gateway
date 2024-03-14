@@ -20,6 +20,8 @@ public class ServiceExceptionType extends ServiceException {
     public static final String ATTRIBUTE_MESSAGE_ARGS = "messageArgs";
     public static final String ATTRIBUTE_MESSAGE_ID = "messageId";
 
+    private static final String DOCUMENTUM_SERVICE_CONTEXT_EXCEPTION_NAME = "com.emc.documentum.fs.rt.ServiceContextLookupException";
+
     public ServiceExceptionType() {
     }
 
@@ -41,7 +43,6 @@ public class ServiceExceptionType extends ServiceException {
         DfsAttributeHolder exceptionTypeAttribute = new DfsAttributeHolder();
         exceptionTypeAttribute.setName(ATTRIBUTE_EXCEPTION_TYPE);
         exceptionTypeAttribute.setType(String.class.getName());
-        exceptionTypeAttribute.setValue(ServiceExceptionType.class.getCanonicalName());
 
         DfsAttributeHolder messageArgsAttribute = new DfsAttributeHolder();
         messageArgsAttribute.setName(ATTRIBUTE_MESSAGE_ARGS);
@@ -55,7 +56,7 @@ public class ServiceExceptionType extends ServiceException {
 
         // add one exception
         DfsExceptionHolder holder = new DfsExceptionHolder();
-        holder.setExceptionClass("com.emc.documentum.fs.rt.ServiceContextLookupException");
+        holder.setExceptionClass(DOCUMENTUM_SERVICE_CONTEXT_EXCEPTION_NAME);
         holder.setGenericType(Exception.class.getCanonicalName());
         holder.setMessage(getMessage());
         holder.setMessageId(getMessageId());
