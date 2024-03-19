@@ -78,14 +78,14 @@ darts-gateway:
     connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
     ssl-enabled: ${REDIS_SSL_ENABLED:true}
   security:
-    base-uri: https://hmctsstgextid.b2clogin.com
-    auth-uri: ${darts-gateway.security.base-uri}/hmctsstgextid.onmicrosoft.com
-    token-uri: ${darts-gateway.security.auth-uri}/${darts-gateway.security.signin-policy}/oauth2/v2.0/token
-    scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Darts.ExternalService
+    base-uri: ${ACTIVE_DIRECTORY_B2C_BASE_URI:#{null}}
+    auth-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:#{null}}
+    token-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:#{null}}/${darts-gateway.security.signin-policy}/oauth2/v2.0/token
+    scope: ${ACTIVE_DIRECTORY_B2C_BASE_URI:#{null}}/${AAD_B2C_CLIENT_ID_KEY:00000000-0000-0000-0000-000000000000}/Darts.ExternalService
     client-id: ${AAD_B2C_CLIENT_ID_KEY:#{null}}
-    jwk-set-uri: ${darts-gateway.security.auth-uri}/${darts-gateway.security.signin-policy}/discovery/v2.0/keys
+    jwk-set-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com}/${darts-gateway.security.signin-policy}/discovery/v2.0/keys
     sign-in-policy: B2C_1_ropc_darts_signin
-    issuer-uri: ${darts-gateway.security.base-uri}/${AAD_B2C_TENANT_ID_KEY:00000000-0000-0000-0000-000000000000}/v2.0/
+    issuer-uri: ${ACTIVE_DIRECTORY_B2C_BASE_URI:#{null}}/${AAD_B2C_TENANT_ID_KEY:00000000-0000-0000-0000-000000000000}/v2.0/
     claims: emails
     user-external-internal-mappings-enabled: true
     user-external-internal-mappings:
