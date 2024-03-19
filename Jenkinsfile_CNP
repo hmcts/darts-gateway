@@ -6,7 +6,7 @@ def type = "java"
 def product = "darts"
 def component = "gateway"
 
-def branchesToSync = ['demo' ,'perftest']
+def branchesToSync = ['demo' ,'perftest','ithc']
 
 def secrets = [
   'darts-${env}': [

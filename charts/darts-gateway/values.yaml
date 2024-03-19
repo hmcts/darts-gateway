@@ -44,3 +44,5 @@ java:
           alias: EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
   environment:
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net
+    ACTIVE_DIRECTORY_B2C_BASE_URI: https://hmctsstgextid.b2clogin.com
+    ACTIVE_DIRECTORY_B2C_AUTH_URI: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com
