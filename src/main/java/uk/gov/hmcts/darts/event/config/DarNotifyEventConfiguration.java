@@ -59,13 +59,10 @@ public class DarNotifyEventConfiguration {
         return darNotifyEventConfigurationProperties.getSoapAction().toExternalForm();
     }
 
-
     @Bean
     public LogApi logApi() {
         return new LogApiImpl(
             new DarNotificationLoggerServiceImpl());
     }
-
-
 
 }

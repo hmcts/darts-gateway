@@ -2,41 +2,42 @@ package uk.gov.hmcts.darts.event.enums;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.MALFORMED;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.NO_DESTINATION_DATA;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.NO_MATCHING_EVENT;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.OK;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.OTHER_ERROR;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.WRONG_DESTINATION;
+import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.findByResult;
 
 class DarNotifyEventResultTest {
 
     @Test
-    void shouldReturnDarNotifyEventResultWhenResultCodeValid() {
-        DarNotifyEventResult darNotifyEventResult = DarNotifyEventResult.OK;
-        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(0));
-        assertEquals("OK", darNotifyEventResult.getMessage());
+    void returnsCorrectEnum() {
+        assertThat(findByResult(0))
+            .isEqualTo(OK)
+            .hasFieldOrPropertyWithValue("message", "OK");
 
-        darNotifyEventResult = DarNotifyEventResult.MALFORMED;
-        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(1));
-        assertEquals("XML malformed", darNotifyEventResult.getMessage());
+        assertThat(findByResult(1))
+            .isEqualTo(MALFORMED)
+            .hasFieldOrPropertyWithValue("message", "XML malformed");
 
-        darNotifyEventResult = DarNotifyEventResult.NO_DESTINATION_DATA;
-        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(2));
-        assertEquals("No destination data", darNotifyEventResult.getMessage());
+        assertThat(findByResult(2))
+            .isEqualTo(NO_DESTINATION_DATA)
+            .hasFieldOrPropertyWithValue("message", "No destination data");
 
-        darNotifyEventResult = DarNotifyEventResult.WRONG_DESTINATION;
-        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(3));
-        assertEquals("Wrong destination", darNotifyEventResult.getMessage());
+        assertThat(findByResult(3))
+            .isEqualTo(WRONG_DESTINATION)
+            .hasFieldOrPropertyWithValue("message", "Wrong destination");
 
-        darNotifyEventResult = DarNotifyEventResult.NO_MATCHING_EVENT;
-        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(4));
-        assertEquals("No matching event", darNotifyEventResult.getMessage());
+        assertThat(findByResult(4))
+            .isEqualTo(NO_MATCHING_EVENT)
+            .hasFieldOrPropertyWithValue("message", "No matching event");
 
-        darNotifyEventResult = DarNotifyEventResult.OTHER_ERROR;
-        assertEquals(darNotifyEventResult, DarNotifyEventResult.valueOfResult(5));
-        assertEquals("Other error", darNotifyEventResult.getMessage());
-    }
-
-    @Test
-    void shouldReturnNullWhenResultCodeUnknown() {
-        assertNull(DarNotifyEventResult.valueOfResult(6));
+        assertThat(findByResult(5))
+            .isEqualTo(OTHER_ERROR)
+            .hasFieldOrPropertyWithValue("message", "Other error");
     }
 
 }

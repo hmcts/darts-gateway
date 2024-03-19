@@ -1,14 +1,12 @@
 package uk.gov.hmcts.darts.event.enums;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static java.util.Arrays.stream;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@RequiredArgsConstructor
 public enum DarNotifyEventResult {
 
     OK(0, "OK"),
@@ -18,19 +16,13 @@ public enum DarNotifyEventResult {
     NO_MATCHING_EVENT(4, "No matching event"),
     OTHER_ERROR(5, "Other error");
 
-    private static final Map<Integer, DarNotifyEventResult> BY_RESULT = new ConcurrentHashMap<>();
-
-    static {
-        for (DarNotifyEventResult e : values()) {
-            BY_RESULT.put(e.result, e);
-        }
-    }
-
     private final int result;
     private final String message;
 
-    public static DarNotifyEventResult valueOfResult(int result) {
-        return BY_RESULT.get(result);
+    public static DarNotifyEventResult findByResult(int result) {
+        return stream(DarNotifyEventResult.values())
+            .filter(r -> r.getResult() == result)
+            .findFirst().orElse(null);
     }
 
 }

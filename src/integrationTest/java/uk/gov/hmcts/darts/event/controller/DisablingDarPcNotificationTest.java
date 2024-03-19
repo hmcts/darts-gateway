@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.darts.utils.DarPcStub;
 
@@ -17,7 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles({"int-test"})
 @AutoConfigureMockMvc
-class DarNotifyControllerTest {
+@TestPropertySource(properties = "darts-gateway.events.dar-notify-event.enabled=false")
+class DisablingDarPcNotificationTest {
 
     private static final String VALID_NOTIFICATION_JSON = """
         {
@@ -31,28 +33,6 @@ class DarNotifyControllerTest {
           ]
         }
         """;
-    private static final String EXPECTED_DAR_PC_NOTIFICATION = """
-        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-          <SOAP-ENV:Header>
-            <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" SOAP-ENV:mustUnderstand="1">
-              ${xmlunit.ignore}
-            </wsse:Security>
-          </SOAP-ENV:Header>
-          <SOAP-ENV:Body>
-            <ns3:DARNotifyEvent xmlns:ns3="http://www.VIQSoultions.com">
-              <XMLEventDocument>
-                <event D="19" H="15" M="6" MIN="52" S="40" Y="2023" type="3">
-                  <courthouse>Test Court</courthouse>
-                  <courtroom>1</courtroom>
-                  <case_numbers>
-                    <case_number>A123456</case_number>
-                  </case_numbers>
-                </event>
-              </XMLEventDocument>
-            </ns3:DARNotifyEvent>
-          </SOAP-ENV:Body>
-        </SOAP-ENV:Envelope>
-        """;
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,15 +42,13 @@ class DarNotifyControllerTest {
 
 
     @Test
-    void shouldSendDarNotifyEventSoapAction() throws Exception {
-        darPcStub.respondWithSuccessResponse();
-
+    void shouldNotSendDarNotifyEventWhenNotificationsDisabled() throws Exception {
         mockMvc.perform(post("/events/dar-notify")
                             .contentType(APPLICATION_JSON_VALUE)
                             .content(VALID_NOTIFICATION_JSON))
             .andExpect(status().is2xxSuccessful());
 
-        darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+        darPcStub.verifyNoNotificationReceived();
     }
 
 }
