@@ -4,31 +4,34 @@
 
 * [SoapUI](https://www.soapui.org/downloads/soapui/) can be used for "Try it out" functionality
   using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
-following properties within SoapUI
+  following properties within SoapUI
 
-  *  username - The user to authenticate with
-  *  password - The password to authenticate with
-  *  token - The token (either jwt or documentum) to authenticate with
+    * username - The user to authenticate with
+    * password - The password to authenticate with
+    * token - The token (either jwt or documentum) to authenticate with
 
-* **IMPORTANT! Do not add the properties as project properties as they will be saved back to the committed xml files. Instead set them as global properties. See https://www.soapui.org/docs/soap-and-wsdl/**
+* **IMPORTANT! Do not add the properties as project properties as they will be saved back to the committed xml files. Instead set them as global properties.
+  See https://www.soapui.org/docs/soap-and-wsdl/**
 
 ## DARTSService SoapUI
 
 * To View the application SOAP Web Services:
-  * http://localhost:8070/service/darts/DARTSService?wsdl
+    * http://localhost:8070/service/darts/DARTSService?wsdl
 * Import SOAP Project [README-DARTSService](README-DARTSService-soapui-project.xml) with
   initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
-* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g. addCase will use the ServiceContext Soap Header with some custom project
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g.
+  addCase will use the ServiceContext Soap Header with some custom project
   properties: `userName="${#Project#userName}" password="${#Project#password}"`
 * When testing the add audio endpoint make sure to change the properties to support MTOM and Multipart. Additionally, attach an mp2 file
 
 ## ContextRegistryService SoapUI
 
 * To View the application SOAP Web Services:
-  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
+    * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
 * Import SOAP Project [README-ContextRegistryService](README-ContextRegistryService-soapui-project.xml) with
   initial [ContextRegistryService WSDL](context/src/main/resources/ws/ContextRegistryService.wsdl).
-* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g. register will use the ServiceContext Soap Header with some custom project
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g.
+  register will use the ServiceContext Soap Header with some custom project
   properties: `userName="${#Project#userName}" password="${#Project#password}"`
 * Requests for lookup / unregister operations use the JWT token property provided in the Soap Body, so you will need to remember to update it using the register
   response: `<token>${#Project#token}</token>`
@@ -39,22 +42,22 @@ following properties within SoapUI
   using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
   following properties within Postman NOTE: This excludes the add audio test. SoapUi must be used in the case of addaudio
 
-  *  userToUse - The user to authenticate with
-  *  passwordToUse - The password to authenticate with
-  *  tokenToUse - The token (jwt by default) to authenticate with
-  *  gatewayurl - The gateway url to use
+    * userToUse - The user to authenticate with
+    * passwordToUse - The password to authenticate with
+    * tokenToUse - The token (jwt by default) to authenticate with
+    * gatewayurl - The gateway url to use
 
 ## DARTSService Postman
 
 * To View the application SOAP Web Services:
-  * http://localhost:8070/service/darts/DARTSService?wsdl
-* Import  Project [README-DARTSService](README-DARTSService-postman-project.json)
+    * http://localhost:8070/service/darts/DARTSService?wsdl
+* Import Project [README-DARTSService](README-DARTSService-postman-project.json)
 * Sample requests for all operations have been created (using both user name and password authentication as well as token authentication)`
 
 ## ContextRegistryService Postman
 
 * To View the application SOAP Web Services:
-  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
+    * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
 * Import Postman Project [README-ContextRegistryService](README-ContextRegistryService-postman-project.json)
 * Sample requests for all operations have been created (using both user name and password authentication as well as token authentication).
 
@@ -89,27 +92,27 @@ maven repository. To do this manually then follow these steps:-
 To run the service locally, you must set the following environment variables on your machine.
 The required value of each variable is stored in Azure Key Vault as a Secret.
 
-| Environment Variable Name           | Corresponding Azure Key Vault Secret Name                                                                      |
-|-------------------------------------|----------------------------------------------------------------------------------------------------------------|
-| AAD_B2C_TENANT_ID_KEY               | AzureAdB2CTenantId                                                                                             |
-| REDIS_CONNECTION_STRING             | redis-connection-string (local Redis uri by default)                                                           |
-| MAX_FILE_UPLOAD_SIZE_MEGABYTES      | MaxFileUploadSizeInMegabytes (350mb by default)                                                                |
-| AAD_B2C_ROPC_CLIENT_ID_KEY          | AzureAdB2CFuncTestROPCClientId                                                                                 |
-| AAD_B2C_CLIENT_ID_KEY               | AzureAdB2CClientId                                                                                             |
-| DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD | darts-gateway-DarNotifyEventSecurementPassword                                                                 |
-| DAR_NOTIFY_EVENT_SECUREMENT_USERNAME | darts-gateway-DarNotifyEventSecurementUsername                                                                 |
-| DARTS_API_URL                       | N/A (local darts uri by default)                                                                               |
-| REDIS_SSL_ENABLED                   | N/A (true by default)                                                                                          |
-| VIQ_EXTERNAL_USER_NAME              | The VIQ username                                                                                               |
-| VIQ_EXTERNAL_PASSWORD               | The VIQ external facing password i.e. used by the client                                                       |
-| VIQ_INTERNAL_PASSWORD               | The VIQ internal facing password i.e. used by the gateway to talk to the Idp for token acquisition             |
-| XHIBIT_EXTERNAL_USER_NAME           | The XHIBIT username                                                                                            |
-| XHIBIT_EXTERNAL_PASSWORD            | The XHIBIT external facing password i.e. used by the client                                                    |
-| XHIBIT_INTERNAL_PASSWORD            | The XHIBIT internal facing password i.e. used by the gateway to talk to the Idp for token acquisition          |
-| CP_EXTERNAL_USER_NAME               | The common platform username                                                                                   |
-| CP_EXTERNAL_PASSWORD                | The common platform facing password i.e. used by the client                                                    |
-| CP_INTERNAL_PASSWORD                | The common platform facing password i.e. used by the gateway to talk to the Idp for token acquisition          |
-| EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST   | comma separated list of external services ids which are allowed to call the DARTS API with basic authorisation |
+| Environment Variable Name                      | Corresponding Azure Key Vault Secret Name                                                                      |
+|------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| AAD_B2C_TENANT_ID                              | AzureAdB2CTenantId                                                                                             |
+| REDIS_CONNECTION_STRING                        | redis-connection-string (local Redis uri by default)                                                           |
+| MAX_FILE_UPLOAD_SIZE_MEGABYTES                 | MaxFileUploadSizeInMegabytes (350mb by default)                                                                |
+| AAD_B2C_ROPC_CLIENT_ID                         | AzureAdB2CFuncTestROPCClientId                                                                                 |
+| AAD_B2C_CLIENT_ID                              | AzureAdB2CClientId                                                                                             |
+| DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD           | darts-gateway-DarNotifyEventSecurementPassword                                                                 |
+| DAR_NOTIFY_EVENT_SECUREMENT_USERNAME           | darts-gateway-DarNotifyEventSecurementUsername                                                                 |
+| DARTS_API_URL                                  | N/A (local darts uri by default)                                                                               |
+| REDIS_SSL_ENABLED                              | N/A (true by default)                                                                                          |
+| VIQ_EXTERNAL_USER_NAME                         | The VIQ username                                                                                               |
+| VIQ_EXTERNAL_PASSWORD                          | The VIQ external facing password i.e. used by the client                                                       |
+| VIQ_INTERNAL_PASSWORD                          | The VIQ internal facing password i.e. used by the gateway to talk to the Idp for token acquisition             |
+| XHIBIT_EXTERNAL_USER_NAME                      | The XHIBIT username                                                                                            |
+| XHIBIT_EXTERNAL_PASSWORD                       | The XHIBIT external facing password i.e. used by the client                                                    |
+| XHIBIT_INTERNAL_PASSWORD                       | The XHIBIT internal facing password i.e. used by the gateway to talk to the Idp for token acquisition          |
+| CP_EXTERNAL_USER_NAME                          | The common platform username                                                                                   |
+| CP_EXTERNAL_PASSWORD                           | The common platform facing password i.e. used by the client                                                    |
+| CP_INTERNAL_PASSWORD                           | The common platform facing password i.e. used by the gateway to talk to the Idp for token acquisition          |
+| EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST | comma separated list of external services ids which are allowed to call the DARTS API with basic authorisation |
 
 To obtain the secret value, you may retrieve the keys from the Azure Vault by running the `az keyvault secret show`
 command in the terminal. E.g. to obtain the value for `GOVUK_NOTIFY_API_KEY`, you should run:
@@ -131,7 +134,8 @@ in the terminal, replacing `<<env var name>>` and `<<secret value>>` as necessar
 launchctl setenv <<env var name>> <<secret value>>
 ```
 
-> Note: there is also a convenient script for exporting all these secret values from the key-vault, ensure you have the Azure CLI, `az`, installed and have run `az login`.
+> Note: there is also a convenient script for exporting all these secret values from the key-vault, ensure you have the Azure CLI, `az`, installed and have
+> run `az login`.
 > ```bash
 > source bin/secrets-stg.sh
 > ```
@@ -142,15 +146,15 @@ to make the changes permanent, make a `.zshrc` file in your users folder and pop
 
 ```
 export GOVUK_NOTIFY_API_KEY=
-export AAD_B2C_TENANT_ID_KEY=
+export AAD_B2C_TENANT_ID=
 export REDIS_CONNECTION_STRING=
 export MAX_FILE_UPLOAD_SIZE_MEGABYTES=
-export AAD_B2C_ROPC_CLIENT_ID_KEY=
+export AAD_B2C_ROPC_CLIENT_ID=
 export DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD=
 export DAR_NOTIFY_EVENT_SECUREMENT_USERNAME=
 export DARTS_API_URL=
 export REDIS_SSL_ENABLED=
-export AAD_B2C_CLIENT_ID_KEY=
+export AAD_B2C_CLIENT_ID=
 
 ```
 
@@ -258,7 +262,6 @@ Here are some other functionalities it provides:
   the number of concurrent calls to any given dependency
 * [Request caching](https://github.com/Netflix/Hystrix/wiki/How-it-Works#request-caching), allowing
   different code paths to execute Hystrix Commands without worrying about duplicating work
-
 
 ### Troubleshooting
 

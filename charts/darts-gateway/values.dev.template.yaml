@@ -10,9 +10,9 @@ java:
         - name: darts-gateway-DarNotifyEventSecurementPassword
           alias: DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD
         - name: AzureAdB2CFuncTestROPCClientId
-          alias: AAD_B2C_ROPC_CLIENT_ID_KEY
+          alias: AAD_B2C_ROPC_CLIENT_ID
         - name: AzureAdB2CClientId
-          alias: AAD_B2C_CLIENT_ID_KEY
+          alias: AAD_B2C_CLIENT_ID
         - name: app-insights-connection-string
           alias: app-insights-connection-string
         - name: MaxFileUploadSizeInMegabytes
@@ -20,7 +20,7 @@ java:
         - name: redis-connection-string
           alias: REDIS_CONNECTION_STRING
         - name: AzureAdB2CTenantId
-          alias: AAD_B2C_TENANT_ID_KEY
+          alias: AAD_B2C_TENANT_ID
         - name: ViQExternalUserName
           alias: VIQ_EXTERNAL_USER_NAME
         - name: ViQExternalPassword

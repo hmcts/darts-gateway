@@ -13,12 +13,12 @@ services:
       - DARTS_API_DB_PASSWORD=darts
       - DARTS_API_DB_SCHEMA=darts
       - SPRING_PROFILES_ACTIVE=local
-      - AAD_B2C_CLIENT_ID_KEY
-      - AAD_B2C_CLIENT_SECRET_KEY
-      - AAD_B2C_TENANT_ID_KEY
+      - AAD_B2C_CLIENT_ID
+      - AAD_B2C_CLIENT_SECRET
+      - AAD_B2C_TENANT_ID
       - GOVUK_NOTIFY_API_KEY
-      - AAD_B2C_ROPC_CLIENT_ID_KEY
-      - AAD_B2C_ROPC_CLIENT_SECRET_KEY
+      - AAD_B2C_ROPC_CLIENT_ID
+      - AAD_B2C_ROPC_CLIENT_SECRET
       - AZURE_STORAGE_CONNECTION_STRING
       - AAD_TENANT_ID
       - AAD_CLIENT_ID
@@ -54,8 +54,8 @@ services:
     container_name: darts-gateway
     image: darts-gateway:master
     environment:
-      - AAD_B2C_ROPC_CLIENT_ID_KEY
-      - AAD_B2C_CLIENT_ID_KEY
+      - AAD_B2C_ROPC_CLIENT_ID
+      - AAD_B2C_CLIENT_ID
       - DARTS_API_URL=http://darts-api:4550
       - AAD_TENANT_ID
       - REDIS_CONNECTION_STRING
@@ -91,7 +91,7 @@ services:
       - POSTGRES_USER=darts
       - POSTGRES_PASSWORD=darts
       - POSTGRES_DB=darts
-    command: ["postgres", "-c", "log_statement=all"]
+    command: [ "postgres", "-c", "log_statement=all" ]
     ports:
       - "5432:5432"
     volumes:
