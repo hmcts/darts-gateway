@@ -4,8 +4,8 @@ services:
   darts-gateway:
     container_name: darts-gateway
     environment:
-      - AAD_B2C_ROPC_CLIENT_ID_KEY
-      - AAD_B2C_CLIENT_ID_KEY
+      - AAD_B2C_ROPC_CLIENT_ID
+      - AAD_B2C_CLIENT_ID
       - DARTS_API_URL
       - AAD_TENANT_ID
       - REDIS_CONNECTION_STRING
