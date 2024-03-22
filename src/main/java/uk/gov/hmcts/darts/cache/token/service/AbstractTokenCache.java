@@ -210,7 +210,8 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return work.executeForValueReturn(t -> {
             Optional<CacheValue> val = getValue(holder);
 
-            if (val.isPresent() && !holder.valid()) {
+            boolean tokenValid = holder.valid();
+            if (val.isPresent() && !tokenValid) {
                 evict(holder);
                 val = Optional.empty();
                 log.debug("Token manually removed as it is no longer valid");

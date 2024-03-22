@@ -57,10 +57,10 @@ class EventWebServiceTest extends IntegrationBase {
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("test");
 
-        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
+        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD))
             .thenReturn("test");
     }
 
@@ -68,7 +68,7 @@ class EventWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesAddDocumentRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
@@ -83,9 +83,9 @@ class EventWebServiceTest extends IntegrationBase {
                 validEventResponse.getContentAsString(Charset.defaultCharset()),
                 AddDocumentResponse.class
             ).getValue());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -108,7 +108,7 @@ class EventWebServiceTest extends IntegrationBase {
 
         });
 
-        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -129,7 +129,7 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
         });
 
-        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -150,11 +150,11 @@ class EventWebServiceTest extends IntegrationBase {
                 validEventResponse.getContentAsString(Charset.defaultCharset()),
                 AddDocumentResponse.class
             ).getValue());
-        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
         theEventApi.verifyPostRequest();
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -167,7 +167,7 @@ class EventWebServiceTest extends IntegrationBase {
         when(tokenValidator.test(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
 
         authenticationStub.assertWithTokenHeader(client, () -> {
@@ -186,12 +186,12 @@ class EventWebServiceTest extends IntegrationBase {
                 validEventResponse.getContentAsString(Charset.defaultCharset()),
                 AddDocumentResponse.class
             ).getValue());
-        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
                             .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
 
-        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -213,12 +213,12 @@ class EventWebServiceTest extends IntegrationBase {
                 validEventResponse.getContentAsString(Charset.defaultCharset()),
                 AddDocumentResponse.class
             ).getValue());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         theEventApi.verifyPostRequest();
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -235,9 +235,9 @@ class EventWebServiceTest extends IntegrationBase {
                 client.send(getGatewayUri(), invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
             });
             theEventApi.verifyDoesntReceiveEvent();
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -260,12 +260,12 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
 
             dailyListApiStub.verifyPostRequest();
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
         dailyListApiStub.verifyPostRequest();
         dailyListApiStub.verifyPatchRequest();
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -281,9 +281,9 @@ class EventWebServiceTest extends IntegrationBase {
             org.assertj.core.api.Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
                 client.addDocument(getGatewayUri(), validDlEventResponse.getContentAsString(Charset.defaultCharset()));
             });
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -306,9 +306,9 @@ class EventWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil.assertErrorResponse(op.getMessage().getCode(), op.getMessage().getMessage(), response.getResponse().getValue().getReturn());
 
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -325,9 +325,9 @@ class EventWebServiceTest extends IntegrationBase {
             );
 
             SoapAssertionUtil.assertErrorResponse(String.valueOf(500), response.getResponse().getValue().getReturn());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -350,11 +350,11 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
 
             dailyListApiStub.verifyPostRequestWithoutLineBreaks();
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
         dailyListApiStub.verifyPostRequestWithoutLineBreaks();
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -375,7 +375,7 @@ class EventWebServiceTest extends IntegrationBase {
                 AddDocumentResponse.class
             ).getValue());
 
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
 
         dailyListApiStub.verifyCppPatchRequest();
     }

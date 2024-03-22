@@ -45,7 +45,7 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD)).thenReturn("test");
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD)).thenReturn("test");
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
@@ -92,8 +92,8 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
 
             client.getCases(getGatewayUri(), soapRequestStr);
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));

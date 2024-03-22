@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.cache.token.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
@@ -51,7 +52,7 @@ public class Token {
             return Optional.empty();
         }
 
-        return Optional.of(tokenString);
+        return Optional.ofNullable(tokenString);
     }
 
     @EqualsAndHashCode.Include
@@ -67,10 +68,10 @@ public class Token {
      * @param applyExpiryOffset Take into account the expiry of the token
      */
     public boolean valid(TokenExpiryEnum applyExpiryOffset) {
-        if (validate != null && !tokenString.isEmpty()) {
+        if (validate != null && StringUtils.isNotEmpty(tokenString)) {
             return validate.test(applyExpiryOffset, tokenString);
         }
-        return !tokenString.isEmpty();
+        return StringUtils.isNotEmpty(tokenString);
     }
 
     public boolean valid() {
