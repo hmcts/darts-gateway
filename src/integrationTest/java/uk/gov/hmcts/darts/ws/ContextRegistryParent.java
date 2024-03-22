@@ -43,10 +43,23 @@ public class ContextRegistryParent extends IntegrationBase {
 
     String executeHandleRegister(ContextRegistryClient client) throws Exception {
         String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/register/soapRequest.xml");
+            "payloads/ctxtRegistry/register/soapRequest.xml");
 
         soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
         soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
+
+        SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+        Assertions.assertNotNull(response.getResponse().getValue());
+
+        return response.getResponse().getValue().getReturn();
+    }
+
+    String executeHandleRegisterInvalidIdentity(ContextRegistryClient client) throws Exception {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "payloads/ctxtRegistry/register/soapRequest.xml");
+
+        soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", "");
 
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue());
