@@ -110,14 +110,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         downstreamTokenisable);
-                }  else {
+                } else {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         specifiedtoken);
                 }
             }
         }
 
-        if  (tokenToReturn.isEmpty()) {
+        if (tokenToReturn.isEmpty()) {
             throw new DocumentumUnknownTokenSoapException("");
         }
 
@@ -126,7 +126,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private boolean authenticateUsernameAndPassword(SaajSoapMessage message) throws AuthenticationFailedException {
         boolean headerSecurityIsValid = authenticateUsernameAndPasswordFromHeader(message);
-        if (headerSecurityIsValid){
+        if (headerSecurityIsValid) {
             return true;
         }
         Node bodyNode = ((DOMSource) message.getSoapBody().getPayloadSource()).getNode();
@@ -254,8 +254,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             message.writeTo(byteArrayTransportOutputStream);
 
             String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
-                + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
-                + MESSAGE_SEPERATOR + NEW_LINE;
+                                    + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
+                                    + MESSAGE_SEPERATOR + NEW_LINE;
 
             log.trace(messagePrefix, payloadMessage);
         } catch (IOException ex) {
@@ -275,8 +275,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private boolean isContextRegistryRequest(SaajSoapMessage message) {
         return isSoapBodyOfType(message, Register.class)
-            || isSoapBodyOfType(message, Lookup.class)
-            || isSoapBodyOfType(message, Unregister.class);
+               || isSoapBodyOfType(message, Lookup.class)
+               || isSoapBodyOfType(message, Unregister.class);
     }
 
     private <T> boolean isSoapBodyOfType(SaajSoapMessage message, Class<T> clazz) {
