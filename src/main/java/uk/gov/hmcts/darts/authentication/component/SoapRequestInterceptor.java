@@ -132,10 +132,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         Node bodyNode = ((DOMSource) message.getSoapBody().getPayloadSource()).getNode();
         String messageEndpoint = bodyNode.getLocalName();
         if (messageEndpoint.equals("register")) {
-            boolean credentialsValid = authenticateUsernameAndPasswordFromBody(message);
-            if (credentialsValid) {
-                return true;
-            }
+            return authenticateUsernameAndPasswordFromBody(message);
         }
         return false;
     }
