@@ -301,7 +301,7 @@ sourceSets {
 dependencies {
   implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.20'
   implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.19'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.19'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.20'
   implementation 'org.apache.santuario:xmlsec:4.0.2'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
