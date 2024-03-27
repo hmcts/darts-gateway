@@ -58,7 +58,7 @@ public class CourtLogAssert extends AbstractAssert<CourtLogAssert, com.synapps.m
 
         // Create a Calendar instance and set the month and day
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, 2023); // You can adjust the year as needed
+        calendar.set(Calendar.YEAR, Integer.parseInt(courtLogEntry.getY())); // You can adjust the year as needed
         calendar.set(Calendar.MONTH, Integer.parseInt(courtLogEntry.getM()) - 1); // Month is 0-based in Calendar
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(courtLogEntry.getD()));
 
