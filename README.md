@@ -280,7 +280,7 @@ If we encounter a SOAP general error response (as shown below) please check that
             &lt;detail&gt;
                 &lt;ns3:ServiceInvocationException
                     xmlns:ns3=&quot;http://rt.fs.documentum.emc.com/&quot;&gt;
-                    &lt;messageId&gt;E_UNSUPPORTED_EXCEPTION&lt;/messageId&gt;
+                    &lt;messageId&gt;E_UNKNOWN_CODE&lt;/messageId&gt;
                     &lt;message&gt;An unexpected service exception occurred please check logs&lt;/message&gt;
                     &lt;exceptionType/&gt;
                 &lt;/ns3:ServiceInvocationException&gt;

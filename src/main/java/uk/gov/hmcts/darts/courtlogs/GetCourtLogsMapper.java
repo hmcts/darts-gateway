@@ -43,6 +43,8 @@ public class GetCourtLogsMapper {
         legacyCourtLogEntry.setY(String.valueOf(logDateTime.getYear()));
         legacyCourtLogEntry.setM(String.valueOf(logDateTime.getMonthValue()));
         legacyCourtLogEntry.setD(String.valueOf(logDateTime.getDayOfMonth()));
+
+
         legacyCourtLogEntry.setH(String.valueOf(logDateTime.getHour()));
         legacyCourtLogEntry.setMIN(String.valueOf(logDateTime.getMinute()));
         legacyCourtLogEntry.setS(String.valueOf(logDateTime.getSecond()));

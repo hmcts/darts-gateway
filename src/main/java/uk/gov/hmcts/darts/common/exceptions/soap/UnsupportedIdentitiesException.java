@@ -5,6 +5,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class UnsupportedIdentitiesException extends SoapFaultServiceException {
     public UnsupportedIdentitiesException() {
-        super(FaultErrorCodes.E_UNSUPPORTED_EXCEPTION, null, "");
+        super(FaultErrorCodes.E_UNKNOWN_CODE, null, "");
     }
 }
