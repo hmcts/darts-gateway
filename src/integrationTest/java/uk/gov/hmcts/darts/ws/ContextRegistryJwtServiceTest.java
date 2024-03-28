@@ -171,7 +171,8 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    @Disabled("Temp disabled to get XHIBIT testing progressing") //todo fix
+    @Disabled("Temp disabled to get XHIBIT testing progressing")
+        //todo fix
     void testLookupWithNoIdentities(ContextRegistryClient client) throws Exception {
 
         authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
@@ -203,7 +204,8 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    @Disabled("Temp disabled to get XHIBIT testing progressing") //todo fix
+    @Disabled("Temp disabled to get XHIBIT testing progressing")
+        //todo fix
     void testHandleLookupTokenExpired(ContextRegistryClient client) throws Exception {
         when(tokenValidator.test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, true, false);
 
