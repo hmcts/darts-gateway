@@ -130,7 +130,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         String messageEndpoint = bodyNode.getLocalName();
         if (messageEndpoint.equals("register")) {
             authenticateUsernameAndPasswordFromBody(message);
-        } else{
+        } else {
             authenticateUsernameAndPasswordFromHeader(message);
         }
     }
@@ -140,7 +140,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         if (serviceContextOpt.isEmpty()) {
             throw new NoIdentitiesFoundException();
         }
-        try{
+        try {
             getAuthenticationToken(message, serviceContextOpt.get());
         } catch (CacheTokenCreationException tokenCreationException) {
             throw new AuthenticationFailedException(tokenCreationException);
@@ -182,7 +182,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     private void getAuthenticationToken(SaajSoapMessage message, ServiceContext serviceContext)
         throws AuthenticationFailedException, InvalidIdentitiesFoundException {
         List<Identity> identities = serviceContext.getIdentities();
-        if(CollectionUtils.isEmpty(identities)){
+        if (CollectionUtils.isEmpty(identities)) {
             throw new NoIdentitiesFoundException();
         }
         Optional<BasicIdentity> basicIdentityOptional = identities

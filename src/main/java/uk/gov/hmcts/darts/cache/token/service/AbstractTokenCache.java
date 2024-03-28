@@ -28,7 +28,6 @@ import java.util.Optional;
  * some life in them for the calling client to then leverage
  * This implementation supports the use of cache values that implement {@link uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue}
  * On lookup of a cache value we ensure that the internal token is valid before returning.
- *
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -74,12 +73,12 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
                 tokenToUse = lookup(value);
 
-                if(tokenToUse.isPresent()){
+                if (tokenToUse.isPresent()) {
                     log.debug("Found the token in the cache");
                     if (!tokenToUse.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
                         tokenToUse = Optional.empty();
                     }
-                }else{
+                } else {
                     log.debug("Token not found in cache");
                 }
 
@@ -114,7 +113,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 Optional<CacheValue> concurrentValue = lookup(t);
                 if (concurrentValue.isEmpty()) {
                     redisTemplate.opsForValue()
-                            .set(t.getId(), value, getSecondsToExpire());
+                        .set(t.getId(), value, getSecondsToExpire());
                 } else {
                     redisTemplate.expire(t.getId(), getSecondsToExpire());
                 }

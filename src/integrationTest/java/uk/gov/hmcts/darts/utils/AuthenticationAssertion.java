@@ -53,7 +53,8 @@ public class AuthenticationAssertion {
     }
 
     public void assertWithUserNameAndPasswordHeader(SoapTestClient client,
-                                                    GeneralRunnableOperationWithException runnable, String headerUsername, String headerPassword) throws Exception {
+                                                    GeneralRunnableOperationWithException runnable, String headerUsername,
+                                                    String headerPassword) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
@@ -84,7 +85,7 @@ public class AuthenticationAssertion {
     }
 
     public void assertFailBasedOnNoIdentities(SoapTestClient client,
-        GeneralRunnableOperationWithException runnable) throws Exception {
+                                              GeneralRunnableOperationWithException runnable) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextNoIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
@@ -97,7 +98,7 @@ public class AuthenticationAssertion {
     }
 
     public void assertFailBasedOnInvalidIdentities(SoapTestClient client,
-                                              GeneralRunnableOperationWithException runnable) throws Exception {
+                                                   GeneralRunnableOperationWithException runnable) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextInvalidIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
@@ -110,7 +111,8 @@ public class AuthenticationAssertion {
     }
 
     public void assertFailBasedOnNotAuthenticatedForUsernameAndPassword(SoapTestClient client,
-        GeneralRunnableOperationWithException runnable, String username, String password) throws Exception {
+                                                                        GeneralRunnableOperationWithException runnable, String username,
+                                                                        String password) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
@@ -144,9 +146,11 @@ public class AuthenticationAssertion {
 
         // assert the three core attributes
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
-                             String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute());
+                             String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute()
+        );
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ARGS,
-                             String.class.getCanonicalName(), type.getMessageArgs().get(0).toString(), exceptionHolder.getAttribute());
+                             String.class.getCanonicalName(), type.getMessageArgs().get(0).toString(), exceptionHolder.getAttribute()
+        );
     }
 
     private void assertAttributeValue(String name, String assertType, String assertValue, List<DfsAttributeHolder> atts) {
