@@ -199,16 +199,18 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             // always reuse the tokenOpt in the case of authentication
             Optional<Token> tokenOpt = tokenRegisterable.store(serviceContext, true);
 
-            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(tokenOpt.get());
-            CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
+            if (tokenOpt.isPresent()) {
+                Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(tokenOpt.get());
+                CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
 
-            if (tokenOpt.isPresent() && refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
-                Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
-                if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
-                    throw new AuthenticationFailedException();
-                } else {
-                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                        tokenDownstream.get().getTokenString().orElse(""));
+                if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
+                    Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
+                    if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
+                        throw new AuthenticationFailedException();
+                    } else {
+                        new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                            tokenDownstream.get().getTokenString().orElse(""));
+                    }
                 }
             } else if (tokenOpt.isEmpty() || tokenOpt.get().getTokenString().isEmpty()) {
                 throw new AuthenticationFailedException();
