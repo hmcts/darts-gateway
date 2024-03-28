@@ -64,8 +64,6 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
 
             Identity identity = identities.get(0);
             if (identity instanceof BasicIdentity basicIdentity) {
-                log.info("**** calling acquireNewToken with {} and {}", basicIdentity.getUserName(),
-                         basicIdentity.getPassword());
                 jwtToken = generator.acquireNewToken(
                         basicIdentity.getUserName(),
                         basicIdentity.getPassword()

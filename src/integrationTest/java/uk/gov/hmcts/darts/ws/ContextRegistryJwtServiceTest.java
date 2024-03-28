@@ -210,9 +210,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
         when(tokenValidator.test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true, true, false);
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-            log.info("**** hello");
             String token = registerToken(client);
-            log.info("**** register token finished");
 
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/lookup/soapRequest.xml");

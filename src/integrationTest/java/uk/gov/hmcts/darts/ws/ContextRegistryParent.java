@@ -179,7 +179,6 @@ public class ContextRegistryParent extends IntegrationBase {
         soapRequestStr = soapRequestStr.replace("${PASSWORD}", password);
 
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(baseUrl + "ContextRegistryService?wsdl"), soapRequestStr);
-        log.info("**** Finished register");
         return response.getResponse().getValue().getReturn();
     }
 

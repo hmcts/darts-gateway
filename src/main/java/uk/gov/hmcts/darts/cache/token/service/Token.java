@@ -71,7 +71,6 @@ public class Token {
      */
     public boolean validate(TokenExpiryEnum applyExpiryOffset) {
         if (validator != null && StringUtils.isNotEmpty(tokenString)) {
-            log.info("**** testing token");
             return validator.test(applyExpiryOffset, tokenString);
         }
         return StringUtils.isNotEmpty(tokenString);
