@@ -70,7 +70,6 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    @Disabled("Temp disabled to get XHIBIT testing progressing") //todo fix
     void testRegisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
         when(generator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD))
@@ -86,11 +85,10 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    @Disabled("Temp disabled to get XHIBIT testing progressing") //todo fix
     void testRegisterWithNoIdentities(ContextRegistryClient client) throws Exception {
 
         authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
-            executeHandleRegister(client);
+            executeHandleRegisterMissingIdentity(client);
         });
 
         verify(generator, times(0)).acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);

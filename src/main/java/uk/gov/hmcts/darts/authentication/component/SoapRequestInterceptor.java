@@ -211,12 +211,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                         new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                             tokenDownstream.get().getTokenString().orElse(""));
                     }
+                } else if (tokenOpt.get().getTokenString().isEmpty()) {
+                    throw new AuthenticationFailedException();
+                } else {
+                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                        tokenOpt.get().getTokenString().orElse(""));
                 }
-            } else if (tokenOpt.isEmpty() || tokenOpt.get().getTokenString().isEmpty()) {
-                throw new AuthenticationFailedException();
             } else {
-                new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                    tokenOpt.get().getTokenString().orElse(""));
+                throw new AuthenticationFailedException();
             }
         } else {
             throw new InvalidIdentitiesFoundException();
