@@ -155,12 +155,21 @@ class TokenTest {
     }
 
     @Test
-    void getTokenString() {
+    void getTokenStringEmpty() {
         String tokenStr = null;
         TokenValidator validator = null;
         Token token = Token.readToken(tokenStr, true, validator);
         Assertions.assertTrue(token.getTokenString(false).isEmpty());
 
+    }
+
+    @Test
+    void validate() {
+        String tokenStr = null;
+        TokenValidator validator = null;
+        Token token = Token.readToken(tokenStr, true, validator);
+        boolean response = token.validate(null);
+        Assertions.assertFalse(response);
     }
 
 }

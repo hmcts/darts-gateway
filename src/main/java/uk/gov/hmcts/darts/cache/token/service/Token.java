@@ -46,11 +46,11 @@ public class Token {
 
     /**
      * Gets a token and applies validation.
-     * @param validateTokenBefore Whether to validate the token
+     * @param validateToken Whether to validate the token
      * @return The optional token based on whether it has expired or not
      */
-    public Optional<String> getTokenString(boolean validateTokenBefore) {
-        if (validateTokenBefore && validator != null && !validate()) {
+    public Optional<String> getTokenString(boolean validateToken) {
+        if (validateToken && validator != null && !validate()) {
             return Optional.empty();
         }
 
