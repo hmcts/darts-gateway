@@ -24,11 +24,9 @@ class NodeUtilTest {
     @Test
     void findNodeNotFound() throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
         String myDocumentStr = "<shop><shoes>brand1</shoes><tshirt>brand2</tshirt><socks>brand3</socks></shop>";
-        Node myDocument = getNode(myDocumentStr);
         XPathExpression path = XPathFactory.newInstance().newXPath().compile("/shop/*");
 
-        NodeList nodeList = (NodeList) path.evaluate(myDocument, XPathConstants.NODESET);
-
+        NodeList nodeList = (NodeList) path.evaluate(getNode(myDocumentStr), XPathConstants.NODESET);
 
         Optional<Node> response = NodeUtil.findNode("hello", nodeList);
         assertTrue(response.isEmpty());
@@ -40,7 +38,6 @@ class NodeUtilTest {
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
 
-        Node myDocument = builder.parse(new ByteArrayInputStream(myDocumentStr.getBytes()));
-        return myDocument;
+        return builder.parse(new ByteArrayInputStream(myDocumentStr.getBytes()));
     }
 }
