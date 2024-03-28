@@ -44,7 +44,7 @@ class CasesWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("test");
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
@@ -56,16 +56,16 @@ class CasesWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
             client.getCases(getGatewayUri(), soapRequestStr);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -84,7 +84,7 @@ class CasesWebServiceTest extends IntegrationBase {
             Assertions.fail("Never expect to get here");
         });
 
-        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -99,7 +99,7 @@ class CasesWebServiceTest extends IntegrationBase {
             Assertions.fail("Never expect to get here");
         });
 
-        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -124,8 +124,8 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
-        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -137,7 +137,7 @@ class CasesWebServiceTest extends IntegrationBase {
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         // setup the tokens so that we refresh the backend token before making the restful darts calls
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
 
         authenticationStub.assertWithTokenHeader(client, () -> {
@@ -160,12 +160,12 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
-        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
 
-        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -190,8 +190,8 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
@@ -210,8 +210,8 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -233,9 +233,9 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -254,8 +254,8 @@ class CasesWebServiceTest extends IntegrationBase {
             Assertions.assertThrows(SoapFaultClientException.class, () -> {
                 client.addCases(getGatewayUri(), soapRequestStr);
             });
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -276,9 +276,9 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 }

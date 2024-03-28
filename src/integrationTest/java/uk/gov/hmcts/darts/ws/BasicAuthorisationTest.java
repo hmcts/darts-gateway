@@ -45,12 +45,12 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD)).thenReturn("test");
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD)).thenReturn("test");
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
             .thenReturn("test");
-        when(mockOauthTokenGenerator.acquireNewToken("not_whitelisted_service", DEFAULT_PASSWORD)).thenReturn("test");
+        when(mockOauthTokenGenerator.acquireNewToken("not_whitelisted_service", DEFAULT_HEADER_PASSWORD)).thenReturn("test");
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(mockOauthTokenGenerator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD)).thenReturn(CONTEXT_REGISTRY_TOKEN);
@@ -63,7 +63,7 @@ class BasicAuthorisationTest extends ContextRegistryParent {
     void testBasicAuthorisationRequestFromNotWhitelistedServiceSucceedsForContextRegistryCall(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleRegister(client);
-        }, "not_whitelisted_service", DEFAULT_PASSWORD);
+        }, "not_whitelisted_service", DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -74,7 +74,7 @@ class BasicAuthorisationTest extends ContextRegistryParent {
             String soapRequestStr = TestUtils.getContentsFromFile("payloads/getCases/soapRequest.xml");
 
             client.getCases(getGatewayUri(), soapRequestStr);
-        }, "not_whitelisted_service", DEFAULT_PASSWORD);
+        }, "not_whitelisted_service", DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -92,8 +92,8 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
 
             client.getCases(getGatewayUri(), soapRequestStr);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));

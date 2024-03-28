@@ -16,6 +16,8 @@ import uk.gov.hmcts.darts.utils.CacheUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("int-test-documentum-jwt-token-shared")
 class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegistryParent {
     @MockBean
-    private OauthTokenGenerator generator;
+    private OauthTokenGenerator oauthTokenGenerator;
 
     @Autowired
     private CacheProperties properties;
@@ -38,13 +40,13 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @BeforeEach
     public void before() {
-        when(generator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
+        when(oauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("test");
 
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
-        when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
+        when(oauthTokenGenerator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
             .thenReturn(CONTEXT_REGISTRY_TOKEN);
 
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
@@ -55,7 +57,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
             when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
 
-            when(generator.acquireNewToken(Mockito.eq("user" + i), Mockito.eq("pass"))).thenReturn("test2");
+            when(oauthTokenGenerator.acquireNewToken(Mockito.eq("user" + i), Mockito.eq("pass"))).thenReturn("test2");
         }
     }
 
@@ -63,12 +65,12 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRegisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
-        when(generator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
+        when(oauthTokenGenerator.acquireNewToken(DEFAULT_REGISTER_USERNAME, DEFAULT_REGISTER_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeHandleRegister(client);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
     }
 
@@ -77,11 +79,11 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testRegisterWithNoIdentities(ContextRegistryClient client) throws Exception {
 
         authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
-            executeHandleRegister(client);
+            executeHandleRegisterMissingIdentity(client);
         });
 
-        verify(generator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(0)).acquireNewToken(anyString(), anyString());
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
@@ -91,8 +93,8 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             executeHandleRegister(client);
         });
 
-        verify(generator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
 
@@ -101,7 +103,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testHandleRegister(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleRegister(client);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -118,7 +120,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             String newOriginalToken = executeHandleRegister(client);
             Assertions.assertNotEquals(originalToken, newOriginalToken);
 
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -126,22 +128,22 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testHandleRegisterWithAuthenticationToken(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithTokenHeader(client, () -> {
             executeHandleRegister(client);
-        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testLookupWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
-
-        when(generator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD))
+        when(oauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeHandleLookup(client);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(generator, times(1)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
@@ -152,8 +154,9 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             executeHandleLookup(client);
         });
 
-        verify(generator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(DEFAULT_REGISTER_USERNAME, DEFAULT_REGISTER_PASSWORD);
+        verify(oauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
@@ -163,8 +166,8 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             executeHandleLookup(client);
         });
 
-        verify(generator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
@@ -172,7 +175,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testHandleLookup(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleLookup(client);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -180,7 +183,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testHandleLookupWithAuthenticationToken(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithTokenHeader(client, () -> {
             executeHandleLookup(client);
-        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -188,7 +191,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testTimeToLive(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeTestTimeToLive(client, properties);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -196,7 +199,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testTimeToIdle(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeTestTimeToIdle(client, properties);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -204,22 +207,22 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testBasicConcurrency(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeBasicConcurrency(client, REGISTERED_USER_COUNT, properties);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
-        when(generator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD))
+        when(oauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeTestHandleUnregister(client);
         }, ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
 
-        verify(generator, times(1)).acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
@@ -230,8 +233,9 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             executeTestHandleUnregister(client);
         });
 
-        verify(generator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(DEFAULT_REGISTER_USERNAME, DEFAULT_REGISTER_PASSWORD);
+        verify(oauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
@@ -241,8 +245,8 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
             executeTestHandleUnregister(client);
         });
 
-        verify(generator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
-        verifyNoMoreInteractions(generator);
+        verify(oauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
@@ -250,7 +254,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testHandleRegisterWithSharing(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleRegisterWithSharing(client);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -258,6 +262,6 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
     void testHandleUnregisterSharing(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeTestHandleUnregisterSharing(client);
-        }, DEFAULT_HEADER_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 }
