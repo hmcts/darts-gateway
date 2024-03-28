@@ -154,4 +154,13 @@ class TokenTest {
         verify(validate, Mockito.times(1)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
+    @Test
+    void getTokenString() {
+        String tokenStr = null;
+        TokenValidator validator = null;
+        Token token = Token.readToken(tokenStr, true, validator);
+        Assertions.assertTrue(token.getTokenString(false).isEmpty());
+
+    }
+
 }
