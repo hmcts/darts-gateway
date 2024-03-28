@@ -362,7 +362,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
         HttpResponse<String> response;
 
         response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        Assertions.assertTrue(response.body().contains(FaultErrorCodes.E_UNSUPPORTED_EXCEPTION.name()));
+        Assertions.assertTrue(response.body().contains(FaultErrorCodes.E_UNKNOWN_CODE.name()));
     }
 
     @Test

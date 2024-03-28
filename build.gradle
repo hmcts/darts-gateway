@@ -6,7 +6,7 @@ plugins {
   id 'idea'
   id "io.freefair.lombok" version "8.6"
   id 'io.spring.dependency-management' version '1.1.4'
-  id 'org.springframework.boot' version '3.2.3'
+  id 'org.springframework.boot' version '3.2.4'
   id 'org.owasp.dependencycheck' version '9.0.10'
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '4.4.1.3373'
@@ -299,9 +299,9 @@ sourceSets {
 }
 
 dependencies {
-  implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.19'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.19'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.19'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.20'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.20'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.20'
   implementation 'org.apache.santuario:xmlsec:4.0.2'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
