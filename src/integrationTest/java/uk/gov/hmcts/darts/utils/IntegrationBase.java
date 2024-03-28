@@ -47,7 +47,11 @@ public class IntegrationBase implements CommandHolder {
 
     protected static final String DEFAULT_HEADER_USERNAME = "some-user";
 
-    protected static final String DEFAULT_PASSWORD = "password";
+    protected static final String DEFAULT_HEADER_PASSWORD = "password";
+
+    protected static final String DEFAULT_REGISTER_USERNAME = "user";
+
+    protected static final String DEFAULT_REGISTER_PASSWORD = "pass";
 
     @Value("${local.server.port}")
     protected int port;

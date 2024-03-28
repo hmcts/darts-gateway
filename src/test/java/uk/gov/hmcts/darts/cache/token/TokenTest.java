@@ -132,7 +132,7 @@ class TokenTest {
         TokenValidator validate = Mockito.mock(TokenValidator.class);
         Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(true, validate);
-        Assertions.assertTrue(token.valid());
+        Assertions.assertTrue(token.validate());
         verify(validate, Mockito.times(1)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
@@ -141,7 +141,7 @@ class TokenTest {
         TokenValidator validate = Mockito.mock(TokenValidator.class);
         Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(false);
         Token token = Token.generateDocumentumToken(true, validate);
-        Assertions.assertFalse(token.valid());
+        Assertions.assertFalse(token.validate());
         verify(validate, Mockito.times(1)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 
@@ -150,7 +150,7 @@ class TokenTest {
         TokenValidator validate = Mockito.mock(TokenValidator.class);
         Mockito.when(validate.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Token token = Token.generateDocumentumToken(true, validate);
-        Assertions.assertTrue(token.valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY));
+        Assertions.assertTrue(token.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY));
         verify(validate, Mockito.times(1)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull());
     }
 

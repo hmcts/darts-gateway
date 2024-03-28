@@ -25,7 +25,7 @@ public interface TokenRegisterable {
      * return the same id if we choose to.
      * This method should ensure the token is valid
      * (whatever that may mean) before it is returned. Clients can validate the tokens at any time thereafter
-     * by calling {@link Token#valid()}
+     * by calling {@link Token#validate()}
      * @param reuseTokenIfPossible If set to true we reuse the token else we create a new one
      */
     Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible);

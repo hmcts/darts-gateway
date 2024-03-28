@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.authentication.component;
 
 import com.google.common.collect.Iterators;
 import documentum.contextreg.BasicIdentity;
+import documentum.contextreg.Identity;
 import documentum.contextreg.Lookup;
 import documentum.contextreg.Register;
 import documentum.contextreg.ServiceContext;
@@ -12,6 +13,7 @@ import jakarta.xml.bind.JAXBIntrospector;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -71,14 +74,12 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         return true; // continue processing of the request interceptor chain
     }
 
-    private boolean handleRequest(SaajSoapMessage soapMessage) {
+    private void handleRequest(SaajSoapMessage soapMessage) {
         if (isTokenAuthentication(soapMessage)) {
             authenticateToken(soapMessage);
         } else {
             authenticateUsernameAndPassword(soapMessage);
         }
-
-        return true;
     }
 
     private boolean isTokenAuthentication(SaajSoapMessage message) {
@@ -124,31 +125,26 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         return true;
     }
 
-    private boolean authenticateUsernameAndPassword(SaajSoapMessage message) throws AuthenticationFailedException {
-        boolean headerSecurityIsValid = authenticateUsernameAndPasswordFromHeader(message);
-        if (headerSecurityIsValid) {
-            return true;
-        }
+    private void authenticateUsernameAndPassword(SaajSoapMessage message) throws AuthenticationFailedException {
         Node bodyNode = ((DOMSource) message.getSoapBody().getPayloadSource()).getNode();
         String messageEndpoint = bodyNode.getLocalName();
         if (messageEndpoint.equals("register")) {
-            return authenticateUsernameAndPasswordFromBody(message);
+            authenticateUsernameAndPasswordFromBody(message);
+        } else{
+            authenticateUsernameAndPasswordFromHeader(message);
         }
-        return false;
     }
 
-    private boolean authenticateUsernameAndPasswordFromBody(SaajSoapMessage message) throws AuthenticationFailedException {
+    private void authenticateUsernameAndPasswordFromBody(SaajSoapMessage message) throws AuthenticationFailedException {
         Optional<ServiceContext> serviceContextOpt = soapBodyConverter.getServiceContext(message);
         if (serviceContextOpt.isEmpty()) {
-            return false;
+            throw new NoIdentitiesFoundException();
         }
-        try {
+        try{
             getAuthenticationToken(message, serviceContextOpt.get());
         } catch (CacheTokenCreationException tokenCreationException) {
             throw new AuthenticationFailedException(tokenCreationException);
         }
-
-        return true;
     }
 
 
@@ -185,7 +181,11 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private void getAuthenticationToken(SaajSoapMessage message, ServiceContext serviceContext)
         throws AuthenticationFailedException, InvalidIdentitiesFoundException {
-        Optional<BasicIdentity> basicIdentityOptional = serviceContext.getIdentities()
+        List<Identity> identities = serviceContext.getIdentities();
+        if(CollectionUtils.isEmpty(identities)){
+            throw new NoIdentitiesFoundException();
+        }
+        Optional<BasicIdentity> basicIdentityOptional = identities
             .stream()
             .filter(identity -> identity instanceof BasicIdentity)
             .map(identity -> (BasicIdentity) identity)
@@ -196,13 +196,13 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
             verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
 
-            // always reuse the token in the case of authentication
-            Optional<Token> token = tokenRegisterable.store(serviceContext, true);
+            // always reuse the tokenOpt in the case of authentication
+            Optional<Token> tokenOpt = tokenRegisterable.store(serviceContext, true);
 
-            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token.get());
+            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(tokenOpt.get());
             CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
 
-            if (token.isPresent() && refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
+            if (tokenOpt.isPresent() && refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
                 Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
                 if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
                     throw new AuthenticationFailedException();
@@ -210,11 +210,11 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         tokenDownstream.get().getTokenString().orElse(""));
                 }
-            } else if (token.isEmpty() || token.get().getTokenString().isEmpty()) {
+            } else if (tokenOpt.isEmpty() || tokenOpt.get().getTokenString().isEmpty()) {
                 throw new AuthenticationFailedException();
             } else {
                 new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                    token.get().getTokenString().orElse(""));
+                    tokenOpt.get().getTokenString().orElse(""));
             }
         } else {
             throw new InvalidIdentitiesFoundException();

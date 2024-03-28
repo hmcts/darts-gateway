@@ -49,7 +49,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     public boolean doesRequireRefresh() throws CacheException {
         Optional<Token> downstream = getValidatedToken();
 
-        boolean tokenValid = downstream.isPresent() && downstream.get().valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY);
+        boolean tokenValid = downstream.isPresent() && downstream.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY);
         String downstreamToken = getDownstreamToken();
         return StringUtils.isEmpty(downstreamToken) || (StringUtils.isNotEmpty(downstreamToken)
                                                                                && !tokenValid);
