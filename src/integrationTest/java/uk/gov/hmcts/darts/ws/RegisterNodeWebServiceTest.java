@@ -44,7 +44,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("test");
 
         when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
@@ -55,7 +55,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void routesRegisterNodeRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
@@ -75,9 +75,9 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
 
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -104,7 +104,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
         });
 
-        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -130,7 +130,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
         });
 
-        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -154,9 +154,9 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
-        },  getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -167,7 +167,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
         when(tokenValidator.test(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
 
         authenticationStub.assertWithTokenHeader(client, () -> {
@@ -188,11 +188,11 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
-        },  getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         WireMock.verify(postRequestedFor(urlPathEqualTo("/register-devices"))
                             .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
-        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -217,11 +217,11 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         WireMock.verify(postRequestedFor(urlPathEqualTo("/register-devices"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -243,9 +243,9 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             Assertions.assertThatExceptionOfType(SoapFaultClientException.class).isThrownBy(() -> {
                 client.registerNode(getGatewayUri(), soapRequestStr);
             });
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
