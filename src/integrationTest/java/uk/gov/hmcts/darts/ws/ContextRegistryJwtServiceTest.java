@@ -155,7 +155,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-        //@Disabled("Temp disabled to get XHIBIT testing progressing") //todo fix
+    //@Disabled("Temp disabled to get XHIBIT testing progressing") //todo fix
     void testLookupWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
