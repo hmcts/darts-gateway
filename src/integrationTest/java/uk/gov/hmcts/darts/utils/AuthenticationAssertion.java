@@ -53,20 +53,39 @@ public class AuthenticationAssertion {
     }
 
     public void assertWithUserNameAndPasswordHeader(SoapTestClient client,
-                                                    GeneralRunnableOperationWithException runnable, String username, String password) throws Exception {
+                                                    GeneralRunnableOperationWithException runnable, String headerUsername,
+                                                    String headerPassword) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
-        soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${USER}", username);
-        soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${PASSWORD}", password);
+        soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${USER}", headerUsername);
+        soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${PASSWORD}", headerPassword);
 
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
         runnable.run();
     }
 
+    /*
+    To be used with Register call as it doesn't use a header.
+     */
+    public void assertWithNoHeader(GeneralRunnableOperationWithException runnable) throws Exception {
+        runnable.run();
+    }
+
+    /*
+    To be used with Register call as it doesn't use a header.
+     */
+    public void assertWithNoHeaderInvalidCredentials(GeneralRunnableOperationWithException runnable) throws Exception {
+        try {
+            runnable.run();
+        } catch (SoapFaultClientException e) {
+            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, "");
+        }
+    }
+
     public void assertFailBasedOnNoIdentities(SoapTestClient client,
-        GeneralRunnableOperationWithException runnable) throws Exception {
+                                              GeneralRunnableOperationWithException runnable) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextNoIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
@@ -79,7 +98,7 @@ public class AuthenticationAssertion {
     }
 
     public void assertFailBasedOnInvalidIdentities(SoapTestClient client,
-                                              GeneralRunnableOperationWithException runnable) throws Exception {
+                                                   GeneralRunnableOperationWithException runnable) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextInvalidIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
@@ -92,7 +111,8 @@ public class AuthenticationAssertion {
     }
 
     public void assertFailBasedOnNotAuthenticatedForUsernameAndPassword(SoapTestClient client,
-        GeneralRunnableOperationWithException runnable, String username, String password) throws Exception {
+                                                                        GeneralRunnableOperationWithException runnable, String username,
+                                                                        String password) throws Exception {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
@@ -126,9 +146,11 @@ public class AuthenticationAssertion {
 
         // assert the three core attributes
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
-                             String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute());
+                             String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute()
+        );
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ARGS,
-                             String.class.getCanonicalName(), type.getMessageArgs().get(0).toString(), exceptionHolder.getAttribute());
+                             String.class.getCanonicalName(), type.getMessageArgs().get(0).toString(), exceptionHolder.getAttribute()
+        );
     }
 
     private void assertAttributeValue(String name, String assertType, String assertValue, List<DfsAttributeHolder> atts) {

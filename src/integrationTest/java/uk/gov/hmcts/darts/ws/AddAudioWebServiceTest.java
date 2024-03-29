@@ -64,7 +64,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("test");
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
@@ -77,7 +77,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesAddAudioRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
@@ -94,9 +94,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             client.addAudio(getGatewayUri(), soapRequestStr);
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        Mockito.verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -121,7 +121,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
         });
 
-        Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -144,7 +144,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             client.addAudio(getGatewayUri(), soapRequestStr);
         });
 
-        Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 
@@ -172,7 +172,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
-        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -182,7 +182,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
         when(validator.test(Mockito.any(),
                                      Mockito.eq("downstreamtoken"))).thenReturn(true);
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD))
+        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
 
         authenticationStub.assertWithTokenHeader(client, () -> {
@@ -209,11 +209,11 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
-        }, getContextClient(), getGatewayUri(), DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                             .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
-        Mockito.verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        Mockito.verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -240,7 +240,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -257,7 +257,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -274,7 +274,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             CodeAndMessage responseCode = CodeAndMessage.INVALID_XML;
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -293,7 +293,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             CodeAndMessage responseCode = CodeAndMessage.ERROR;
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                    .withRequestBody(new MultipartDartsProxyContentPattern()));
     }
@@ -313,7 +313,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             CodeAndMessage responseCode = CodeAndMessage.ERROR;
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -341,7 +341,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
-        }, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @Test
@@ -349,8 +349,8 @@ class AddAudioWebServiceTest extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/addAudio/register/soapRequestMTOMErrorNoXMLBody.txt");
 
-        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_USERNAME);
-        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_PASSWORD);
+        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_HEADER_USERNAME);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_HEADER_PASSWORD);
 
         HttpRequest request = HttpRequest.newBuilder()
             .header("Content-Type", "multipart/related;boundary=\"uuid:b93ca7c1-d42d-4acd-aa56-3c9db058d44f\";")
@@ -370,8 +370,8 @@ class AddAudioWebServiceTest extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/addAudio/register/soapRequestMTOMFailureBadRequestNoXMLPart.txt");
 
-        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_USERNAME);
-        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_PASSWORD);
+        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_HEADER_USERNAME);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_HEADER_PASSWORD);
 
         HttpRequest request = HttpRequest.newBuilder()
             .header("Content-Type", "multipart/related;boundary=\"uuid:b93ca7c1-d42d-4acd-aa56-3c9db058d44f\";")
@@ -392,8 +392,8 @@ class AddAudioWebServiceTest extends IntegrationBase {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/addAudio/register/soapRequestMTOMFailureBadRequestNoXMLContent.txt");
 
-        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_USERNAME);
-        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_PASSWORD);
+        soapRequestStr = soapRequestStr.replace("${USER}", DEFAULT_HEADER_USERNAME);
+        soapRequestStr = soapRequestStr.replace("${PASSWORD}", DEFAULT_HEADER_PASSWORD);
 
         HttpRequest request = HttpRequest.newBuilder()
             .header("Content-Type", "multipart/related;boundary=\"uuid:b93ca7c1-d42d-4acd-aa56-3c9db058d44f\";")

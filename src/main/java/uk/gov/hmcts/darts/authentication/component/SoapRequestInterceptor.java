@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.authentication.component;
 
 import com.google.common.collect.Iterators;
 import documentum.contextreg.BasicIdentity;
+import documentum.contextreg.Identity;
 import documentum.contextreg.Lookup;
 import documentum.contextreg.Register;
 import documentum.contextreg.ServiceContext;
@@ -12,6 +13,7 @@ import jakarta.xml.bind.JAXBIntrospector;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -21,6 +23,7 @@ import org.springframework.ws.soap.SoapBody;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
+import org.w3c.dom.Node;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
@@ -34,9 +37,11 @@ import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 
 @Component
 @RequiredArgsConstructor
@@ -47,6 +52,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     private static final String SECURITY_HEADER = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security";
 
     private final SoapHeaderConverter soapHeaderConverter;
+    private final SoapBodyConverter soapBodyConverter;
     private final TokenRegisterable tokenRegisterable;
     private final SecurityProperties securityProperties;
 
@@ -68,18 +74,19 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         return true; // continue processing of the request interceptor chain
     }
 
-    private boolean handleRequest(SaajSoapMessage soapMessage) {
+    private void handleRequest(SaajSoapMessage soapMessage) {
         if (isTokenAuthentication(soapMessage)) {
             authenticateToken(soapMessage);
         } else {
             authenticateUsernameAndPassword(soapMessage);
         }
-
-        return true;
     }
 
     private boolean isTokenAuthentication(SaajSoapMessage message) {
         var soapHeader = message.getSoapHeader();
+        if (soapHeader == null) {
+            return false;
+        }
         Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
             QName.valueOf(SECURITY_HEADER));
         return serviceContextSoapHeaderElementIt.hasNext();
@@ -104,21 +111,44 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         downstreamTokenisable);
-                }  else {
+                } else {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         specifiedtoken);
                 }
             }
         }
 
-        if  (tokenToReturn.isEmpty()) {
+        if (tokenToReturn.isEmpty()) {
             throw new DocumentumUnknownTokenSoapException("");
         }
 
         return true;
     }
 
-    private boolean authenticateUsernameAndPassword(SaajSoapMessage message) throws AuthenticationFailedException {
+    private void authenticateUsernameAndPassword(SaajSoapMessage message) throws AuthenticationFailedException {
+        Node bodyNode = ((DOMSource) message.getSoapBody().getPayloadSource()).getNode();
+        String messageEndpoint = bodyNode.getLocalName();
+        if (messageEndpoint.equals("register")) {
+            authenticateUsernameAndPasswordFromBody(message);
+        } else {
+            authenticateUsernameAndPasswordFromHeader(message);
+        }
+    }
+
+    private void authenticateUsernameAndPasswordFromBody(SaajSoapMessage message) throws AuthenticationFailedException {
+        Optional<ServiceContext> serviceContextOpt = soapBodyConverter.getServiceContext(message);
+        if (serviceContextOpt.isEmpty()) {
+            throw new NoIdentitiesFoundException();
+        }
+        try {
+            getAuthenticationToken(message, serviceContextOpt.get());
+        } catch (CacheTokenCreationException tokenCreationException) {
+            throw new AuthenticationFailedException(tokenCreationException);
+        }
+    }
+
+
+    private boolean authenticateUsernameAndPasswordFromHeader(SaajSoapMessage message) throws AuthenticationFailedException {
         var soapHeader = message.getSoapHeader();
         Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
             QName.valueOf(SERVICE_CONTEXT_HEADER));
@@ -129,47 +159,15 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                     QName.valueOf(SERVICE_CONTEXT_HEADER));
                 while (serviceContextSoapHeaderElementIt.hasNext()) {
                     SoapHeaderElement soapHeaderElement = serviceContextSoapHeaderElementIt.next();
-                    soapHeaderConverter.convertSoapHeader(soapHeaderElement).ifPresent(serviceContext -> {
-
+                    Optional<ServiceContext> serviceContextOpt = soapHeaderConverter.convertSoapHeader(soapHeaderElement);
+                    if (serviceContextOpt.isPresent()) {
+                        ServiceContext serviceContext = serviceContextOpt.get();
                         if (!identitiesPresent(soapHeaderElement)) {
                             throw new NoIdentitiesFoundException();
                         }
 
-                        Optional<BasicIdentity> basicIdentityOptional = serviceContext.getIdentities()
-                            .stream()
-                            .filter(identity -> identity instanceof BasicIdentity)
-                            .map(identity -> (BasicIdentity) identity)
-                            .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getUserName()))
-                            .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
-                            .findFirst();
-                        if (basicIdentityOptional.isPresent()) {
-
-                            verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
-
-                            // always reuse the token in the case of authentication
-                            Optional<Token> token = tokenRegisterable.store(serviceContext, true);
-
-                            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token.get());
-                            CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
-
-                            if (token.isPresent() && refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
-                                Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
-                                if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
-                                    throw new AuthenticationFailedException();
-                                } else {
-                                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                        tokenDownstream.get().getTokenString().orElse(""));
-                                }
-                            } else if (token.isEmpty() || token.get().getTokenString().isEmpty()) {
-                                throw new AuthenticationFailedException();
-                            } else {
-                                new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                                    token.get().getTokenString().orElse(""));
-                            }
-                        } else {
-                            throw new InvalidIdentitiesFoundException();
-                        }
-                    });
+                        getAuthenticationToken(message, serviceContext);
+                    }
                 }
             } else {
                 throw new NoIdentitiesFoundException();
@@ -178,6 +176,54 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             throw new AuthenticationFailedException(tokenCreationException);
         }
         return true;
+    }
+
+
+    private void getAuthenticationToken(SaajSoapMessage message, ServiceContext serviceContext)
+        throws AuthenticationFailedException, InvalidIdentitiesFoundException {
+        List<Identity> identities = serviceContext.getIdentities();
+        if (CollectionUtils.isEmpty(identities)) {
+            throw new NoIdentitiesFoundException();
+        }
+        Optional<BasicIdentity> basicIdentityOptional = identities
+            .stream()
+            .filter(identity -> identity instanceof BasicIdentity)
+            .map(identity -> (BasicIdentity) identity)
+            .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getUserName()))
+            .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
+            .findAny();
+        if (basicIdentityOptional.isPresent()) {
+
+            verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
+
+            // always reuse the tokenOpt in the case of authentication
+            Optional<Token> tokenOpt = tokenRegisterable.store(serviceContext, true);
+
+            if (tokenOpt.isPresent()) {
+                Token token = tokenOpt.get();
+                Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token);
+                CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
+
+                if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
+                    Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
+                    if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
+                        throw new AuthenticationFailedException();
+                    } else {
+                        new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                            tokenDownstream.get().getTokenString().orElse(""));
+                    }
+                } else if (token.getTokenString().isEmpty()) {
+                    throw new AuthenticationFailedException();
+                } else {
+                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                        token.getTokenString().orElse(""));
+                }
+            } else {
+                throw new AuthenticationFailedException();
+            }
+        } else {
+            throw new InvalidIdentitiesFoundException();
+        }
     }
 
     private boolean identitiesPresent(SoapHeaderElement soapHeader) {
@@ -210,8 +256,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             message.writeTo(byteArrayTransportOutputStream);
 
             String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
-                + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
-                + MESSAGE_SEPERATOR + NEW_LINE;
+                                    + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
+                                    + MESSAGE_SEPERATOR + NEW_LINE;
 
             log.trace(messagePrefix, payloadMessage);
         } catch (IOException ex) {
@@ -231,8 +277,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private boolean isContextRegistryRequest(SaajSoapMessage message) {
         return isSoapBodyOfType(message, Register.class)
-            || isSoapBodyOfType(message, Lookup.class)
-            || isSoapBodyOfType(message, Unregister.class);
+               || isSoapBodyOfType(message, Lookup.class)
+               || isSoapBodyOfType(message, Unregister.class);
     }
 
     private <T> boolean isSoapBodyOfType(SaajSoapMessage message, Class<T> clazz) {

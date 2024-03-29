@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import documentum.contextreg.ServiceContext;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -48,8 +49,10 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     public boolean doesRequireRefresh() throws CacheException {
         Optional<Token> downstream = getValidatedToken();
 
-        return EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken()) || (!EMPTY_DOWN_STREAM_TOKEN.equals(getDownstreamToken())
-            && downstream.isPresent() && !downstream.get().valid(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY));
+        boolean tokenValid = downstream.isPresent() && downstream.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY);
+        String downstreamToken = getDownstreamToken();
+        return StringUtils.isEmpty(downstreamToken) || (StringUtils.isNotEmpty(downstreamToken)
+                                                                               && !tokenValid);
     }
 
     @Override
