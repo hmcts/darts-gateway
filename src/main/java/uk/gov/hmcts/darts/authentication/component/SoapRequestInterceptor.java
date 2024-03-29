@@ -200,7 +200,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             Optional<Token> tokenOpt = tokenRegisterable.store(serviceContext, true);
 
             if (tokenOpt.isPresent()) {
-                Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(tokenOpt.get());
+                Token token = tokenOpt.get();
+                Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token);
                 CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
 
                 if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
@@ -211,11 +212,11 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                         new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                             tokenDownstream.get().getTokenString().orElse(""));
                     }
-                } else if (tokenOpt.get().getTokenString().isEmpty()) {
+                } else if (token.getTokenString().isEmpty()) {
                     throw new AuthenticationFailedException();
                 } else {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                        tokenOpt.get().getTokenString().orElse(""));
+                        token.getTokenString().orElse(""));
                 }
             } else {
                 throw new AuthenticationFailedException();

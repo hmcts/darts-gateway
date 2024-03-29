@@ -136,6 +136,24 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
         when(oauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenThrow(new RuntimeException());
 
+        when(oauthTokenGenerator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
+            .thenReturn(CONTEXT_REGISTRY_TOKEN);
+
+        authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
+            executeHandleLookup(client);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(oauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testLookupReturningNullToken(ContextRegistryClient client) throws Exception {
+        when(oauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
+            .thenThrow(new RuntimeException());
+
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeHandleLookup(client);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
