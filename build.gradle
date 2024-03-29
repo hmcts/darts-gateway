@@ -335,7 +335,7 @@ dependencies {
   implementation 'com.fasterxml.jackson.core:jackson-databind'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.4.0'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.0', {
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.1', {
     exclude group: 'commons-fileupload', module: 'commons-fileupload'
   }
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
@@ -384,7 +384,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.0.10'
   testImplementation group: 'commons-io', name: 'commons-io', version: '2.15.1'// CVE-2021-29425
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.1.1'
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.1.2'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
   testImplementation 'org.xmlunit:xmlunit-core:2.9.1'
   testImplementation 'org.xmlunit:xmlunit-matchers:2.9.1'
