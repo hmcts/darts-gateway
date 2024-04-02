@@ -43,6 +43,11 @@ public class ServiceExceptionType extends ServiceException {
         exceptionTypeAttribute.setName(ATTRIBUTE_EXCEPTION_TYPE);
         exceptionTypeAttribute.setType(String.class.getName());
 
+        DfsAttributeHolder messageArgsAttribute = new DfsAttributeHolder();
+        messageArgsAttribute.setName(ATTRIBUTE_MESSAGE_ARGS);
+        messageArgsAttribute.setType(String.class.getName());
+        messageArgsAttribute.setValue(arg);
+
         DfsAttributeHolder messageIdAttribute = new DfsAttributeHolder();
         messageIdAttribute.setName(ATTRIBUTE_MESSAGE_ID);
         messageIdAttribute.setType(getMessage().getClass().getCanonicalName());
@@ -56,6 +61,7 @@ public class ServiceExceptionType extends ServiceException {
         holder.setMessageId(getMessageId());
 
         holder.getAttribute().add(exceptionTypeAttribute);
+        holder.getAttribute().add(messageArgsAttribute);
         holder.getAttribute().add(messageIdAttribute);
 
         List<DfsExceptionHolder> exceptionHolders = new ArrayList<>();
