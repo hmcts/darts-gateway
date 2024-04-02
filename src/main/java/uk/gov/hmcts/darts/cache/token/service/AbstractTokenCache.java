@@ -67,7 +67,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         Optional<Token> token = distributedLockWork.execute(() -> {
             Optional<Token> tokenToUse = Optional.empty();
 
-            // if we have found a token but it is invalid then invalid it and force a new token to be created
+            // if we have found a token, but it is invalid then invalidate it and force a new token to be created
             if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
                 log.debug("Looking up token in cache");
 
@@ -211,7 +211,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
         CacheLockableUnitOfWork work = new CacheLockableUnitOfWork(lockRegistry);
 
-        return work.executeForValueReturn(t -> {
+        CacheLockableUnitOfWork.ExecuteRefreshableValueReturn executeRefreshableValueReturn = t -> {
             Optional<CacheValue> val = getValue(tokenToLookup);
 
             boolean tokenIsValid = tokenToLookup.validate();
@@ -231,7 +231,8 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             log.debug("Returning found value");
             return val;
-        }, tokenToLookup);
+        };
+        return work.executeForValueReturn(executeRefreshableValueReturn, tokenToLookup);
     }
 
     protected Optional<CacheValue> getValue(Token holder) throws CacheException {
@@ -276,9 +277,9 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return getTokenValueWithResetExpiration(holder);
     }
 
-    private Optional<CacheValue> getRefreshValueWithResetExpiration(Token holder) {
-        Object value = redisTemplate.opsForValue().get(holder.getId());
-        redisTemplate.expire(holder.getId(), getSecondsToExpire());
+    private Optional<CacheValue> getRefreshValueWithResetExpiration(Token token) {
+        Object value = redisTemplate.opsForValue().get(token.getId());
+        redisTemplate.expire(token.getId(), getSecondsToExpire());
 
         if (value != null) {
             return Optional.of(getValue((CacheValue) value));

@@ -192,37 +192,35 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getUserName()))
             .filter(basicIdentity -> StringUtils.isNotBlank(basicIdentity.getPassword()))
             .findAny();
-        if (basicIdentityOptional.isPresent()) {
-
-            verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
-
-            // always reuse the tokenOpt in the case of authentication
-            Optional<Token> tokenOpt = tokenRegisterable.store(serviceContext, true);
-
-            if (tokenOpt.isPresent()) {
-                Token token = tokenOpt.get();
-                Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token);
-                CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
-
-                if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
-                    Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
-                    if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
-                        throw new AuthenticationFailedException();
-                    } else {
-                        new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                            tokenDownstream.get().getTokenString().orElse(""));
-                    }
-                } else if (token.getTokenString().isEmpty()) {
-                    throw new AuthenticationFailedException();
-                } else {
-                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                        token.getTokenString().orElse(""));
-                }
-            } else {
-                throw new AuthenticationFailedException();
-            }
-        } else {
+        if (basicIdentityOptional.isEmpty()) {
             throw new InvalidIdentitiesFoundException();
+        }
+
+        verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
+
+        // always reuse the tokenOpt in the case of authentication
+        Optional<Token> tokenOpt = tokenRegisterable.store(serviceContext, true);
+
+        if (tokenOpt.isEmpty()) {
+            throw new AuthenticationFailedException();
+        }
+        Token token = tokenOpt.get();
+        Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token);
+        CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
+
+        if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
+            Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
+            if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
+                throw new AuthenticationFailedException();
+            } else {
+                new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                    tokenDownstream.get().getTokenString().orElse(""));
+            }
+        } else if (token.getTokenString().isEmpty()) {
+            throw new AuthenticationFailedException();
+        } else {
+            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                token.getTokenString().orElse(""));
         }
     }
 
