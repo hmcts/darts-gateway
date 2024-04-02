@@ -27,7 +27,6 @@ public class ServiceExceptionType extends ServiceException {
 
     public ServiceExceptionType(String code, Throwable cause, String arg) {
         setMessageId(code);
-        //setMessageArgs(arg);
         setMessage(SoapFaultServiceException.getMessage(code, arg));
 
         if (cause != null) {
