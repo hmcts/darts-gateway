@@ -148,6 +148,9 @@ public class AuthenticationAssertion {
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
                              String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute()
         );
+        assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ARGS,
+                             String.class.getCanonicalName(), type.getMessageArgs().get(0).toString(), exceptionHolder.getAttribute()
+        );
     }
 
     private void assertAttributeValue(String name, String assertType, String assertValue, List<DfsAttributeHolder> atts) {
