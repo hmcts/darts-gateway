@@ -104,4 +104,5 @@ public class DailyListRoute {
         dartsResponse.setMessage("OK");
         return dartsResponse;
     }
+
 }
