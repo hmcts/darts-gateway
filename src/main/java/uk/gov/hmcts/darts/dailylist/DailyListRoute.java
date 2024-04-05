@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.dailylist;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.service.mojdarts.synapps.com.AddDocument;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +42,13 @@ public class DailyListRoute {
     @Value("${darts-gateway.daily-list.validate}")
     private boolean validate;
 
-    public DARTSResponse handle(String document, String type) {
+    public DARTSResponse handle(AddDocument addDocument, String type) {
         Optional<SystemType> systemType = SystemType.getByType(type);
         if (systemType.isEmpty()) {
             throw new DartsValidationException((Throwable) null, CodeAndMessage.SYSTEM_TYPE_NOT_FOUND);
         }
+
+        var document = addDocument.getDocument();
 
         if (validate) {
             try {
@@ -71,6 +74,7 @@ public class DailyListRoute {
             LocalDateTypeDeserializer.getLocalDate(postDailyListRequest.getHearingDate()),
             postDailyListRequest.getUniqueId(),
             OffsetDateTimeTypeDeserializer.getLOffsetDate(postDailyListRequest.getPublishedTs()),
+            addDocument.getMessageId(),
             postDailyListRequest.getDailyListXml(),
             // Null JSON when first persisting the XML to the API
             // this is so that a record is kept if the XML cannot be serialised to JSON
@@ -100,4 +104,5 @@ public class DailyListRoute {
         dartsResponse.setMessage("OK");
         return dartsResponse;
     }
+
 }
