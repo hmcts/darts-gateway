@@ -40,11 +40,12 @@ public class DailyListApiStub extends DartsApiStub {
         String dailyListXmlString = TestUtils.getContentsFromFile(
             "payloads/events/dailyList-api-request.xml");
         verify(exactly(1), postRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
-            .withQueryParam("source_system", equalTo("XHB"))
-            .withQueryParam("courthouse", equalTo("SNARESBROOK"))
-            .withQueryParam("hearing_date", equalTo("2010-02-18"))
-            .withQueryParam("unique_id", equalTo("CSDDL000000000576147"))
-            .withQueryParam("published_ts", equalTo("2010-02-17T16:16:50Z"))
+                .withQueryParam("source_system", equalTo("XHB"))
+                .withQueryParam("courthouse", equalTo("SNARESBROOK"))
+                .withQueryParam("hearing_date", equalTo("2010-02-18"))
+                .withQueryParam("unique_id", equalTo("CSDDL000000000576147"))
+                .withQueryParam("published_ts", equalTo("2010-02-17T16:16:50Z"))
+                .withQueryParam("message_id", equalTo("18418"))
             .withHeader("xml_document", equalTo(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
         );
     }
@@ -53,12 +54,13 @@ public class DailyListApiStub extends DartsApiStub {
         String dailyListXmlString = TestUtils.getContentsFromFile(
             "payloads/events/dailyList-api-request-with-lb-removed.xml");
         verify(exactly(1), postRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
-            .withQueryParam("source_system", equalTo("CPP"))
-            .withQueryParam("courthouse", equalTo("YORK"))
-            .withQueryParam("hearing_date", equalTo("2024-03-06"))
-            .withQueryParam("unique_id", equalTo("CSDDL1709741907143"))
-            .withQueryParam("published_ts", equalTo("2024-03-06T16:18:25.108Z"))
-            .withHeader("xml_document", equalToXml(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
+                .withQueryParam("source_system", equalTo("CPP"))
+                .withQueryParam("courthouse", equalTo("YORK"))
+                .withQueryParam("hearing_date", equalTo("2024-03-06"))
+                .withQueryParam("unique_id", equalTo("CSDDL1709741907143"))
+                .withQueryParam("published_ts", equalTo("2024-03-06T16:18:25.108Z"))
+                .withQueryParam("message_id", equalTo("18418"))
+                .withHeader("xml_document", equalToXml(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
         );
     }
 
