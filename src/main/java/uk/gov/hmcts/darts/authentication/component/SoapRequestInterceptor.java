@@ -3,14 +3,7 @@ package uk.gov.hmcts.darts.authentication.component;
 import com.google.common.collect.Iterators;
 import documentum.contextreg.BasicIdentity;
 import documentum.contextreg.Identity;
-import documentum.contextreg.Lookup;
-import documentum.contextreg.Register;
 import documentum.contextreg.ServiceContext;
-import documentum.contextreg.Unregister;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.JAXBIntrospector;
-import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.soap.SoapBody;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
@@ -40,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 @Component
@@ -106,7 +97,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
 
             if (optRefreshableCacheValue.isEmpty()) {
-                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getTokenString().orElse(specifiedtoken));
+                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getTokenString());
             } else {
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
@@ -128,7 +119,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     private void authenticateUsernameAndPassword(SaajSoapMessage message) throws AuthenticationFailedException {
         Node bodyNode = ((DOMSource) message.getSoapBody().getPayloadSource()).getNode();
         String messageEndpoint = bodyNode.getLocalName();
-        if (messageEndpoint.equals("register")) {
+        if (ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)) {
             authenticateUsernameAndPasswordFromBody(message);
         } else {
             authenticateUsernameAndPasswordFromHeader(message);
@@ -209,18 +200,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
 
         if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
-            Optional<Token> tokenDownstream = downstreamTokenisable.getValidatedToken();
-            if (tokenDownstream.isEmpty() || tokenDownstream.get().getTokenString().isEmpty()) {
-                throw new AuthenticationFailedException();
-            } else {
+            Token tokenDownstream = downstreamTokenisable.getToken();
                 new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                    tokenDownstream.get().getTokenString().orElse(""));
-            }
+                    tokenDownstream.getTokenString());
         } else if (token.getTokenString().isEmpty()) {
             throw new AuthenticationFailedException();
         } else {
             new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                token.getTokenString().orElse(""));
+                token.getTokenString());
         }
     }
 
@@ -274,21 +261,12 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private boolean isContextRegistryRequest(SaajSoapMessage message) {
-        return isSoapBodyOfType(message, Register.class)
-               || isSoapBodyOfType(message, Lookup.class)
-               || isSoapBodyOfType(message, Unregister.class);
-    }
-
-    private <T> boolean isSoapBodyOfType(SaajSoapMessage message, Class<T> clazz) {
-        try {
-            SoapBody soapBody = message.getSoapBody();
-            Source bodySource = soapBody.getPayloadSource();
-            JAXBContext context = JAXBContext.newInstance(clazz);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            JAXBIntrospector.getValue(unmarshaller.unmarshal(bodySource));
+        if (ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)
+            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.LOOKUP_OPERATION)
+            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.UNREGISTER_OPERATION)) {
             return true;
-        } catch (JAXBException exc) {
-            return false;
         }
+
+        return false;
     }
 }

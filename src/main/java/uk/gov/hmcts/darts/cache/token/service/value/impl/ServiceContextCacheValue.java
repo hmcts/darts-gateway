@@ -26,8 +26,6 @@ public class ServiceContextCacheValue implements CacheValue {
 
     private ServiceContext context;
 
-    protected static final String EMPTY_DOWN_STREAM_TOKEN = "";
-
     protected JAXBContext jaxbContext;
 
     public ServiceContextCacheValue() throws CacheException {
