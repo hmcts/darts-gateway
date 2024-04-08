@@ -91,7 +91,7 @@ public class TokenValidatorImpl implements TokenValidator {
             log.error("Major token validation failure", e);
             throw new CacheTokenValidationException("The token validation failed");
         }
-            return validated;
+        return validated;
     }
 
     boolean validateTheTokenExpiry(String accessToken) {

@@ -7,11 +7,18 @@ import javax.xml.transform.dom.DOMSource;
 
 public class ContextRegistryPayload {
 
+    private ContextRegistryPayload() {
+
+    }
+
     private static final String CONTEXT_REGISTRY_NAMESPACE = "http://services.rt.fs.documentum.emc.com/";
+
     public enum ContextRegistryOperation {
         REGISTRY_OPERATION("register"), LOOKUP_OPERATION("lookup"), UNREGISTER_OPERATION("unregister");
+
         private String soapOperationName;
-        ContextRegistryOperation (String soapOperationName) {
+
+        ContextRegistryOperation(String soapOperationName) {
             this.soapOperationName = soapOperationName;
         }
 
@@ -23,9 +30,9 @@ public class ContextRegistryPayload {
     public static boolean isApplicable(SaajSoapMessage message, ContextRegistryOperation contextRegistryOperation) {
         Node bodyNode = ((DOMSource) message.getSoapBody().getPayloadSource()).getNode();
         String messageEndpoint = bodyNode.getLocalName();
-        String namespaceURI = bodyNode.getNamespaceURI();
+        String namespaceUri = bodyNode.getNamespaceURI();
 
-        if (messageEndpoint.equals(contextRegistryOperation.soapOperationName) && namespaceURI.equals(CONTEXT_REGISTRY_NAMESPACE)) {
+        if (messageEndpoint.equals(contextRegistryOperation.soapOperationName) && namespaceUri.equals(CONTEXT_REGISTRY_NAMESPACE)) {
             return true;
         }
         return false;
