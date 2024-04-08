@@ -23,7 +23,7 @@ public class EventRoutingService {
 
     public DARTSResponse route(AddDocument request) {
         if (DAILY_LIST_TYPES.contains(request.getType())) {
-            return dailyListRoute.handle(request.getDocument(), request.getType());
+            return dailyListRoute.handle(request, request.getType());
         } else {
             return eventRoute.handle(
                 request.getDocument(),
