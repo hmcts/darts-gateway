@@ -5,8 +5,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.opensaml.soap.wsaddressing.To;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +14,6 @@ import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
-
-import java.net.InetAddress;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -64,68 +60,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     @Transactional
     @SuppressWarnings("java:S6809")
     public Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible) throws CacheException {
-        return store(value, reuseTokenIfPossible, true);
-    }
-
-    @SuppressWarnings("java:S6809")
-    private Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible, boolean validateToken) throws CacheException {
-
-        log.debug("Storing the supplied value");
-
-        Optional<Token> tokenToUse = Optional.empty();
-
-        // if we have found a token, but it is invalid then invalidate it and force a new token to be created
-        if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
-            log.debug("Looking up token in cache");
-
-            tokenToUse = read(value);
-
-            if (tokenToUse.isPresent() && validateToken) {
-                log.debug("Found the token in the cache");
-                if (!tokenToUse.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
-                    tokenToUse = Optional.empty();
-                }
-            } else {
-                log.debug("Token not found in cache");
-            }
-
-            if (tokenToUse.isEmpty()) {
-                // ensure that one token is acquired when we know one is needed
-                CacheLockableUnitOfWork distributedLockWork = new CacheLockableUnitOfWork(lockRegistry);
-                tokenToUse = distributedLockWork.execute(() -> {
-
-                    // read the token again one at a time to skip token creation
-                    Optional<Token> foundToken = read(value);
-                    if (foundToken.isPresent() && !foundToken.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
-                        foundToken = Optional.empty();
-                    }
-
-                    // if the token is invalid then create the token
-                    if (!foundToken.isPresent()) {
-                        return createToken(value.getServiceContext());
-                    }
-                   return foundToken.get();
-                }, value.getId());
-            }
-        }
-        else {
-            tokenToUse = Optional.of(createToken(value.getServiceContext()));
-        }
-
-        // now update the redis ids with the shared token details as well as the token for the request
-        Duration secondsToExpire = getSecondsToExpire();
-        redisTemplate.opsForValue().set(tokenToUse.get().getId(), value, secondsToExpire);
-        redisTemplate.opsForValue().set(value.getId(), tokenToUse.get().getTokenString(), secondsToExpire);
-        redisTemplate.expire(tokenToUse.get().getId(), getSecondsToExpire());
-        redisTemplate.expire(value.getId(), getSecondsToExpire());
-
-        log.debug("Token value stored in cache");
-
-        return tokenToUse;
-    }
-
-    private String getHostName() {
-        return SystemUtils.getHostName();
+        return storeIntoRedis(value, reuseTokenIfPossible, true);
     }
 
     @Override
@@ -148,7 +83,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             );
             Optional<CacheValue> value = lookup(token);
             if (value.isPresent()) {
-                return Optional.of(store(value.get(), reuseTokenIfPossible, false).get());
+                return Optional.of(storeIntoRedis(value.get(), reuseTokenIfPossible, false).get());
             } else {
                 log.debug("Not looking up shared token either turned off or not  forced");
                 return Optional.of(store(createValue(context), reuseTokenIfPossible).get());
@@ -245,6 +180,63 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         }
 
         return Optional.empty();
+    }
+
+
+    @SuppressWarnings("java:S6809")
+    private Optional<Token> storeIntoRedis(CacheValue value, Boolean reuseTokenIfPossible, boolean validateToken) throws CacheException {
+
+        log.debug("Storing the supplied value");
+
+        Optional<Token> tokenToUse = Optional.empty();
+
+        // if we have found a token, but it is invalid then invalidate it and force a new token to be created
+        if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
+            log.debug("Looking up token in cache");
+
+            tokenToUse = read(value);
+
+            if (tokenToUse.isPresent() && validateToken) {
+                log.debug("Found the token in the cache");
+                if (!tokenToUse.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
+                    tokenToUse = Optional.empty();
+                }
+            } else {
+                log.debug("Token not found in cache");
+            }
+
+            if (tokenToUse.isEmpty()) {
+                // ensure that one token is acquired when we know one is needed
+                CacheLockableUnitOfWork distributedLockWork = new CacheLockableUnitOfWork(lockRegistry);
+                tokenToUse = distributedLockWork.execute(() -> {
+
+                    // read the token again one at a time to skip token creation
+                    Optional<Token> foundToken = read(value);
+                    if (foundToken.isPresent() && !foundToken.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
+                        foundToken = Optional.empty();
+                    }
+
+                    // if the token is invalid then create the token
+                    if (!foundToken.isPresent()) {
+                        return createToken(value.getServiceContext());
+                    }
+                    return foundToken.get();
+                }, value.getId());
+            }
+        } else {
+            tokenToUse = Optional.of(createToken(value.getServiceContext()));
+        }
+
+        // now update the redis ids with the shared token details as well as the token for the request
+        Duration secondsToExpire = getSecondsToExpire();
+        redisTemplate.opsForValue().set(tokenToUse.get().getId(), value, secondsToExpire);
+        redisTemplate.opsForValue().set(value.getId(), tokenToUse.get().getTokenString(), secondsToExpire);
+        redisTemplate.expire(tokenToUse.get().getId(), getSecondsToExpire());
+        redisTemplate.expire(value.getId(), getSecondsToExpire());
+
+        log.debug("Token value stored in cache");
+
+        return tokenToUse;
     }
 
     protected abstract Token createToken(ServiceContext context) throws CacheException;

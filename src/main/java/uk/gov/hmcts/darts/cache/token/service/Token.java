@@ -11,7 +11,6 @@ import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Getter

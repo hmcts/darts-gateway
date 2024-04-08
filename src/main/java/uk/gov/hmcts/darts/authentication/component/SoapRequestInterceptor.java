@@ -201,8 +201,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
         if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
             Token tokenDownstream = downstreamTokenisable.getToken();
-                new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                    tokenDownstream.getTokenString());
+            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
+                tokenDownstream.getTokenString());
         } else if (token.getTokenString().isEmpty()) {
             throw new AuthenticationFailedException();
         } else {
@@ -241,8 +241,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             message.writeTo(byteArrayTransportOutputStream);
 
             String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
-                                    + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
-                                    + MESSAGE_SEPERATOR + NEW_LINE;
+                + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
+                + MESSAGE_SEPERATOR + NEW_LINE;
 
             log.trace(messagePrefix, payloadMessage);
         } catch (IOException ex) {
