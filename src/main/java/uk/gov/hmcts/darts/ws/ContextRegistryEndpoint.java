@@ -34,12 +34,11 @@ public class ContextRegistryEndpoint {
         RegisterResponse registerResponse = new RegisterResponse();
 
         try {
-
             // create a session as the client needs this
             Optional<Token> cacheValue = registerable.store(register.getValue().getContext());
 
             // for now return a documentum id
-            cacheValue.ifPresent(value -> registerResponse.setReturn(value.getTokenString().orElse("")));
+            cacheValue.ifPresent(value -> registerResponse.setReturn(value.getTokenString()));
         } catch (CacheTokenCreationException cte) {
             log.warn("Failed creation of token", cte);
         }

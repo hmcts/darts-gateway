@@ -22,12 +22,12 @@ public class CacheLockableUnitOfWork {
 
     @FunctionalInterface
     interface ExecuteForToken {
-        Optional<Token> execute() throws CacheException;
+        Token execute() throws CacheException;
     }
 
     @FunctionalInterface
     interface ExecuteForBoolean {
-        boolean execute(Token token) throws CacheException;
+        Token execute() throws CacheException;
     }
 
 
@@ -36,57 +36,11 @@ public class CacheLockableUnitOfWork {
         Optional<CacheValue> execute(Token token) throws CacheException;
     }
 
-    public void execute(Execute runnable, Token token) throws CacheException {
-
-        Lock lock = lockRegistry.obtain(token.getId());
-        lock.lock();
-        try {
-            runnable.execute(token);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public Optional<Token> execute(ExecuteForToken runnable, boolean doesLock, String id) throws CacheException {
-
-        if (doesLock) {
-            Lock lock = lockRegistry.obtain(id);
-            lock.lock();
-            try {
-                return runnable.execute();
-            } finally {
-                lock.unlock();
-            }
-        } else {
-            return runnable.execute();
-        }
-    }
-
-    public Optional<Token> execute(ExecuteForToken runnable, String id) throws CacheException {
+    public Optional<Token> execute(ExecuteForBoolean runnable,  String id) throws CacheException {
         Lock lock = lockRegistry.obtain(id);
         lock.lock();
         try {
-            return runnable.execute();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public boolean executeIsApplicable(ExecuteForBoolean runnable,  Token id) throws CacheException {
-        Lock lock = lockRegistry.obtain(id.getId());
-        lock.lock();
-        try {
-            return runnable.execute(id);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public Optional<CacheValue> executeForValueReturn(ExecuteRefreshableValueReturn runnable, Token token) throws CacheException {
-        Lock lock = lockRegistry.obtain(token.getId());
-        lock.lock();
-        try {
-            return runnable.execute(token);
+            return Optional.of(runnable.execute());
         } finally {
             lock.unlock();
         }

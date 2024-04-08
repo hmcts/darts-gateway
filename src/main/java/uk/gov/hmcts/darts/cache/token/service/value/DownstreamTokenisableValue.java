@@ -3,8 +3,6 @@ package uk.gov.hmcts.darts.cache.token.service.value;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 
-import java.util.Optional;
-
 /**
  * Defines a cache value that has the ability to store an authenticated token for downstream communication.
  */
@@ -14,7 +12,7 @@ public interface DownstreamTokenisableValue extends CacheValue {
      * gets the validated token.
      * @return if the token is not valid we return an empty value else the token
      */
-    Optional<Token> getValidatedToken();
+    Token getToken();
 
     /**
      * Gets the string representation of the token.

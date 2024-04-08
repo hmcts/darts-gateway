@@ -12,8 +12,6 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 
-import java.util.Optional;
-
 /**
  * A default implementation of the {@link DownstreamTokenisableValue} that uses {@link TokenGeneratable} to generate
  * tokens.
@@ -33,7 +31,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
 
         jwtCacheRegisterable = registerable;
         Token newtoken = jwtCacheRegisterable.createToken(context);
-        tokenString = newtoken.getTokenString(false).orElse(EMPTY_DOWN_STREAM_TOKEN);
+        tokenString = newtoken.getTokenString();
     }
 
     public RefeshableTokenCacheValue(RefeshableTokenCacheValue context, TokenGeneratable registerable) throws CacheException {
@@ -47,9 +45,9 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
 
     @Override
     public boolean doesRequireRefresh() throws CacheException {
-        Optional<Token> downstream = getValidatedToken();
+        Token downstream = getToken();
 
-        boolean tokenValid = downstream.isPresent() && downstream.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY);
+        boolean tokenValid = downstream.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY);
         String downstreamToken = getDownstreamToken();
         return StringUtils.isEmpty(downstreamToken) || (StringUtils.isNotEmpty(downstreamToken)
                                                                                && !tokenValid);
@@ -60,19 +58,15 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
         try {
             Token token = jwtCacheRegisterable.createToken(getServiceContext());
 
-            setDownstreamToken(token.getTokenString(false).orElse(EMPTY_DOWN_STREAM_TOKEN));
+            setDownstreamToken(token.getTokenString());
         } catch (CacheTokenCreationException e) {
             log.warn("Failure in refreshing a token continuing to use existing one");
         }
     }
 
     @JsonIgnore
-    public Optional<Token> getValidatedToken() {
-        if (!tokenString.equals(EMPTY_DOWN_STREAM_TOKEN)) {
-            return Optional.of(jwtCacheRegisterable.getToken(tokenString));
-        }
-
-        return Optional.empty();
+    public Token getToken() {
+        return jwtCacheRegisterable.getToken(tokenString);
     }
 
     public void setDownstreamToken(String token) {

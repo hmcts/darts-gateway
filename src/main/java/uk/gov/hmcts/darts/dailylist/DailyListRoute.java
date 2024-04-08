@@ -71,6 +71,7 @@ public class DailyListRoute {
             LocalDateTypeDeserializer.getLocalDate(postDailyListRequest.getHearingDate()),
             postDailyListRequest.getUniqueId(),
             OffsetDateTimeTypeDeserializer.getLOffsetDate(postDailyListRequest.getPublishedTs()),
+            "",
             postDailyListRequest.getDailyListXml(),
             // Null JSON when first persisting the XML to the API
             // this is so that a record is kept if the XML cannot be serialised to JSON

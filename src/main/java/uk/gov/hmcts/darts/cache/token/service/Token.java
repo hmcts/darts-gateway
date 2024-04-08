@@ -36,25 +36,8 @@ public class Token {
         this.validator = validator;
     }
 
-    public Optional<String> getTokenString() {
-        if (validator != null && !validate()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(tokenString);
-    }
-
-    /**
-     * Gets a token and applies validation.
-     * @param validateToken Whether to validate the token
-     * @return The optional token based on whether it has expired or not
-     */
-    public Optional<String> getTokenString(boolean validateToken) {
-        if (validateToken && validator != null && !validate()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(tokenString);
+    public String getTokenString() {
+        return tokenString;
     }
 
     @EqualsAndHashCode.Include
