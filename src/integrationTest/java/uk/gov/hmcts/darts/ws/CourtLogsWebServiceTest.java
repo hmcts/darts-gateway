@@ -74,7 +74,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
-            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
             client.getCourtLogs(
@@ -93,7 +93,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     void testRoutesGetCasesRequestWithIdentitiesFailure(DartsGatewayClient client) throws Exception {
 
         authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
-            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
             client.getCourtLogs(
@@ -112,7 +112,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithAuthenticationTokenFailure(DartsGatewayClient client) throws Exception {
         authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
-            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
             client.getCourtLogs(
@@ -130,7 +130,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequestWithAuthenticationToken(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithTokenHeader(client, () -> {
-            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
             SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(
@@ -168,7 +168,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
 
         authenticationStub.assertWithTokenHeader(client, () -> {
-            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
             when(tokenValidator.test(Mockito.any(),
@@ -204,7 +204,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequest(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-            var dartsApiCourtLogsResponse = someListOfCourtLog(3);
+            List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
             SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(

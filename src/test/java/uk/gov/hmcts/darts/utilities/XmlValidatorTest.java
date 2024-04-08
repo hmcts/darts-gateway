@@ -38,9 +38,7 @@ class XmlValidatorTest {
     }
 
     private String loadSchemaFilePath() {
-        var resourceName = "simple-test-schema.xsd";
-        var classLoader = getClass().getClassLoader();
-        var file = new File(classLoader.getResource(resourceName).getFile());
+        var file = new File(getClass().getClassLoader().getResource("simple-test-schema.xsd").getFile());
 
         return file.getAbsolutePath();
     }

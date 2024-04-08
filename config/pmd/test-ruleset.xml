@@ -20,7 +20,6 @@
     <exclude name="MethodNamingConventions"/>
     <exclude name="OnlyOneReturn"/>
     <exclude name="TooManyStaticImports"/>
-    <exclude name="DefaultPackage"/>
     <exclude name="CommentDefaultAccessModifier"/>
     <exclude name="LinguisticNaming"/>
     <exclude name="MethodNamingConventions"/>
@@ -71,6 +70,17 @@
   </rule>
   <rule ref="category/java/multithreading.xml">
     <exclude name="UseConcurrentHashMap"/>
+  </rule>
+  <rule ref="category/java/codestyle.xml/UseExplicitTypes">
+    <properties>
+      <property name="allowLiterals" value="true" />
+      <property name="allowCtors" value="true" />
+    </properties>
+  </rule>
+  <rule ref="category/java/design.xml/CouplingBetweenObjects">
+    <properties>
+      <property name="threshold" value="30" />
+    </properties>
   </rule>
   <rule ref="category/java/performance.xml"/>
   <rule ref="category/java/security.xml"/>

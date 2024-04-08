@@ -36,7 +36,7 @@ public class CourtLogAssert extends AbstractAssert<CourtLogAssert, com.synapps.m
     }
 
     private void hasCorrectMapping(CourtLog newApiCourtLog) {
-        var legacyCourtLog = getLegacyEntriesFrom(actual).stream()
+        CourtLogEntry legacyCourtLog = getLegacyEntriesFrom(actual).stream()
               .filter((legacyLog) -> legacyLog.getValue().equals(newApiCourtLog.getEventText()))
               .findFirst().orElseThrow(
                     () -> new AssertionError("Expected a log with text: " + newApiCourtLog.getEventText()));
@@ -54,8 +54,6 @@ public class CourtLogAssert extends AbstractAssert<CourtLogAssert, com.synapps.m
     }
 
     public static int getHourAdjustingForTimezone(CourtLogEntry courtLogEntry) {
-        TimeZone timeZone = TimeZone.getTimeZone("Europe/London");
-
         // Create a Calendar instance and set the month and day
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, Integer.parseInt(courtLogEntry.getY())); // You can adjust the year as needed
@@ -63,9 +61,7 @@ public class CourtLogAssert extends AbstractAssert<CourtLogAssert, com.synapps.m
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(courtLogEntry.getD()));
 
         // Check if the date is in daylight saving time
-        var isDaylightSavingTime = timeZone.inDaylightTime(calendar.getTime());
-
-        if (isDaylightSavingTime) {
+        if (TimeZone.getTimeZone("Europe/London").inDaylightTime(calendar.getTime())) {
             return Integer.parseInt(courtLogEntry.getH()) - 1;
         }
 

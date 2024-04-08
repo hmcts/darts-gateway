@@ -7,7 +7,7 @@ import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 class DartsEndpointHandlerTest {
 
-    private final CodeAndMessage assertMessage = CodeAndMessage.NOT_FOUND_COURTHOUSE;
+    private static final CodeAndMessage ASSERT_MESSAGE = CodeAndMessage.NOT_FOUND_COURTHOUSE;
 
     @Test
     void testEndpointExecution() {
@@ -17,11 +17,11 @@ class DartsEndpointHandlerTest {
             () -> new DARTSResponse()
         );
 
-        Assertions.assertEquals(assertMessage.getCode(), response.getCode());
-        Assertions.assertEquals(assertMessage.getMessage(), response.getMessage());
+        Assertions.assertEquals(ASSERT_MESSAGE.getCode(), response.getCode());
+        Assertions.assertEquals(ASSERT_MESSAGE.getMessage(), response.getMessage());
     }
 
     private DARTSResponse executeWithCourtHouseError() {
-        throw new DartsException(assertMessage);
+        throw new DartsException(ASSERT_MESSAGE);
     }
 }

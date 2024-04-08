@@ -16,6 +16,7 @@ import com.service.mojdarts.synapps.com.ObjectFactory;
 import com.service.mojdarts.synapps.com.RegisterNode;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -53,7 +54,7 @@ public class DartsGatewayMtomClient extends AbstractSoapTestClient implements Da
     }
 
     @Override
-    public SoapAssertionUtil<GetCasesResponse> getCases(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<GetCasesResponse> getCases(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            getCases -> new ObjectFactory().createGetCases(getCases),
                            GetCases.class,
@@ -62,7 +63,7 @@ public class DartsGatewayMtomClient extends AbstractSoapTestClient implements Da
     }
 
     @Override
-    public SoapAssertionUtil<AddDocumentResponse> addDocument(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddDocumentResponse> addDocument(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            addDocument -> new ObjectFactory().createAddDocument(addDocument),
                            AddDocument.class,
@@ -71,7 +72,7 @@ public class DartsGatewayMtomClient extends AbstractSoapTestClient implements Da
     }
 
     @Override
-    public SoapAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            getCaseLog -> new ObjectFactory().createGetCourtLog(getCaseLog),
                            GetCourtLog.class,
@@ -80,7 +81,7 @@ public class DartsGatewayMtomClient extends AbstractSoapTestClient implements Da
     }
 
     @Override
-    public SoapAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            addLog -> new ObjectFactory().createAddLogEntry(addLog),
                            AddLogEntry.class,
@@ -89,7 +90,7 @@ public class DartsGatewayMtomClient extends AbstractSoapTestClient implements Da
     }
 
     @Override
-    public SoapAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            addCases -> new ObjectFactory().createAddCase(addCases),
                            AddCase.class,
@@ -98,7 +99,7 @@ public class DartsGatewayMtomClient extends AbstractSoapTestClient implements Da
     }
 
     @Override
-    public SoapAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            registerNode -> new ObjectFactory().createRegisterNode(registerNode),
                            RegisterNode.class,
@@ -107,7 +108,7 @@ public class DartsGatewayMtomClient extends AbstractSoapTestClient implements Da
     }
 
     @Override
-    public SoapAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            addAudio -> new ObjectFactory().createAddAudio(addAudio),
                            AddAudio.class,

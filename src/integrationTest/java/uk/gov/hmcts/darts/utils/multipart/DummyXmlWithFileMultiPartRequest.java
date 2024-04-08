@@ -23,6 +23,7 @@ public class DummyXmlWithFileMultiPartRequest extends XmlWithFileMultiPartReques
     }
 
     @Override
+    @SuppressWarnings("PMD.UseTryWithResources")
     public boolean consumeFileBinaryStream(ConsumerWithIoException<SizeableInputSource> fileInputStream) throws IOException {
 
         SizeableInputSource is = new SizeableInputSource() {

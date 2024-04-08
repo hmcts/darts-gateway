@@ -1,7 +1,5 @@
 package uk.gov.hmcts.darts.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -11,7 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 
 public class GetCasesApiStub {
-    public void returnsFailureWhenGettingCases() throws JsonProcessingException, IOException {
+    public void returnsFailureWhenGettingCases() throws IOException {
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/problemResponse.json");
 

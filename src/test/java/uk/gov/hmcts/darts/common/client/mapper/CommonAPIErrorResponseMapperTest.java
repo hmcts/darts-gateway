@@ -42,7 +42,7 @@ class CommonAPIErrorResponseMapperTest {
         Assertions.assertTrue(exception.isPresent());
         Assertions.assertEquals(
             CodeAndMessage.NOT_FOUND_COURTHOUSE,
-            ((ClientProblemException) exception.get()).getCodeAndMessage()
+            exception.get().getCodeAndMessage()
         );
     }
 }

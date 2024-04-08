@@ -70,7 +70,7 @@ class DarNotificationLoggerServiceImplTest {
         notificationLogger.notificationSucceeded(
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
 
-        var expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=OK",
+        String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=OK",
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
         assertThat(logCaptor.getInfoLogs()).containsExactly(expectedLogEntry);
     }
@@ -81,8 +81,8 @@ class DarNotificationLoggerServiceImplTest {
         notificationLogger.notificationFailed(
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", logLevel);
 
-        var expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, message=some-msg",
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
+        String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, " +
+                                             "message=some-msg", SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
         assertThat(logsFor(logLevel)).containsExactly(expectedLogEntry);
     }
 
@@ -92,7 +92,7 @@ class DarNotificationLoggerServiceImplTest {
         notificationLogger.notificationFailedWithCode(
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", 1, logLevel);
 
-        var expectedLogEntry =
+        String expectedLogEntry =
                 format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, message=some-msg, code=1",
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
         assertThat(logsFor(logLevel)).containsExactly(expectedLogEntry);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +16,9 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.utils.CacheUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
+
+import java.io.IOException;
+import javax.xml.transform.TransformerException;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -107,6 +111,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
+    @SuppressWarnings("PMD.DoNotUseThreads")
     void testHandleRegisterExpiry(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String originalToken = executeHandleRegister(client);
@@ -229,22 +234,22 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
+    void testUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws IOException, InterruptedException, TransformerException {
 
-        when(oauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD))
+        when(oauthTokenGenerator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
             .thenThrow(new RuntimeException());
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeTestHandleUnregister(client);
-        }, ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
+        }, SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
 
-        verify(oauthTokenGenerator, times(1)).acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
+        verify(oauthTokenGenerator, times(1)).acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
         verifyNoMoreInteractions(oauthTokenGenerator);
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testUnregisterWithNoIdentities(ContextRegistryClient client) throws Exception {
+    void testUnregisterWithNoIdentities(ContextRegistryClient client) throws IOException, InterruptedException, TransformerException {
 
         authenticationStub.assertFailBasedOnNoIdentities(client, () -> {
             executeTestHandleUnregister(client);
@@ -257,7 +262,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testRoutesUnregisterWithAuthenticationTokenFailure(ContextRegistryClient client) throws Exception {
+    void testRoutesUnregisterWithAuthenticationTokenFailure(ContextRegistryClient client) throws IOException, InterruptedException, TransformerException {
         authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> {
             executeTestHandleUnregister(client);
         });
@@ -268,7 +273,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testHandleRegisterWithSharing(ContextRegistryClient client) throws Exception {
+    void testHandleRegisterWithSharing(ContextRegistryClient client) throws JAXBException, IOException, InterruptedException {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleRegisterWithSharing(client);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
@@ -276,7 +281,7 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testHandleUnregisterSharing(ContextRegistryClient client) throws Exception {
+    void testHandleUnregisterSharing(ContextRegistryClient client) throws JAXBException, IOException, InterruptedException {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeTestHandleUnregisterSharing(client);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);

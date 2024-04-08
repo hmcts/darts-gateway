@@ -17,10 +17,12 @@ import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.ContextRegistryParent;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.List;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -28,8 +30,20 @@ import javax.xml.transform.stream.StreamResult;
 
 public class AuthenticationAssertion {
 
+    void runBlock(GeneralRunnableOperationWithException runnable, FaultErrorCodes expectedFaultCode, String invalidToken)
+        throws IOException, TransformerException, InterruptedException {
+        try {
+            runnable.run();
+            Assertions.fail("Never expect to get here");
+        } catch (SoapFaultClientException e) {
+            assertErrorResponse(e, expectedFaultCode, invalidToken);
+        } catch (JAXBException e) {
+            Assertions.fail("JAXBException, never expect to get here");
+        }
+    }
+
     public String assertWithTokenHeader(SoapTestClient client, GeneralRunnableOperationWithException runnable, ContextRegistryClient contextClient,
-                                        URL baseUrl, String userName, String password) throws Exception {
+                                        URL baseUrl, String userName, String password) throws IOException, JAXBException, InterruptedException {
 
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
@@ -54,7 +68,7 @@ public class AuthenticationAssertion {
 
     public void assertWithUserNameAndPasswordHeader(SoapTestClient client,
                                                     GeneralRunnableOperationWithException runnable, String headerUsername,
-                                                    String headerPassword) throws Exception {
+                                                    String headerPassword) throws IOException, JAXBException, InterruptedException {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
@@ -69,50 +83,41 @@ public class AuthenticationAssertion {
     /*
     To be used with Register call as it doesn't use a header.
      */
-    public void assertWithNoHeader(GeneralRunnableOperationWithException runnable) throws Exception {
+    public void assertWithNoHeader(GeneralRunnableOperationWithException runnable) throws IOException, JAXBException, InterruptedException {
         runnable.run();
     }
 
     /*
     To be used with Register call as it doesn't use a header.
      */
-    public void assertWithNoHeaderInvalidCredentials(GeneralRunnableOperationWithException runnable) throws Exception {
-        try {
-            runnable.run();
-        } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, "");
-        }
+    public void assertWithNoHeaderInvalidCredentials(GeneralRunnableOperationWithException runnable)
+        throws TransformerException, IOException, InterruptedException {
+        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, null);
     }
 
     public void assertFailBasedOnNoIdentities(SoapTestClient client,
-                                              GeneralRunnableOperationWithException runnable) throws Exception {
+                                              GeneralRunnableOperationWithException runnable) throws IOException, TransformerException, InterruptedException {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextNoIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
-
-        try {
-            runnable.run();
-        } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_NO_IDENTITIES, "");
-        }
+        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_NO_IDENTITIES, null);
     }
 
+
+
     public void assertFailBasedOnInvalidIdentities(SoapTestClient client,
-                                                   GeneralRunnableOperationWithException runnable) throws Exception {
+                                                   GeneralRunnableOperationWithException runnable)
+        throws IOException, TransformerException, InterruptedException {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextInvalidIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        try {
-            runnable.run();
-        } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, "");
-        }
+        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, null);
     }
 
     public void assertFailBasedOnNotAuthenticatedForUsernameAndPassword(SoapTestClient client,
                                                                         GeneralRunnableOperationWithException runnable, String username,
-                                                                        String password) throws Exception {
+                                                                        String password) throws IOException, TransformerException, InterruptedException {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 
@@ -121,15 +126,10 @@ public class AuthenticationAssertion {
 
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        try {
-            runnable.run();
-            Assertions.fail("Never expect to get here");
-        } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, "");
-        }
+        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, null);
     }
 
-    private void assertErrorResponse(SoapFaultClientException faultClientException, FaultErrorCodes code, String messageArgs) throws Exception {
+    private void assertErrorResponse(SoapFaultClientException faultClientException, FaultErrorCodes code, String messageArgs) throws TransformerException {
         ServiceExceptionType type = getSoapFaultDetails(faultClientException);
         Assertions.assertEquals(faultClientException.getMessage(), type.getMessage());
         Assertions.assertEquals(SoapFaultServiceException.getMessage(code.name(), messageArgs), type.getMessage());
@@ -163,7 +163,8 @@ public class AuthenticationAssertion {
         Assertions.assertTrue(found);
     }
 
-    public void assertFailBasedOnNotAuthenticatedToken(SoapTestClient client, GeneralRunnableOperationWithException runnable) throws Exception {
+    public void assertFailBasedOnNotAuthenticatedToken(SoapTestClient client, GeneralRunnableOperationWithException runnable)
+        throws IOException, TransformerException, InterruptedException {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderSecurityToken.xml");
 
@@ -171,32 +172,24 @@ public class AuthenticationAssertion {
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${TOKEN}", invalidToken);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        try {
-            runnable.run();
-            Assertions.fail("Never expect to get here");
-        } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, FaultErrorCodes.E_UNKNOWN_TOKEN, invalidToken);
-        }
+        runBlock(runnable, FaultErrorCodes.E_UNKNOWN_TOKEN, invalidToken);
     }
 
     public void assertFailsWithServiceAuthorisationFailedError(SoapTestClient client,
                                                                GeneralRunnableOperationWithException runnable,
-                                                               String username, String password) throws Exception {
+                                                               String username, String password)
+        throws IOException, TransformerException, InterruptedException {
 
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile("payloads/soapHeaderServiceContext.xml");
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${USER}", username);
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${PASSWORD}", password);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        try {
-            runnable.run();
-            Assertions.fail("Never expect to get here");
-        } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, username);
-        }
+        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, null);
+
     }
 
-    public static ServiceExceptionType getSoapFaultDetails(SoapFaultClientException exception) throws Exception {
+    public static ServiceExceptionType getSoapFaultDetails(SoapFaultClientException exception) throws TransformerException {
         SoapFaultDetailElement faultDetailElement = exception.getSoapFault().getFaultDetail().getDetailEntries().next();
         DOMResult result = (DOMResult) faultDetailElement.getResult();
 
@@ -221,6 +214,8 @@ public class AuthenticationAssertion {
 
     @FunctionalInterface
     public interface GeneralRunnableOperationWithException {
-        void run() throws Exception;
+        @SuppressWarnings("PMD.AvoidUncheckedExceptionsInSignatures")
+
+        void run() throws SoapFaultClientException, JAXBException, IOException, InterruptedException;
     }
 }

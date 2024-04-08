@@ -4,6 +4,7 @@ import documentum.contextreg.ServiceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -62,7 +63,7 @@ class RefreshableTokenCacheValueTest {
     }
 
     @BeforeEach
-    void beforeTest() throws Exception {
+    void beforeTest() throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(ServiceContext.class);
         Unmarshaller jaxbMarshaller = jaxbContext.createUnmarshaller();
         StringSource ss = new StringSource(SERVICE_CONTEXT_UNDER_TEST);
@@ -75,7 +76,7 @@ class RefreshableTokenCacheValueTest {
     }
 
     @Test
-    void testBasicParsing() throws Exception {
+    void testBasicParsing() {
         TokenGeneratable generatable = Mockito.mock(TokenGeneratable.class);
         when(generatable.createToken(Mockito.notNull())).thenReturn(token);
 
@@ -87,7 +88,7 @@ class RefreshableTokenCacheValueTest {
     }
 
     @Test
-    void testNeedRefreshing() throws Exception {
+    void testNeedRefreshing() {
         TokenGeneratable generatable = Mockito.mock(TokenGeneratable.class);
         when(generatable.getToken(CACHED_TOKEN_STRING)).thenReturn(token);
         when(generatable.createToken(Mockito.notNull())).thenReturn(token);
@@ -102,7 +103,7 @@ class RefreshableTokenCacheValueTest {
     }
 
     @Test
-    void testRefreshToken() throws Exception {
+    void testRefreshToken() {
         TokenGeneratable generatable = Mockito.mock(TokenGeneratable.class);
         when(generatable.createToken(context)).thenReturn(token);
         when(generatable.getToken(CACHED_TOKEN_STRING)).thenReturn(token);
@@ -118,7 +119,7 @@ class RefreshableTokenCacheValueTest {
     }
 
     @Test
-    void testRefreshTokenFailure() throws Exception {
+    void testRefreshTokenFailure() {
         TokenGeneratable generatable = Mockito.mock(TokenGeneratable.class);
         when(generatable.getToken(CACHED_TOKEN_STRING)).thenReturn(token);
         when(generatable.createToken(Mockito.notNull())).thenReturn(token).thenThrow(new CacheTokenCreationException(""));

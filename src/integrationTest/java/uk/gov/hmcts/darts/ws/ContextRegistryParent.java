@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.ws;
 import documentum.contextreg.LookupResponse;
 import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.UnregisterResponse;
+import jakarta.xml.bind.JAXBException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +16,9 @@ import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -27,13 +30,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@SuppressWarnings("PMD.DoNotUseThreads")
 public class ContextRegistryParent extends IntegrationBase {
 
     public static final String SERVICE_CONTEXT_USER = "user";
 
     public static final String SERVICE_CONTEXT_PASSWORD = "pass";
 
-    void executeTestGetContextRegistryWsdl() throws Exception {
+    void executeTestGetContextRegistryWsdl() throws IOException, InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(getGatewayUri() + "runtime/ContextRegistryService?wsdl"))
                 .timeout(Duration.ofMinutes(2))
@@ -44,7 +48,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNotNull(response.body());
     }
 
-    String executeHandleRegisterMissingIdentity(ContextRegistryClient client) throws Exception {
+    String executeHandleRegisterMissingIdentity(ContextRegistryClient client) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/ctxtRegistry/register/soapRequestNoIdentities.xml");
 
@@ -54,7 +58,7 @@ public class ContextRegistryParent extends IntegrationBase {
         return response.getResponse().getValue().getReturn();
     }
 
-    String executeHandleRegister(ContextRegistryClient client) throws Exception {
+    String executeHandleRegister(ContextRegistryClient client) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/ctxtRegistry/register/soapRequest.xml");
 
@@ -67,7 +71,7 @@ public class ContextRegistryParent extends IntegrationBase {
         return response.getResponse().getValue().getReturn();
     }
 
-    String executeHandleRegisterInvalidIdentity(ContextRegistryClient client) throws Exception {
+    String executeHandleRegisterInvalidIdentity(ContextRegistryClient client) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/ctxtRegistry/register/soapRequest.xml");
 
@@ -80,7 +84,7 @@ public class ContextRegistryParent extends IntegrationBase {
         return response.getResponse().getValue().getReturn();
     }
 
-    void executeHandleRegisterWithSharing(ContextRegistryClient client) throws Exception {
+    void executeHandleRegisterWithSharing(ContextRegistryClient client) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
 
@@ -99,7 +103,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertEquals(response.getResponse().getValue().getReturn(), response3.getResponse().getValue().getReturn());
     }
 
-    void executeHandleLookup(ContextRegistryClient client) throws Exception {
+    void executeHandleLookup(ContextRegistryClient client) throws JAXBException, IOException {
 
         String token = registerToken(client);
 
@@ -111,7 +115,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
     }
 
-    void executeHandleLookupNoIdentities(ContextRegistryClient client) throws Exception {
+    void executeHandleLookupNoIdentities(ContextRegistryClient client) throws IOException, JAXBException {
 
         String token = registerToken(getGatewayUri(), client, null, null);
 
@@ -123,7 +127,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
     }
 
-    void executeHandleLookupForToken(ContextRegistryClient client, String token) throws Exception {
+    void executeHandleLookupForToken(ContextRegistryClient client, String token) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
@@ -132,7 +136,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
     }
 
-    void executeTestTimeToLive(ContextRegistryClient client, CacheProperties properties) throws Exception {
+    void executeTestTimeToLive(ContextRegistryClient client, CacheProperties properties) throws JAXBException, IOException, InterruptedException {
         String token = registerToken(client);
 
         String soapRequestStr = TestUtils.getContentsFromFile(
@@ -148,7 +152,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNull(response.getResponse().getValue().getReturn());
     }
 
-    void executeTestTimeToIdle(ContextRegistryClient client, CacheProperties properties) throws Exception {
+    void executeTestTimeToIdle(ContextRegistryClient client, CacheProperties properties) throws IOException, JAXBException, InterruptedException {
         String token = registerToken(client);
 
         String soapRequestStr = TestUtils.getContentsFromFile(
@@ -179,11 +183,11 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNull(response.getResponse().getValue().getReturn());
     }
 
-    protected String registerToken(ContextRegistryClient client) throws Exception {
+    protected String registerToken(ContextRegistryClient client) throws IOException, JAXBException {
         return registerToken(getGatewayUri(), client, SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
     }
 
-    public static String registerToken(URL baseUrl, ContextRegistryClient client, String username, String password) throws Exception {
+    public static String registerToken(URL baseUrl, ContextRegistryClient client, String username, String password) throws IOException, JAXBException {
         String soapRequestStr;
         if (username == null && password == null) {
             soapRequestStr = TestUtils.getContentsFromFile(
@@ -202,7 +206,7 @@ public class ContextRegistryParent extends IntegrationBase {
 
 
     @SuppressWarnings({"PMD.SimplifiableTestAssertion", "PMD.DoNotUseThreads", "PMD.AvoidInstantiatingObjectsInLoops"})
-    void executeBasicConcurrency(ContextRegistryClient client, int usersCount, CacheProperties properties) throws Exception {
+    void executeBasicConcurrency(ContextRegistryClient client, int usersCount, CacheProperties properties) throws InterruptedException {
         CountDownLatch semaphore = new CountDownLatch(usersCount);
         CountDownLatch lookupSemaphore = new CountDownLatch(usersCount);
 
@@ -241,7 +245,7 @@ public class ContextRegistryParent extends IntegrationBase {
         }
     }
 
-    void executeTestHandleUnregister(ContextRegistryClient client) throws Exception {
+    void executeTestHandleUnregister(ContextRegistryClient client) throws IOException, JAXBException {
         String token = registerToken(client);
         lookup(client, token);
 
@@ -259,7 +263,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNull(client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr).getResponse().getValue().getReturn());
     }
 
-    void executeTestHandleUnregisterSharing(ContextRegistryClient client) throws Exception {
+    void executeTestHandleUnregisterSharing(ContextRegistryClient client) throws IOException, JAXBException {
         String token = registerToken(client);
         lookup(client, token);
 
@@ -277,7 +281,7 @@ public class ContextRegistryParent extends IntegrationBase {
         Assertions.assertNotNull(client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr).getResponse().getValue().getReturn());
     }
 
-    private LookupResponse lookup(ContextRegistryClient client, String token) throws Exception {
+    private LookupResponse lookup(ContextRegistryClient client, String token) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", StringUtils.trimToEmpty(token));
@@ -289,15 +293,15 @@ public class ContextRegistryParent extends IntegrationBase {
     @Getter
     class RegisterThread implements Runnable {
 
-        private ContextRegistryClient client;
+        private final ContextRegistryClient client;
 
         private String token;
 
-        private String user;
+        private final String user;
 
-        private CountDownLatch latch;
+        private final CountDownLatch latch;
 
-        private CacheProperties properties;
+        private final CacheProperties properties;
 
         RegisterThread(ContextRegistryClient client, String user, CountDownLatch latch, CacheProperties properties) {
             this.client = client;
@@ -320,15 +324,15 @@ public class ContextRegistryParent extends IntegrationBase {
     @Getter
     class LookupThread implements Runnable {
 
-        private ContextRegistryClient client;
+        private final ContextRegistryClient client;
 
         private LookupResponse value;
 
-        private String token;
+        private final String token;
 
-        private CountDownLatch latch;
+        private final CountDownLatch latch;
 
-        private CacheProperties properties;
+        private final CacheProperties properties;
 
         LookupThread(ContextRegistryClient client, String token, CountDownLatch latch, CacheProperties properties) {
             this.client = client;

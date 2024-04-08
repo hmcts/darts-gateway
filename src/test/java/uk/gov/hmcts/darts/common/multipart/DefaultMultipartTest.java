@@ -29,13 +29,13 @@ class DefaultMultipartTest {
             }
 
             @Override
-            public InputStream getInputStream() throws IOException {
+            public InputStream getInputStream() {
                 return new ByteArrayInputStream(contents.getBytes());
             }
         };
     }
 
-    DefaultMultipartTest() throws Exception {
+    DefaultMultipartTest() throws IOException {
         multipart = new StreamingMultipart(NAME, CONTENT_TYPE, getIS(IS_BYTES));
     }
 

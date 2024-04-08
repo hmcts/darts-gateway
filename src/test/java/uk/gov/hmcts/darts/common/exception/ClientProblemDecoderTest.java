@@ -13,6 +13,7 @@ import uk.gov.hmcts.darts.utilities.TestUtils;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ class ClientProblemDecoderTest {
     private Response response;
 
 
-    private void setupSuccessResponse() throws Exception {
+    private void setupSuccessResponse() throws IOException {
         response = Mockito.mock(Response.class);
         Response.Body body = Mockito.mock(Response.Body.class);
 
@@ -35,7 +36,7 @@ class ClientProblemDecoderTest {
     }
 
     @Test
-    void testDecoderNoProblemMapperFound() throws Exception {
+    void testDecoderNoProblemMapperFound() throws IOException {
         setupSuccessResponse();
 
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
@@ -52,7 +53,7 @@ class ClientProblemDecoderTest {
     }
 
     @Test
-    void testDecoderErrorsException() throws Exception {
+    void testDecoderErrorsException() throws IOException {
         setupSuccessResponse();
 
         ClientProblemException exceptionToReturn = new ClientProblemException(null);
@@ -68,7 +69,7 @@ class ClientProblemDecoderTest {
     }
 
     @Test
-    void testDecoderProblemParsingException() throws Exception {
+    void testDecoderProblemParsingException() throws IOException {
         response = Mockito.mock(Response.class);
         Response.Body body = Mockito.mock(Response.Body.class);
 

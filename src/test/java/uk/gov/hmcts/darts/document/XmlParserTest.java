@@ -48,7 +48,7 @@ class XmlParserTest {
 
     @Test
     void unmarshalEvent() {
-        var dartsEvent = xmlParser.unmarshal(eventXML, DartsEvent.class);
+        DartsEvent dartsEvent = xmlParser.unmarshal(eventXML, DartsEvent.class);
 
         assertThat(dartsEvent.getID()).isEqualTo(0);
         assertThat(dartsEvent.getY()).isEqualTo(2019);

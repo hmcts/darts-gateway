@@ -8,8 +8,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 
-import java.net.URL;
-
 @ActiveProfiles("int-test-jwt-token-shared")
 class WsdlTest extends IntegrationBase {
 
@@ -42,11 +40,5 @@ class WsdlTest extends IntegrationBase {
         Assertions.assertThrows(HttpClientErrorException.NotFound.class, () -> {
             template.getForObject(getGatewayUri() + "/DARTSServiceUnknown?wsdl", String.class);
         });
-    }
-
-    @Test
-    void testFaviconSuccess() throws Exception {
-        template.getForObject(new URL("http://localhost:" + port  + "/favicon.ico").toString(), String.class);
-        Assertions.assertTrue(true);
     }
 }

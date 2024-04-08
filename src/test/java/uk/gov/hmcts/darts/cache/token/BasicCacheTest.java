@@ -332,8 +332,6 @@ class BasicCacheTest {
 
 
     class DummyCache extends AbstractTokenCache implements TokenGeneratable {
-        private TokenGeneratable cache;
-
         private final TokenValidator validate;
 
         private final String token;

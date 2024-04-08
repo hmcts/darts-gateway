@@ -48,8 +48,7 @@ class BasicAuthorisationTest extends ContextRegistryParent {
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD)).thenReturn("test");
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
-            .thenReturn("test");
+        when(mockOauthTokenGenerator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_USER)).thenReturn("test");
         when(mockOauthTokenGenerator.acquireNewToken("not_whitelisted_service", DEFAULT_HEADER_PASSWORD)).thenReturn("test");
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);

@@ -29,10 +29,10 @@ class DailyListAPIErrorResponseMapperTest {
         problem.setType(uriType);
         Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
         Assertions.assertTrue(exception.isPresent());
-        Assertions.assertEquals(problem, ((ClientProblemException) exception.get()).getProblem());
+        Assertions.assertEquals(problem, exception.get().getProblem());
         Assertions.assertEquals(
             CodeAndMessage.NOT_FOUND_HANLDER,
-            ((ClientProblemException) exception.get()).getCodeAndMessage()
+            exception.get().getCodeAndMessage()
         );
     }
 }
