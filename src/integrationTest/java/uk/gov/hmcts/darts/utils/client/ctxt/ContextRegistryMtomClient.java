@@ -8,6 +8,7 @@ import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.Unregister;
 import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import uk.gov.hmcts.darts.utils.client.AbstractSoapTestClient;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
@@ -25,7 +26,7 @@ public class ContextRegistryMtomClient extends AbstractSoapTestClient implements
     }
 
     @Override
-    public SoapAssertionUtil<RegisterResponse> register(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<RegisterResponse> register(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            register -> new ObjectFactory().createRegister(register),
                            Register.class,
@@ -34,7 +35,7 @@ public class ContextRegistryMtomClient extends AbstractSoapTestClient implements
     }
 
     @Override
-    public SoapAssertionUtil<LookupResponse> lookup(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<LookupResponse> lookup(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            lookup -> new ObjectFactory().createLookup(lookup),
                            Lookup.class,
@@ -43,7 +44,7 @@ public class ContextRegistryMtomClient extends AbstractSoapTestClient implements
     }
 
     @Override
-    public SoapAssertionUtil<UnregisterResponse> unregister(URL uri, String payload) throws Exception {
+    public SoapAssertionUtil<UnregisterResponse> unregister(URL uri, String payload) throws JAXBException {
         return sendMessage(uri, payload,
                            unregister -> new ObjectFactory().createUnregister(unregister),
                            Unregister.class,

@@ -17,6 +17,7 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.utilities.TestUtils;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ class JacksonDartsClientProblemDecoderTest {
     private String dartsApiResponseStr;
 
     @BeforeEach
-    public void before() throws Exception {
+    public void before() throws IOException {
         dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "tests/client/error/problemResponse.json");
     }
@@ -41,8 +42,7 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpHeaders headers = new HttpHeaders();
-        HttpStatusCodeException ex = new DummyBadRequest("404", headers, dartsApiResponseStr.getBytes(), Charset.defaultCharset());
+        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
         Exception exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
 
         Assertions.assertTrue(ClientProblemException.class.isAssignableFrom(exception.getClass()));
@@ -60,8 +60,7 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpHeaders headers = new HttpHeaders();
-        HttpStatusCodeException ex = new DummyBadRequest("404", headers, dartsApiResponseStr.getBytes(), Charset.defaultCharset());
+        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
         DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
         Assertions.assertSame(CodeAndMessage.ERROR, exception.getCodeAndMessage());
     }
@@ -78,13 +77,13 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpHeaders headers = new HttpHeaders();
-        HttpStatusCodeException ex = new DummyBadRequest("404", headers, dartsApiResponseStr.getBytes(), Charset.defaultCharset());
+        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
         DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
-        Assertions.assertEquals(CodeAndMessage.ERROR, ((DartsException) exception).getCodeAndMessage());
+        Assertions.assertEquals(CodeAndMessage.ERROR, exception.getCodeAndMessage());
     }
 
     class DummyBadRequest extends HttpClientErrorException {
+        @SuppressWarnings({"unchecked", "PMD.LooseCoupling"})
         public DummyBadRequest(String statusText, HttpHeaders headers, byte[] body, @Nullable Charset charset) {
             super(HttpStatus.BAD_REQUEST, statusText, headers, body, charset);
         }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +14,7 @@ class DateConvertersTest {
 
     @Test
     void convertsLegacyDateFormatToOffsetDateTimeWhenTimezoneIsGmt() {
-        var offsetDateTime = dateConverters.offsetDateTimeFrom("20221228115959");
+        OffsetDateTime offsetDateTime = dateConverters.offsetDateTimeFrom("20221228115959");
 
         assertThat(offsetDateTime.getYear()).isEqualTo(2022);
         assertThat(offsetDateTime.getMonthValue()).isEqualTo(12);
@@ -27,7 +28,7 @@ class DateConvertersTest {
 
     @Test
     void convertsLegacyDateFormatToOffsetDateTimeWhenTimezoneIsBst() {
-        var offsetDateTime = dateConverters.offsetDateTimeFrom("20220628115959");
+        OffsetDateTime offsetDateTime = dateConverters.offsetDateTimeFrom("20220628115959");
 
         assertThat(offsetDateTime.getYear()).isEqualTo(2022);
         assertThat(offsetDateTime.getMonthValue()).isEqualTo(6);
@@ -41,18 +42,18 @@ class DateConvertersTest {
 
     @Test
     void convertsUtcLocalDateTimeToLegacyDateTimeForGmt() {
-        var utcDateTime = OffsetDateTime.parse("2022-01-11T16:00:00.000Z");
+        OffsetDateTime utcDateTime = OffsetDateTime.parse("2022-01-11T16:00:00.000Z");
 
-        var dateTime = dateConverters.offsetDateTimeToLegacyDateTime(utcDateTime);
+        ZonedDateTime dateTime = dateConverters.offsetDateTimeToLegacyDateTime(utcDateTime);
 
         assertThat(dateTime.getHour()).isEqualTo(16);
     }
 
     @Test
     void convertsUtcLocalDateTimeToLegacyDateTimeForBst() {
-        var utcDateTime = OffsetDateTime.parse("2022-06-11T16:00:00.000Z");
+        OffsetDateTime utcDateTime = OffsetDateTime.parse("2022-06-11T16:00:00.000Z");
 
-        var dateTime = dateConverters.offsetDateTimeToLegacyDateTime(utcDateTime);
+        ZonedDateTime dateTime = dateConverters.offsetDateTimeToLegacyDateTime(utcDateTime);
 
         assertThat(dateTime.getHour()).isEqualTo(17);
     }

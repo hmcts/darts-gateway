@@ -184,10 +184,6 @@ class TokenValidatorImplTest {
 
 
     class DefaultJwtProcessorCustom extends DefaultJWTProcessor<SecurityContext> {
-        @Override
-        public JWTClaimsSet process(String jwtString, SecurityContext context) throws ParseException, BadJOSEException, JOSEException {
-            return super.process(jwtString, context);
-        }
     }
 
     class DefaultJwtProcessorThrows extends DefaultJWTProcessor<SecurityContext> {

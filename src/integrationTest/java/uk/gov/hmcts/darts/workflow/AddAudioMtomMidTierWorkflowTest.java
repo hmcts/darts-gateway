@@ -37,7 +37,7 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     private TokenValidator validator;
 
     @BeforeEach
-    void before() throws Exception {
+    void before() {
         when(generator.acquireNewToken(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);

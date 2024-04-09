@@ -49,13 +49,10 @@ class GetCourtLogRouteTest {
 
     @Test
     void callsGetLogApiClientWithCorrectParameters() {
-        var legacyGetCourtLog = someLegacyGetCourtLogRequest();
-
-        ArrayList<CourtLog> courtLogs = new ArrayList<>();
-        ResponseEntity<List<CourtLog>> entity = new ResponseEntity<>(courtLogs, HttpStatusCode.valueOf(200));
+        ResponseEntity<List<CourtLog>> entity = new ResponseEntity<>(new ArrayList<>(), HttpStatusCode.valueOf(200));
         when(courtLogsClient.courtlogsGet(notNull(), notNull(), notNull(), notNull())).thenReturn(entity);
 
-        getCourtLogRoute.route(legacyGetCourtLog);
+        getCourtLogRoute.route(someLegacyGetCourtLogRequest());
 
         verify(courtLogsClient).courtlogsGet(
               "some-court-house",
@@ -65,7 +62,7 @@ class GetCourtLogRouteTest {
     }
 
     private GetCourtLog someLegacyGetCourtLogRequest() {
-        var getCourtLog = new GetCourtLog();
+        GetCourtLog getCourtLog = new GetCourtLog();
         getCourtLog.setCourthouse("some-court-house");
         getCourtLog.setCaseNumber("some-court-house");
         getCourtLog.setStartTime("20221228235959");

@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.cache.token.service.value.impl;
 
 import documentum.contextreg.ServiceContext;
 import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ class ServiceContextCacheValueTest {
     private  ServiceContext context;
 
     @BeforeEach
-    void beforeTest() throws Exception {
+    void beforeTest() throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(ServiceContext.class);
         Unmarshaller jaxbMarshaller = jaxbContext.createUnmarshaller();
         StringSource ss = new StringSource(SERVICE_CONTEXT_UNDER_TEST);
@@ -32,7 +33,7 @@ class ServiceContextCacheValueTest {
     }
 
     @Test
-    void testBasicParsing() throws Exception {
+    void testBasicParsing() {
         ServiceContextCacheValue contextCacheValue = new ServiceContextCacheValue(context);
         Assertions.assertFalse(contextCacheValue.getContextString().isEmpty());
         Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":${USER}:${PASSWORD}", contextCacheValue.getId());

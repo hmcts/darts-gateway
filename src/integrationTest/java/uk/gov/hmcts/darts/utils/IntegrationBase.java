@@ -21,6 +21,7 @@ import uk.gov.hmcts.darts.workflow.command.Command;
 import uk.gov.hmcts.darts.workflow.command.CommandHolder;
 import uk.gov.hmcts.darts.workflow.command.DeployRedisCommand;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
@@ -76,7 +77,7 @@ public class IntegrationBase implements CommandHolder {
     }
 
     @BeforeEach
-    void clearStubs() throws Exception {
+    void clearStubs()  {
         template.getConnectionFactory().getConnection().flushAll();
         WireMock.reset();
     }
@@ -95,10 +96,10 @@ public class IntegrationBase implements CommandHolder {
         try {
             Enumeration<NetworkInterface> networkEnum = NetworkInterface.getNetworkInterfaces();
             while (networkEnum.hasMoreElements()) {
-                NetworkInterface networkInterfaces = (NetworkInterface) networkEnum.nextElement();
+                NetworkInterface networkInterfaces = networkEnum.nextElement();
                 Enumeration<InetAddress> ipaddressesOfNic = networkInterfaces.getInetAddresses();
                 while (ipaddressesOfNic.hasMoreElements()) {
-                    InetAddress ipaddress = (InetAddress) ipaddressesOfNic.nextElement();
+                    InetAddress ipaddress = ipaddressesOfNic.nextElement();
                     if (!ipaddress.isLoopbackAddress() && ipaddress.getHostAddress().contains(".")) {
                         ipaddressStr = ipaddress.getHostAddress() + ":" + port;
                     }
@@ -135,7 +136,7 @@ public class IntegrationBase implements CommandHolder {
         RedisConfiguration.getDeployRedisCommand().cleanupResources();
     }
 
-    protected void startRedis() throws Exception {
+    protected void startRedis() throws IOException {
         RedisConfiguration.getDeployRedisCommand().executeWithDocker();
     }
 

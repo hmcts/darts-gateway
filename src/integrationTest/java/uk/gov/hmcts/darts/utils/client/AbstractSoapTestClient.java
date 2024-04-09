@@ -24,20 +24,6 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
     implements SoapTestClient {
     private String headerContents;
 
-    private javax.xml.transform.Result getResult() {
-        return new javax.xml.transform.Result() {
-            @Override
-            public void setSystemId(String systemId) {
-
-            }
-
-            @Override
-            public String getSystemId() {
-                return null;
-            }
-        };
-    }
-
     public AbstractSoapTestClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);
     }

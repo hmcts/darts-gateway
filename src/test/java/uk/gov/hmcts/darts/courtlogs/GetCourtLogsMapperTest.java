@@ -22,9 +22,9 @@ class GetCourtLogsMapperTest {
 
     @Test
     void mapsEmptyCourtLogsToLegacyApi() {
-        var emptyCourtLogs = new ArrayList<CourtLog>();
+        List<CourtLog> emptyCourtLogs = new ArrayList<>();
 
-        var legacyCourtLog = courtLogsMapper.toLegacyApi(emptyCourtLogs);
+        GetCourtLogResponse legacyCourtLog = courtLogsMapper.toLegacyApi(emptyCourtLogs);
 
         assertThat(legacyCourtLog).isInstanceOf(GetCourtLogResponse.class);
         assertThat(legacyCourtLog.getCourtLog()).isNull();
@@ -32,9 +32,9 @@ class GetCourtLogsMapperTest {
 
     @Test
     void mapsToLegacyApi() {
-        var dartsApiCourtLogs = someCourtLogs(2);
+        List<CourtLog> dartsApiCourtLogs = someCourtLogs(2);
 
-        var legacyCourtLog = courtLogsMapper.toLegacyApi(dartsApiCourtLogs).getCourtLog();
+        com.synapps.moj.dfs.response.CourtLog legacyCourtLog = courtLogsMapper.toLegacyApi(dartsApiCourtLogs).getCourtLog();
 
         verifyThat(legacyCourtLog).isCorrectlyMappedFrom(dartsApiCourtLogs);
     }

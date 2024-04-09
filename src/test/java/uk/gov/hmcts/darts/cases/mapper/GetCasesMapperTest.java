@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
@@ -48,7 +47,7 @@ class GetCasesMapperTest {
         ObjectMapper mapper =  new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(module);
-        List<ScheduledCase> modernisedDartsResponse = mapper.readValue(dartsApiResponseStr, new TypeReference<ArrayList<ScheduledCase>>() {});
+        List<ScheduledCase> modernisedDartsResponse = mapper.readValue(dartsApiResponseStr, new TypeReference<>() {});
 
         GetCasesResponse getCasesResponse = GetCasesMapper.mapToDfsResponse(
             getCasesRequest,

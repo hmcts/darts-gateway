@@ -38,7 +38,7 @@ class APIResponseMapperTest {
     @SuppressWarnings({"unchecked", "PMD.NonStaticInitializer"})
     class DummyAPIResponseMapper extends AbstractAPIProblemResponseMapper {
         {
-            var opmapping = new ProblemResponseMappingOperation
+            ProblemResponseMappingOperation<CommonErrorCode> opmapping = new ProblemResponseMappingOperation
                 .ProblemResponseMappingOperationBuilder<CommonErrorCode>()
                 .operation(CommonErrorCode.class)
                 .exception((mapping) -> new DailyListAPIAddException(
