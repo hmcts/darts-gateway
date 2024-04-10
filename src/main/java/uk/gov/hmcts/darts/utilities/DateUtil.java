@@ -1,7 +1,9 @@
 package uk.gov.hmcts.darts.utilities;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.time.DateUtils;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -38,6 +40,16 @@ public class DateUtil {
         return dateToConvert.toInstant()
             .atZone(LONDON_ZONE_ID)
             .toLocalDate();
+    }
+
+    public LocalDate toLocalDate(String dateString) {
+        Date date = null;
+        try {
+            date = DateUtils.parseDate(dateString, "yyyyMMdd", "yyyy-MM-dd");
+            return toLocalDate(date);
+        } catch (ParseException e) {
+            throw new RuntimeException("Error parsing date", e);
+        }
     }
 
 }

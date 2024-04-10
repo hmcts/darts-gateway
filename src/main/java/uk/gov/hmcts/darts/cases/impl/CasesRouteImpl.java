@@ -6,7 +6,6 @@ import com.service.mojdarts.synapps.com.addcase.Case;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import com.synapps.moj.dfs.response.GetCasesResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,7 @@ import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -42,18 +39,13 @@ public class CasesRouteImpl implements CasesRoute {
     @Override
     public GetCasesResponse route(GetCases getCasesRequest) {
         String dateString = getCasesRequest.getDate();
-        try {
-            Date date = DateUtils.parseDate(dateString, "yyyyMMdd", "yyyy-MM-dd");
-            LocalDate localDate = DateUtil.toLocalDate(date);
-            ResponseEntity<List<ScheduledCase>> modernisedDartsResponse = casesClient.casesGet(
-                getCasesRequest.getCourthouse(),
-                getCasesRequest.getCourtroom(),
-                localDate
-            );
-            return GetCasesMapper.mapToDfsResponse(getCasesRequest, modernisedDartsResponse.getBody());
-        } catch (ParseException e) {
-            throw new RuntimeException("Error parsing date from getCasesRequest.", e);
-        }
+        LocalDate localDate = DateUtil.toLocalDate(dateString);
+        ResponseEntity<List<ScheduledCase>> modernisedDartsResponse = casesClient.casesGet(
+            getCasesRequest.getCourthouse(),
+            getCasesRequest.getCourtroom(),
+            localDate
+        );
+        return GetCasesMapper.mapToDfsResponse(getCasesRequest, modernisedDartsResponse.getBody());
     }
 
     @Override
