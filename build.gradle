@@ -383,7 +383,7 @@ dependencies {
   }
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.0.10'
-  testImplementation group: 'commons-io', name: 'commons-io', version: '2.16.0'// CVE-2021-29425
+  testImplementation group: 'commons-io', name: 'commons-io', version: '2.16.1'// CVE-2021-29425
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.1.2'
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
   testImplementation 'org.xmlunit:xmlunit-core:2.9.1'
