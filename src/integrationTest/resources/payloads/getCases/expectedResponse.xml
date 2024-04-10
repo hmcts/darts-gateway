@@ -2,7 +2,7 @@
   <return>
     <code>200</code>
     <message>OK</message>
-    <cases D="20" M="6" Y="2023" courthouse="swansea" courtroom="1">
+    <cases>
       <case>
         <case_number>Case0000001</case_number>
         <scheduled_start>09:00</scheduled_start>
