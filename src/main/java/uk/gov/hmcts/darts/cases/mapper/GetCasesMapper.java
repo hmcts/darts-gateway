@@ -9,7 +9,9 @@ import com.synapps.moj.dfs.response.Judges;
 import com.synapps.moj.dfs.response.Prosecutors;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
+import uk.gov.hmcts.darts.utilities.DartsResponseUtil;
 import uk.gov.hmcts.darts.utilities.DateUtil;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,8 +29,10 @@ public class GetCasesMapper {
 
         com.synapps.moj.dfs.response.GetCasesResponse response = new com.synapps.moj.dfs.response.GetCasesResponse();
         response.setCases(cases);
+        DartsResponseUtil.addMessageAndCode(response, CodeAndMessage.OK);
         return response;
     }
+
 
     private static void setCasesAttributes(GetCases getCasesRequest, Cases cases) {
         cases.setCourthouse(getCasesRequest.getCourthouse());
