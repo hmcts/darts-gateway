@@ -1,5 +1,5 @@
 <com:getCases xmlns:com="http://com.synapps.mojdarts.service.com">
   <courthouse>swansea</courthouse>
   <courtroom>1</courtroom>
-  <date>2023-06-20</date>
+  <date>20230620</date>
 </com:getCases>

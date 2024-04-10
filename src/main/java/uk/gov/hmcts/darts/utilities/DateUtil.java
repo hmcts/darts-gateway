@@ -3,10 +3,12 @@ package uk.gov.hmcts.darts.utilities;
 import lombok.experimental.UtilityClass;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -30,6 +32,12 @@ public class DateUtil {
         //adjust to correct offset
         instant = instant.minusSeconds(zoneOffSet.getTotalSeconds());
         return instant.atOffset(zoneOffSet);
+    }
+
+    public LocalDate toLocalDate(Date dateToConvert) {
+        return dateToConvert.toInstant()
+            .atZone(LONDON_ZONE_ID)
+            .toLocalDate();
     }
 
 }
