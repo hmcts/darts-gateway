@@ -1,5 +1,12 @@
 {
+  "code": "200",
+  "message": "OK",
   "cases": {
+    "courthouse": "Swansea",
+    "courtroom": "1",
+    "y": "2023",
+    "m": "6",
+    "d": "20",
     "case": [
       {
         "caseNumber": "Case0000001",
@@ -217,11 +224,6 @@
           ]
         }
       }
-    ],
-    "courthouse": "Swansea",
-    "courtroom": "1",
-    "y": "2023",
-    "m": "6",
-    "d": "20"
+    ]
   }
 }
