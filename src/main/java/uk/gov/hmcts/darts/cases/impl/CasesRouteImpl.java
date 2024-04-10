@@ -14,6 +14,7 @@ import uk.gov.hmcts.darts.cases.mapper.AddCaseMapper;
 import uk.gov.hmcts.darts.cases.mapper.GetCasesMapper;
 import uk.gov.hmcts.darts.common.client.CasesClient;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
+import uk.gov.hmcts.darts.utilities.DateUtil;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
@@ -37,11 +38,12 @@ public class CasesRouteImpl implements CasesRoute {
 
     @Override
     public GetCasesResponse route(GetCases getCasesRequest) {
-
+        String dateString = getCasesRequest.getDate();
+        LocalDate localDate = DateUtil.toLocalDate(dateString);
         ResponseEntity<List<ScheduledCase>> modernisedDartsResponse = casesClient.casesGet(
             getCasesRequest.getCourthouse(),
             getCasesRequest.getCourtroom(),
-            LocalDate.parse(getCasesRequest.getDate())
+            localDate
         );
         return GetCasesMapper.mapToDfsResponse(getCasesRequest, modernisedDartsResponse.getBody());
     }

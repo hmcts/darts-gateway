@@ -9,6 +9,7 @@ import com.synapps.moj.dfs.response.Judges;
 import com.synapps.moj.dfs.response.Prosecutors;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
+import uk.gov.hmcts.darts.utilities.DateUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,7 +33,7 @@ public class GetCasesMapper {
     private static void setCasesAttributes(GetCases getCasesRequest, Cases cases) {
         cases.setCourthouse(getCasesRequest.getCourthouse());
         cases.setCourtroom(getCasesRequest.getCourtroom());
-        LocalDate localDate = LocalDate.parse(getCasesRequest.getDate());
+        LocalDate localDate = DateUtil.toLocalDate(getCasesRequest.getDate());
         cases.setY(String.valueOf(localDate.getYear()));
         cases.setM(String.valueOf(localDate.getMonthValue()));
         cases.setD(String.valueOf(localDate.getDayOfMonth()));
