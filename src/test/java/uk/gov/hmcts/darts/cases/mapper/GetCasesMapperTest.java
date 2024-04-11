@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.service.mojdarts.synapps.com.GetCases;
 import com.synapps.moj.dfs.response.GetCasesResponse;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -30,10 +29,6 @@ class GetCasesMapperTest {
 
     @Test
     void mapOk() throws IOException, JSONException {
-        GetCases getCasesRequest = new GetCases();
-        getCasesRequest.setCourthouse("Swansea");
-        getCasesRequest.setCourtroom("1");
-        getCasesRequest.setDate("2023-06-20");
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
             "tests/cases/GetCasesMapperTest/mapOk/dartsApiResponse.json");
 
@@ -50,7 +45,6 @@ class GetCasesMapperTest {
         List<ScheduledCase> modernisedDartsResponse = mapper.readValue(dartsApiResponseStr, new TypeReference<>() {});
 
         GetCasesResponse getCasesResponse = GetCasesMapper.mapToDfsResponse(
-            getCasesRequest,
             modernisedDartsResponse
         );
 

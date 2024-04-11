@@ -45,7 +45,7 @@ public class CasesRouteImpl implements CasesRoute {
             getCasesRequest.getCourtroom(),
             localDate
         );
-        return GetCasesMapper.mapToDfsResponse(getCasesRequest, modernisedDartsResponse.getBody());
+        return GetCasesMapper.mapToDfsResponse(modernisedDartsResponse.getBody());
     }
 
     @Override

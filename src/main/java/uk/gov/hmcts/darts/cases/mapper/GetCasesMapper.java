@@ -1,46 +1,33 @@
 package uk.gov.hmcts.darts.cases.mapper;
 
-import com.service.mojdarts.synapps.com.GetCases;
 import com.synapps.moj.dfs.response.Case;
 import com.synapps.moj.dfs.response.Cases;
 import com.synapps.moj.dfs.response.Defendants;
 import com.synapps.moj.dfs.response.Defenders;
+import com.synapps.moj.dfs.response.GetCasesResponse;
 import com.synapps.moj.dfs.response.Judges;
 import com.synapps.moj.dfs.response.Prosecutors;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.utilities.DartsResponseUtil;
-import uk.gov.hmcts.darts.utilities.DateUtil;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @UtilityClass
 public class GetCasesMapper {
 
-    public com.synapps.moj.dfs.response.GetCasesResponse mapToDfsResponse(GetCases getCasesRequest, List<ScheduledCase> modernisedDartsResponse) {
+    public GetCasesResponse mapToDfsResponse(List<ScheduledCase> modernisedDartsResponse) {
         Cases cases = new Cases();
-        setCasesAttributes(getCasesRequest, cases);
         List<Case> caseList = cases.getCase();
         for (ScheduledCase scheduledCase : modernisedDartsResponse) {
             caseList.add(mapToCase(scheduledCase));
         }
 
-        com.synapps.moj.dfs.response.GetCasesResponse response = new com.synapps.moj.dfs.response.GetCasesResponse();
+        GetCasesResponse response = new GetCasesResponse();
         response.setCases(cases);
         DartsResponseUtil.addMessageAndCode(response, CodeAndMessage.OK);
         return response;
-    }
-
-
-    private static void setCasesAttributes(GetCases getCasesRequest, Cases cases) {
-        cases.setCourthouse(getCasesRequest.getCourthouse());
-        cases.setCourtroom(getCasesRequest.getCourtroom());
-        LocalDate localDate = DateUtil.toLocalDate(getCasesRequest.getDate());
-        cases.setY(String.valueOf(localDate.getYear()));
-        cases.setM(String.valueOf(localDate.getMonthValue()));
-        cases.setD(String.valueOf(localDate.getDayOfMonth()));
     }
 
     private Case mapToCase(ScheduledCase scheduledCase) {
