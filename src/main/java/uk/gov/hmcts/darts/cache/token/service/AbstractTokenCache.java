@@ -81,10 +81,10 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             Token token = Token.readToken((String) sharedToken, properties.isMapTokenToSession(),
                                           getValidateToken()
             );
-            Optional<CacheValue> value = lookup(token);
+            Optional<CacheValue> value = getRefreshValueWithResetExpiration(token);
             if (value.isPresent()) {
                 // store into redis without validation of the associated token
-                return Optional.of(createNewTokenOrReuseExistingToken(value.get(), reuseTokenIfPossible, false).get());
+                return Optional.of(createNewTokenOrReuseExistingToken(value.get(), reuseTokenIfPossible, true).get());
             } else {
                 log.debug("Not looking up shared token either turned off or not  forced");
                 return Optional.of(store(createValue(context), reuseTokenIfPossible).get());
@@ -111,7 +111,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
         boolean tokenIsValid = tokenToLookup.validate();
         if (val.isPresent() && !tokenIsValid) {
-            evict(tokenToLookup);
+            redisTemplate.delete(tokenToLookup.getKey());
             val = Optional.empty();
             log.debug("Token manually removed as it is no longer valid");
         } else {
@@ -218,6 +218,9 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             if (tokenToUse.isPresent()) {
                 if (!getValidTokenFromCache(tokenToUse.get(), validateToken)) {
+                    redisTemplate.delete(valueToBeCached.getSharedKey());
+                    redisTemplate.delete(tokenToUse.get().getKey());
+
                     tokenToUse = Optional.empty();
                     log.debug("Cached token is invalid. Proceeding to create new token");
                 }
