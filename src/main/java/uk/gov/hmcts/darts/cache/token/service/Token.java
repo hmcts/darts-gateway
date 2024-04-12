@@ -40,7 +40,7 @@ public class Token {
     }
 
     @EqualsAndHashCode.Include
-    public String getKey() {
+    public String getId() {
         return TokenRegisterable.CACHE_PREFIX + ":" + tokenString + ":" + sessionId;
     }
 

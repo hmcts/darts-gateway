@@ -22,7 +22,7 @@ import java.io.StringWriter;
 public class ServiceContextCacheValue implements CacheValue {
     private String contextStr;
 
-    private String sharedKey;
+    private String id;
 
     private ServiceContext context;
 
@@ -48,7 +48,7 @@ public class ServiceContextCacheValue implements CacheValue {
     public ServiceContextCacheValue(ServiceContextCacheValue value) throws CacheException {
         try {
             jaxbContext = JAXBContext.newInstance(ServiceContext.class);
-            setSharedKey(value.getSharedKey());
+            setId(value.getId());
             setContextString(value.getContextString());
         } catch (JAXBException e) {
             throw new CacheException(e);
@@ -99,11 +99,11 @@ public class ServiceContextCacheValue implements CacheValue {
     }
 
     @Override
-    public String getSharedKey() throws CacheException {
-        if (sharedKey == null) {
-            sharedKey = getId(getServiceContext());
+    public String getId() throws CacheException {
+        if (id == null) {
+            id = getId(getServiceContext());
         }
-        return sharedKey;
+        return id;
     }
 
 
@@ -111,7 +111,7 @@ public class ServiceContextCacheValue implements CacheValue {
         return TokenRegisterable.CACHE_PREFIX + ":" + getUserName(context) + ":" + getPassword(context);
     }
 
-    public void setSharedKey(String sharedKey) throws CacheException {
-        this.sharedKey = sharedKey;
+    public void setId(String id) throws CacheException {
+        this.id = id;
     }
 }
