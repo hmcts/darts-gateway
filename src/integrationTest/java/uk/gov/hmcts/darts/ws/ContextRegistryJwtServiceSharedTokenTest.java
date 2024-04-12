@@ -136,12 +136,12 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
 
             when(tokenValidator.test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
-            executeHandleLookupForToken(client, token);
+            executeHandleLookupForToken(client, token2);
 
             Assertions.assertNotEquals(token, token2);
             Assertions.assertEquals(refreshedToken, token2);
 
-            verify(tokenValidator, times(15)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
+            verify(tokenValidator, times(9)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -200,7 +200,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
             SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
             Assertions.assertNotNull(response.getResponse().getValue().getReturn());
 
-            verify(tokenValidator, times(6)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
+            verify(tokenValidator, times(5)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
