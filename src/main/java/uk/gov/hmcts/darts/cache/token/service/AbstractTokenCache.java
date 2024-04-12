@@ -183,10 +183,14 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return Optional.empty();
     }
 
-    private boolean getValidTokenFromCache(Token token, boolean validateToken) {
-        log.debug("Found the token in the cache");
-        if (validateToken && !token.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
-            return false;
+    private boolean getValidTokenFromCache(Optional<Token> token, boolean validateToken) {
+        if (token.isPresent()) {
+            log.debug("Found the token in the cache");
+            if (validateToken && !token.get().validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY)) {
+                return false;
+            }
+        } else {
+            log.debug("Token not found in cache");
         }
 
         return true;
@@ -216,16 +220,12 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             // validate the token
             tokenToUse = read(valueToBeCached);
 
-            if (tokenToUse.isPresent()) {
-                if (!getValidTokenFromCache(tokenToUse.get(), validateToken)) {
-                    redisTemplate.delete(valueToBeCached.getSharedKey());
-                    redisTemplate.delete(tokenToUse.get().getKey());
+            if (!getValidTokenFromCache(tokenToUse, validateToken)) {
+                redisTemplate.delete(valueToBeCached.getSharedKey());
+                redisTemplate.delete(tokenToUse.get().getKey());
 
-                    tokenToUse = Optional.empty();
-                    log.debug("Cached token is invalid. Proceeding to create new token");
-                }
-            } else {
-                log.debug("Token not found in cache");
+                tokenToUse = Optional.empty();
+                log.debug("Cached token is invalid. Proceeding to create new token");
             }
 
             if (tokenToUse.isEmpty()) {
@@ -236,9 +236,9 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         }
 
         Token consumerToken = tokenToUse.get();
-        CacheValue cachedValueIncludingdartsApiToken = valueToBeCached;
+        CacheValue cachedValueIncludingDartsApiToken = valueToBeCached;
 
-        storeToRedis(consumerToken, cachedValueIncludingdartsApiToken);
+        storeToRedis(consumerToken, cachedValueIncludingDartsApiToken);
 
         log.debug("Token value stored in cache");
 
