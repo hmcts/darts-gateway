@@ -121,7 +121,7 @@ class BasicCacheTest {
         CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
         Assertions.assertEquals(TOKEN_STRING, token.get().getTokenString());
-        Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
+        Assertions.assertEquals(value, redisData.getModel().get(token.get().getKey()));
         Assertions.assertNotNull(value.getServiceContext());
         Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getToken().getTokenString());
     }
@@ -144,14 +144,14 @@ class BasicCacheTest {
         CacheValue value = cache.createValue(context);
         Optional<Token> token = cache.store(value);
         Assertions.assertEquals(TOKEN_STRING, token.get().getTokenString());
-        Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
+        Assertions.assertEquals(value, redisData.getModel().get(token.get().getKey()));
 
         Mockito.when(properties.isShareTokenForSameCredentials()).thenReturn(true);
         Optional<Token> existingToken = cache.store(value);
 
-        Assertions.assertNotNull(template.getExpireDuration().get(value.getId()));
-        Assertions.assertNotNull(template.getExpireDuration().get(existingToken.get().getId()));
-        Assertions.assertEquals(existingToken.get().getId(), token.get().getId());
+        Assertions.assertNotNull(template.getExpireDuration().get(value.getSharedKey()));
+        Assertions.assertNotNull(template.getExpireDuration().get(existingToken.get().getKey()));
+        Assertions.assertEquals(existingToken.get().getKey(), token.get().getKey());
     }
 
     @Test
@@ -175,8 +175,8 @@ class BasicCacheTest {
         Optional<CacheValue> refreshableCacheValue = cache.lookup(token.get());
 
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
-        Assertions.assertEquals(value, redisData.getModel().get(token.get().getId()));
-        Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());
+        Assertions.assertEquals(value, redisData.getModel().get(token.get().getKey()));
+        Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getKey()).getSeconds());
         Assertions.assertEquals(valueToken, ((DownstreamTokenisableValue) value).getToken().getTokenString());
     }
 
@@ -239,7 +239,7 @@ class BasicCacheTest {
         Assertions.assertEquals(valueToken, dummyRefreshableCacheValueWithJwt.getToken().getTokenString());
         Assertions.assertTrue(dummyRefreshableCacheValueWithJwt.hasRefreshed);
         Assertions.assertEquals(value.getContextString(), refreshableCacheValue.get().getContextString());
-        Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getId()).getSeconds());
+        Assertions.assertEquals(TOKEN_EXPIRE_SECONDS, template.getExpireDuration().get(token.get().getKey()).getSeconds());
 
         Mockito.verify(generatable, times(2)).createToken(Mockito.notNull());
     }
@@ -266,7 +266,7 @@ class BasicCacheTest {
 
         cache.evict(token.get());
 
-        Assertions.assertNull(redisData.getModel().get(token.get().getId()));
+        Assertions.assertNull(redisData.getModel().get(token.get().getKey()));
     }
 
     @Test
@@ -295,7 +295,7 @@ class BasicCacheTest {
 
         cache.evict(token.get());
 
-        Assertions.assertNotNull(redisData.getModel().get(token.get().getId()));
+        Assertions.assertNotNull(redisData.getModel().get(token.get().getKey()));
     }
 
     static class DummyInMemoryRedisTemplate extends RedisTemplate<String, Object> {
