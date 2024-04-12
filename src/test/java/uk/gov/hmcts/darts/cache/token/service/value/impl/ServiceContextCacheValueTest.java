@@ -35,6 +35,6 @@ class ServiceContextCacheValueTest {
     void testBasicParsing() throws Exception {
         ServiceContextCacheValue contextCacheValue = new ServiceContextCacheValue(context);
         Assertions.assertFalse(contextCacheValue.getContextString().isEmpty());
-        Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":${USER}:${PASSWORD}", contextCacheValue.getId());
+        Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":${USER}:${PASSWORD}", contextCacheValue.getSharedKey());
     }
 }
