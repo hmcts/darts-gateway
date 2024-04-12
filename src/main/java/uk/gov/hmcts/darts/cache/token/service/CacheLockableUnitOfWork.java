@@ -36,11 +36,11 @@ public class CacheLockableUnitOfWork {
         Optional<CacheValue> execute(Token token) throws CacheException;
     }
 
-    public Token execute(ExecuteForBoolean runnable,  String id) throws CacheException {
+    public Optional<Token> execute(ExecuteForBoolean runnable,  String id) throws CacheException {
         Lock lock = lockRegistry.obtain(id);
         lock.lock();
         try {
-            return runnable.execute();
+            return Optional.of(runnable.execute());
         } finally {
             lock.unlock();
         }
