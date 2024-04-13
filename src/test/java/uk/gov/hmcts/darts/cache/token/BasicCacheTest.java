@@ -347,13 +347,13 @@ class BasicCacheTest {
         }
 
         @Override
-        protected TokenValidator getValidateToken() {
+        protected TokenValidator getTokenValidator() {
             return validate;
         }
 
         @Override
         public Token createToken(ServiceContext context) {
-            return Token.readToken(token, false, getValidateToken());
+            return Token.readToken(token, false, getTokenValidator());
         }
 
         @Override

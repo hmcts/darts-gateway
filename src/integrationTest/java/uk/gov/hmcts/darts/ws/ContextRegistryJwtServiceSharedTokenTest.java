@@ -141,7 +141,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
             Assertions.assertNotEquals(token, token2);
             Assertions.assertEquals(refreshedToken, token2);
 
-            verify(tokenValidator, times(9)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
+            verify(tokenValidator, times(10)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 

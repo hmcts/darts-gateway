@@ -39,7 +39,7 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
     }
 
     @Override
-    protected TokenValidator getValidateToken() {
+    protected TokenValidator getTokenValidator() {
         return validator;
     }
 
@@ -76,7 +76,7 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
             throw new CacheTokenCreationException("Could not get an identity", e);
         }
 
-        return Token.readToken(jwtToken, properties.isMapTokenToSession(), getValidateToken());
+        return Token.readToken(jwtToken, properties.isMapTokenToSession(), getTokenValidator());
     }
 
 

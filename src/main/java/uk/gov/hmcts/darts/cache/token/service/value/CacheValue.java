@@ -10,5 +10,6 @@ public interface CacheValue {
 
     String getSharedKey();
 
+    //service context from the consumer
     ServiceContext getServiceContext();
 }
