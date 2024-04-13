@@ -10,6 +10,7 @@ public class AddCaseMapper {
     public AddCaseRequest mapToDartsApi(Case legacyCase) {
         var addCaseRequest = new AddCaseRequest();
         addCaseRequest.setCourthouse(legacyCase.getCourthouse());
+        addCaseRequest.setCourtroom(legacyCase.getCourtroom());
         addCaseRequest.setCaseNumber(legacyCase.getId());
 
         legacyCase.getDefendants().stream()
