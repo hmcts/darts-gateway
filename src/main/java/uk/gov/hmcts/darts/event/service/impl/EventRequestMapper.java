@@ -4,12 +4,12 @@ import com.synapps.moj.dfs.response.DARTSResponse;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
 import uk.gov.hmcts.darts.model.event.EventsResponse;
+import uk.gov.hmcts.darts.utilities.DateUtil;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 @Service
 public class EventRequestMapper {
@@ -31,13 +31,15 @@ public class EventRequestMapper {
     }
 
     private static OffsetDateTime toOffsetDateTime(DartsEvent dartsEvent) {
-        return OffsetDateTime.of(LocalDateTime.of(
+        LocalDateTime localDateTime = LocalDateTime.of(
             dartsEvent.getY().intValue(),
             Month.of(dartsEvent.getM().intValue()),
             dartsEvent.getD().intValue(),
             dartsEvent.getH().intValue(),
             dartsEvent.getMIN().intValue(),
-            dartsEvent.getS().intValue()), ZoneOffset.UTC);
+            dartsEvent.getS().intValue()
+        );
+        return DateUtil.toOffsetDateTime(localDateTime);
     }
 
     public DARTSResponse toLegacyAddDocumentResponse(EventsResponse eventResponse) {
