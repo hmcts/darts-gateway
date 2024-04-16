@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -20,6 +21,15 @@ public class DateUtil {
 
     public static final ZoneId UTC = ZoneId.of("UTC");
     public static final ZoneId LONDON_ZONE_ID = ZoneId.of("Europe/London");
+
+    public OffsetDateTime toOffsetDateTime(LocalDateTime localDateTime) {
+        ZonedDateTime zonedDateTime = toZonedDateTime(localDateTime);
+        return toOffsetDateTime(zonedDateTime);
+    }
+
+    private OffsetDateTime toOffsetDateTime(ZonedDateTime zonedDateTime) {
+        return zonedDateTime.withZoneSameInstant(UTC).toOffsetDateTime();
+    }
 
     public OffsetDateTime toOffsetDateTime(XMLGregorianCalendar date) {
         GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
@@ -50,6 +60,10 @@ public class DateUtil {
         } catch (ParseException e) {
             throw new RuntimeException("Error parsing date", e);
         }
+    }
+
+    public ZonedDateTime toZonedDateTime(LocalDateTime localDateTime) {
+        return localDateTime.atZone(LONDON_ZONE_ID);
     }
 
 }
