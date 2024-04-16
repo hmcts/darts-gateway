@@ -39,6 +39,7 @@ public class EventRequestMapper {
             dartsEvent.getMIN().intValue(),
             dartsEvent.getS().intValue()
         );
+        //date comes in as localTime from xhibit.
         return DateUtil.toOffsetDateTime(localDateTime);
     }
 
