@@ -33,11 +33,7 @@ class DarNotifyControllerTest {
         """;
     private static final String EXPECTED_DAR_PC_NOTIFICATION = """
         <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-          <SOAP-ENV:Header>
-            <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" SOAP-ENV:mustUnderstand="1">
-              ${xmlunit.ignore}
-            </wsse:Security>
-          </SOAP-ENV:Header>
+          <SOAP-ENV:Header/>
           <SOAP-ENV:Body>
             <ns3:DARNotifyEvent xmlns:ns3="http://www.VIQSoultions.com">
               <XMLEventDocument>

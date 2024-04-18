@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
-import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import uk.gov.hmcts.darts.log.api.LogApi;
 import uk.gov.hmcts.darts.log.api.impl.LogApiImpl;
@@ -32,26 +30,12 @@ public class DarNotifyEventConfiguration {
 
     @Bean
     @Primary
-    public WebServiceTemplate darNotifyEventWebServiceTemplate(
-        Jaxb2Marshaller marshaller,
-        Wss4jSecurityInterceptor securityInterceptor) {
-
+    public WebServiceTemplate darNotifyEventWebServiceTemplate(Jaxb2Marshaller marshaller) {
         var webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(marshaller);
         webServiceTemplate.setUnmarshaller(marshaller);
-        webServiceTemplate.setInterceptors(new ClientInterceptor[]{securityInterceptor});
         webServiceTemplate.setMessageSender(httpComponentsMessageSender());
         return webServiceTemplate;
-    }
-
-    @Bean
-    public Wss4jSecurityInterceptor securityInterceptor(
-        DarNotifyEventConfigurationProperties darNotifyEventConfigurationProperties) {
-        var securityInterceptor = new Wss4jSecurityInterceptor();
-        securityInterceptor.setSecurementActions(darNotifyEventConfigurationProperties.getSecurementActions());
-        securityInterceptor.setSecurementUsername(darNotifyEventConfigurationProperties.getSecurementUsername());
-        securityInterceptor.setSecurementPassword(darNotifyEventConfigurationProperties.getSecurementPassword());
-        return securityInterceptor;
     }
 
     @Bean

@@ -55,9 +55,6 @@ darts-gateway:
     schema: "src/main/resources/schemas/darts-event.xsd"
     dar-notify-event:
       soap-action: http://www.VIQSoultions.com/DARNotifyEvent
-      securement-actions: UsernameToken
-      securement-username: ${DAR_NOTIFY_EVENT_SECUREMENT_USERNAME:<username>}
-      securement-password: ${DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD:<password>}
       enabled: ${DAR_NOTIFY_ENABLED:true}
   addcase:
     schema: "src/main/resources/schemas/darts-addcase.xsd"
