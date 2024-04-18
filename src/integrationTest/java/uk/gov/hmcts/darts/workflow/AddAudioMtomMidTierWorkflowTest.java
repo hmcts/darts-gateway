@@ -69,8 +69,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
                    .withHeader("Authorization", new RegexPattern("Bearer test"))
                 .withRequestBody(new MultipartDartsProxyContentPattern()));
 
-        Mockito.verify(validator, times(6)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
-        Mockito.verify(validator, times(4)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(2)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(3)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
 
         verify(postRequestedFor(urlPathEqualTo("/audios"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));

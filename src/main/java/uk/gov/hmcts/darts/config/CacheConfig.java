@@ -10,10 +10,6 @@ import io.lettuce.core.internal.HostAndPort;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DnsResolvers;
 import io.lettuce.core.resource.MappingSocketAddressResolver;
-import io.lettuce.core.resource.NettyCustomizer;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.socket.nio.NioChannelOption;
-import jdk.net.ExtendedSocketOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -72,7 +68,6 @@ public class CacheConfig {
         );
 
         var clientResources = ClientResources.builder()
-            .nettyCustomizer(new CustomNettyConfig())
             .socketAddressResolver(mappingSocketAddressResolver)
             .build();
 
@@ -125,15 +120,6 @@ public class CacheConfig {
         };
     }
 
-    private static class CustomNettyConfig implements NettyCustomizer {
-
-        @Override
-        public void afterBootstrapInitialized(Bootstrap bootstrap) {
-            bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPIDLE), 15);
-            bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPINTERVAL), 5);
-            bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPCOUNT), 3);
-        }
-    }
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, RedisCacheConfiguration redisCacheConfiguration) {
@@ -220,8 +206,10 @@ public class CacheConfig {
 
     @Bean
     public RedisLockRegistry lockRegistry(RedisConnectionFactory redisConnectionFactory) {
-        return new RedisLockRegistry(redisConnectionFactory, LOCK_REGISTRY_REDIS_KEY,
+        RedisLockRegistry registry =  new RedisLockRegistry(redisConnectionFactory, LOCK_REGISTRY_REDIS_KEY,
                                   RELEASE_TIME_DURATION.toMillis());
+        registry.setRedisLockType(RedisLockRegistry.RedisLockType.PUB_SUB_LOCK);
+        return registry;
     }
 
     private static GenericJackson2JsonRedisSerializer redisSerializer() {

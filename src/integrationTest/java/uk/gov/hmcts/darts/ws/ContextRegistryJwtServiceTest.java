@@ -218,8 +218,8 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
             SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
             Assertions.assertNotNull(response.getResponse().getValue().getReturn());
-            //todo 9 is far too high, should be fixed by DMP-2674
-            verify(tokenValidator, times(9)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
+
+            verify(tokenValidator, times(4)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 

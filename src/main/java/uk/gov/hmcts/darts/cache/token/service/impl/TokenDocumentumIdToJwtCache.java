@@ -29,13 +29,13 @@ public class TokenDocumentumIdToJwtCache extends AbstractTokenCache {
     }
 
     @Override
-    protected TokenValidator getValidateToken() {
+    protected TokenValidator getTokenValidator() {
         return validator;
     }
 
     @Override
     protected Token createToken(ServiceContext context) {
-        return Token.generateDocumentumToken(properties.isMapTokenToSession(), getValidateToken());
+        return Token.generateDocumentumToken(properties.isMapTokenToSession(), getTokenValidator());
     }
 
     @Override

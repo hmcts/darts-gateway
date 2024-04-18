@@ -8,7 +8,8 @@ import documentum.contextreg.ServiceContext;
 public interface CacheValue {
     String getContextString();
 
-    String getId();
+    String getSharedKey();
 
+    //service context from the consumer
     ServiceContext getServiceContext();
 }
