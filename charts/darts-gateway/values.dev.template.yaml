@@ -5,10 +5,6 @@ java:
   keyVaults:
     darts:
       secrets:
-        - name: darts-gateway-DarNotifyEventSecurementUsername
-          alias: DAR_NOTIFY_EVENT_SECUREMENT_USERNAME
-        - name: darts-gateway-DarNotifyEventSecurementPassword
-          alias: DAR_NOTIFY_EVENT_SECUREMENT_PASSWORD
         - name: AzureAdB2CFuncTestROPCClientId
           alias: AAD_B2C_ROPC_CLIENT_ID
         - name: AzureAdB2CClientId
