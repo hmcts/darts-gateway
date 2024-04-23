@@ -12,13 +12,14 @@ import java.time.OffsetDateTime;
 public class DarNotificationLoggerServiceImpl implements DarNotificationLoggerService {
 
     @Override
-    public void notificationSucceeded(String uri, String courthouse, String courtroom, String caseNumber, OffsetDateTime offsetDateTime) {
-        log.info("DAR Notify: uri={}, courthouse={}, courtroom={}, caseNumber={}, date_time={}, response_status=OK",
+    public void notificationSucceeded(String uri, String courthouse, String courtroom, String caseNumber, OffsetDateTime offsetDateTime, int responseCode) {
+        log.info("DAR Notify: uri={}, courthouse={}, courtroom={}, caseNumber={}, date_time={}, response_status=OK, responseCode={}",
                 uri,
                 courthouse,
                 courtroom,
                 caseNumber,
-                offsetDateTime);
+                offsetDateTime,
+                responseCode);
     }
 
     @Override
@@ -43,10 +44,10 @@ public class DarNotificationLoggerServiceImpl implements DarNotificationLoggerSe
             OffsetDateTime offsetDateTime,
             String status,
             String message,
-            int code,
+            int responseCode,
             Level logLevel) {
-
-        log.atLevel(logLevel).log("DAR Notify: uri={}, courthouse={}, courtroom={}, caseNumber={}, date_time={}, response_status={}, message={}, code={}",
+        log.atLevel(logLevel).log("DAR Notify: uri={}, courthouse={}, courtroom={}, caseNumber={}, date_time={}, response_status={}, message={}, " +
+                                      "responseCode={}",
                 uri,
                 courthouse,
                 courtroom,
@@ -54,6 +55,6 @@ public class DarNotificationLoggerServiceImpl implements DarNotificationLoggerSe
                 offsetDateTime,
                 status,
                 message,
-                code);
+                responseCode);
     }
 }
