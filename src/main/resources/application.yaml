@@ -106,10 +106,6 @@ logging:
             MessageTracing:
               sent: trace
               received: trace
-          server:
-            MessageTracing:
-              sent: trace
-              received: trace
 
     uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}
     uk:
