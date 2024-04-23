@@ -98,6 +98,15 @@ darts-gateway:
     external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
 logging:
   level:
+    org:
+      springframework:
+        web: debug
+        ws:
+          client:
+            MessageTracing:
+              sent: trace
+              received: trace
+
     uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}
     uk:
       gov:
