@@ -20,9 +20,10 @@ public class LogApiImpl implements LogApi {
             String courthouse,
             String courtroom,
             String caseNumber,
-            OffsetDateTime offsetDateTime) {
+            OffsetDateTime offsetDateTime,
+            int responseCode) {
 
-        darNotificationLogger.notificationSucceeded(uri, courthouse, courtroom, caseNumber, offsetDateTime);
+        darNotificationLogger.notificationSucceeded(uri, courthouse, courtroom, caseNumber, offsetDateTime, responseCode);
     }
 
     @Override
@@ -48,9 +49,9 @@ public class LogApiImpl implements LogApi {
             OffsetDateTime offsetDateTime,
             String status,
             String message,
-            int code,
+            int responseCode,
             Level logLevel) {
 
-        darNotificationLogger.notificationFailedWithCode(uri, courthouse, courtroom, caseNumber, offsetDateTime, status, message, code, logLevel);
+        darNotificationLogger.notificationFailedWithCode(uri, courthouse, courtroom, caseNumber, offsetDateTime, status, message, responseCode, logLevel);
     }
 }

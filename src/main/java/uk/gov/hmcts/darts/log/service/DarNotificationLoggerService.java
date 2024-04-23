@@ -11,7 +11,8 @@ public interface DarNotificationLoggerService {
             String courthouse,
             String courtroom,
             String caseNumber,
-            OffsetDateTime offsetDateTime);
+            OffsetDateTime offsetDateTime,
+            int responseCode);
 
     void notificationFailed(
             String uri,
@@ -31,6 +32,6 @@ public interface DarNotificationLoggerService {
             OffsetDateTime offsetDateTime,
             String status,
             String message,
-            int code,
+            int responseCode,
             Level logLevel);
 }

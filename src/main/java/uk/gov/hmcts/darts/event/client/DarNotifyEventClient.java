@@ -42,10 +42,11 @@ public class DarNotifyEventClient {
                 var result = DarNotifyEventResult.findByResult(response.getDARNotifyEventResult());
 
                 if (OK.equals(result)) {
-                    logApi.notificationSucceeded(uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(request));
+                    logApi.notificationSucceeded(uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(request),
+                         response.getDARNotifyEventResult());
                     successful = true;
                 } else if (result != null) {
-                    logApi.notificationFailed(
+                    logApi.notificationFailedWithCode(
                         uri,
                         event.getCourthouse(),
                         event.getCourtroom(),
@@ -53,6 +54,7 @@ public class DarNotifyEventClient {
                         dateTimeFrom(request),
                         "FAILED",
                         result.getMessage(),
+                        response.getDARNotifyEventResult(),
                         WARN
                     );
                 } else {
@@ -75,7 +77,8 @@ public class DarNotifyEventClient {
 
         } catch (WebServiceException webServiceException) {
             logApi.notificationFailed(
-                uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(request), "FAILED", "fail to send", ERROR);
+                uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(request), "FAILED",
+                "WebServiceException thrown. Failed to send", ERROR);
         }
 
         return successful;

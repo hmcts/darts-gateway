@@ -68,9 +68,9 @@ class DarNotificationLoggerServiceImplTest {
     @Test
     void logsSuccess() {
         notificationLogger.notificationSucceeded(
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
+                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, 0);
 
-        String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=OK",
+        String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=OK, responseCode=0",
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
         assertThat(logCaptor.getInfoLogs()).containsExactly(expectedLogEntry);
     }
@@ -93,7 +93,7 @@ class DarNotificationLoggerServiceImplTest {
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", 1, logLevel);
 
         String expectedLogEntry =
-                format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, message=some-msg, code=1",
+                format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, message=some-msg, responseCode=1",
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
         assertThat(logsFor(logLevel)).containsExactly(expectedLogEntry);
     }

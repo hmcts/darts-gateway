@@ -11,7 +11,8 @@ public interface LogApi {
             String courthouse,
             String courtroom,
             String caseNumber,
-            OffsetDateTime offsetDateTime);
+            OffsetDateTime offsetDateTime,
+            int responseCode);
 
     void notificationFailed(
             String uri,
