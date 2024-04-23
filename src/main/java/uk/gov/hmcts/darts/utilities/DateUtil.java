@@ -34,15 +34,20 @@ public class DateUtil {
     public OffsetDateTime toOffsetDateTime(XMLGregorianCalendar date) {
         GregorianCalendar gregorianCalendar = date.toGregorianCalendar();
 
-        //server always converts time as UTC, so this will make local testing perform the same.
-        gregorianCalendar.setTimeZone(TimeZone.getTimeZone(UTC));
+        if (date.getTimezone() == 0) {
+            // XML date timezone of 0 indicates it's either specified as UTC
+            // or the local time zone is the same, ie. GMT
+            gregorianCalendar.setTimeZone(TimeZone.getTimeZone(UTC));
+        } else {
+            // otherwise, it's assumed that local time is used
+            // and that is the Europe/London timezone
+            gregorianCalendar.setTimeZone(TimeZone.getTimeZone(LONDON_ZONE_ID));
+        }
 
         ZonedDateTime zonedDateTime = gregorianCalendar.toZonedDateTime();
         Instant instant = zonedDateTime.toInstant();
         //find out what offset it should be in.
         ZoneOffset zoneOffSet = LONDON_ZONE_ID.getRules().getOffset(instant);
-        //adjust to correct offset
-        instant = instant.minusSeconds(zoneOffSet.getTotalSeconds());
         return instant.atOffset(zoneOffSet);
     }
 
