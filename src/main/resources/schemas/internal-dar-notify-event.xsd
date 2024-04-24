@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="courthouse" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="courtroom" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="case_numbers" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="case_number" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+
+      <xs:attribute name="type" form="unqualified" type="notify_type" use="required"/>
+      <xs:attribute name="Y" form="unqualified" type="xs:string" use="required"/>
+      <xs:attribute name="M" form="unqualified" type="xs:string" use="required"/>
+      <xs:attribute name="D" form="unqualified" type="xs:string" use="required"/>
+      <xs:attribute name="H" form="unqualified" type="xs:string" use="required"/>
+      <xs:attribute name="MIN" form="unqualified" type="xs:string" use="required"/>
+      <xs:attribute name="S" form="unqualified" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="notify_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+      <xs:enumeration value="3"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.event.client;
 
 import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.DARNotifyEventResponse;
+import com.service.viq.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,11 +30,10 @@ public class DarNotifyEventClient {
     private final LogApi logApi;
 
     // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
-    public boolean darNotifyEvent(String uri, DARNotifyEvent request) {
+    public boolean darNotifyEvent(String uri, DARNotifyEvent request, Event event) {
         boolean successful = false;
 
-        var caseNumber = request.getXMLEventDocument().getEvent().getCaseNumbers().getCaseNumber().toString();
-        var event = request.getXMLEventDocument().getEvent();
+        var caseNumber = event.getCaseNumbers().getCaseNumber().toString();
 
         try {
             log.info("Sending notification to to DAR PC with case number: {}", caseNumber);
@@ -42,7 +42,7 @@ public class DarNotifyEventClient {
                 var result = DarNotifyEventResult.findByResult(response.getDARNotifyEventResult());
 
                 if (OK.equals(result)) {
-                    logApi.notificationSucceeded(uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(request),
+                    logApi.notificationSucceeded(uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(event),
                          response.getDARNotifyEventResult());
                     successful = true;
                 } else if (result != null) {
@@ -51,7 +51,7 @@ public class DarNotifyEventClient {
                         event.getCourthouse(),
                         event.getCourtroom(),
                         caseNumber,
-                        dateTimeFrom(request),
+                        dateTimeFrom(event),
                         "FAILED",
                         result.getMessage(),
                         response.getDARNotifyEventResult(),
@@ -63,7 +63,7 @@ public class DarNotifyEventClient {
                         event.getCourthouse(),
                         event.getCourtroom(),
                         caseNumber,
-                        dateTimeFrom(request),
+                        dateTimeFrom(event),
                         "FAILED",
                         "result code not recognised",
                         response.getDARNotifyEventResult(),
@@ -72,27 +72,26 @@ public class DarNotifyEventClient {
                 }
             } else {
                 logApi.notificationFailed(
-                    uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(request), "FAILED", "No response", WARN);
+                    uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(event), "FAILED", "No response", WARN);
             }
 
         } catch (WebServiceException webServiceException) {
             logApi.notificationFailed(
-                uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(request), "FAILED",
+                uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(event), "FAILED",
                 "WebServiceException thrown. Failed to send", ERROR);
         }
 
         return successful;
     }
 
-    private static OffsetDateTime dateTimeFrom(DARNotifyEvent darNotifyEvent) {
-        var eventDetails = darNotifyEvent.getXMLEventDocument().getEvent();
+    private static OffsetDateTime dateTimeFrom(Event event) {
         return OffsetDateTime.of(
-            parseInt(eventDetails.getY()),
-            parseInt(eventDetails.getM()),
-            parseInt(eventDetails.getD()),
-            parseInt(eventDetails.getH()),
-            parseInt(eventDetails.getMIN()),
-            parseInt(eventDetails.getS()),
+            parseInt(event.getY()),
+            parseInt(event.getM()),
+            parseInt(event.getD()),
+            parseInt(event.getH()),
+            parseInt(event.getMIN()),
+            parseInt(event.getS()),
             0,
             ZoneOffset.UTC
         );

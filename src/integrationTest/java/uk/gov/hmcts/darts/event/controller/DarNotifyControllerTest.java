@@ -23,11 +23,11 @@ class DarNotifyControllerTest {
         {
           "notification_url": "http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx",
           "notification_type": "3",
-          "timestamp": "2023-06-19T14:52:40.637Z",
-          "courthouse": "Test Court",
+          "timestamp": "2024-04-25T14:20:40.637Z",
+          "courthouse": "York",
           "courtroom": "1",
           "case_numbers": [
-            "A123456"
+            "T20240000"
           ]
         }
         """;
@@ -35,17 +35,9 @@ class DarNotifyControllerTest {
         <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
           <SOAP-ENV:Header/>
           <SOAP-ENV:Body>
-            <ns3:DARNotifyEvent xmlns:ns3="http://www.VIQSoultions.com">
-              <XMLEventDocument>
-                <event D="19" H="15" M="6" MIN="52" S="40" Y="2023" type="3">
-                  <courthouse>Test Court</courthouse>
-                  <courtroom>1</courtroom>
-                  <case_numbers>
-                    <case_number>A123456</case_number>
-                  </case_numbers>
-                </event>
-              </XMLEventDocument>
-            </ns3:DARNotifyEvent>
+            <DARNotifyEvent xmlns="http://www.VIQSoultions.com">
+              <XMLEventDocument>&lt;Event type="3" Y="2024" M="4" D="25" H="15" MIN="20" S="40"&gt;&lt;courthouse&gt;York&lt;/courthouse&gt;&lt;courtroom&gt;1&lt;/courtroom&gt;&lt;case_numbers&gt;&lt;case_number&gt;T20240000&lt;/case_number&gt;&lt;/case_numbers&gt;&lt;/Event&gt;</XMLEventDocument>
+            </DARNotifyEvent>
           </SOAP-ENV:Body>
         </SOAP-ENV:Envelope>
         """;
