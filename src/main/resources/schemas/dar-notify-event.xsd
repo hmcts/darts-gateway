@@ -15,6 +15,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="DARNotifyEventResult" type="xs:int"/>
+        <xs:element name="TestString" type="xs:string"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
