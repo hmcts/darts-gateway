@@ -2,13 +2,11 @@ package uk.gov.hmcts.darts.event.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import static java.util.Arrays.stream;
 
 @Getter
 @RequiredArgsConstructor
-@Slf4j
 public enum DarNotifyEventResult {
 
     OK(0, "OK"),
@@ -24,10 +22,7 @@ public enum DarNotifyEventResult {
     public static DarNotifyEventResult findByResult(int result) {
         return stream(DarNotifyEventResult.values())
             .filter(r -> r.getResult() == result)
-            .findFirst().orElseGet(() -> {
-                log.warn("unknown DarNotifyEventResult {}", result);
-                return null;
-            });
+            .findFirst().orElse(null);
     }
 
 }
