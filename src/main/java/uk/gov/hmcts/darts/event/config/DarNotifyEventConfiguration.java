@@ -29,6 +29,7 @@ public class DarNotifyEventConfiguration {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setPackagesToScan("com.viqsoultions");
         marshaller.setMarshallerProperties(Map.of("org.glassfish.jaxb.namespacePrefixMapper", new MyNsPrefixMapper()));
+        marshaller.setValidationEventHandler(new  jakarta.xml.bind.helpers.DefaultValidationEventHandler());
         return marshaller;
     }
 

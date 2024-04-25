@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.utils;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.springframework.stereotype.Component;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -18,11 +19,20 @@ public class DarPcStub {
     private static final String DAR_PC_SUCCESS_RESPONSE = """
         <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><DARNotifyEventResponse xmlns="http://www.VIQSoultions.com"><DARNotifyEventResult>0</DARNotifyEventResult></DARNotifyEventResponse></soap:Body></soap:Envelope>""";
 
+    private static final String DAR_PC_MALFORMED_RESPONSE = """
+        <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><DARNotifyEventResponse xmlns="http://www.VIQSoultions.com"><DARNotifyEventResult>1</DARNotifyEventResult></DARNotifyEventResponse></soap:Body></soap:Envelope>""";
+
 
     public void respondWithSuccessResponse() {
         stubFor(post(urlEqualTo(BASE_API_URL)).willReturn(
             aResponse().withHeader("Content-Type", "text/xml")
                 .withBody(DAR_PC_SUCCESS_RESPONSE)));
+    }
+
+    public void respondWithMalformedResponse() {
+        stubFor(post(urlEqualTo(BASE_API_URL)).willReturn(
+            aResponse().withHeader("Content-Type", "text/xml")
+                .withBody(DAR_PC_MALFORMED_RESPONSE)));
     }
 
     public void verifyNotificationReceivedWithBody(String body) {
@@ -32,5 +42,9 @@ public class DarPcStub {
 
     public void verifyNoNotificationReceived() {
         verify(exactly(0), postRequestedFor(urlEqualTo(BASE_API_URL)));
+    }
+
+    public void reset() {
+        WireMock.reset();
     }
 }
