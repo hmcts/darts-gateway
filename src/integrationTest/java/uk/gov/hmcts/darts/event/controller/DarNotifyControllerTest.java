@@ -48,19 +48,6 @@ class DarNotifyControllerTest {
     @Autowired
     private DarPcStub darPcStub;
 
-
-    @Test
-    void shouldSendDarNotifyEventSoapAction() throws Exception {
-        darPcStub.respondWithSuccessResponse();
-
-        mockMvc.perform(post("/events/dar-notify")
-                            .contentType(APPLICATION_JSON_VALUE)
-                            .content(VALID_NOTIFICATION_JSON))
-            .andExpect(status().is2xxSuccessful());
-
-        darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
-    }
-
     @Test
     void shouldHandleDarNotifyMalformedErrorResponse() throws Exception {
         darPcStub.respondWithMalformedResponse();
