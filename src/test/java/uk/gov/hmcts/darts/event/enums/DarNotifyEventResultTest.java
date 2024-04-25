@@ -38,6 +38,13 @@ class DarNotifyEventResultTest {
         assertThat(findByResult(5))
             .isEqualTo(OTHER_ERROR)
             .hasFieldOrPropertyWithValue("message", "Other error");
+
+    }
+
+    @Test
+    void returnsNullForUnknownResult() {
+        assertThat(findByResult(16))
+            .isNull();
     }
 
 }
