@@ -1,10 +1,11 @@
 package uk.gov.hmcts.darts.event.service.impl;
 
+import com.service.viq.event.Event;
+import com.service.viq.event.Event.CaseNumbers;
 import com.viqsoultions.DARNotifyEvent;
-import com.viqsoultions.Event;
-import com.viqsoultions.Event.CaseNumbers;
-import com.viqsoultions.ObjectFactory;
-import com.viqsoultions.XMLEventDocument;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.darts.event.client.DarNotifyEventClient;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.event.service.DarNotifyEventService;
 
+import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
@@ -31,15 +33,15 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
     @Override
     public void darNotify(DarNotifyEvent darNotifyEvent) {
         if (enableDarNotify) {
-            DARNotifyEvent xmlDarNotifyEvent = convertToXmlDarNotifyEvent(darNotifyEvent);
-            darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), xmlDarNotifyEvent);
+            var eventAsXml = createEvent(darNotifyEvent);
+            var darNotifyEventAsXml = convertToXmlDarNotifyEvent(eventAsXml);
+
+            darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), darNotifyEventAsXml, eventAsXml);
         }
     }
 
-    private DARNotifyEvent convertToXmlDarNotifyEvent(DarNotifyEvent darNotifyEvent) {
-        ObjectFactory factory = new ObjectFactory();
-
-        Event event = factory.createEvent();
+    private Event createEvent(DarNotifyEvent darNotifyEvent) {
+        Event event = new Event();
         event.setType(darNotifyEvent.getNotificationType());
 
         OffsetDateTime localDateTime = OffsetDateTime.ofInstant(
@@ -56,17 +58,36 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
         event.setCourthouse(darNotifyEvent.getCourthouse());
         event.setCourtroom(darNotifyEvent.getCourtroom());
 
-        CaseNumbers caseNumbers = factory.createEventCaseNumbers();
+        CaseNumbers caseNumbers = new CaseNumbers();
         caseNumbers.getCaseNumber().addAll(darNotifyEvent.getCaseNumbers());
         event.setCaseNumbers(caseNumbers);
 
-        XMLEventDocument xmlEventDocument = factory.createXMLEventDocument();
-        xmlEventDocument.setEvent(event);
+        return event;
+    }
 
-        DARNotifyEvent xmlDarNotifyEvent = factory.createDARNotifyEvent();
-        xmlDarNotifyEvent.setXMLEventDocument(xmlEventDocument);
+    private DARNotifyEvent convertToXmlDarNotifyEvent(Event eventAsXml) {
+        DARNotifyEvent xmlDarNotifyEvent = new DARNotifyEvent();
+        xmlDarNotifyEvent.setXMLEventDocument(serialized(eventAsXml));
 
         return xmlDarNotifyEvent;
+    }
+
+    private String serialized(Event event) {
+        var writer = new StringWriter();
+        try {
+            var context = JAXBContext.newInstance(Event.class);
+            var marshaller = context.createMarshaller();
+
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
+            marshaller.marshal(event, writer);
+        } catch (JAXBException e) {
+            log.error("Error marshalling XML", e);
+        }
+
+        return writer.toString();
     }
 
 }

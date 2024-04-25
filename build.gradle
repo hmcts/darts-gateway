@@ -180,7 +180,9 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/darts/**/config/**',
   '**/enums/**',
   '**/DocumentumIdToJwtCache*',
-  '**/CacheValueWithJwt*'
+  '**/CacheValueWithJwt*',
+  '**/com/service/viq/event/**'
+
 ]
 
 sonarqube {
@@ -329,7 +331,7 @@ dependencies {
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.5')
-  jaxb( 'org.glassfish.jaxb:jaxb-runtime:4.0.5')
+  implementation( 'org.glassfish.jaxb:jaxb-runtime:4.0.5')
 
   // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
   implementation 'com.fasterxml.jackson.core:jackson-databind'
@@ -359,6 +361,8 @@ dependencies {
 
   implementation 'org.mapstruct:mapstruct:1.5.5.Final'
   implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+  implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.2.0'
+
 
   implementation project(path: ':context')
 
@@ -373,6 +377,7 @@ dependencies {
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.4'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.4'
+  implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.0.1'
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
@@ -435,6 +440,7 @@ tasks.withType(Checkstyle) {
   exclude 'uk/gov/courtservice/**/*.java'
   exclude 'uk/gov/addcase/**/*.java'
   exclude 'com/viqsoultions/**/*.java'
+  exclude 'com/service/viq/event/**/*.java'
 }
 
 tasks.withType(Pmd) {
@@ -444,17 +450,20 @@ tasks.withType(Pmd) {
   exclude 'uk/gov/courtservice/**/*.java'
   exclude 'uk/gov/addcase/**/*.java'
   exclude 'com/viqsoultions/**/*.java'
+  exclude 'com/service/viq/event/**/*.java'
 }
 
 sourceSets {
   main {
     java {
       srcDir 'src/main/java'
-      srcDir 'build/generated-sources/jaxb'
       srcDir 'src/main/java/generated'
+      srcDir 'build/generated-sources/jaxb'
+      srcDir 'build/generated-sources/jaxbViqEvent'
       srcDir 'build/generated-sources/jaxbRegisterNode'
       srcDir 'build/generated-sources/jaxbAddCase'
       srcDir 'build/generated-sources/jaxbAddAudio'
+      srcDir 'build/generated-sources/jaxbViqEvent'
     }
   }
 }
@@ -471,6 +480,25 @@ task genJaxb {
       mkdir(dir: sourcesDir)
 
       xjc(destdir: sourcesDir, schema: schema) {
+        arg(value: "-wsdl")
+        produces(dir: sourcesDir, includes: "**/*.java")
+      }
+    }
+  }
+}
+
+task genJaxbViqEvent {
+  ext.sourcesDir = "${buildDir}/generated-sources/jaxbViqEvent"
+  ext.schema = "src/main/resources/schemas/internal-dar-notify-event.xsd"
+
+  outputs.dir sourcesDir
+
+  doLast() {
+    project.ant {
+      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+      mkdir(dir: sourcesDir)
+
+      xjc(destdir: sourcesDir, package: "com.service.viq.event",  schema: schema) {
         arg(value: "-wsdl")
         produces(dir: sourcesDir, includes: "**/*.java")
       }
@@ -587,4 +615,4 @@ project.tasks.processResources.dependsOn processDartsServiceWSDL
 project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
 compileJava.dependsOn generateCodeFromSpecification
 generateCodeFromSpecification.dependsOn extractOpenSpecification
-compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio
+compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio, genJaxbViqEvent

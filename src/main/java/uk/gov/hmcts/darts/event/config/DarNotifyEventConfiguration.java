@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.event.config;
 
+import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,8 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import uk.gov.hmcts.darts.log.api.LogApi;
 import uk.gov.hmcts.darts.log.api.impl.LogApiImpl;
 import uk.gov.hmcts.darts.log.service.impl.DarNotificationLoggerServiceImpl;
+
+import java.util.Map;
 
 @Configuration
 @EnableConfigurationProperties(DarNotifyEventConfigurationProperties.class)
@@ -23,8 +26,9 @@ public class DarNotifyEventConfiguration {
 
     @Bean
     public Jaxb2Marshaller marshaller() {
-        var marshaller = new Jaxb2Marshaller();
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setPackagesToScan("com.viqsoultions");
+        marshaller.setMarshallerProperties(Map.of("org.glassfish.jaxb.namespacePrefixMapper", new MyNsPrefixMapper()));
         return marshaller;
     }
 
@@ -49,4 +53,18 @@ public class DarNotifyEventConfiguration {
             new DarNotificationLoggerServiceImpl());
     }
 
+    public static class MyNsPrefixMapper extends NamespacePrefixMapper {
+
+        public String getPreferredPrefix(String uri, String suggest, boolean require) {
+            if ("http://www.VIQSoultions.com".equals(uri)) {
+                return "";
+            }
+
+            return suggest;
+        }
+
+        public String[] getPreDeclaredNamespaceUris() {
+            return new String[0];
+        }
+    }
 }
