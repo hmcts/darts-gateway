@@ -53,10 +53,10 @@ public class DarNotifyEventConfiguration {
             new DarNotificationLoggerServiceImpl());
     }
 
-    static public class MyNsPrefixMapper extends NamespacePrefixMapper
-    {
+    public static class MyNsPrefixMapper extends NamespacePrefixMapper {
+
         public String getPreferredPrefix(String uri, String suggest, boolean require) {
-            if("http://www.VIQSoultions.com".equals(uri) ){
+            if ("http://www.VIQSoultions.com".equals(uri)) {
                 return "";
             }
 

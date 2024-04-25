@@ -1,8 +1,8 @@
 package uk.gov.hmcts.darts.event.service.impl;
 
-import com.viqsoultions.DARNotifyEvent;
 import com.service.viq.event.Event;
 import com.service.viq.event.Event.CaseNumbers;
+import com.viqsoultions.DARNotifyEvent;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -67,12 +67,12 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
 
     private DARNotifyEvent convertToXmlDarNotifyEvent(Event eventAsXml) {
         DARNotifyEvent xmlDarNotifyEvent = new DARNotifyEvent();
-        xmlDarNotifyEvent.setXMLEventDocument(serializedAndEscaped(eventAsXml));
+        xmlDarNotifyEvent.setXMLEventDocument(serialized(eventAsXml));
 
         return xmlDarNotifyEvent;
     }
 
-    private String serializedAndEscaped(Event event) {
+    private String serialized(Event event) {
         var writer = new StringWriter();
         try {
             var context = JAXBContext.newInstance(Event.class);
