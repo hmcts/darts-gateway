@@ -1,11 +1,8 @@
 package uk.gov.hmcts.darts.event.service.impl;
 
-import com.synapps.moj.dfs.response.DARTSResponse;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
-import uk.gov.hmcts.darts.model.event.EventsResponse;
 import uk.gov.hmcts.darts.utilities.DateUtil;
-import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -41,18 +38,5 @@ public class EventRequestMapper {
         );
         //date comes in as localTime from xhibit.
         return DateUtil.toOffsetDateTime(localDateTime);
-    }
-
-    public DARTSResponse toLegacyAddDocumentResponse(EventsResponse eventResponse) {
-        var dartsResponse = new DARTSResponse();
-        if (eventResponse.getCode().equals("201")) {
-            dartsResponse.setCode(CodeAndMessage.OK.getCode());
-            dartsResponse.setMessage(CodeAndMessage.OK.getMessage());
-        } else {
-            dartsResponse.setMessage(eventResponse.getMessage());
-            dartsResponse.setCode(eventResponse.getCode());
-        }
-
-        return dartsResponse;
     }
 }

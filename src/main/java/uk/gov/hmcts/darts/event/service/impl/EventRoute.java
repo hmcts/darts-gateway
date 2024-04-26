@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
 import uk.gov.hmcts.darts.common.client.EventsClient;
 import uk.gov.hmcts.darts.model.event.EventsResponse;
+import uk.gov.hmcts.darts.utilities.MapperUtility;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 
@@ -35,6 +36,6 @@ public class EventRoute {
 
         ResponseEntity<EventsResponse> eventResponse = eventsClient.eventsPost(eventRequest);
 
-        return dartsXmlMapper.toLegacyAddDocumentResponse(eventResponse.getBody());
+        return MapperUtility.mapResponse(eventResponse.getBody(), true);
     }
 }

@@ -20,8 +20,8 @@ public class PostCourtLogsApiStub extends DartsApiStub {
 
     private static final String EVENTS_API_SUCCESS_BODY = """
         {
-            "code": "200",
-            "message": "OK"
+            "code": "201",
+            "message": "CREATED"
         }""";
 
 
