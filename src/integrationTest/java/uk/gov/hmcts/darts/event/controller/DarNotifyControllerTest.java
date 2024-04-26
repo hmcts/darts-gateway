@@ -37,7 +37,7 @@ class DarNotifyControllerTest {
           <SOAP-ENV:Header/>
           <SOAP-ENV:Body>
             <DARNotifyEvent xmlns="http://www.VIQSoultions.com">
-              <XMLEventDocument>&lt;Event type="3" Y="2024" M="4" D="25" H="15" MIN="20" S="40"&gt;&lt;courthouse&gt;York&lt;/courthouse&gt;&lt;courtroom&gt;1&lt;/courtroom&gt;&lt;case_numbers&gt;&lt;case_number&gt;T20240000&lt;/case_number&gt;&lt;/case_numbers&gt;&lt;/Event&gt;</XMLEventDocument>
+              <XMLEventDocument>&lt;event type="3" Y="2024" M="4" D="25" H="15" MIN="20" S="40"&gt;&lt;courthouse&gt;York&lt;/courthouse&gt;&lt;courtroom&gt;1&lt;/courtroom&gt;&lt;case_numbers&gt;&lt;case_number&gt;T20240000&lt;/case_number&gt;&lt;/case_numbers&gt;&lt;/event&gt;</XMLEventDocument>
             </DARNotifyEvent>
           </SOAP-ENV:Body>
         </SOAP-ENV:Envelope>
