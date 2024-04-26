@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -31,6 +30,7 @@ import java.util.stream.IntStream;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -141,13 +141,13 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
             com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
 
-            Assertions.assertEquals("200", actualResponse.getCode());
-            Assertions.assertEquals("OK", actualResponse.getMessage());
-            Assertions.assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
-            Assertions.assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
-            Assertions.assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
-            Assertions.assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
-            Assertions.assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+            assertEquals("200", actualResponse.getCode());
+            assertEquals("OK", actualResponse.getMessage());
+            assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
+            assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
+            assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
+            assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
+            assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
@@ -182,13 +182,13 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
             com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
 
-            Assertions.assertEquals("200", actualResponse.getCode());
-            Assertions.assertEquals("OK", actualResponse.getMessage());
-            Assertions.assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
-            Assertions.assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
-            Assertions.assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
-            Assertions.assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
-            Assertions.assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+            assertEquals("200", actualResponse.getCode());
+            assertEquals("OK", actualResponse.getMessage());
+            assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
+            assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
+            assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
+            assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
+            assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
@@ -215,13 +215,13 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
             com.synapps.moj.dfs.response.GetCourtLogResponse actualResponse = response.getResponse().getValue().getReturn();
 
-            Assertions.assertEquals("200", actualResponse.getCode());
-            Assertions.assertEquals("OK", actualResponse.getMessage());
-            Assertions.assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
-            Assertions.assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
-            Assertions.assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
-            Assertions.assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
-            Assertions.assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+            assertEquals("200", actualResponse.getCode());
+            assertEquals("OK", actualResponse.getMessage());
+            assertEquals(SOME_COURTHOUSE, actualResponse.getCourtLog().getCourthouse());
+            assertEquals(SOME_CASE_NUMBER, actualResponse.getCourtLog().getCaseNumber());
+            assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
+            assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
+            assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
 
@@ -257,9 +257,14 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     void testPostCourtLogsRoute(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             postCourtLogsApi.returnsEventResponse();
-            client.postCourtLogs(getGatewayUri(), postCourtLogs.getContentAsString(Charset.defaultCharset()));
+            SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(
+                getGatewayUri(),
+                postCourtLogs.getContentAsString(Charset.defaultCharset())
+            );
 
             postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
+
+            assertEquals("200", response.getResponse().getValue().getReturn().getCode());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
