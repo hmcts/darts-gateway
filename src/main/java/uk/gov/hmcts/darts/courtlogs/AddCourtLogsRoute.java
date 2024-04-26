@@ -36,7 +36,7 @@ public class AddCourtLogsRoute {
             throw ce;
         }
 
-        return MapperUtility.mapResponse(response.getBody());
+        return MapperUtility.mapResponse(response.getBody(), true);
     }
 
 }

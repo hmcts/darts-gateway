@@ -4,6 +4,7 @@ import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
 import uk.gov.hmcts.darts.model.event.EventsResponse;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -34,11 +35,15 @@ public class MapperUtility {
 
     }
 
-    public static DARTSResponse mapResponse(EventsResponse eventResponse) {
+    public static DARTSResponse mapResponse(EventsResponse eventResponse, boolean convert201to200) {
         var dartsResponse = new DARTSResponse();
-        dartsResponse.setMessage(eventResponse.getMessage());
-        dartsResponse.setCode(eventResponse.getCode());
-
+        if (convert201to200 && eventResponse.getCode().equals("201")) {
+            dartsResponse.setCode(CodeAndMessage.OK.getCode());
+            dartsResponse.setMessage(CodeAndMessage.OK.getMessage());
+        } else {
+            dartsResponse.setMessage(eventResponse.getMessage());
+            dartsResponse.setCode(eventResponse.getCode());
+        }
         return dartsResponse;
     }
 
