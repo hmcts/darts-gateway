@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+  <!-- Only used internally within the darts gateway to build the event, serialized and escaped before embedding in SOAP message -->
   <xs:element name="event">
     <xs:complexType>
       <xs:sequence>
