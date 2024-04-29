@@ -3,6 +3,7 @@
   targetNamespace="http://www.VIQSoultions.com"
   elementFormDefault="qualified">
 
+  <!-- Wrapper for serialized Event - see event.xsd -->
   <xs:element name="DARNotifyEvent">
     <xs:complexType>
       <xs:sequence>

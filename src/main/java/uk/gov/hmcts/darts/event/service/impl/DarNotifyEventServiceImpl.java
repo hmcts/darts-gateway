@@ -31,16 +31,19 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
     boolean enableDarNotify;
 
     @Override
-    public void darNotify(DarNotifyEvent darNotifyEvent) {
+    public void darNotify(DarNotifyEvent inboundDarNotifyEvent) {
         if (enableDarNotify) {
-            var eventAsXml = createEvent(darNotifyEvent);
-            var darNotifyEventAsXml = convertToXmlDarNotifyEvent(eventAsXml);
+            var outboundDarNotifyEvent = convertToOutboundEvent(inboundDarNotifyEvent);
 
-            darNotifyEventClient.darNotifyEvent(darNotifyEvent.getNotificationUrl(), darNotifyEventAsXml, eventAsXml);
+            darNotifyEventClient.darNotifyEvent(
+                inboundDarNotifyEvent.getNotificationUrl(),
+                wrapAndPrepare(outboundDarNotifyEvent),
+                outboundDarNotifyEvent
+            );
         }
     }
 
-    private Event createEvent(DarNotifyEvent darNotifyEvent) {
+    private Event convertToOutboundEvent(DarNotifyEvent darNotifyEvent) {
         Event event = new Event();
         event.setType(darNotifyEvent.getNotificationType());
 
@@ -65,14 +68,14 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
         return event;
     }
 
-    private DARNotifyEvent convertToXmlDarNotifyEvent(Event eventAsXml) {
-        DARNotifyEvent xmlDarNotifyEvent = new DARNotifyEvent();
-        xmlDarNotifyEvent.setXMLEventDocument(serialized(eventAsXml));
+    private DARNotifyEvent wrapAndPrepare(Event outboundEvent) {
+        DARNotifyEvent darNotifyEvent = new DARNotifyEvent();
+        darNotifyEvent.setXMLEventDocument(serialized(outboundEvent));
 
-        return xmlDarNotifyEvent;
+        return darNotifyEvent;
     }
 
-    private String serialized(Event event) {
+    private String serialized(Event outboundEvent) {
         var writer = new StringWriter();
         try {
             var context = JAXBContext.newInstance(Event.class);
@@ -82,7 +85,7 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
-            marshaller.marshal(event, writer);
+            marshaller.marshal(outboundEvent, writer);
         } catch (JAXBException e) {
             log.error("Error marshalling XML", e);
         }

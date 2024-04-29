@@ -28,7 +28,7 @@ public class DarNotifyEventConfiguration {
     public Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setPackagesToScan("com.viqsoultions");
-        marshaller.setMarshallerProperties(Map.of("org.glassfish.jaxb.namespacePrefixMapper", new MyNsPrefixMapper()));
+        marshaller.setMarshallerProperties(Map.of("org.glassfish.jaxb.namespacePrefixMapper", new ViqSolutionsNamespaceMapper()));
         marshaller.setValidationEventHandler(new  jakarta.xml.bind.helpers.DefaultValidationEventHandler());
         return marshaller;
     }
@@ -54,7 +54,7 @@ public class DarNotifyEventConfiguration {
             new DarNotificationLoggerServiceImpl());
     }
 
-    public static class MyNsPrefixMapper extends NamespacePrefixMapper {
+    private static class ViqSolutionsNamespaceMapper extends NamespacePrefixMapper {
 
         public String getPreferredPrefix(String uri, String suggest, boolean require) {
             if ("http://www.VIQSoultions.com".equals(uri)) {

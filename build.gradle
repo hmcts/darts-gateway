@@ -489,7 +489,7 @@ task genJaxb {
 
 task genJaxbViqEvent {
   ext.sourcesDir = "${buildDir}/generated-sources/jaxbViqEvent"
-  ext.schema = "src/main/resources/schemas/internal-dar-notify-event.xsd"
+  ext.schema = "src/main/resources/schemas/event.xsd"
 
   outputs.dir sourcesDir
 
