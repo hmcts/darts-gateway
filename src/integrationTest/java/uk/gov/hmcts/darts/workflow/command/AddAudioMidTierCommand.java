@@ -34,8 +34,13 @@ public class AddAudioMidTierCommand implements Command {
     public static final File SAMPLE_FILE =
             new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/sample6.mp2").getFile());
 
+    public static final File BAD_SIGNATURE_FILE =
+        new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/badsignature.mp2").getFile());
+
     public static final File SAMPLE_XML =
             new File(AddAudioMidTierCommand.class.getClassLoader().getResource("addaudio/addAudio.xml").getFile());
+
+    public static final File AUDIO_DIR =  new File(Thread.currentThread().getContextClassLoader().getResource("addaudio").getFile());
 
     private GenericContainer container;
 
@@ -147,6 +152,7 @@ public class AddAudioMidTierCommand implements Command {
                                 .build());
         if (container == null || !container.isRunning()) {
             container = new GenericContainer<>(importDocker)
+                    .withCopyToContainer(MountableFile.forHostPath(AUDIO_DIR.toPath(), 777), "/")
                     .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 777), "/")
                     .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio/Lib", 777), "/")
                     .withCopyFileToContainer(MountableFile.forHostPath(fileToSend.getAbsolutePath(), 777), "/")

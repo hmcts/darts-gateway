@@ -69,6 +69,11 @@ darts-gateway:
     schema: "src/main/resources/schemas/addAudio.xsd"
     validate: false
     fileSizeInMegaBytes: ${MAX_FILE_UPLOAD_SIZE_MEGABYTES:350}
+    maxFileDuration: 1440m
+    allowedMediaFormats:
+      - "mpeg2"
+      - "mp2"
+      - "audio/mpeg"
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
   redis:
