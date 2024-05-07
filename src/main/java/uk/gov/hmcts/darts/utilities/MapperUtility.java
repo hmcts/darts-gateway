@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.utilities;
 
+import com.service.mojdarts.synapps.com.addaudio.Audio;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
@@ -47,4 +48,31 @@ public class MapperUtility {
         return dartsResponse;
     }
 
+    public static OffsetDateTime getAudioStartDateTime(Audio audio) {
+        OffsetDateTime startDate = OffsetDateTime.of(
+            Integer.valueOf(audio.getStart().getY()),
+            Integer.valueOf(audio.getStart().getM()),
+            Integer.valueOf(audio.getStart().getD()),
+            Integer.valueOf(audio.getStart().getH()),
+            Integer.valueOf(audio.getStart().getMIN()),
+            Integer.valueOf(audio.getStart().getS()),
+            0,
+            ZoneOffset.UTC
+        );
+        return startDate;
+    }
+
+    public static OffsetDateTime getAudioEndDateTime(Audio audio) {
+        OffsetDateTime finishDate = OffsetDateTime.of(
+            audio.getEnd().getY().intValue(),
+            audio.getEnd().getM().intValue(),
+            audio.getEnd().getD().intValue(),
+            audio.getEnd().getH().intValue(),
+            audio.getEnd().getMIN().intValue(),
+            audio.getEnd().getS().intValue(),
+            0,
+            ZoneOffset.UTC
+        );
+        return finishDate;
+    }
 }

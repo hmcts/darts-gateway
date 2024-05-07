@@ -4,7 +4,6 @@ import com.service.mojdarts.synapps.com.AddAudio;
 import com.service.mojdarts.synapps.com.addaudio.Audio;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,10 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Optional;
+
+import static uk.gov.hmcts.darts.utilities.MapperUtility.getAudioEndDateTime;
+import static uk.gov.hmcts.darts.utilities.MapperUtility.getAudioStartDateTime;
 
 @Service
 @Slf4j
@@ -36,9 +37,6 @@ public class AddAudioValidator {
     private long expectedFileSize;
     @Value("${darts-gateway.add-audio.maxFileDuration}")
     private Duration maxFileDuration;
-
-    @Autowired
-    private final AllowedMediaConfig allowedMediaConfig;
 
     private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
     private final XmlValidator xmlValidator;
@@ -90,26 +88,8 @@ public class AddAudioValidator {
 
     private void validateDuration(Audio audio) {
 
-        OffsetDateTime startDate = OffsetDateTime.of(
-            Integer.valueOf(audio.getStart().getY()),
-            Integer.valueOf(audio.getStart().getM()),
-            Integer.valueOf(audio.getStart().getD()),
-            Integer.valueOf(audio.getStart().getH()),
-            Integer.valueOf(audio.getStart().getMIN()),
-            Integer.valueOf(audio.getStart().getS()),
-            0,
-            ZoneOffset.UTC
-        );
-        OffsetDateTime finishDate = OffsetDateTime.of(
-            audio.getEnd().getY().intValue(),
-            audio.getEnd().getM().intValue(),
-            audio.getEnd().getD().intValue(),
-            audio.getEnd().getH().intValue(),
-            audio.getEnd().getMIN().intValue(),
-            audio.getEnd().getS().intValue(),
-            0,
-            ZoneOffset.UTC
-        );
+        OffsetDateTime startDate = getAudioStartDateTime(audio);
+        OffsetDateTime finishDate = getAudioEndDateTime(audio);
 
         Duration difference = Duration.between(startDate, finishDate);
 
