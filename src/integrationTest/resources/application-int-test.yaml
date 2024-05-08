@@ -32,4 +32,3 @@ darts-gateway:
     validate: true
   events:
     validate: true
-
