@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.unit.DataSize;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
@@ -62,7 +63,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     private TokenValidator validator;
 
     @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")
-    private long maxByteSize;
+    private DataSize maxByteSize;
 
     @Value("${darts-gateway.add-audio.maxFileDuration}")
     private Duration maxFileDuration;
@@ -259,7 +260,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/soapRequest.xml");
 
             XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize) + 1);
+            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()) + 1);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
@@ -276,7 +277,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/invalidDocumentStructure.xml");
 
             XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-            when(request.getBinarySize()).thenReturn(maxByteSize);
+            when(request.getBinarySize()).thenReturn(maxByteSize.toBytes());
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             CodeAndMessage responseCode = CodeAndMessage.INVALID_XML;
@@ -315,7 +316,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/soapRequestEmptyCourthouse.xml");
 
             XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-            when(request.getBinarySize()).thenReturn(maxByteSize);
+            when(request.getBinarySize()).thenReturn(maxByteSize.toBytes());
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             CodeAndMessage responseCode = CodeAndMessage.ERROR;
@@ -425,7 +426,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/soapRequestDurationExceeded.xml");
 
             XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize));
+            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()));
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
