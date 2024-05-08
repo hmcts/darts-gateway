@@ -67,6 +67,7 @@ public class AddAudioValidator {
             try {
                 xmlValidator.validate(audio.getDocument(), addAudioSchema);
             } catch (DartsValidationException de) {
+                log.info("Add Audio failed due to Invalid XML");
                 throw new DartsValidationException(de, CodeAndMessage.INVALID_XML);
             }
         }
@@ -79,9 +80,11 @@ public class AddAudioValidator {
         }
         try {
             if (request.get().getBinarySize() > getBytes(expectedFileSize)) {
+                log.info("Add Audio failed due to Audio too large");
                 throw new DartsValidationException(CodeAndMessage.AUDIO_TOO_LARGE);
             }
         } catch (IOException ioe) {
+            log.info("Add Audio failed during size validation");
             throw new DartsValidationException(ioe, CodeAndMessage.ERROR);
         }
     }
@@ -94,6 +97,7 @@ public class AddAudioValidator {
         Duration difference = Duration.between(startDate, finishDate);
 
         if (difference.compareTo(maxFileDuration) > 0) {
+            log.info("Add Audio failed due to Duration too long");
             throw new DartsValidationException(CodeAndMessage.AUDIO_TOO_LARGE);
         }
     }

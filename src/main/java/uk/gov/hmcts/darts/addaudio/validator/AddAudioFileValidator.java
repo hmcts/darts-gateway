@@ -24,15 +24,18 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
 
     public void validate(MultipartFile addAudioFileRequest) {
         if (addAudioFileRequest.getSize() <= 0) {
+            log.info("Add Audio failed due size too small");
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
         if (addAudioFileRequest.getContentType() != null && !isWhiteListedFileType(addAudioFileRequest.getContentType())) {
+            log.info("Add Audio failed due to invalid Content Type");
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
         String extension = FilenameUtils.getExtension(addAudioFileRequest.getOriginalFilename());
         if (!isWhiteListedFileType(extension)) {
+            log.info("Add Audio failed due to invalid Extension");
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
@@ -43,9 +46,11 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
                 = tika.detect(addAudioFileRequest.getInputStream());
 
             if (!isWhiteListedFileType(mimeType)) {
+                log.info("Add Audio failed due to invalid Signature");
                 throw new DartsValidationException(CodeAndMessage.ERROR);
             }
         } catch (IOException ioException) {
+            log.info("Add Audio failed during signature validation");
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
     }
