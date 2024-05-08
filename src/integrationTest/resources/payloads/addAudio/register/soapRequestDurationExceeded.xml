@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><addAudio xmlns="http://com.synapps.mojdarts.service.com"><document xmlns="">&lt;audio&gt;&lt;start Y="2023" M="9" D="7" H="11" MIN="26" S="51" /&gt;&lt;end Y="2023" M="9" D="10" H="11" MIN="29" S="49" /&gt;&lt;channel&gt;1&lt;/channel&gt;&lt;max_channels&gt;4&lt;/max_channels&gt;&lt;mediaformat&gt;mpeg2&lt;/mediaformat&gt;&lt;mediafile&gt;0001.a00&lt;/mediafile&gt;&lt;courthouse&gt;SWANSEA&lt;/courthouse&gt;&lt;courtroom&gt;32&lt;/courtroom&gt;&lt;case_numbers&gt;&lt;case_number&gt;T20230294&lt;/case_number&gt;&lt;case_number&gt;U20230907-112949&lt;/case_number&gt;&lt;/case_numbers&gt;&lt;/audio&gt;</document></addAudio>
+
+<!--
+<addAudio xmlns="http://com.synapps.mojdarts.service.com">
+  <document xmlns="">
+  <audio>
+    <start Y="2023" M="9" D="7" H="11" MIN="26" S="51" />
+    <end Y="2023" M="9" D="10" H="11" MIN="29" S="49" />
+    <channel>4</channel>
+    <max_channels>4</max_channels>
+    <mediaformat>mpeg2</mediaformat>
+    <mediafile>0001.a03</mediafile>
+    <courthouse>SWANSEA</courthouse>
+    <courtroom>32</courtroom>
+    <case_numbers>
+     <case_number>T20230294</case_number>
+      <case_number>U20230907-112949</case_number>
+    </case_numbers>
+  </audio>
+</document>
+  <dataPackage xmlns="">
+    <DataObjects>
+      <Contents format="mp2" pageNumber="0">
+        \\MTS0286-2012\DAUDIO\DAUDIO\2072\PRE23\09071126.51S\0001\0001.a03
+      </Contents>
+    </DataObjects>
+  </dataPackage>
+</addAudio>
+-->

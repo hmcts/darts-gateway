@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.unit.DataSize;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
@@ -27,9 +28,13 @@ import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.utils.multipart.DummyXmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -44,7 +49,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 @ActiveProfiles("int-test-jwt-token-shared")
 class AddAudioWebServiceTest extends IntegrationBase {
@@ -58,9 +62,14 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @MockBean
     private TokenValidator validator;
 
-
     @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")
-    private long maxByteSize;
+    private DataSize maxByteSize;
+
+    @Value("${darts-gateway.add-audio.maxFileDuration}")
+    private Duration maxFileDuration;
+
+    private static final OffsetDateTime STARTED_AT = OffsetDateTime.of(2024, 10, 10, 10, 0, 0, 0, ZoneOffset.UTC);
+    private static final URI ENDPOINT = URI.create("/audios");
 
     @BeforeEach
     public void before() {
@@ -251,7 +260,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/soapRequest.xml");
 
             XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize) + 1);
+            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()) + 1);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
@@ -268,7 +277,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/invalidDocumentStructure.xml");
 
             XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-            when(request.getBinarySize()).thenReturn(maxByteSize);
+            when(request.getBinarySize()).thenReturn(maxByteSize.toBytes());
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             CodeAndMessage responseCode = CodeAndMessage.INVALID_XML;
@@ -307,7 +316,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 "payloads/addAudio/register/soapRequestEmptyCourthouse.xml");
 
             XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
-            when(request.getBinarySize()).thenReturn(maxByteSize);
+            when(request.getBinarySize()).thenReturn(maxByteSize.toBytes());
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             CodeAndMessage responseCode = CodeAndMessage.ERROR;
@@ -407,5 +416,72 @@ class AddAudioWebServiceTest extends IntegrationBase {
         response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(400, response.statusCode());
         Assertions.assertTrue(response.body().isEmpty());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioHandleErrorMaxDurationExceed(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            final String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequestDurationExceeded.xml");
+
+            XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
+            when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()));
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioHandleErrorInvalidExtension(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequestInvalidExtension.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/problemResponse500.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(aResponse().withStatus(500)
+                                        .withBody(dartsApiResponseStr)));
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+
+            CodeAndMessage responseCode = CodeAndMessage.ERROR;
+            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioHandleErrorInvalidSignature(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/problemResponse500.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(aResponse().withStatus(500)
+                                        .withBody(dartsApiResponseStr)));
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.BAD_SIGNATURE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+
+            CodeAndMessage responseCode = CodeAndMessage.ERROR;
+            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 }

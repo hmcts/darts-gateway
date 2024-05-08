@@ -6,6 +6,7 @@ import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.darts.addaudio.validator.AddAudioFileValidator;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
 import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
@@ -28,8 +29,10 @@ public class AddAudioRoute {
     private final AddAudioMapper addAudioMapper;
     private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
     private final AddAudioValidator addAudioValidator;
+    private final AddAudioFileValidator multipartFileValidator;
 
     public DARTSResponse route(AddAudio addAudio) {
+
         addAudioValidator.validate(addAudio);
 
         var audioXml = addAudio.getDocument();
@@ -38,6 +41,8 @@ public class AddAudioRoute {
 
         try {
             addAudioLegacy = (Audio) xmlParser.unmarshal(audioXml, Audio.class);
+
+            addAudioValidator.validate(addAudioLegacy);
 
             Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
 
@@ -52,6 +57,7 @@ public class AddAudioRoute {
                     );
                     AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
                     metaData.setFileSize(request.get().getBinarySize());
+                    multipartFileValidator.validate(multipartFile);
                     audiosClient.addAudio(multipartFile, metaData);
                 });
             } else {
