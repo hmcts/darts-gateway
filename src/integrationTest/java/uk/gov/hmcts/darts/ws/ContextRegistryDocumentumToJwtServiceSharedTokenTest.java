@@ -79,6 +79,14 @@ class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegist
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRegisterFailsIfNoServiceContextHeader(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailsIfNoServiceContextHeader(() -> {
+            executeHandleRegister(client);
+        });
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRegisterWithNoIdentities(ContextRegistryClient client) throws Exception {
 
         authenticationStub.assertFailBasedOnNoIdentities(client, () -> {

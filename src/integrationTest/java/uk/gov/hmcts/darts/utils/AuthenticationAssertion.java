@@ -104,6 +104,11 @@ public class AuthenticationAssertion {
     }
 
 
+    public void assertFailsIfNoServiceContextHeader(GeneralRunnableOperationWithException runnable)
+        throws IOException, InterruptedException, TransformerException {
+
+        runBlock(runnable, FaultErrorCodes.E_NULL_CONTEXT_CHECK_LIBRARIES, null);
+    }
 
     public void assertFailBasedOnInvalidIdentities(SoapTestClient client,
                                                    GeneralRunnableOperationWithException runnable)

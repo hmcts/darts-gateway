@@ -83,6 +83,14 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRegisterFailsIfNoServiceContextHeader(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailsIfNoServiceContextHeader(() -> {
+            executeHandleRegister(client);
+        });
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRegisterWithNoIdentities(ContextRegistryClient client) throws Exception {
 
         authenticationStub.assertFailBasedOnNoIdentities(client, () -> {

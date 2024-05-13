@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.ws;
 
 import documentum.contextreg.LookupResponse;
 import documentum.contextreg.ObjectFactory;
+import documentum.contextreg.Register;
 import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBElement;
@@ -11,6 +12,9 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.SoapHeader;
+import org.springframework.ws.soap.SoapHeaderElement;
+import uk.gov.hmcts.darts.authentication.exception.RegisterNullServiceContextException;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
@@ -30,7 +34,16 @@ public class ContextRegistryEndpoint {
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
-    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<documentum.contextreg.Register> register) {
+    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<Register> register,
+                                                  org.springframework.ws.soap.SoapHeader soapHeader,
+                                                  @org.springframework.ws.soap.server.endpoint.annotation.SoapHeader(
+                                                      value = "{http://context.core.datamodel.fs.documentum.emc.com/}ServiceContext"
+                                                  ) SoapHeaderElement serviceContextHeader) {
+
+        if (missingSoapHeader(soapHeader) || serviceContextHeader == null) {
+            throw new RegisterNullServiceContextException();
+        }
+
         RegisterResponse registerResponse = new RegisterResponse();
 
         try {
@@ -67,5 +80,9 @@ public class ContextRegistryEndpoint {
         value.ifPresent(refreshableCacheValue -> lookupResponse.setReturn(refreshableCacheValue.getServiceContext()));
 
         return new ObjectFactory().createLookupResponse(lookupResponse);
+    }
+
+    private static boolean missingSoapHeader(SoapHeader soapHeader) {
+        return !soapHeader.examineAllHeaderElements().hasNext();
     }
 }

@@ -74,6 +74,14 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRegisterFailsIfNoServiceContextHeader(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailsIfNoServiceContextHeader(() -> {
+            executeHandleRegister(client);
+        });
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRegisterWithAuthenticationFailure(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
 
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
