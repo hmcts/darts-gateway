@@ -58,6 +58,16 @@ public class ContextRegistryParent extends IntegrationBase {
         return response.getResponse().getValue().getReturn();
     }
 
+    String executeHandleRegisterMissingServiceContext(ContextRegistryClient client) throws IOException, JAXBException {
+        String soapRequestStr = TestUtils.getContentsFromFile(
+            "payloads/ctxtRegistry/register/soapRequestNoServiceContext.xml");
+
+        SoapAssertionUtil<RegisterResponse> response = client.register(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
+        Assertions.assertNotNull(response.getResponse().getValue());
+
+        return response.getResponse().getValue().getReturn();
+    }
+
     String executeHandleRegister(ContextRegistryClient client) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "payloads/ctxtRegistry/register/soapRequest.xml");

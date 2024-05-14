@@ -103,7 +103,30 @@ public class AuthenticationAssertion {
         runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_NO_IDENTITIES, null);
     }
 
+    public String assertFailsWithRegisterNullServiceContextException(SoapTestClient client, GeneralRunnableOperationWithException runnable,
+                                                                     ContextRegistryClient contextClient, URL baseUrl, String userName, String password)
+        throws IOException, JAXBException, InterruptedException, TransformerException {
 
+        String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
+            "payloads/soapHeaderServiceContext.xml");
+
+        soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${USER}", userName);
+        soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${PASSWORD}", password);
+
+        contextClient.setHeaderBlock(soapHeaderServiceContextStr);
+
+        String token = ContextRegistryParent.registerToken(baseUrl, contextClient, userName, password);
+
+        soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
+            "payloads/soapHeaderSecurityToken.xml");
+
+        String headerWithToken = soapHeaderServiceContextStr.replace("${TOKEN}", token);
+        client.setHeaderBlock(headerWithToken);
+
+        runBlock(runnable, FaultErrorCodes.E_NULL_CONTEXT_CHECK_LIBRARIES, null);
+
+        return token;
+    }
 
     public void assertFailBasedOnInvalidIdentities(SoapTestClient client,
                                                    GeneralRunnableOperationWithException runnable)

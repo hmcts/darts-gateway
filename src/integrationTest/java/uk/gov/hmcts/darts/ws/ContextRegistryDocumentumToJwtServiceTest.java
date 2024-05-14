@@ -114,6 +114,14 @@ class ContextRegistryDocumentumToJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRegisterFailsIfNoServiceContextInRegisterBody(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailsWithRegisterNullServiceContextException(client, () -> {
+            executeHandleRegisterMissingServiceContext(client);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
     void testLookupWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
         when(generator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))

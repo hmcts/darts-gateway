@@ -106,7 +106,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testhandleRegister(ContextRegistryClient client) throws Exception {
+    void testHandleRegister(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             executeHandleRegister(client);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
@@ -151,6 +151,14 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
     void testHandleRegisterWithAuthenticationToken(ContextRegistryClient client) throws Exception {
         authenticationStub.assertWithTokenHeader(client, () -> {
             executeHandleRegister(client);
+        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientProvider.class)
+    void testRegisterFailsIfNoServiceContextInRegisterBody(ContextRegistryClient client) throws Exception {
+        authenticationStub.assertFailsWithRegisterNullServiceContextException(client, () -> {
+            executeHandleRegisterMissingServiceContext(client);
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
