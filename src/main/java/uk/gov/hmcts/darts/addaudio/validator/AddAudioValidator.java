@@ -84,7 +84,7 @@ public class AddAudioValidator {
                 throw new DartsValidationException(CodeAndMessage.AUDIO_TOO_LARGE);
             }
         } catch (IOException | NullPointerException e) {
-            log.info("Add Audio failed during size validation");
+            log.info("Add Audio failed during size validation ");
             throw new DartsValidationException(e, CodeAndMessage.ERROR);
         }
     }
