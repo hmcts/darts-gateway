@@ -394,11 +394,11 @@ dependencies {
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
   testImplementation 'org.xmlunit:xmlunit-core:2.10.0'
   testImplementation 'org.xmlunit:xmlunit-matchers:2.10.0'
-  testImplementation 'org.testcontainers:testcontainers:1.19.7'
+  testImplementation 'org.testcontainers:testcontainers:1.19.8'
   testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 
 
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.7'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.8'
   testImplementation 'it.ozimov:embedded-redis:0.7.3'
   testImplementation 'io.github.hakky54:logcaptor:2.9.2'
 
