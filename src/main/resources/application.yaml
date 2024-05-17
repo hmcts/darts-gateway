@@ -5,6 +5,7 @@ server:
       store-type: redis
       cookie:
         name: JSESSIONID
+      timeout: 245m
 
 management:
   endpoint:
