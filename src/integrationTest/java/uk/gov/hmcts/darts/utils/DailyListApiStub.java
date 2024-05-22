@@ -44,7 +44,7 @@ public class DailyListApiStub extends DartsApiStub {
                 .withQueryParam("courthouse", equalTo("SNARESBROOK"))
                 .withQueryParam("hearing_date", equalTo("2010-02-18"))
                 .withQueryParam("unique_id", equalTo("CSDDL000000000576147"))
-                .withQueryParam("published_ts", equalTo("2010-02-17T16:16:50Z"))
+            .withQueryParam("published_ts", equalTo("2010-02-18T11:13:23.03Z"))
                 .withQueryParam("message_id", equalTo("18418"))
             .withHeader("xml_document", equalTo(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
         );
@@ -58,7 +58,7 @@ public class DailyListApiStub extends DartsApiStub {
                 .withQueryParam("courthouse", equalTo("YORK"))
                 .withQueryParam("hearing_date", equalTo("2024-03-06"))
                 .withQueryParam("unique_id", equalTo("CSDDL1709741907143"))
-                .withQueryParam("published_ts", equalTo("2024-03-06T16:18:25.108Z"))
+            .withQueryParam("published_ts", equalTo("2024-03-06T16:18:24.871Z"))
                 .withQueryParam("message_id", equalTo("18418"))
                 .withHeader("xml_document", equalToXml(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
         );
