@@ -35,6 +35,15 @@ class APIResponseMapperTest {
         Assertions.assertEquals(problem, exception.get().getProblem());
     }
 
+    @Test
+    void testProblemWithoutType() {
+        Problem problem = new Problem();
+        problem.setTitle("AnError");
+        Optional<ClientProblemException> exception = new DummyAPIResponseMapper().getExceptionForProblem(problem);
+        Assertions.assertTrue(exception.isEmpty());
+    }
+
+
     @SuppressWarnings({"unchecked", "PMD.NonStaticInitializer"})
     class DummyAPIResponseMapper extends AbstractAPIProblemResponseMapper {
         {
