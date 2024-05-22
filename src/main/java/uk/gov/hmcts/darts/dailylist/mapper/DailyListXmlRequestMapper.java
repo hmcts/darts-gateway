@@ -13,7 +13,7 @@ public class DailyListXmlRequestMapper {
         PostDailyListRequest request = new PostDailyListRequest();
         request.setCourthouse(legacyDailyListObject.getCrownCourt().getCourtHouseName());
         request.setUniqueId(legacyDailyListObject.getDocumentID().getUniqueID());
-        XMLGregorianCalendar publishedTime = legacyDailyListObject.getListHeader().getPublishedTime();
+        XMLGregorianCalendar publishedTime = legacyDailyListObject.getDocumentID().getTimeStamp();//changed to DocumentId.timestamp as part of DMP-3086
         request.setPublishedTs(DateUtil.toOffsetDateTime(publishedTime).toString());
         request.setHearingDate(legacyDailyListObject
                                    .getCourtLists().getCourtList().get(0)

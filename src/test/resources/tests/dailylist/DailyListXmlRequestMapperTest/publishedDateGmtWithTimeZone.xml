@@ -6,7 +6,7 @@
     <cs:DocumentName>DL 18/02/10 FINAL v1</cs:DocumentName>
     <cs:UniqueID>CSDDL000000000576147</cs:UniqueID>
     <cs:DocumentType>DL</cs:DocumentType>
-    <cs:TimeStamp>2024-01-12T11:13:23.000Z</cs:TimeStamp>
+    <cs:TimeStamp>2024-01-12T11:00:00.000Z</cs:TimeStamp>
     <cs:Version>1.0</cs:Version>
     <cs:SecurityClassification>NPM</cs:SecurityClassification>
     <cs:SellByDate>2010-12-15</cs:SellByDate>
@@ -19,7 +19,7 @@
     <cs:EndDate>2010-02-18</cs:EndDate>
     <cs:Version>FINAL v1</cs:Version>
     <cs:CRESTprintRef>MCD/112585</cs:CRESTprintRef>
-    <cs:PublishedTime>2024-01-12T11:00:00Z</cs:PublishedTime>
+    <cs:PublishedTime>2024-01-12T11:01:00Z</cs:PublishedTime>
     <cs:CRESTlistID>12298</cs:CRESTlistID>
   </cs:ListHeader>
   <cs:CrownCourt>
