@@ -362,7 +362,7 @@ dependencies {
 
   implementation 'org.mapstruct:mapstruct:1.5.5.Final'
   implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
-  implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.2.0'
+  implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.2.1'
 
 
   implementation project(path: ':context')
