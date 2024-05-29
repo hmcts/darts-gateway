@@ -16,13 +16,11 @@ import uk.gov.hmcts.darts.config.ServiceConfig;
 import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListXmlRequestMapper;
-import uk.gov.hmcts.darts.dailylist.model.PostDailyListRequest;
 import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
+import uk.gov.hmcts.darts.model.dailylist.PostDailyListRequest;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
-import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
-import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.util.Optional;
@@ -65,20 +63,13 @@ public class DailyListRoute {
 
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
                 legacyDailyListObject,
-                document
+                document,
+                systemType.get().getModernisedSystemType(),
+                addDocument.getMessageId()
         );
 
-        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsPost(
-            systemType.get().getModernisedSystemType(),
-            postDailyListRequest.getCourthouse(),
-            LocalDateTypeDeserializer.getLocalDate(postDailyListRequest.getHearingDate()),
-            postDailyListRequest.getUniqueId(),
-            OffsetDateTimeTypeDeserializer.getLOffsetDate(postDailyListRequest.getPublishedTs()),
-            addDocument.getMessageId(),
-            postDailyListRequest.getDailyListXml(),
-            // Null JSON when first persisting the XML to the API
-            // this is so that a record is kept if the XML cannot be serialised to JSON
-            null
+        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsV2Post(
+            postDailyListRequest
         );
 
         Integer dalId = postDailyListResponse.getBody().getDalId();
