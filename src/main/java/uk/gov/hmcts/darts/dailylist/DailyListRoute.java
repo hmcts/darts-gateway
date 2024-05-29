@@ -17,6 +17,7 @@ import uk.gov.hmcts.darts.dailylist.enums.SystemType;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListRequestMapper;
 import uk.gov.hmcts.darts.dailylist.mapper.DailyListXmlRequestMapper;
 import uk.gov.hmcts.darts.model.dailylist.DailyListJsonObject;
+import uk.gov.hmcts.darts.model.dailylist.PatchDailyListRequest;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListRequest;
 import uk.gov.hmcts.darts.model.dailylist.PostDailyListResponse;
 import uk.gov.hmcts.darts.utilities.XmlParser;
@@ -81,10 +82,12 @@ public class DailyListRoute {
             throw new DartsException(ex, CodeAndMessage.INVALID_XML);
         }
 
-        dailyListsClient.dailylistsPatch(
-                dalId,
-                // JSON is patched into the daily list record
-                modernisedDailyListJson
+        PatchDailyListRequest patchRequest = new PatchDailyListRequest();
+        patchRequest.setDalId(dalId);
+        patchRequest.setJsonString(modernisedDailyListJson);
+
+        dailyListsClient.dailylistsV2Patch(
+            patchRequest
         );
         return successResponse();
     }
