@@ -1,13 +1,11 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToXml;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
@@ -19,7 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 public class DailyListApiStub extends DartsApiStub {
 
-    private static final String DAILY_LIST_API_PATH = "/dailylists";
+    private static final String DAILY_LIST_API_PATH = "/dailylists/v2";
 
     public DailyListApiStub() {
         super(DAILY_LIST_API_PATH);
@@ -38,48 +36,34 @@ public class DailyListApiStub extends DartsApiStub {
 
     public void verifyPostRequest() throws IOException {
         String dailyListXmlString = TestUtils.getContentsFromFile(
-            "payloads/events/dailyList-api-request.xml");
+            "payloads/events/dailyList-api-post-request.json");
         verify(exactly(1), postRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
-                .withQueryParam("source_system", equalTo("XHB"))
-                .withQueryParam("courthouse", equalTo("SNARESBROOK"))
-                .withQueryParam("hearing_date", equalTo("2010-02-18"))
-                .withQueryParam("unique_id", equalTo("CSDDL000000000576147"))
-            .withQueryParam("published_ts", equalTo("2010-02-18T11:13:23.03Z"))
-                .withQueryParam("message_id", equalTo("18418"))
-            .withHeader("xml_document", equalTo(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
+            .withRequestBody(equalToJson(dailyListXmlString))
         );
     }
 
     public void verifyPostRequestWithoutLineBreaks() throws IOException {
         String dailyListXmlString = TestUtils.getContentsFromFile(
-            "payloads/events/dailyList-api-request-with-lb-removed.xml");
+            "payloads/events/dailyList-api-request-with-lb-removed.json");
         verify(exactly(1), postRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
-                .withQueryParam("source_system", equalTo("CPP"))
-                .withQueryParam("courthouse", equalTo("YORK"))
-                .withQueryParam("hearing_date", equalTo("2024-03-06"))
-                .withQueryParam("unique_id", equalTo("CSDDL1709741907143"))
-            .withQueryParam("published_ts", equalTo("2024-03-06T16:18:24.871Z"))
-                .withQueryParam("message_id", equalTo("18418"))
-                .withHeader("xml_document", equalToXml(StringEscapeUtils.unescapeXml(dailyListXmlString.trim())))
+            .withRequestBody(equalToJson(dailyListXmlString))
         );
     }
 
     public void verifyPatchRequest() throws IOException {
         String dailyListJsonString = TestUtils.getContentsFromFile(
-            "payloads/events/dailyList-api-request.json");
+            "payloads/events/dailyList-api-patch-request.json");
 
         verify(exactly(1), patchRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
-            .withQueryParam("dal_id", equalTo("1"))
-            .withHeader("json_string", equalTo(dailyListJsonString.trim()))
+            .withRequestBody(equalToJson(dailyListJsonString))
         );
     }
 
     public void verifyCppPatchRequest() throws IOException {
-        String dailyListJsonString = TestUtils.getContentsFromFile("payloads/events/dailyList-CPP-api-request.json");
+        String dailyListJsonString = TestUtils.getContentsFromFile("payloads/events/dailyList-CPP-api-patch-request.json");
 
         verify(exactly(1), patchRequestedFor(urlPathEqualTo(DAILY_LIST_API_PATH))
-            .withQueryParam("dal_id", equalTo("1"))
-            .withHeader("json_string", equalTo(dailyListJsonString.trim()))
+            .withRequestBody(equalToJson(dailyListJsonString))
         );
     }
 
