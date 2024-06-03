@@ -25,20 +25,20 @@ public class DateConverters {
     }
 
     public OffsetDateTime offsetDateTimeFrom(Audio.Start start) {
-        return OffsetDateTime.of(Integer.parseInt(start.getY()),
+        var offsetDateTime = OffsetDateTime.of(Integer.parseInt(start.getY()),
                                  Integer.parseInt(start.getM()), Integer.parseInt(start.getD()),
                                  Integer.parseInt(start.getH()), Integer.parseInt(start.getMIN()), Integer.parseInt(start.getS()),
                                  0, ZoneOffset.UTC
         );
-
+        return offsetDateTime.toLocalDateTime().atZone(ASSUMED_SOURCE_ZONE_ID).toOffsetDateTime();
     }
 
     public OffsetDateTime offsetDateTimeFrom(Audio.End end) {
-        return OffsetDateTime.of(end.getY().intValue(), end.getM().intValue(), end.getD().intValue(),
+        var offsetDateTime = OffsetDateTime.of(end.getY().intValue(), end.getM().intValue(), end.getD().intValue(),
                                  end.getH().intValue(), end.getMIN().intValue(), end.getS().intValue(),
                                  0, ZoneOffset.UTC
         );
-
+        return offsetDateTime.toLocalDateTime().atZone(ASSUMED_SOURCE_ZONE_ID).toOffsetDateTime();
     }
 
     public ZonedDateTime offsetDateTimeToLegacyDateTime(final OffsetDateTime offsetDateTime) {
