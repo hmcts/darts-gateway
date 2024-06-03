@@ -2,11 +2,12 @@ package uk.gov.hmcts.darts.common.util;
 
 import com.service.mojdarts.synapps.com.addaudio.Audio;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.darts.utilities.DateUtil;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -25,20 +26,17 @@ public class DateConverters {
     }
 
     public OffsetDateTime offsetDateTimeFrom(Audio.Start start) {
-        var offsetDateTime = OffsetDateTime.of(Integer.parseInt(start.getY()),
-                                 Integer.parseInt(start.getM()), Integer.parseInt(start.getD()),
-                                 Integer.parseInt(start.getH()), Integer.parseInt(start.getMIN()), Integer.parseInt(start.getS()),
-                                 0, ZoneOffset.UTC
-        );
-        return offsetDateTime.toLocalDateTime().atZone(ASSUMED_SOURCE_ZONE_ID).toOffsetDateTime();
+        var localDateTime = LocalDateTime.of(Integer.parseInt(start.getY()),
+                                             Month.of(Integer.parseInt(start.getM())), Integer.parseInt(start.getD()),
+                                             Integer.parseInt(start.getH()), Integer.parseInt(start.getMIN()), Integer.parseInt(start.getS()));
+
+        return DateUtil.toOffsetDateTime(localDateTime);
     }
 
     public OffsetDateTime offsetDateTimeFrom(Audio.End end) {
-        var offsetDateTime = OffsetDateTime.of(end.getY().intValue(), end.getM().intValue(), end.getD().intValue(),
-                                 end.getH().intValue(), end.getMIN().intValue(), end.getS().intValue(),
-                                 0, ZoneOffset.UTC
-        );
-        return offsetDateTime.toLocalDateTime().atZone(ASSUMED_SOURCE_ZONE_ID).toOffsetDateTime();
+        var localDateTime = LocalDateTime.of(end.getY().intValue(), end.getM().intValue(), end.getD().intValue(),
+                                             end.getH().intValue(), end.getMIN().intValue(), end.getS().intValue());
+        return DateUtil.toOffsetDateTime(localDateTime);
     }
 
     public ZonedDateTime offsetDateTimeToLegacyDateTime(final OffsetDateTime offsetDateTime) {

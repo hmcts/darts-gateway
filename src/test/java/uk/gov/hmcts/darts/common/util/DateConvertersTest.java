@@ -74,11 +74,11 @@ class DateConvertersTest {
         assertThat(offsetDateTime.getYear()).isEqualTo(2022);
         assertThat(offsetDateTime.getMonthValue()).isEqualTo(6);
         assertThat(offsetDateTime.getDayOfMonth()).isEqualTo(28);
-        assertThat(offsetDateTime.getHour()).isEqualTo(11);
+        assertThat(offsetDateTime.getHour()).isEqualTo(10);
         assertThat(offsetDateTime.getMinute()).isEqualTo(59);
         assertThat(offsetDateTime.getSecond()).isEqualTo(59);
 
-        assertThat(offsetDateTime.getOffset()).isEqualTo(ZoneOffset.ofHours(1));
+        assertThat(offsetDateTime.getOffset()).isEqualTo(ZoneOffset.ofHours(0));
     }
 
     @Test
@@ -116,11 +116,11 @@ class DateConvertersTest {
         assertThat(offsetDateTime.getYear()).isEqualTo(2022);
         assertThat(offsetDateTime.getMonthValue()).isEqualTo(6);
         assertThat(offsetDateTime.getDayOfMonth()).isEqualTo(28);
-        assertThat(offsetDateTime.getHour()).isEqualTo(11);
+        assertThat(offsetDateTime.getHour()).isEqualTo(10);
         assertThat(offsetDateTime.getMinute()).isEqualTo(59);
         assertThat(offsetDateTime.getSecond()).isEqualTo(59);
 
-        assertThat(offsetDateTime.getOffset()).isEqualTo(ZoneOffset.ofHours(1));
+        assertThat(offsetDateTime.getOffset()).isEqualTo(ZoneOffset.ofHours(0));
     }
 
     @Test
