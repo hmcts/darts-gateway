@@ -69,7 +69,7 @@ public class DailyListRoute {
                 addDocument.getMessageId()
         );
 
-        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsV2Post(
+        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsPost(
             postDailyListRequest
         );
 
@@ -86,7 +86,7 @@ public class DailyListRoute {
         patchRequest.setDalId(dalId);
         patchRequest.setJsonString(modernisedDailyListJson);
 
-        dailyListsClient.dailylistsV2Patch(
+        dailyListsClient.dailylistsPatch(
             patchRequest
         );
         return successResponse();

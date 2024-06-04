@@ -17,7 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 public class DailyListApiStub extends DartsApiStub {
 
-    private static final String DAILY_LIST_API_PATH = "/dailylists/v2";
+    private static final String DAILY_LIST_API_PATH = "/dailylists";
 
     public DailyListApiStub() {
         super(DAILY_LIST_API_PATH);
