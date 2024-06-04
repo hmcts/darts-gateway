@@ -38,8 +38,8 @@
           "judiciary": [
             {
               "citizen_name_forename": "",
-              "citizen_name_surname": "N/A",
-              "citizen_name_requested_name": "N/A"
+              "citizen_name_surname": "JudgeSurname",
+              "citizen_name_requested_name": "JudgeRequestedName"
             }
           ],
           "hearings": [
