@@ -17,7 +17,8 @@ import java.util.List;
     "courtHouse",
     "courtRoom",
     "caseNumbers",
-    "eventText"
+    "eventText",
+    "retentionPolicy"
 })
 @XmlRootElement(name = "DartsEvent")
 public class DartsEvent {
@@ -44,6 +45,9 @@ public class DartsEvent {
     protected BigInteger min;
     @XmlAttribute(name = "S", required = true)
     protected BigInteger s;
+
+    @XmlElement(name = "RetentionPolicy")
+    protected DartsEvent.RetentionPolicy retentionPolicy;
 
     public String getCourtHouse() {
         return courtHouse;
@@ -133,6 +137,14 @@ public class DartsEvent {
         this.s = value;
     }
 
+    public DartsEvent.RetentionPolicy getRetentionPolicy() {
+        return retentionPolicy;
+    }
+
+    public void setRetentionPolicy(DartsEvent.RetentionPolicy retentionPolicy) {
+        this.retentionPolicy = retentionPolicy ;
+    }
+
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -150,6 +162,37 @@ public class DartsEvent {
             return this.caseNumber;
         }
 
+    }
+
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+        "caseRetentionFixedPolicy",
+        "caseTotalSentence"
+    })
+    public static class RetentionPolicy {
+
+        @XmlElement(name = "CaseRetentionFixedPolicy")
+        public String caseRetentionFixedPolicy;
+
+        @XmlElement(name = "CaseTotalSentence")
+        public String caseTotalSentence;
+
+        public String getCaseRetentionFixedPolicy() {
+            return caseRetentionFixedPolicy;
+        }
+
+        public void setCaseRetentionFixedPolicy(String caseRetentionFixedPolicy) {
+            this.caseRetentionFixedPolicy = caseRetentionFixedPolicy ;
+        }
+
+        public String getCaseTotalSentence() {
+            return caseTotalSentence;
+        }
+
+        public void setCaseTotalSentence(String caseTotalSentence) {
+            this.caseTotalSentence = caseTotalSentence ;
+        }
     }
 
 }

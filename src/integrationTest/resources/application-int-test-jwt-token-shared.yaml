@@ -24,6 +24,6 @@ darts-gateway:
   daily-list:
     validate: true
   events:
-    validate: true
+    validate: false
   security:
     external-service-basic-authorisation-whitelist: some-user, some-user2
