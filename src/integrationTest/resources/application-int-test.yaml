@@ -31,4 +31,4 @@ darts-gateway:
   daily-list:
     validate: true
   events:
-    validate: true
+    validate: false
