@@ -76,7 +76,7 @@ public class TokenValidatorImpl implements TokenValidator {
     @Override
     public boolean test(Token.TokenExpiryEnum useExpiryOffset, String accessToken) {
         log.debug("Validating JWT: {}", accessToken);
-        boolean validated = false;
+        boolean validated;
         try {
             validated = useExpiryOffset == Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY || validateTheTokenExpiry(accessToken);
 
@@ -89,7 +89,7 @@ public class TokenValidatorImpl implements TokenValidator {
             return false;
         } catch (Exception e) {
             log.error("Major token validation failure", e);
-            throw new CacheTokenValidationException("The token validation failed");
+            throw new CacheTokenValidationException("The token validation failed", e);
         }
         return validated;
     }
@@ -100,7 +100,8 @@ public class TokenValidatorImpl implements TokenValidator {
             JWT jwt = SignedJWT.parse(accessToken);
             Object expired = jwt.getJWTClaimsSet().getClaim("exp");
             if (expired != null) {
-                long expiryInMillis = ((Date) expired).getTime() - cacheProperties.getSharedTokenEarlyExpirationMinutes() * (1000 * 60);
+                long expiryInMillis = ((Date) expired).getTime() - cacheProperties.getSharedTokenEarlyExpirationMinutes() * 1000 * 60;
+
                 long currentTimeMillis = System.currentTimeMillis();
                 validated = currentTimeMillis < expiryInMillis;
 

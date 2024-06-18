@@ -28,7 +28,7 @@ public class Token {
         DO_NOT_APPLY_EARLY_TOKEN_EXPIRY, APPLY_EARLY_TOKEN_EXPIRY
     }
 
-    private TokenValidator validator;
+    private final TokenValidator validator;
 
     Token(String token,  TokenValidator validator) {
         this.tokenString = token;
@@ -78,10 +78,10 @@ public class Token {
 
     private static void setupSession(Token token, boolean mapToSession) {
         String sessionId;
-        if (!doesSessionExist()) {
-            sessionId = createTokenSession();
-        } else {
+        if (doesSessionExist()) {
             sessionId = getHttpSessionId();
+        } else {
+            sessionId = createTokenSession();
         }
 
         if (mapToSession) {

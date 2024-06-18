@@ -47,7 +47,7 @@ public class DailyListRoute {
             throw new DartsValidationException((Throwable) null, CodeAndMessage.SYSTEM_TYPE_NOT_FOUND);
         }
 
-        var document = addDocument.getDocument();
+        String document = addDocument.getDocument();
 
         if (validate) {
             try {

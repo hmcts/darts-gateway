@@ -20,7 +20,7 @@ public enum DarNotifyEventResult {
     private final String message;
 
     public static DarNotifyEventResult findByResult(int result) {
-        return stream(DarNotifyEventResult.values())
+        return stream(values())
             .filter(r -> r.getResult() == result)
             .findFirst().orElse(null);
     }

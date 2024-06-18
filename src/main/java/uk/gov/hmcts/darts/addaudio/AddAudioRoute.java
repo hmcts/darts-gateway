@@ -35,12 +35,12 @@ public class AddAudioRoute {
 
         addAudioValidator.validate(addAudio);
 
-        var audioXml = addAudio.getDocument();
+        String audioXml = addAudio.getDocument();
 
         Audio addAudioLegacy;
 
         try {
-            addAudioLegacy = (Audio) xmlParser.unmarshal(audioXml, Audio.class);
+            addAudioLegacy = xmlParser.unmarshal(audioXml, Audio.class);
 
             addAudioValidator.validate(addAudioLegacy);
 

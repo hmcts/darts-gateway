@@ -14,6 +14,7 @@ public class ProblemResponseMapping<T> {
     T problem;
     CodeAndMessage message;
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     public boolean match(Problem problemToMatch) {
         if (problemToMatch.getType() == null) {
             return false;

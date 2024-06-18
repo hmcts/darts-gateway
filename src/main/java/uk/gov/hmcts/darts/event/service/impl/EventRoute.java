@@ -31,8 +31,8 @@ public class EventRoute {
             xmlValidator.validate(document, schemaPath);
         }
 
-        var dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
-        var eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
+        DartsEvent dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
+        uk.gov.hmcts.darts.model.event.DartsEvent eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
 
         ResponseEntity<EventsResponse> eventResponse = eventsClient.eventsPost(eventRequest);
 

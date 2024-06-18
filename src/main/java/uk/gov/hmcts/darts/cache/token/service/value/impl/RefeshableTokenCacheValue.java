@@ -6,7 +6,6 @@ import documentum.contextreg.ServiceContext;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
@@ -26,7 +25,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     @JsonIgnore
     private TokenGeneratable jwtCacheRegisterable;
 
-    public RefeshableTokenCacheValue(ServiceContext context, TokenGeneratable registerable) throws CacheException {
+    public RefeshableTokenCacheValue(ServiceContext context, TokenGeneratable registerable) {
         super(context);
 
         jwtCacheRegisterable = registerable;
@@ -34,17 +33,19 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
         tokenString = newtoken.getTokenString();
     }
 
-    public RefeshableTokenCacheValue(RefeshableTokenCacheValue context, TokenGeneratable registerable) throws CacheException {
+    public RefeshableTokenCacheValue(RefeshableTokenCacheValue context, TokenGeneratable registerable) {
         super(context);
         jwtCacheRegisterable = registerable;
         this.tokenString = context.tokenString;
     }
 
+    @SuppressWarnings("PMD.CallSuperInConstructor")
     public RefeshableTokenCacheValue() {
+        //Empty constructor
     }
 
     @Override
-    public boolean doesRequireRefresh() throws CacheException {
+    public boolean doesRequireRefresh() {
         Token downstream = getToken();
 
         boolean tokenValid = downstream.validate(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY);
@@ -54,7 +55,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     }
 
     @Override
-    public void performRefresh() throws CacheException {
+    public void performRefresh() {
         try {
             Token token = jwtCacheRegisterable.createToken(getServiceContext());
 
@@ -65,10 +66,12 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     }
 
     @JsonIgnore
+    @Override
     public Token getToken() {
         return jwtCacheRegisterable.getToken(tokenString);
     }
 
+    @Override
     public void setDownstreamToken(String token) {
         this.tokenString = token;
     }

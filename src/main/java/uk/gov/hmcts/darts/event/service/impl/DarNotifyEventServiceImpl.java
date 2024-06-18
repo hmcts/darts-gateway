@@ -33,7 +33,7 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
     @Override
     public void darNotify(DarNotifyEvent inboundDarNotifyEvent) {
         if (enableDarNotify) {
-            var outboundDarNotifyEvent = convertToOutboundEvent(inboundDarNotifyEvent);
+            Event outboundDarNotifyEvent = convertToOutboundEvent(inboundDarNotifyEvent);
 
             darNotifyEventClient.darNotifyEvent(
                 inboundDarNotifyEvent.getNotificationUrl(),
@@ -78,8 +78,8 @@ public class DarNotifyEventServiceImpl implements DarNotifyEventService {
     private String serialized(Event outboundEvent) {
         var writer = new StringWriter();
         try {
-            var context = JAXBContext.newInstance(Event.class);
-            var marshaller = context.createMarshaller();
+            JAXBContext context = JAXBContext.newInstance(Event.class);
+            Marshaller marshaller = context.createMarshaller();
 
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);

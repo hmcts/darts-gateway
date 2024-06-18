@@ -114,7 +114,7 @@ class RefreshableTokenCacheValueTest {
         Assertions.assertFalse(contextCacheValue.getContextString().isEmpty());
         Assertions.assertEquals(TokenRegisterable.CACHE_PREFIX + ":" + "${USER}:${PASSWORD}", contextCacheValue.getSharedKey());
         Assertions.assertEquals(CACHED_TOKEN_STRING, contextCacheValue.getTokenString());
-        Assertions.assertDoesNotThrow(() -> contextCacheValue.performRefresh());
+        Assertions.assertDoesNotThrow(contextCacheValue::performRefresh);
         Assertions.assertEquals(REPLACE_TOKEN_STRING, contextCacheValue.getTokenString());
     }
 

@@ -25,6 +25,7 @@ public class SoapBodyConverter {
         this.jaxbContext = JAXBContext.newInstance(Register.class);
     }
 
+    @SuppressWarnings("PMD.EmptyCatchBlock")
     public Optional<ServiceContext> getServiceContext(SaajSoapMessage message) {
         Optional<ServiceContext> registerOptional = Optional.empty();
         try {

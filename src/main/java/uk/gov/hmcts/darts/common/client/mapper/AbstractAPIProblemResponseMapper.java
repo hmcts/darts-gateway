@@ -17,6 +17,7 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
         operationErrorResponseMappingList.add(operation);
     }
 
+    @Override
     public List<ProblemResponseMappingOperation> getResponseMappings() {
         return operationErrorResponseMappingList;
     }

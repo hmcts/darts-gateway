@@ -36,22 +36,24 @@ public class OauthTokenGenerator implements TokenGenerator {
 
 
     @SneakyThrows
+    @Override
     public String acquireNewToken(String username, String password) {
 
+        String foundPassword = password;
         // if the internal to external mapping is enabled then throw an error if we cant find an internal password
         if (securityProperties.isUserExternalInternalMappingsEnabled()) {
             Optional<String> fndPassword = findInternalUserPassword(username, password);
             if (fndPassword.isEmpty()) {
                 throw new CacheTokenCreationException("No token found for user name and password");
             }
-            password = fndPassword.get();
+            foundPassword = fndPassword.get();
         }
 
         Map<String, String> params = Map.of(CLIENT_ID_PARAMETER_KEY, securityProperties.getClientId(),
                 SCOPE_PARAMETER_KEY, securityProperties.getScope(),
                 GRANT_TYPE_PARAMETER_KEY, PASSWORD_PARAMETER_KEY,
                 USERNAME_PARAMETER_KEY, username,
-                PASSWORD_PARAMETER_KEY, password
+                PASSWORD_PARAMETER_KEY, foundPassword
         );
 
         String response = makeCall(URI.create(securityProperties.getTokenUri()), params);
@@ -82,15 +84,13 @@ public class OauthTokenGenerator implements TokenGenerator {
 
     @SuppressWarnings("PMD.LawOfDemeter")
     public static String encode(Map<String, String> params) {
-        String urlEncoded = params.entrySet()
-                .stream()
-                .map(entry -> new StringJoiner("=")
-                        .add(entry.getKey())
-                        .add(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
-                        .toString())
-                .collect(Collectors.joining("&"));
-
-        return urlEncoded;
+        return params.entrySet()
+            .stream()
+            .map(entry -> new StringJoiner("=")
+                    .add(entry.getKey())
+                    .add(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
+                    .toString())
+            .collect(Collectors.joining("&"));
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -54,16 +54,20 @@ public class DarNotifyEventConfiguration {
             new DarNotificationLoggerServiceImpl());
     }
 
-    private static class ViqSolutionsNamespaceMapper extends NamespacePrefixMapper {
+    private static final class ViqSolutionsNamespaceMapper extends NamespacePrefixMapper {
 
+        static final String URL = "http://www.VIQSoultions.com";
+
+        @Override
         public String getPreferredPrefix(String uri, String suggest, boolean require) {
-            if ("http://www.VIQSoultions.com".equals(uri)) {
+            if (URL.equals(uri)) {
                 return "";
             }
 
             return suggest;
         }
 
+        @Override
         public String[] getPreDeclaredNamespaceUris() {
             return new String[0];
         }

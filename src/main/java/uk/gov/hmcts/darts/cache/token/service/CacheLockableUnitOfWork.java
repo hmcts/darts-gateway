@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.cache.token.service;
 
 import org.springframework.integration.support.locks.LockRegistry;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 
 import java.util.Optional;
@@ -9,7 +8,7 @@ import java.util.concurrent.locks.Lock;
 
 public class CacheLockableUnitOfWork {
 
-    private LockRegistry lockRegistry;
+    private final LockRegistry lockRegistry;
 
     public CacheLockableUnitOfWork(LockRegistry lockRegistry) {
         this.lockRegistry = lockRegistry;
@@ -17,26 +16,26 @@ public class CacheLockableUnitOfWork {
 
     @FunctionalInterface
     interface Execute {
-        void execute(Token token) throws CacheException;
+        void execute(Token token);
     }
 
     @FunctionalInterface
     interface ExecuteForToken {
-        Token execute() throws CacheException;
+        Token execute();
     }
 
     @FunctionalInterface
     interface ExecuteForBoolean {
-        Token execute() throws CacheException;
+        Token execute();
     }
 
 
     @FunctionalInterface
     interface ExecuteRefreshableValueReturn {
-        Optional<CacheValue> execute(Token token) throws CacheException;
+        Optional<CacheValue> execute(Token token);
     }
 
-    public Token execute(ExecuteForBoolean runnable,  String id) throws CacheException {
+    public Token execute(ExecuteForBoolean runnable, String id) {
         Lock lock = lockRegistry.obtain(id);
         lock.lock();
         try {

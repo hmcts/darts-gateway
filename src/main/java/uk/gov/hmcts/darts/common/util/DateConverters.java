@@ -19,23 +19,23 @@ public class DateConverters {
     private static final ZoneId ASSUMED_SOURCE_ZONE_ID = ZoneId.of("Europe/London");
 
     public OffsetDateTime offsetDateTimeFrom(final String timeString) {
-        var localDateTime = LocalDateTime.parse(timeString, LEGACY_COURT_LOG_DATE_FORMAT);
+        LocalDateTime localDateTime = LocalDateTime.parse(timeString, LEGACY_COURT_LOG_DATE_FORMAT);
 
         return localDateTime.atZone(ASSUMED_SOURCE_ZONE_ID)
               .toOffsetDateTime();
     }
 
     public OffsetDateTime offsetDateTimeFrom(Audio.Start start) {
-        var localDateTime = LocalDateTime.of(Integer.parseInt(start.getY()),
-                                             Month.of(Integer.parseInt(start.getM())), Integer.parseInt(start.getD()),
-                                             Integer.parseInt(start.getH()), Integer.parseInt(start.getMIN()), Integer.parseInt(start.getS()));
+        LocalDateTime localDateTime = LocalDateTime.of(Integer.parseInt(start.getY()),
+                                                       Month.of(Integer.parseInt(start.getM())), Integer.parseInt(start.getD()),
+                                                       Integer.parseInt(start.getH()), Integer.parseInt(start.getMIN()), Integer.parseInt(start.getS()));
 
         return DateUtil.toOffsetDateTime(localDateTime);
     }
 
     public OffsetDateTime offsetDateTimeFrom(Audio.End end) {
-        var localDateTime = LocalDateTime.of(end.getY().intValue(), end.getM().intValue(), end.getD().intValue(),
-                                             end.getH().intValue(), end.getMIN().intValue(), end.getS().intValue());
+        LocalDateTime localDateTime = LocalDateTime.of(end.getY().intValue(), end.getM().intValue(), end.getD().intValue(),
+                                                       end.getH().intValue(), end.getMIN().intValue(), end.getS().intValue());
         return DateUtil.toOffsetDateTime(localDateTime);
     }
 

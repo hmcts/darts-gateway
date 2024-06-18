@@ -32,7 +32,7 @@ public class ContextRegistryEndpoint {
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
-    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<documentum.contextreg.Register> register) {
+    public JAXBElement<RegisterResponse> register(@RequestPayload JAXBElement<Register> register) {
 
         validateRegisterBodyServiceContextIsNotNull(register);
 

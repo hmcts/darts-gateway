@@ -38,7 +38,7 @@ public class MapperUtility {
 
     public static DARTSResponse mapResponse(EventsResponse eventResponse, boolean convert201to200) {
         var dartsResponse = new DARTSResponse();
-        if (convert201to200 && eventResponse.getCode().equals("201")) {
+        if (convert201to200 && "201".equals(eventResponse.getCode())) {
             dartsResponse.setCode(CodeAndMessage.OK.getCode());
             dartsResponse.setMessage(CodeAndMessage.OK.getMessage());
         } else {
@@ -49,21 +49,20 @@ public class MapperUtility {
     }
 
     public static OffsetDateTime getAudioStartDateTime(Audio audio) {
-        OffsetDateTime startDate = OffsetDateTime.of(
-            Integer.valueOf(audio.getStart().getY()),
-            Integer.valueOf(audio.getStart().getM()),
-            Integer.valueOf(audio.getStart().getD()),
-            Integer.valueOf(audio.getStart().getH()),
-            Integer.valueOf(audio.getStart().getMIN()),
-            Integer.valueOf(audio.getStart().getS()),
+        return OffsetDateTime.of(
+            Integer.parseInt(audio.getStart().getY()),
+            Integer.parseInt(audio.getStart().getM()),
+            Integer.parseInt(audio.getStart().getD()),
+            Integer.parseInt(audio.getStart().getH()),
+            Integer.parseInt(audio.getStart().getMIN()),
+            Integer.parseInt(audio.getStart().getS()),
             0,
             ZoneOffset.UTC
         );
-        return startDate;
     }
 
     public static OffsetDateTime getAudioEndDateTime(Audio audio) {
-        OffsetDateTime finishDate = OffsetDateTime.of(
+        return OffsetDateTime.of(
             audio.getEnd().getY().intValue(),
             audio.getEnd().getM().intValue(),
             audio.getEnd().getD().intValue(),
@@ -73,6 +72,5 @@ public class MapperUtility {
             0,
             ZoneOffset.UTC
         );
-        return finishDate;
     }
 }
