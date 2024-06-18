@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
-import org.w3c.dom.Node;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
@@ -32,11 +32,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.namespace.QName;
-import javax.xml.transform.dom.DOMSource;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings("PMD.GodClass")
 public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private static final String SERVICE_CONTEXT_HEADER = "{http://context.core.datamodel.fs.documentum.emc.com/}ServiceContext";
@@ -74,7 +74,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private boolean isTokenAuthentication(SaajSoapMessage message) {
-        var soapHeader = message.getSoapHeader();
+        SoapHeader soapHeader = message.getSoapHeader();
         if (soapHeader == null) {
             return false;
         }
@@ -84,7 +84,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private boolean authenticateToken(SaajSoapMessage message) {
-        var soapHeader = message.getSoapHeader();
+        SoapHeader soapHeader = message.getSoapHeader();
         Iterator<SoapHeaderElement> securityToken = soapHeader.examineHeaderElements(
             QName.valueOf(SECURITY_HEADER));
 
@@ -116,9 +116,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         return true;
     }
 
-    private void authenticateUsernameAndPassword(SaajSoapMessage message) throws AuthenticationFailedException {
-        Node bodyNode = ((DOMSource) message.getSoapBody().getPayloadSource()).getNode();
-        String messageEndpoint = bodyNode.getLocalName();
+    private void authenticateUsernameAndPassword(SaajSoapMessage message) {
         if (ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)) {
             authenticateUsernameAndPasswordFromBody(message);
         } else {
@@ -126,7 +124,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
     }
 
-    private void authenticateUsernameAndPasswordFromBody(SaajSoapMessage message) throws AuthenticationFailedException {
+    private void authenticateUsernameAndPasswordFromBody(SaajSoapMessage message) {
         Optional<ServiceContext> serviceContextOpt = soapBodyConverter.getServiceContext(message);
         if (serviceContextOpt.isEmpty()) {
             throw new NoIdentitiesFoundException();
@@ -139,8 +137,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
 
-    private boolean authenticateUsernameAndPasswordFromHeader(SaajSoapMessage message) throws AuthenticationFailedException {
-        var soapHeader = message.getSoapHeader();
+    private boolean authenticateUsernameAndPasswordFromHeader(SaajSoapMessage message) {
+        SoapHeader soapHeader = message.getSoapHeader();
         Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
             QName.valueOf(SERVICE_CONTEXT_HEADER));
         try {
@@ -170,8 +168,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
 
-    private void getAuthenticationToken(SaajSoapMessage message, ServiceContext serviceContext)
-        throws AuthenticationFailedException, InvalidIdentitiesFoundException {
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    private void getAuthenticationToken(SaajSoapMessage message, ServiceContext serviceContext) {
         List<Identity> identities = serviceContext.getIdentities();
         if (CollectionUtils.isEmpty(identities)) {
             throw new NoIdentitiesFoundException();
@@ -261,12 +259,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private boolean isContextRegistryRequest(SaajSoapMessage message) {
-        if (ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)
-            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.LOOKUP_OPERATION)
-            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.UNREGISTER_OPERATION)) {
-            return true;
-        }
-
-        return false;
+        return ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)
+                || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.LOOKUP_OPERATION)
+                || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.UNREGISTER_OPERATION);
     }
 }

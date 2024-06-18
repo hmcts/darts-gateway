@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.cache.token.service;
 
 import documentum.contextreg.ServiceContext;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 
 import java.util.Optional;
@@ -39,14 +38,14 @@ public interface TokenRegisterable {
      *
      * @return The token to be returned.
      */
-    Optional<Token> store(ServiceContext context, Boolean reuseTokenIfPossible) throws CacheException;
+    Optional<Token> store(ServiceContext context, Boolean reuseTokenIfPossible);
 
     /**
      * This method takes the service context to generate a new token.
      * @param context The service context to store
      * @return The token to be returned
      */
-    Optional<Token> store(ServiceContext context) throws CacheException;
+    Optional<Token> store(ServiceContext context);
 
     /**
      * lookup the token value.
@@ -54,7 +53,7 @@ public interface TokenRegisterable {
      * @return The value. If the token could not be found or the existing token is
      *      found but it is invalid (whatever that means) we should return an empty value (no exception should be thrown).
      */
-    Optional<CacheValue> lookup(Token holder) throws CacheException;
+    Optional<CacheValue> lookup(Token holder);
 
     /**
      * This evicts a token from the cache. No errors are expected. After this call {@link #lookup(Token)} should return empty,

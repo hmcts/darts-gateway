@@ -51,7 +51,8 @@ import static java.time.Duration.ofSeconds;
 @EnableCaching
 @Slf4j
 public class CacheConfig {
-    public static final int ENTRY_EXPIRATION_TIME_MINUTES = 30;
+    private static final String LOCK_REGISTRY_REDIS_KEY = "MY_REDIS_KEY";
+    private static final Duration RELEASE_TIME_DURATION = ofSeconds(30);
 
     @Value("${darts-gateway.redis.connection-string}")
     private String redisConnectionString;
@@ -61,27 +62,27 @@ public class CacheConfig {
 
     @Bean
     public LettuceConnectionFactory connectionFactory() {
-        var redisConnectionProperties = redisConnectionPropertiesFrom(redisConnectionString);
-        var mappingSocketAddressResolver = MappingSocketAddressResolver.create(
+        RedisConnectionProperties redisConnectionProperties = redisConnectionPropertiesFrom(redisConnectionString);
+        MappingSocketAddressResolver mappingSocketAddressResolver = MappingSocketAddressResolver.create(
             DnsResolvers.JVM_DEFAULT,
             getHostAndPortMappingFunctionFor(redisConnectionProperties.host())
         );
 
-        var clientResources = ClientResources.builder()
+        ClientResources clientResources = ClientResources.builder()
             .socketAddressResolver(mappingSocketAddressResolver)
             .build();
 
-        var socketOptions = SocketOptions.builder()
+        SocketOptions socketOptions = SocketOptions.builder()
             .connectTimeout(ofSeconds(20))
             .build();
 
-        var clientOptions = ClientOptions.builder()
+        ClientOptions clientOptions = ClientOptions.builder()
             .timeoutOptions(TimeoutOptions.enabled(ofSeconds(20)))
             .socketOptions(socketOptions)
             .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
             .build();
 
-        var clientConfigurationBuilder = LettuceClientConfiguration.builder();
+        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigurationBuilder = LettuceClientConfiguration.builder();
         clientConfigurationBuilder
             .commandTimeout(ofSeconds(20))
             .clientOptions(clientOptions)
@@ -90,7 +91,7 @@ public class CacheConfig {
             clientConfigurationBuilder.useSsl();
         }
 
-        var redisConfig = new RedisStandaloneConfiguration(
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(
             redisConnectionProperties.host(),
             redisConnectionProperties.port()
         );
@@ -103,15 +104,15 @@ public class CacheConfig {
 
     private UnaryOperator<HostAndPort> getHostAndPortMappingFunctionFor(String host) {
         return hostAndPort -> {
-            var addresses = new InetAddress[0];
+            InetAddress[] addresses = new InetAddress[0];
             try {
                 addresses = DnsResolvers.JVM_DEFAULT.resolve(host);
             } catch (UnknownHostException unknownHostException) {
                 log.error("Failed to resolve: " + host, unknownHostException);
             }
 
-            var hostIp = addresses[0].getHostAddress();
-            var finalAddress = hostAndPort;
+            String hostIp = addresses[0].getHostAddress();
+            HostAndPort finalAddress = hostAndPort;
             if (hostAndPort.hostText.equals(hostIp)) {
                 finalAddress = HostAndPort.of(host, hostAndPort.getPort());
             }
@@ -132,13 +133,13 @@ public class CacheConfig {
     }
 
     static RedisConnectionProperties redisConnectionPropertiesFrom(String redisConnectionString) {
-        var redisUri = RedisURI.create(redisConnectionString);
+        RedisURI redisUri = RedisURI.create(redisConnectionString);
 
-        var redisPassword = RedisPassword.of(redisUri.getPassword());
+        RedisPassword redisPassword = RedisPassword.of(redisUri.getPassword());
         char[] decodedPasswordChars = {};
         if (redisPassword.isPresent()) {
-            var encodedPassword = redisPassword.get();
-            var decodedPasswordString = URLDecoder.decode(String.valueOf(encodedPassword), defaultCharset());
+            char[] encodedPassword = redisPassword.get();
+            String decodedPasswordString = URLDecoder.decode(String.valueOf(encodedPassword), defaultCharset());
             decodedPasswordChars = decodedPasswordString.toCharArray();
         }
 
@@ -157,12 +158,13 @@ public class CacheConfig {
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
             //.enableTimeToIdle()
-            .entryTtl(Duration.ofSeconds(10))
+            .entryTtl(ofSeconds(10))
             .disableCachingNullValues()
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()))
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
     }
 
+    @SuppressWarnings("PMD.UnnecessaryAnnotationValueElement")
     @ConditionalOnProperty(
         value = "darts-gateway.cache.token-generate",
         havingValue = "documentum-to-jwt",
@@ -182,6 +184,7 @@ public class CacheConfig {
         return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
     }
 
+    @SuppressWarnings("PMD.UnnecessaryAnnotationValueElement")
     @ConditionalOnProperty(
         value = "darts-gateway.cache.token-generate",
         havingValue = "jwt",
@@ -201,9 +204,6 @@ public class CacheConfig {
         return template;
     }
 
-    private static final String LOCK_REGISTRY_REDIS_KEY = "MY_REDIS_KEY";
-    private static final Duration RELEASE_TIME_DURATION = Duration.ofSeconds(30);
-
     @Bean
     public RedisLockRegistry lockRegistry(RedisConnectionFactory redisConnectionFactory) {
         RedisLockRegistry registry =  new RedisLockRegistry(redisConnectionFactory, LOCK_REGISTRY_REDIS_KEY,
@@ -213,7 +213,7 @@ public class CacheConfig {
     }
 
     private static GenericJackson2JsonRedisSerializer redisSerializer() {
-        var serializer = new GenericJackson2JsonRedisSerializer();
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
         serializer.configure(objectMapper -> {
             objectMapper.registerModule(new JavaTimeModule());
             objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

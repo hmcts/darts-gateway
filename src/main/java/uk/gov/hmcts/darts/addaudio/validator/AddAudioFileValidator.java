@@ -22,6 +22,8 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
     @Autowired
     private final AllowedMediaConfig allowedMediaConfig;
 
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    @Override
     public void validate(MultipartFile addAudioFileRequest) {
         if (addAudioFileRequest.getSize() <= 0) {
             log.info("Add Audio failed due size too small");
@@ -51,7 +53,7 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
             }
         } catch (IOException ioException) {
             log.info("Add Audio failed during signature validation");
-            throw new DartsValidationException(CodeAndMessage.ERROR);
+            throw new DartsValidationException(ioException, CodeAndMessage.ERROR);
         }
     }
 

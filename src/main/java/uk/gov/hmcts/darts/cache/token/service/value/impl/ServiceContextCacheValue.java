@@ -28,10 +28,12 @@ public class ServiceContextCacheValue implements CacheValue {
 
     protected JAXBContext jaxbContext;
 
-    public ServiceContextCacheValue() throws CacheException {
+    @SuppressWarnings("PMD.CallSuperInConstructor")
+    public ServiceContextCacheValue() {
+        //Empty constructor
     }
 
-    public ServiceContextCacheValue(ServiceContext context) throws CacheException {
+    public ServiceContextCacheValue(ServiceContext context) {
 
         try {
             jaxbContext = JAXBContext.newInstance(ServiceContext.class);
@@ -45,7 +47,8 @@ public class ServiceContextCacheValue implements CacheValue {
         }
     }
 
-    public ServiceContextCacheValue(ServiceContextCacheValue value) throws CacheException {
+    @SuppressWarnings("PMD.ConstructorCallsOverridableMethod")
+    public ServiceContextCacheValue(ServiceContextCacheValue value) {
         try {
             jaxbContext = JAXBContext.newInstance(ServiceContext.class);
             setSharedKey(value.getSharedKey());
@@ -56,6 +59,7 @@ public class ServiceContextCacheValue implements CacheValue {
     }
 
 
+    @Override
     public String getContextString() {
         return contextStr;
     }
@@ -65,7 +69,8 @@ public class ServiceContextCacheValue implements CacheValue {
     }
 
     @JsonIgnore
-    public ServiceContext getServiceContext() throws CacheException {
+    @Override
+    public ServiceContext getServiceContext() {
 
         if (context == null) {
             try {
@@ -80,7 +85,7 @@ public class ServiceContextCacheValue implements CacheValue {
         return context;
     }
 
-    private static String getUserName(ServiceContext serviceContext) throws CacheException {
+    private static String getUserName(ServiceContext serviceContext) {
         Identity identity = serviceContext.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getUserName();
@@ -89,7 +94,7 @@ public class ServiceContextCacheValue implements CacheValue {
         throw new CacheException("Do not understand the service context");
     }
 
-    private static String getPassword(ServiceContext serviceContext) throws CacheException {
+    private static String getPassword(ServiceContext serviceContext) {
         Identity identity = serviceContext.getIdentities().get(0);
         if (identity instanceof BasicIdentity basicIdentity) {
             return basicIdentity.getPassword();
@@ -99,7 +104,7 @@ public class ServiceContextCacheValue implements CacheValue {
     }
 
     @Override
-    public String getSharedKey() throws CacheException {
+    public String getSharedKey() {
         if (sharedKey == null) {
             sharedKey = getId(getServiceContext());
         }
@@ -111,7 +116,7 @@ public class ServiceContextCacheValue implements CacheValue {
         return TokenRegisterable.CACHE_PREFIX + ":" + getUserName(context) + ":" + getPassword(context);
     }
 
-    public void setSharedKey(String sharedKey) throws CacheException {
+    public void setSharedKey(String sharedKey) {
         this.sharedKey = sharedKey;
     }
 }

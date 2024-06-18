@@ -27,7 +27,7 @@ import javax.xml.transform.Result;
 @Component
 public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointExceptionResolver {
 
-    private static final QName _ServiceType_QNAME = new QName("http://rt.fs.documentum.emc.com/", "ServiceException");
+    private static final QName SERVICE_TYPE_QNAME = new QName("http://rt.fs.documentum.emc.com/", "ServiceException");
 
     @Override
     protected boolean resolveExceptionInternal(MessageContext messageContext, Object endpoint, Exception ex) {
@@ -51,8 +51,8 @@ public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointE
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceExceptionType.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
-            JAXBElement<ServiceExceptionType> serviceErrorDetail = new JAXBElement<ServiceExceptionType>(
-                _ServiceType_QNAME,
+            JAXBElement<ServiceExceptionType> serviceErrorDetail = new JAXBElement<>(
+                SERVICE_TYPE_QNAME,
                 ServiceExceptionType.class,
                 null,
                 serviceException.getServiceExceptionType()

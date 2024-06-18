@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
@@ -20,8 +21,8 @@ public class XmlValidator {
 
     public void validate(String xmlDocument, String schemaFilePath) {
         try {
-            var schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
-            var validator = schemaFactory
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
+            Validator validator = schemaFactory
                 .newSchema(new File(schemaFilePath))
                 .newValidator();
             validator.validate(new StreamSource(new StringReader(xmlDocument)));

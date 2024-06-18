@@ -35,7 +35,7 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     private MimeMultipart mimeMultipart;
 
-    private boolean parseFailure = false;
+    private boolean parseFailure;
 
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public JavaMailXmlWithFileMultiPartRequest(HttpServletRequest request) {
@@ -44,13 +44,13 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
         try {
             source = new HttpRequestDataSource(request);
             mimeMultipart = new MimeMultipart(source);
-            parse(request);
+            parse();
         } catch (IOException | MessagingException e) {
             log.warn("Invalid payload, forcing a payload error for Spring ws to handle");
         }
     }
 
-    private void parse(HttpServletRequest request) throws IOException {
+    private void parse() throws IOException {
         try {
             BodyPart xmlPayload = MultiPartUtil.getXml(mimeMultipart);
 
@@ -155,7 +155,8 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     @Override
     public String getHeader(String name) {
-        if ("Content-Type".equalsIgnoreCase(name)) {
+        String contentString = "Content-Type";
+        if (contentString.equalsIgnoreCase(name)) {
             return "text/xml";
         }
 
@@ -178,16 +179,16 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
     public ServletInputStream getInputStream() throws IOException {
         try {
 
-            if (!parseFailure) {
+            if (parseFailure) {
+                // write an empty string which will fail further down the line i.e. spring
+                return new BodyPartServletInputStream("this will fail to process");
+            } else {
                 String removedIncludeForxml = removeIncludeInXml();
                 if (removedIncludeForxml != null) {
                     return new BodyPartServletInputStream(removedIncludeForxml);
                 } else {
                     return new BodyPartServletInputStream(parsedData.getXmlPart());
                 }
-            } else {
-                // write an empty string which will fail further down the line i.e. spring
-                return new BodyPartServletInputStream("this will fail to process");
             }
         } catch (MessagingException ex) {
             log.error("Problem consuming input stream", ex);

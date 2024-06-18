@@ -16,7 +16,7 @@ public enum SystemType {
     String modernisedSystemType;
 
     public static Optional<SystemType> getByType(String type) {
-        return Arrays.stream(SystemType.values()).filter(systemType -> systemType.getType().equalsIgnoreCase(
+        return Arrays.stream(values()).filter(systemType -> systemType.getType().equalsIgnoreCase(
             type)).findAny();
     }
 }

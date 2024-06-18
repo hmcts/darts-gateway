@@ -4,10 +4,10 @@ import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.model.dailylist.DailyListErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "PMD.NonStaticInitializer"})
 public class DailyListAPIProblemResponseMapper extends AbstractAPIProblemResponseMapper {
     {
-        var opmapping = new ProblemResponseMappingOperation
+        ProblemResponseMappingOperation<DailyListErrorCode> opmapping = new ProblemResponseMappingOperation
             . ProblemResponseMappingOperationBuilder<DailyListErrorCode>()
             .operation(DailyListErrorCode.class)
             .exception(this::createException).build();

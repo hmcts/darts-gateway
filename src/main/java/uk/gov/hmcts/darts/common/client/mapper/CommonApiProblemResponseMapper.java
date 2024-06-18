@@ -4,10 +4,11 @@ import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.model.common.CommonErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
+@SuppressWarnings("PMD.NonStaticInitializer")
 public class CommonApiProblemResponseMapper extends AbstractAPIProblemResponseMapper {
 
     {
-        var getCaseOp = new ProblemResponseMappingOperation
+        ProblemResponseMappingOperation<CommonErrorCode> getCaseOp = new ProblemResponseMappingOperation
             .ProblemResponseMappingOperationBuilder<CommonErrorCode>()
             .operation(CommonErrorCode.class)
             .exception(this::createException).build();

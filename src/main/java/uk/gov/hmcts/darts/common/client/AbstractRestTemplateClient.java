@@ -22,6 +22,7 @@ import java.util.List;
  */
 @Slf4j
 @RequiredArgsConstructor
+@SuppressWarnings("PMD.LooseCoupling")
 public abstract class AbstractRestTemplateClient {
 
     @Autowired

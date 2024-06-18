@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 
 @Service
 @Slf4j
+@SuppressWarnings("PMD.UseObjectForClearerAPI")
 public class DarNotificationLoggerServiceImpl implements DarNotificationLoggerService {
 
     @Override

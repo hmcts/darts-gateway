@@ -4,6 +4,7 @@ import org.slf4j.event.Level;
 
 import java.time.OffsetDateTime;
 
+@SuppressWarnings("PMD.UseObjectForClearerAPI")
 public interface DarNotificationLoggerService {
 
     void notificationSucceeded(

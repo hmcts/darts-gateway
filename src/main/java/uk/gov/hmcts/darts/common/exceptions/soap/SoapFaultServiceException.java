@@ -10,9 +10,11 @@ import java.util.ResourceBundle;
 public class SoapFaultServiceException extends RuntimeException {
     private ServiceExceptionType serviceExceptionType;
 
-    private static ResourceBundle BUNDLE = ResourceBundle.getBundle("SoapExceptionMessages");
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("SoapExceptionMessages");
 
+    @SuppressWarnings("PMD.CallSuperInConstructor")
     public SoapFaultServiceException() {
+        //Empty constructor
     }
 
     public SoapFaultServiceException(FaultErrorCodes code, Throwable cause, String arg) {

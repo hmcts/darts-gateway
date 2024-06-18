@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("PMD.UseObjectForClearerAPI")
 public class LogApiImpl implements LogApi {
 
     private final DarNotificationLoggerService darNotificationLogger;

@@ -10,6 +10,7 @@ public class DartsException extends RuntimeException {
         this.codeAndMessage = codeAndMessage;
     }
 
+    @SuppressWarnings("PMD.CallSuperInConstructor")
     public DartsException(CodeAndMessage codeAndMessage) {
         this.codeAndMessage = codeAndMessage;
     }

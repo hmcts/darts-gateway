@@ -54,6 +54,6 @@ public class AudiosClient extends AbstractRestTemplateClient implements AudiosAp
     @Override
     public ResponseEntity<Void> addAudio(MultipartFile file, AddAudioMetadataRequest metadata) {
         streamAudio(file, metadata);
-        return new ResponseEntity<Void>(HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(HttpStatusCode.valueOf(200));
     }
 }

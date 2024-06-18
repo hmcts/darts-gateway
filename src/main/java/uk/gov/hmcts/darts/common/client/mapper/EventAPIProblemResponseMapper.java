@@ -4,12 +4,12 @@ import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.model.event.EventErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "PMD.NonStaticInitializer"})
 public class EventAPIProblemResponseMapper extends AbstractAPIProblemResponseMapper {
 
     {
         // configure mappers for post event
-        var postEventOp = new ProblemResponseMappingOperation
+        ProblemResponseMappingOperation<EventErrorCode> postEventOp = new ProblemResponseMappingOperation
                 .ProblemResponseMappingOperationBuilder<EventErrorCode>()
             .operation(EventErrorCode.class)
             .exception(this::createException).build();

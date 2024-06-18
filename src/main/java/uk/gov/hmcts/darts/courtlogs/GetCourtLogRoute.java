@@ -3,11 +3,14 @@ package uk.gov.hmcts.darts.courtlogs;
 import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.common.client.CourtLogsClient;
 import uk.gov.hmcts.darts.common.util.DateConverters;
+import uk.gov.hmcts.darts.model.event.CourtLog;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -18,12 +21,12 @@ public class GetCourtLogRoute {
     private final DateConverters dateConverters;
 
     public GetCourtLogResponse route(GetCourtLog legacyGetCourtLog) {
-        var courthouse = legacyGetCourtLog.getCourthouse();
-        var caseNumber = legacyGetCourtLog.getCaseNumber();
-        var startDateTime = dateConverters.offsetDateTimeFrom(legacyGetCourtLog.getStartTime());
-        var endDateTime = dateConverters.offsetDateTimeFrom(legacyGetCourtLog.getEndTime());
+        String courthouse = legacyGetCourtLog.getCourthouse();
+        String caseNumber = legacyGetCourtLog.getCaseNumber();
+        OffsetDateTime startDateTime = dateConverters.offsetDateTimeFrom(legacyGetCourtLog.getStartTime());
+        OffsetDateTime endDateTime = dateConverters.offsetDateTimeFrom(legacyGetCourtLog.getEndTime());
 
-        var dartsApiCourtLogs = courtLogsClient.courtlogsGet(
+        ResponseEntity<List<CourtLog>> dartsApiCourtLogs = courtLogsClient.courtlogsGet(
             courthouse,
             caseNumber,
             OffsetDateTime.parse(startDateTime.toString()),

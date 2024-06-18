@@ -22,6 +22,7 @@ public class SoapHeaderConverter {
         this.jaxbContext = JAXBContext.newInstance(ServiceContext.class);
     }
 
+    @SuppressWarnings("PMD.EmptyCatchBlock")
     public Optional<ServiceContext> convertSoapHeader(SoapHeaderElement soapHeaderElement) {
         Optional<ServiceContext> serviceContextOptional = Optional.empty();
         final Source source = soapHeaderElement.getSource();
@@ -35,6 +36,7 @@ public class SoapHeaderConverter {
         return serviceContextOptional;
     }
 
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
     public Optional<String> convertSoapHeaderToToken(SoapHeaderElement soapHeaderElement) {
         Optional<String> securityOptional = Optional.empty();
 

@@ -108,10 +108,11 @@ public class ServiceConfig {
 
     @Bean
     public List<APIProblemResponseMapper> getResponseMappers() {
-        return Arrays.asList(new APIProblemResponseMapper[]{
+        return Arrays.asList(
             new CommonApiProblemResponseMapper(),
             new DailyListAPIProblemResponseMapper(),
-            new EventAPIProblemResponseMapper()});
+            new EventAPIProblemResponseMapper()
+        );
     }
 
     @Bean

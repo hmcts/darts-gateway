@@ -1,6 +1,5 @@
 package uk.gov.hmcts.darts.cache.token.service.value;
 
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 
 /**
@@ -26,7 +25,7 @@ public interface DownstreamTokenisableValue extends CacheValue {
      * Determine if the internal downstream token is in need of a refresh i.e. it has expired.
      * @return True or false
      */
-    boolean doesRequireRefresh() throws CacheException;
+    boolean doesRequireRefresh();
 
     /**
      * performs the internal refresh of the downstream token.
