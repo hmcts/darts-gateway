@@ -137,7 +137,7 @@ checkstyle {
 
 var sourceSetsCopy = sourceSets
 pmd {
-  toolVersion = "7.0.0"
+  toolVersion = "7.2.0"
   sourceSets = [sourceSetsCopy.main]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
@@ -146,7 +146,7 @@ pmd {
 }
 
 pmd {
-  toolVersion = "7.0.0"
+  toolVersion = "7.2.0"
   sourceSets = [sourceSetsCopy.test, sourceSetsCopy.functionalTest, sourceSetsCopy.integrationTest, sourceSetsCopy.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
