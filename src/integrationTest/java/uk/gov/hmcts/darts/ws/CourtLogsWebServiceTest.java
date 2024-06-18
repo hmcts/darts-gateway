@@ -314,7 +314,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     private static List<CourtLog> someListOfCourtLog(int numberOfEntries) {
         return IntStream.rangeClosed(1, numberOfEntries)
-            .mapToObj((index) -> courtLog(index))
+            .mapToObj(CourtLogsWebServiceTest::courtLog)
             .collect(toList());
     }
 

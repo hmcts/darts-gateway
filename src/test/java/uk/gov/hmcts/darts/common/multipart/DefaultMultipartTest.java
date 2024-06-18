@@ -96,7 +96,7 @@ class DefaultMultipartTest {
     }
 
     @Test
-    void testGetContentsOFile() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> multipart.getBytes());
+    void testGetContentsOFile() {
+        Assertions.assertThrows(UnsupportedOperationException.class, multipart::getBytes);
     }
 }

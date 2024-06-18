@@ -43,11 +43,11 @@ class DarNotificationLoggerServiceImplTest {
         logCaptor = LogCaptor.forClass(DarNotificationLoggerServiceImpl.class);
         logCaptor.setLogLevelToTrace();
 
-        LOG_LEVEL_TO_CAPTURED_LOGS.put(WARN, () -> logCaptor.getWarnLogs());
-        LOG_LEVEL_TO_CAPTURED_LOGS.put(ERROR, () -> logCaptor.getErrorLogs());
-        LOG_LEVEL_TO_CAPTURED_LOGS.put(INFO, () -> logCaptor.getInfoLogs());
-        LOG_LEVEL_TO_CAPTURED_LOGS.put(DEBUG, () -> logCaptor.getDebugLogs());
-        LOG_LEVEL_TO_CAPTURED_LOGS.put(TRACE, () -> logCaptor.getTraceLogs());
+        LOG_LEVEL_TO_CAPTURED_LOGS.put(WARN, logCaptor::getWarnLogs);
+        LOG_LEVEL_TO_CAPTURED_LOGS.put(ERROR, logCaptor::getErrorLogs);
+        LOG_LEVEL_TO_CAPTURED_LOGS.put(INFO, logCaptor::getInfoLogs);
+        LOG_LEVEL_TO_CAPTURED_LOGS.put(DEBUG, logCaptor::getDebugLogs);
+        LOG_LEVEL_TO_CAPTURED_LOGS.put(TRACE, logCaptor::getTraceLogs);
     }
 
     @AfterEach
