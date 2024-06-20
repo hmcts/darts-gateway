@@ -399,7 +399,7 @@ dependencies {
 
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.8'
   testImplementation 'it.ozimov:embedded-redis:0.7.3'
-  testImplementation 'io.github.hakky54:logcaptor:2.9.2'
+  testImplementation 'io.github.hakky54:logcaptor:2.9.3'
 
   openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
 
