@@ -11,7 +11,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '5.0.0.4638'
   id 'java-library'
-  id "org.openapi.generator" version "7.5.0" //Don't upgrade to 7.6 until darts-api has been upgraded as it will cause the build to fail
+  id "org.openapi.generator" version "7.6.0"
   id("com.github.bjornvester.wsdl2java") version "2.0.2"
 }
 
