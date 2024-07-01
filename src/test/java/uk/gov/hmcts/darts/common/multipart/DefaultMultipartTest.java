@@ -3,7 +3,7 @@ package uk.gov.hmcts.darts.common.multipart;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
-import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
+import uk.gov.hmcts.darts.common.client1.multipart.StreamingMultipart;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

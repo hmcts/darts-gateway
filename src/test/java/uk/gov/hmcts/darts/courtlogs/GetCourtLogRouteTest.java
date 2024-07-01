@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.darts.common.client.CourtLogsClient;
+import uk.gov.hmcts.darts.common.client1.CourtLogsClient;
 import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 

@@ -4,7 +4,7 @@ import com.service.mojdarts.synapps.com.GetCourtLog;
 import com.synapps.moj.dfs.response.GetCourtLogResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.common.client.CourtLogsClient;
+import uk.gov.hmcts.darts.common.client1.CourtLogsClient;
 import uk.gov.hmcts.darts.common.util.DateConverters;
 
 import java.time.OffsetDateTime;

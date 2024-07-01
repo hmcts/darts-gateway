@@ -1,0 +1,21 @@
+deployed-application-uri: ${TEST_URL:http://localhost:4550}
+viq:
+  username: ${VIQ_EXTERNAL_USER_NAME:#{null}}
+  external-password: ${VIQ_EXTERNAL_PASSWORD:#{null}}
+  internal-password: ${VIQ_INTERNAL_PASSWORD:#{null}}
+cpp:
+  username: ${CP_EXTERNAL_USER_NAME:#{null}}
+  external-password: ${CP_EXTERNAL_PASSWORD:#{null}}
+  internal-password: ${CP_INTERNAL_PASSWORD:#{null}}
+xhibit:
+  username: ${XHIBIT_EXTERNAL_USER_NAME:#{null}}
+  external-password: ${XHIBIT_EXTERNAL_PASSWORD:#{null}}
+  internal-password: ${XHIBIT_INTERNAL_PASSWORD:#{null}}
+darts-api: ${DARTS_API_URL:http://localhost:4550}
+azure-ad-b2c-auth:
+  token-uri: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com/B2C_1_ropc_darts_signin/oauth2/v2.0/token
+  scope: https://hmctsstgextid.onmicrosoft.com/${AAD_B2C_ROPC_CLIENT_ID:00000000-0000-0000-0000-000000000000}/Functional.Test
+  username: ${FUNC_TEST_ROPC_USERNAME:#{null}}
+  password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
+  client-id: ${AAD_B2C_ROPC_CLIENT_ID:#{null}}
+  client-secret: ${AAD_B2C_ROPC_CLIENT_SECRET:#{null}}

@@ -38,10 +38,21 @@ configurations {
 }
 
 sourceSets {
-  functionalTest {
+  testCommon {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
+      srcDir file('src/testCommon/java')
+    }
+    resources.srcDir file('src/testCommon/resources')
+  }
+
+  functionalTest {
+    java {
+      compileClasspath += main.output
+      compileClasspath += testCommon.output
+      runtimeClasspath += main.output
+      runtimeClasspath += testCommon.output
       srcDir file('src/functionalTest/java')
     }
     resources.srcDir file('src/functionalTest/resources')
@@ -50,7 +61,9 @@ sourceSets {
   integrationTest {
     java {
       compileClasspath += main.output
+      compileClasspath += testCommon.output
       runtimeClasspath += main.output
+      runtimeClasspath += testCommon.output
       srcDir file('src/integrationTest/java')
     }
     resources.srcDir file('src/integrationTest/resources')
@@ -64,6 +77,17 @@ sourceSets {
     }
     resources.srcDir file('src/smokeTest/resources')
   }
+
+  test {
+    java {
+      compileClasspath += main.output
+      compileClasspath += testCommon.output
+      runtimeClasspath += main.output
+      runtimeClasspath += testCommon.output
+      srcDir file('src/test/java')
+    }
+    resources.srcDir file('src/test/resources')
+  }
 }
 
 idea {
@@ -74,14 +98,18 @@ idea {
     testResources.from(sourceSets.functionalTest.resources.srcDirs)
     testSources.from(sourceSets.smokeTest.allSource.srcDirs)
     testResources.from(sourceSets.smokeTest.resources.srcDirs)
+    testSources.from(sourceSets.testCommon.allSource.srcDirs)
+    testResources.from(sourceSets.testCommon.resources.srcDirs)
   }
 }
 
 configurations {
-  functionalTestImplementation.extendsFrom testImplementation
+  testCommonImplementation.extendsFrom testImplementation
+
+  functionalTestImplementation.extendsFrom testCommonImplementation
   functionalTestRuntimeOnly.extendsFrom runtimeOnly
 
-  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestImplementation.extendsFrom testCommonImplementation
   integrationTestRuntimeOnly.extendsFrom runtimeOnly
 
   smokeTestImplementation.extendsFrom testImplementation
@@ -400,6 +428,7 @@ dependencies {
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.8'
   testImplementation 'it.ozimov:embedded-redis:0.7.3'
   testImplementation 'io.github.hakky54:logcaptor:2.9.2'
+  testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.6.3'
 
   openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
 

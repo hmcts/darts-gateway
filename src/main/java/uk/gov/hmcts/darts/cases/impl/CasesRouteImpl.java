@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.cases.mapper.AddCaseMapper;
 import uk.gov.hmcts.darts.cases.mapper.GetCasesMapper;
-import uk.gov.hmcts.darts.common.client.CasesClient;
+import uk.gov.hmcts.darts.common.client1.CasesClient;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.utilities.DateUtil;
 import uk.gov.hmcts.darts.utilities.XmlParser;
