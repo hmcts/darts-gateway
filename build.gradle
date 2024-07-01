@@ -377,7 +377,7 @@ dependencies {
   implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 
 
-  implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.9'
+  implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '4.0.5'
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
