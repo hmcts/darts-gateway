@@ -12,7 +12,7 @@ import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 
 class BodyPartServletInputStream extends ServletInputStream {
-    private InputStream input;
+    private final InputStream input;
 
     public BodyPartServletInputStream(BodyPart payload) throws MessagingException, IOException {
         super();

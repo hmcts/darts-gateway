@@ -7,20 +7,18 @@ import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.common.AccessTokenClient;
-import uk.gov.hmcts.darts.common.client1.ContextRegistryClientWrapper;
+import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapper;
 
 import java.net.URI;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
-@SpringBootTest(
-    classes = {
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
-)
+@SpringBootTest()
 @ActiveProfiles({"functionalTest"})
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class FunctionalTest {
@@ -28,13 +26,16 @@ public class FunctionalTest {
     protected static final String COURTHOUSE_SWANSEA = "func-swansea";
 
     @Autowired
-    private ContextRegistryClientWrapper viq;
+    @Qualifier("viqClient")
+    protected ContextRegistryClientWrapper viq;
 
     @Autowired
-    private ContextRegistryClientWrapper xhibit;
+    @Qualifier("xhibitClient")
+    protected ContextRegistryClientWrapper xhibit;
 
     @Autowired
-    private ContextRegistryClientWrapper cpp;
+    @Qualifier("cppClient")
+    protected ContextRegistryClientWrapper cpp;
 
     @Autowired
     private AccessTokenClient client;
@@ -48,30 +49,19 @@ public class FunctionalTest {
     }
 
 
-    public ContextRegistryClientWrapper getContextRegistryClientWithViqClient() {
-        return new ContextRegistryClientWrapper(baseUri, viq);
-    }
-
-    public ContextRegistryClientWrapper getContextRegistryClientWithCppClient() {
-        return new ContextRegistryClientWrapper(baseUri, cpp);
-    }
-
-    public ContextRegistryClientWrapper getContextRegistryClientWithXhibitClient() {
-        return new ContextRegistryClientWrapper(baseUri, xhibit);
-    }
-
-    public GatewayClient getGatewayClient() {
-        return new GatewayClient(baseUri, xhibit);
-    }
-
     @SneakyThrows
-    public String getUri(String endpoint) {
+    public String getBaseUri(String endpoint) {
         return baseUri + endpoint + "service/darts";
     }
 
+    @SneakyThrows
+    public String getDartsGatewayOperationUrl() {
+        return baseUri + "/service/darts";
+    }
+
     public void clean() {
-        buildFunctionDartsApi()
-            .baseUri(getUri("/functional-tests/clean"))
+        buildFunctionGatewayTestApi()
+            .baseUri(getBaseUri("/functional-tests/clean"))
             .redirects().follow(false)
             .delete();
     }
@@ -79,6 +69,10 @@ public class FunctionalTest {
     protected RequestSpecification buildFunctionDartsApi() {
         return RestAssured.given()
             .header("Authorization", String.format("Bearer %s", client.getAccessToken()));
+    }
+
+    protected RequestSpecification buildFunctionGatewayTestApi() {
+        return RestAssured.given();
     }
 
     private void configureRestAssured() {

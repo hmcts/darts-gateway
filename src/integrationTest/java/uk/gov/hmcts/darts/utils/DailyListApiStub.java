@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import uk.gov.hmcts.darts.common.utils.TestUtils;
 
 import java.io.IOException;
 
@@ -17,7 +18,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 public class DailyListApiStub extends DartsApiStub {
 
-    private static final String DAILY_LIST_API_PATH = "/dailylists/v2";
+    private static final String DAILY_LIST_API_PATH = "/dailylists";
 
     public DailyListApiStub() {
         super(DAILY_LIST_API_PATH);

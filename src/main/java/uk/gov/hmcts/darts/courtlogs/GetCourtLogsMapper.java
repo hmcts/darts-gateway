@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.common.util.DateConverters;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -22,12 +23,12 @@ public class GetCourtLogsMapper {
         if (courtLogs.isEmpty()) {
             return emptyResponse();
         }
-        var legacyCourtLog = createLegacyCourtLog();
+        com.synapps.moj.dfs.response.CourtLog legacyCourtLog = createLegacyCourtLog();
         legacyCourtLog.setCourthouse(courtLogs.get(0).getCourthouse());
         legacyCourtLog.setCaseNumber(courtLogs.get(0).getCaseNumber());
         courtLogs.forEach((courtLog) -> legacyCourtLog.getEntry().add(toLegacyApi(courtLog)));
 
-        var innerResponse = createInnerResponse();
+        GetCourtLogResponse innerResponse = createInnerResponse();
         innerResponse.setCourtLog(legacyCourtLog);
         innerResponse.setCode(String.valueOf(HttpStatus.OK.value()));
         innerResponse.setMessage(HttpStatus.OK.name());
@@ -36,8 +37,8 @@ public class GetCourtLogsMapper {
     }
 
     private CourtLogEntry toLegacyApi(CourtLog courtLog) {
-        var legacyCourtLogEntry = new CourtLogEntry();
-        var logDateTime =
+        CourtLogEntry legacyCourtLogEntry = new CourtLogEntry();
+        ZonedDateTime logDateTime =
             dateConverters.offsetDateTimeToLegacyDateTime(courtLog.getTimestamp());
 
         legacyCourtLogEntry.setY(String.valueOf(logDateTime.getYear()));

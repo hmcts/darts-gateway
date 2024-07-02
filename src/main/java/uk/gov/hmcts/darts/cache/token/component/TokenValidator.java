@@ -12,5 +12,6 @@ public interface TokenValidator extends BiPredicate<Token.TokenExpiryEnum, Strin
      * @param accessToken The token to validate
      * @return Whether validation had succeeded or not
      */
+    @Override
     boolean test(Token.TokenExpiryEnum validateUsingExpiryOffset, String accessToken);
 }

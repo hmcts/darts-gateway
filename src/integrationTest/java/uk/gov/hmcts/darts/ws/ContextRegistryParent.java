@@ -10,11 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
+import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.CacheUtil;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
-import uk.gov.hmcts.darts.utils.TestUtils;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 
 import java.io.IOException;
 import java.net.URI;

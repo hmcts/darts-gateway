@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.client.darts;
+package uk.gov.hmcts.darts.common.utils.client.darts;
 
 import com.service.mojdarts.synapps.com.AddAudio;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
@@ -21,7 +21,7 @@ import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import uk.gov.hmcts.darts.utils.client.AbstractSoapTestClient;
+import uk.gov.hmcts.darts.common.utils.client.AbstractSoapTestClient;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
 
 import java.net.URL;
@@ -30,7 +30,7 @@ import java.net.URL;
  * Simple client that demonstrates Mtom interaction for the darts api.
  */
 @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "unchecked"})
-public class DartsGatewayMtomClient extends AbstractSoapTestClient implements DartsGatewayClient {
+public class DartsGatewayMtomClient extends AbstractSoapTestClient implements uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient {
 
     public DartsGatewayMtomClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);

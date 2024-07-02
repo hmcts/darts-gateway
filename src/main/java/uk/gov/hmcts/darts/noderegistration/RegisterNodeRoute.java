@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.darts.common.client1.RegisterNodeClient;
+import uk.gov.hmcts.darts.common.client.RegisterNodeClient;
 import uk.gov.hmcts.darts.model.noderegistration.PostNodeRegistrationResponse;
 import uk.gov.hmcts.darts.noderegistration.mapper.RegisterNodeMapper;
 import uk.gov.hmcts.darts.utilities.XmlParser;
@@ -28,12 +28,12 @@ public class RegisterNodeRoute {
     private final RegisterNodeMapper registerNodeMapper;
 
     public RegisterNodeResponse route(RegisterNode registerNode) {
-        var caseDocumentXmlStr = registerNode.getDocument();
+        String caseDocumentXmlStr = registerNode.getDocument();
         if (validateAddCase) {
             xmlValidator.validate(caseDocumentXmlStr, addCaseSchemaPath);
         }
 
-        var registerNodeObj = xmlParser.unmarshal(caseDocumentXmlStr, Node.class);
+        Node registerNodeObj = xmlParser.unmarshal(caseDocumentXmlStr, Node.class);
 
         ResponseEntity<PostNodeRegistrationResponse> registerNodeResponse =
             registerNodeClient.registerDevicesPost(registerNodeObj.getType(), registerNodeObj.getCourthouse(),

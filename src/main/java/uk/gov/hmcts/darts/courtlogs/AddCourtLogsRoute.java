@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.darts.addlogentry.LogEntry;
-import uk.gov.hmcts.darts.common.client1.CourtLogsClient;
+import uk.gov.hmcts.darts.common.client.CourtLogsClient;
 import uk.gov.hmcts.darts.model.event.CourtLogsPostRequestBody;
 import uk.gov.hmcts.darts.model.event.EventsResponse;
 import uk.gov.hmcts.darts.utilities.MapperUtility;

@@ -26,7 +26,7 @@ import static uk.gov.hmcts.darts.utilities.MapperUtility.getAudioStartDateTime;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@EnableConfigurationProperties(value = AllowedMediaConfig.class)
+@EnableConfigurationProperties(AllowedMediaConfig.class)
 public class AddAudioValidator {
 
     @Value("${darts-gateway.add-audio.schema}")

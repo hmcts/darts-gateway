@@ -1,0 +1,17 @@
+{
+  "message_id": "34567",
+  "type": "3000",
+  "event_id": "-2357",
+  "event_text" : "Archive Case",
+  "courthouse": "YORK",
+  "courtroom": "2",
+  "case_numbers": [
+    "T20190555"
+  ],
+  "retention_policy": {
+    "case_retention_fixed_policy": "3",
+    "case_total_sentence": "9Y0M0D"
+  },
+  "date_time" : "2024-06-03T09:52:58Z",
+  "is_mid_tier" : false
+}

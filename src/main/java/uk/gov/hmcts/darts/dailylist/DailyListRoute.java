@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.schemas.courtservice.DailyListStructure;
-import uk.gov.hmcts.darts.common.client1.DailyListsClient;
+import uk.gov.hmcts.darts.common.client.DailyListsClient;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.config.ServiceConfig;
@@ -47,7 +47,7 @@ public class DailyListRoute {
             throw new DartsValidationException((Throwable) null, CodeAndMessage.SYSTEM_TYPE_NOT_FOUND);
         }
 
-        var document = addDocument.getDocument();
+        String document = addDocument.getDocument();
 
         if (validate) {
             try {
@@ -69,7 +69,7 @@ public class DailyListRoute {
                 addDocument.getMessageId()
         );
 
-        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsV2Post(
+        ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsPost(
             postDailyListRequest
         );
 
@@ -86,7 +86,7 @@ public class DailyListRoute {
         patchRequest.setDalId(dalId);
         patchRequest.setJsonString(modernisedDailyListJson);
 
-        dailyListsClient.dailylistsV2Patch(
+        dailyListsClient.dailylistsPatch(
             patchRequest
         );
         return successResponse();

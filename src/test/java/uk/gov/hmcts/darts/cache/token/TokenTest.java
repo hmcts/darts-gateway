@@ -26,7 +26,7 @@ class TokenTest {
     static void before() {
         contextHolder = Mockito.mockStatic(RequestContextHolder.class);
         ServletRequestAttributes attributes = Mockito.mock(ServletRequestAttributes.class);
-        contextHolder.when(() -> RequestContextHolder.currentRequestAttributes()).thenReturn(attributes);
+        contextHolder.when(RequestContextHolder::currentRequestAttributes).thenReturn(attributes);
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);

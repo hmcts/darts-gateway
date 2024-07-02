@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.utils;
 
+import uk.gov.hmcts.darts.common.utils.TestUtils;
+
 import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -43,8 +45,8 @@ public class EventApiStub extends DartsApiStub {
         verify(exactly(0), postRequestedFor(urlEqualTo(EVENT_API_PATH)));
     }
 
-    public void verifyPostRequest() throws IOException {
-        String eventJson = TestUtils.getContentsFromFile("payloads/events/valid-event-api-request.json");
+    public void verifyPostRequest(String requestFilePath) throws IOException {
+        String eventJson = TestUtils.getContentsFromFile(requestFilePath);
         verify(exactly(1), postRequestedFor(urlEqualTo(EVENT_API_PATH))
             .withRequestBody(equalToJson(eventJson)));
     }

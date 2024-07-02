@@ -6,6 +6,7 @@ public class KeyConfiguration extends KeyspaceConfiguration {
 
     private final CacheProperties properties;
 
+    @SuppressWarnings("PMD.CallSuperInConstructor")
     public KeyConfiguration(CacheProperties properties) {
         this.properties = properties;
     }
@@ -16,10 +17,9 @@ public class KeyConfiguration extends KeyspaceConfiguration {
     }
 
     @Override
-    public org.springframework.data.redis.core.convert.KeyspaceConfiguration.KeyspaceSettings getKeyspaceSettings(Class<?> type) {
+    public KeyspaceSettings getKeyspaceSettings(Class<?> type) {
 
-        org.springframework.data.redis.core.convert.KeyspaceConfiguration.KeyspaceSettings keyspaceSettings
-            = new org.springframework.data.redis.core.convert.KeyspaceConfiguration.KeyspaceSettings(type, "my-keyspace");
+        KeyspaceSettings keyspaceSettings = new KeyspaceSettings(type, "my-keyspace");
         keyspaceSettings.setTimeToLive(properties.getEntryTimeToIdleSeconds());
 
         return keyspaceSettings;

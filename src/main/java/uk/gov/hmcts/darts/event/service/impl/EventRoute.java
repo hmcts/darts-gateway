@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.courtservice.events.DartsEvent;
-import uk.gov.hmcts.darts.common.client1.EventsClient;
+import uk.gov.hmcts.darts.common.client.EventsClient;
 import uk.gov.hmcts.darts.model.event.EventsResponse;
 import uk.gov.hmcts.darts.utilities.MapperUtility;
 import uk.gov.hmcts.darts.utilities.XmlParser;
@@ -31,8 +31,8 @@ public class EventRoute {
             xmlValidator.validate(document, schemaPath);
         }
 
-        var dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
-        var eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
+        DartsEvent dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
+        uk.gov.hmcts.darts.model.event.DartsEvent eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
 
         ResponseEntity<EventsResponse> eventResponse = eventsClient.eventsPost(eventRequest);
 

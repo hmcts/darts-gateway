@@ -19,9 +19,8 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.model.event.CourtLog;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
-import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
-
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 import java.nio.charset.Charset;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -314,7 +313,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     private static List<CourtLog> someListOfCourtLog(int numberOfEntries) {
         return IntStream.rangeClosed(1, numberOfEntries)
-            .mapToObj((index) -> courtLog(index))
+            .mapToObj(CourtLogsWebServiceTest::courtLog)
             .collect(toList());
     }
 

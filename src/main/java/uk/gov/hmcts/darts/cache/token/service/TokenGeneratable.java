@@ -13,7 +13,7 @@ public interface TokenGeneratable {
      * @return The credentials in token form
      * @throws CacheException Any cache related problems whilst getting the token
      */
-    Token createToken(ServiceContext context) throws CacheException;
+    Token createToken(ServiceContext context);
 
     /**
      * gets a random token string and gets it in token form.

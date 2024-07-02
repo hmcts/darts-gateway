@@ -51,8 +51,8 @@
           <cs:SittingPriority>T</cs:SittingPriority>
           <cs:Judiciary>
             <cs:Judge>
-              <apd:CitizenNameSurname>N&#47;A</apd:CitizenNameSurname>
-              <apd:CitizenNameRequestedName>N&#47;A</apd:CitizenNameRequestedName>
+              <apd:CitizenNameSurname>JudgeSurname</apd:CitizenNameSurname>
+              <apd:CitizenNameRequestedName>JudgeRequestedName</apd:CitizenNameRequestedName>
               <cs:CRESTjudgeID>0</cs:CRESTjudgeID>
             </cs:Judge>
           </cs:Judiciary>

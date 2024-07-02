@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.client.darts;
+package uk.gov.hmcts.darts.common.utils.client.darts;
 
 import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCaseResponse;

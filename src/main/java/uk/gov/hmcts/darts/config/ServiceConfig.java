@@ -23,13 +23,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.darts.common.client1.exeption.DartsClientProblemDecoder;
-import uk.gov.hmcts.darts.common.client1.exeption.JacksonDartsClientProblemDecoder;
-import uk.gov.hmcts.darts.common.client1.exeption.JacksonFeignClientProblemDecoder;
-import uk.gov.hmcts.darts.common.client1.mapper.APIProblemResponseMapper;
-import uk.gov.hmcts.darts.common.client1.mapper.CommonApiProblemResponseMapper;
-import uk.gov.hmcts.darts.common.client1.mapper.DailyListAPIProblemResponseMapper;
-import uk.gov.hmcts.darts.common.client1.mapper.EventAPIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonDartsClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonFeignClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.CommonApiProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.EventAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
@@ -108,10 +108,11 @@ public class ServiceConfig {
 
     @Bean
     public List<APIProblemResponseMapper> getResponseMappers() {
-        return Arrays.asList(new APIProblemResponseMapper[]{
+        return Arrays.asList(
             new CommonApiProblemResponseMapper(),
             new DailyListAPIProblemResponseMapper(),
-            new EventAPIProblemResponseMapper()});
+            new EventAPIProblemResponseMapper()
+        );
     }
 
     @Bean

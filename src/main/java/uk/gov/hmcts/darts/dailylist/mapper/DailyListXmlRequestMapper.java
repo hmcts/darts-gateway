@@ -19,11 +19,7 @@ public class DailyListXmlRequestMapper {
         request.setMessageId(messageId);
         XMLGregorianCalendar publishedTime = legacyDailyListObject.getDocumentID().getTimeStamp();//changed to DocumentId.timestamp as part of DMP-3086
         request.setPublishedTs(DateUtil.toOffsetDateTime(publishedTime));
-        XMLGregorianCalendar hearingDateGregCal = legacyDailyListObject
-            .getCourtLists().getCourtList().get(0)
-            .getSittings().getSitting().get(0)
-            .getHearings().getHearing().get(0)
-            .getHearingDetails().getHearingDate();
+        XMLGregorianCalendar hearingDateGregCal = legacyDailyListObject.getListHeader().getStartDate();
         LocalDate hearingLocalDate = LocalDateTypeDeserializer.getLocalDate(hearingDateGregCal.toString());
         request.setHearingDate(hearingLocalDate);
         request.setXmlDocument(removeLineBreaks(document));

@@ -3,31 +3,13 @@ package uk.gov.hmcts.darts.common.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import uk.gov.hmcts.darts.common.AccessTokenClient;
-import uk.gov.hmcts.darts.common.client1.ContextRegistryClientWrapper;
+import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapper;
 import uk.gov.hmcts.darts.properties.AzureAdB2CAuthenticationProperties;
 import uk.gov.hmcts.darts.properties.FunctionalProperties;
 
 public class AuthConfiguration {
     @Autowired
-    private FunctionalProperties functionalProperties;
-
-    @Autowired
     private AzureAdB2CAuthenticationProperties azureAdB2CAuthenticationProperties;
-
-    @Bean
-    public ContextRegistryClientWrapper getViq() {
-        return new ContextRegistryClientWrapper(functionalProperties.getDeployedApplicationUri(), functionalProperties.getViq());
-    }
-
-    @Bean
-    public ContextRegistryClientWrapper getXhibit() {
-        return new ContextRegistryClientWrapper(functionalProperties.getDeployedApplicationUri(), functionalProperties.getXhibit());
-    }
-
-    @Bean
-    public ContextRegistryClientWrapper getCpp() {
-        return new ContextRegistryClientWrapper(functionalProperties.getDeployedApplicationUri(), functionalProperties.getCpp());
-    }
 
     @Bean
     public AccessTokenClient getDartsToken() {

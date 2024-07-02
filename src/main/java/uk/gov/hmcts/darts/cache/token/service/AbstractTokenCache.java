@@ -53,28 +53,28 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S6809")
+    @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
     public Optional<Token> store(CacheValue value) throws CacheException {
         return store(value, null);
     }
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S6809")
+    @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
     public Optional<Token> store(CacheValue value, Boolean reuseTokenIfPossible) throws CacheException {
         return createNewTokenOrReuseExistingToken(value, reuseTokenIfPossible, true);
     }
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S6809")
+    @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
     public Optional<Token> store(ServiceContext context) throws CacheException {
         return store(context, false);
     }
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S6809")
+    @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
     public Optional<Token> store(ServiceContext context, Boolean reuseTokenIfPossible) throws CacheException {
 
         String sharedId = getIdForServiceContext(context);
@@ -105,7 +105,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S6809")
+    @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
     public Optional<CacheValue> lookup(Token tokenToLookup) throws CacheException {
         log.debug("Looking up the token");
 
@@ -133,7 +133,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         return val;
     }
 
-    protected abstract CacheValue getValue(CacheValue holder) throws CacheException;
+    protected abstract CacheValue getValue(CacheValue holder);
 
     protected abstract TokenValidator getTokenValidator();
 
@@ -144,16 +144,14 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
     @Override
     @Transactional
-    public void evict(Token holder) throws CacheException {
+    public void evict(Token holder) {
         log.debug("Evicting the token");
 
-        if (!properties.isShareTokenForSameCredentials()) {
-
-            redisTemplate.delete(holder.getKey());
-
-            log.debug("Evicted the token");
-        } else {
+        if (properties.isShareTokenForSameCredentials()) {
             log.debug("Token was not evicted as it can be shared. The token expiration timeout is still applicable");
+        } else {
+            redisTemplate.delete(holder.getKey());
+            log.debug("Evicted the token");
         }
     }
 
@@ -222,7 +220,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
      * @param validateToken Do we wish to validate the token if one exists and sharing is required.
      * @return The token to use. This maybe a shared token or a branch new one.
      */
-    @SuppressWarnings("java:S6809")
+    @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
     private Optional<Token> createNewTokenOrReuseExistingToken(CacheValue cachedValueIncludingDartsApiToken,
                                                                Boolean reuseTokenIfPossible, boolean validateToken) throws CacheException {
 
@@ -286,8 +284,8 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         }, value.getSharedKey());
     }
 
-    protected abstract Token createToken(ServiceContext context) throws CacheException;
+    protected abstract Token createToken(ServiceContext context);
 
-    protected abstract String getIdForServiceContext(ServiceContext context) throws CacheException;
+    protected abstract String getIdForServiceContext(ServiceContext context);
 
 }

@@ -22,7 +22,7 @@ public class HttpRequestDataSource implements DataSource, Closeable {
 
     private final File payload;
 
-    private SharedFileInputStream sharedFileInputStream;
+    private final SharedFileInputStream sharedFileInputStream;
 
     public HttpRequestDataSource(HttpServletRequest request) throws IOException {
         this.request = request;

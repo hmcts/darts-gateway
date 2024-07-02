@@ -13,11 +13,11 @@ import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.utils.TestUtils;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
-import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
-import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
+import uk.gov.hmcts.darts.common.utils.TestUtils;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider;
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;

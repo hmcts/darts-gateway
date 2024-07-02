@@ -22,9 +22,12 @@ public class ServiceExceptionType extends ServiceException {
 
     private static final String DOCUMENTUM_SERVICE_CONTEXT_EXCEPTION_NAME = "com.emc.documentum.fs.rt.ServiceContextLookupException";
 
+    @SuppressWarnings("PMD.CallSuperInConstructor")
     public ServiceExceptionType() {
+        //Empty constructor
     }
 
+    @SuppressWarnings({"PMD.ConstructorCallsOverridableMethod", "PMD.CallSuperInConstructor"})
     public ServiceExceptionType(String code, Throwable cause, String arg) {
         setMessageId(code);
         setMessage(SoapFaultServiceException.getMessage(code, arg));

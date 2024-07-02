@@ -20,7 +20,7 @@ public class SecurityRequestAttributesWrapper {
     public String getAuthenticationToken() {
         Object accessTokenObj =  requestAttributes.getAttribute(ACCESS_TOKEN_REQUEST_ATTR, SCOPE_REQUEST);
 
-        String tokenToReturn = "";
+        String tokenToReturn;
 
         // if we have a token that can be refreshed and it needs refreshing then refresh it
         if (accessTokenObj instanceof DownstreamTokenisableValue tokenCacheValue) {

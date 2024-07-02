@@ -19,7 +19,7 @@ import java.net.URL;
  * Simple client that demonstrates Mtom interaction for the context registry api.
  */
 @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "unchecked"})
-public class ContextRegistryMtomClient extends AbstractSoapTestClient implements uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient {
+public class ContextRegistryMtomClient extends AbstractSoapTestClient implements ContextRegistryClient {
 
     public ContextRegistryMtomClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);

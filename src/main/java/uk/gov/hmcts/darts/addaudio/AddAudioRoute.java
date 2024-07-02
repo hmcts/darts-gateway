@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioFileValidator;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
-import uk.gov.hmcts.darts.common.client1.multipart.StreamingMultipart;
+import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
@@ -35,12 +35,12 @@ public class AddAudioRoute {
 
         addAudioValidator.validate(addAudio);
 
-        var audioXml = addAudio.getDocument();
+        String audioXml = addAudio.getDocument();
 
         Audio addAudioLegacy;
 
         try {
-            addAudioLegacy = (Audio) xmlParser.unmarshal(audioXml, Audio.class);
+            addAudioLegacy = xmlParser.unmarshal(audioXml, Audio.class);
 
             addAudioValidator.validate(addAudioLegacy);
 

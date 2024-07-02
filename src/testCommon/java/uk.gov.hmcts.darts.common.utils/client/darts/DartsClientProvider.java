@@ -19,8 +19,8 @@ public class DartsClientProvider implements ArgumentsProvider {
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
         // get the injected client
-        Map<String, uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient> beans = SpringExtension.getApplicationContext(context).getBeansOfType(
-            uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient.class);
+        Map<String, DartsGatewayClient> beans = SpringExtension.getApplicationContext(context).getBeansOfType(
+            DartsGatewayClient.class);
 
         Arguments[] clientable = new Arguments[0];
         clientable = getCollection(beans.values()).toArray(clientable);
@@ -28,9 +28,9 @@ public class DartsClientProvider implements ArgumentsProvider {
         return Stream.of(clientable);
     }
 
-    private List<Arguments> getCollection(Collection<uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient> col) {
+    private List<Arguments> getCollection(Collection<DartsGatewayClient> col) {
         List<Arguments> arguments = new ArrayList<>();
-        for (uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient clientable : col) {
+        for (DartsGatewayClient clientable : col) {
             arguments.add(Arguments.arguments(clientable));
         }
 

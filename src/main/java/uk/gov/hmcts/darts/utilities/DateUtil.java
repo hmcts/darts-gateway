@@ -2,6 +2,8 @@ package uk.gov.hmcts.darts.utilities;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.time.DateUtils;
+import uk.gov.hmcts.darts.common.exceptions.DartsException;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -58,12 +60,11 @@ public class DateUtil {
     }
 
     public LocalDate toLocalDate(String dateString) {
-        Date date = null;
         try {
-            date = DateUtils.parseDate(dateString, "yyyyMMdd", "yyyy-MM-dd");
+            Date date = DateUtils.parseDate(dateString, "yyyyMMdd", "yyyy-MM-dd");
             return toLocalDate(date);
         } catch (ParseException e) {
-            throw new RuntimeException("Error parsing date", e);
+            throw new DartsException(e, CodeAndMessage.ERROR);
         }
     }
 

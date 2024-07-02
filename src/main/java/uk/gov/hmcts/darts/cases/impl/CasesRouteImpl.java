@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.cases.CasesRoute;
 import uk.gov.hmcts.darts.cases.mapper.AddCaseMapper;
 import uk.gov.hmcts.darts.cases.mapper.GetCasesMapper;
-import uk.gov.hmcts.darts.common.client1.CasesClient;
+import uk.gov.hmcts.darts.common.client.CasesClient;
+import uk.gov.hmcts.darts.model.cases.AddCaseRequest;
 import uk.gov.hmcts.darts.model.cases.ScheduledCase;
 import uk.gov.hmcts.darts.utilities.DateUtil;
 import uk.gov.hmcts.darts.utilities.XmlParser;
@@ -50,13 +51,13 @@ public class CasesRouteImpl implements CasesRoute {
 
     @Override
     public DARTSResponse route(AddCase addCase) {
-        var caseDocumentXmlStr = addCase.getDocument();
+        String caseDocumentXmlStr = addCase.getDocument();
         if (validateAddCase) {
             xmlValidator.validate(caseDocumentXmlStr, addCaseSchemaPath);
         }
 
-        var caseDocument = xmlParser.unmarshal(caseDocumentXmlStr, Case.class);
-        var addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
+        Case caseDocument = xmlParser.unmarshal(caseDocumentXmlStr, Case.class);
+        AddCaseRequest addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
 
         casesClient.casesPost(addCaseRequest);
 

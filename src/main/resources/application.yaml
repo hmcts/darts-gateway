@@ -42,11 +42,13 @@ azure:
     instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
 
 darts-gateway:
+  testing-support-endpoints:
+    enabled: ${TESTING_SUPPORT_ENDPOINTS_ENABLED:false}
   cache:
     token-generate: jwt
     map-token-to-session: false
     share-token-for-same-credentials: true
-    entry-time-to-idle-seconds: 3600
+    entry-time-to-idle-seconds: 14400
     shared-token-early-expiration-minutes: 5
   ws:
     request-validation: true

@@ -9,7 +9,6 @@ import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -44,33 +43,30 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
     }
 
     @Override
-    public CacheValue createValue(ServiceContext serviceContext) throws CacheException {
+    public CacheValue createValue(ServiceContext serviceContext) {
         return new RefeshableTokenCacheValue(serviceContext, this);
     }
 
     @Override
-    protected CacheValue getValue(CacheValue holder) throws CacheException {
+    protected CacheValue getValue(CacheValue holder) {
         return new RefeshableTokenCacheValue((RefeshableTokenCacheValue) holder, this);
     }
 
     @Override
-    public Token createToken(ServiceContext context) throws CacheException {
-        String jwtToken = "";
-        try {
-            List<Identity> identities = context.getIdentities();
-            if (identities.isEmpty()) {
-                throw new CacheTokenCreationException("Could not get an identity in order to fetch a token");
-            }
+    public Token createToken(ServiceContext context) {
+        List<Identity> identities = context.getIdentities();
+        if (identities.isEmpty()) {
+            throw new CacheTokenCreationException("Could not get an identity in order to fetch a token");
+        }
 
-            Identity identity = identities.get(0);
-            if (identity instanceof BasicIdentity basicIdentity) {
-                jwtToken = generator.acquireNewToken(
-                        basicIdentity.getUserName(),
-                        basicIdentity.getPassword()
-                );
-            } else {
-                throw new CacheTokenCreationException("Require basic credentials to get a token");
-            }
+        Identity identity = identities.get(0);
+        if (!(identity instanceof BasicIdentity basicIdentity)) {
+            throw new CacheTokenCreationException("Require basic credentials to get a token");
+        }
+
+        String jwtToken;
+        try {
+            jwtToken = generator.acquireNewToken(basicIdentity.getUserName(), basicIdentity.getPassword());
         } catch (Exception e) {
             log.error("error obtaining token", e);
             throw new CacheTokenCreationException("Could not get an identity", e);
@@ -81,7 +77,7 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
 
 
     @Override
-    public String getIdForServiceContext(ServiceContext serviceContext) throws CacheException {
+    public String getIdForServiceContext(ServiceContext serviceContext) {
         return ServiceContextCacheValue.getId(serviceContext);
     }
 }

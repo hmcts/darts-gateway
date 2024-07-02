@@ -16,13 +16,13 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.common.client1.mapper.DailyListAPIProblemResponseMapper;
-import uk.gov.hmcts.darts.common.client1.mapper.ProblemResponseMapping;
+import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
+import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 import uk.gov.hmcts.darts.model.dailylist.DailyListErrorCode;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.darts.DartsClientProvider;
-import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayClient;
 
 import java.nio.charset.Charset;
 
@@ -38,6 +38,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-event.xml") Resource validEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validEventResponse;
+    private @Value("classpath:payloads/events/valid-event-with-retention.xml") Resource validEventWithRetention;
     private @Value("classpath:payloads/events/invalid-soap-message.xml") Resource invalidSoapMessage;
     private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
@@ -152,7 +153,7 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        theEventApi.verifyPostRequest();
+        theEventApi.verifyPostRequest("payloads/events/valid-event-api-request.json");
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -219,7 +220,36 @@ class EventWebServiceTest extends IntegrationBase {
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        theEventApi.verifyPostRequest();
+        theEventApi.verifyPostRequest("payloads/events/valid-event-api-request.json");
+
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testRoutesValidEventWithRetentionPayload(
+        DartsGatewayClient client
+    ) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            theEventApi.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validEventWithRetention.getContentAsString(
+                    Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        theEventApi.verifyPostRequest("payloads/events/valid-event-api-with-retention-request.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
