@@ -16,8 +16,6 @@ import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapper;
 
 import java.net.URI;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-
 @SpringBootTest()
 @ActiveProfiles({"functionalTest"})
 @SuppressWarnings("PMD.TestClassWithoutTestCases")

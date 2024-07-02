@@ -16,7 +16,7 @@ import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "darts-gateway.testing-support-endpoints", name = "enabled", havingValue = "true")
 @SuppressWarnings({"PMD.UnnecessaryAnnotationValueElement", "PMD.TestClassWithoutTestCases"})
-public class TestSupportController { ;
+public class TestSupportController {
 
     private final RedisTemplate template;
 

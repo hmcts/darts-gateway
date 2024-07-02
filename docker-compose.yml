@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: darts-gateway:latest
+    image: darts-gateway:master
     ports:
       - "8070:8070"
     networks:

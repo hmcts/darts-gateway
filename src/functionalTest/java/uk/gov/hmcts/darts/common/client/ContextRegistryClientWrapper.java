@@ -20,11 +20,15 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
 
     private uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient client;
 
-    public ContextRegistryClientWrapper(URI urlToCommunicateWith, ExternalUserToInternalUserMappingImpl externalUserToInternalUserMapping, ContextRegistryClient client) throws MalformedURLException {
+    public ContextRegistryClientWrapper(URI urlToCommunicateWith,
+                                        ExternalUserToInternalUserMappingImpl externalUserToInternalUserMapping,
+                                        ContextRegistryClient client) throws MalformedURLException {
         super(urlToCommunicateWith, externalUserToInternalUserMapping);
+        this.client = client;
     }
 
-    public uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse>  register(@RequestPayload documentum.contextreg.Register register) throws JAXBException, IOException {
+    public uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse>  register(
+        @RequestPayload documentum.contextreg.Register register) throws JAXBException, IOException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "requestHeaders.xml");
 
@@ -40,7 +44,8 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
         return client.register(urlToCommunicateWith.toURL(), registerStr);
     }
 
-    public uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<LookupResponse> lookup(@RequestPayload documentum.contextreg.Lookup lookup) throws JAXBException, IOException {
+    public uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<LookupResponse> lookup(
+        @RequestPayload documentum.contextreg.Lookup lookup) throws JAXBException, IOException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "requestHeaders.xml");
 
@@ -52,7 +57,8 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
         return client.lookup(urlToCommunicateWith.toURL(), getStringFromClass(lookup));
     }
 
-    public uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<UnregisterResponse> unregister(@RequestPayload documentum.contextreg.Unregister unregister) throws JAXBException, IOException {
+    public uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<UnregisterResponse> unregister(
+        @RequestPayload documentum.contextreg.Unregister unregister) throws JAXBException, IOException {
         String soapRequestStr = TestUtils.getContentsFromFile(
             "requestHeaders.xml");
 

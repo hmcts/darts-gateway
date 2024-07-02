@@ -9,12 +9,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.xml.transform.StringSource;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-
 
 public class AbstractSoapClient {
 
