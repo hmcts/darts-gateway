@@ -1,65 +1,58 @@
 package uk.gov.hmcts.darts;
 
+import documentum.contextreg.Lookup;
+import documentum.contextreg.LookupResponse;
 import documentum.contextreg.Register;
 import documentum.contextreg.RegisterResponse;
+import documentum.contextreg.Unregister;
+import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBElement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapper;
+import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapperProvider;
+import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider;
 
-public class TestContextRegistry extends FunctionalTest {
+class TestContextRegistry extends FunctionalTest {
 
-    @Test
-    public void testRegisterForXhibit() throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientWrapperProvider.class)
+    void testRegister(ContextRegistryClientWrapper wrapper) throws Exception {
         Register register = ContextRegistryClientWrapper.getRegisterPayload();
 
-        uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse> soapAssertionUtil = xhibit.register(register);
+        SoapAssertionUtil<RegisterResponse> soapAssertionUtil = wrapper.register(register);
         JAXBElement<RegisterResponse> context = soapAssertionUtil.getResponse();
         Assertions.assertNotNull(context.getValue().getReturn());
     }
 
-    @Test
-    public void testLookupForXhibit() throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientWrapperProvider.class)
+    void testLookup(ContextRegistryClientWrapper wrapper) throws Exception {
         Register register = ContextRegistryClientWrapper.getRegisterPayload();
+        Lookup lookup = ContextRegistryClientWrapper.getLookupPayload();
 
-        uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse> soapAssertionUtil = xhibit.register(register);
-        JAXBElement<RegisterResponse> context = soapAssertionUtil.getResponse();
+        SoapAssertionUtil<RegisterResponse> soapAssertionUtil = wrapper.register(register);
+        wrapper.setToken(soapAssertionUtil.getResponse().getValue().getReturn());
+
+        SoapAssertionUtil<LookupResponse> lookupResponseSoapAssertionUtil = wrapper.lookup(lookup);
+        JAXBElement<LookupResponse> context = lookupResponseSoapAssertionUtil.getResponse();
         Assertions.assertNotNull(context.getValue().getReturn());
     }
 
-    @Test
-    public void testRegisterForViq() throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ContextRegistryClientWrapperProvider.class)
+    void testUnregister(ContextRegistryClientWrapper wrapper) throws Exception {
         Register register = ContextRegistryClientWrapper.getRegisterPayload();
+        Unregister unregister = ContextRegistryClientWrapper.getUnregisterPayload();
 
-        uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse> soapAssertionUtil = viq.register(register);
-        JAXBElement<RegisterResponse> context = soapAssertionUtil.getResponse();
-        Assertions.assertNotNull(context.getValue().getReturn());
-    }
+        SoapAssertionUtil<RegisterResponse> soapAssertionUtil = wrapper.register(register);
+        wrapper.setToken(soapAssertionUtil.getResponse().getValue().getReturn());
 
-    @Test
-    public void testLookupForViq() throws Exception {
-        Register register = ContextRegistryClientWrapper.getRegisterPayload();
-
-        uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse> soapAssertionUtil = viq.register(register);
-        JAXBElement<RegisterResponse> context = soapAssertionUtil.getResponse();
-        Assertions.assertNotNull(context.getValue().getReturn());
-    }
-
-    @Test
-    public void testRegisterForCpp() throws Exception {
-        Register register = ContextRegistryClientWrapper.getRegisterPayload();
-
-        uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse> soapAssertionUtil = cpp.register(register);
-        JAXBElement<RegisterResponse> context = soapAssertionUtil.getResponse();
-        Assertions.assertNotNull(context.getValue().getReturn());
-    }
-
-    @Test
-    public void testLookupForCpp() throws Exception {
-        Register register = ContextRegistryClientWrapper.getRegisterPayload();
-
-        uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<RegisterResponse> soapAssertionUtil = cpp.register(register);
-        JAXBElement<RegisterResponse> context = soapAssertionUtil.getResponse();
-        Assertions.assertNotNull(context.getValue().getReturn());
+        SoapAssertionUtil<UnregisterResponse> unregisterResponseSoapAssertionUtil = wrapper.unregister(unregister);
+        JAXBElement<UnregisterResponse> context = unregisterResponseSoapAssertionUtil.getResponse();
+        Assertions.assertNotNull(context.getValue());
     }
 }

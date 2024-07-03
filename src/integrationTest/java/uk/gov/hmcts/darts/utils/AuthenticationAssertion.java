@@ -13,8 +13,8 @@ import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 import uk.gov.hmcts.darts.common.exceptions.soap.documentum.ServiceExceptionType;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
+import uk.gov.hmcts.darts.common.utils.client.SoapTestClient;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.client.SoapTestClient;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import uk.gov.hmcts.darts.ws.ContextRegistryParent;
 

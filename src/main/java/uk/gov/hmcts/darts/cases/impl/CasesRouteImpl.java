@@ -20,6 +20,7 @@ import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class CasesRouteImpl implements CasesRoute {
     private final AddCaseMapper addCaseMapper;
 
     private final CasesClient casesClient;
+
 
     @Override
     public GetCasesResponse route(GetCases getCasesRequest) {

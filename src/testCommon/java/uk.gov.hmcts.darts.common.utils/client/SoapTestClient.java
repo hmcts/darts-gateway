@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.client;
+package uk.gov.hmcts.darts.common.utils.client;
 
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;

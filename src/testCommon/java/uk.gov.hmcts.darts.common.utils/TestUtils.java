@@ -5,6 +5,9 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 @UtilityClass
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
@@ -16,4 +19,20 @@ public class TestUtils {
         return FileUtils.readFileToString(file, "UTF-8");
     }
 
+    public String getContentsFromFile(String filelocation, Map<String, String> substitution) throws IOException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        File file = new File(classLoader.getResource(filelocation).getFile());
+
+        String contens = FileUtils.readFileToString(file, "UTF-8");
+
+        Set<String> keys = substitution.keySet();
+        Iterator<String> keysIt = keys.iterator();
+
+        while (keysIt.hasNext()) {
+            String key = keysIt.next();
+            contens = contens.replace(key, substitution.get(key));
+        }
+
+        return contens;
+    }
 }

@@ -10,6 +10,8 @@ logging:
     root: DEBUG
 
 darts-gateway:
+  testing-support-endpoints:
+    enabled: true
   cache:
     token-generate: jwt
     map-token-to-session: false

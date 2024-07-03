@@ -8,14 +8,13 @@ import com.service.mojdarts.synapps.com.GetCasesResponse;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import jakarta.xml.bind.JAXBException;
-import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.SoapTestClient;
+import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
-public interface DartsGatewayClient extends SoapTestClient {
+public interface DartsGatewayClient extends uk.gov.hmcts.darts.common.utils.client.SoapTestClient {
 
     SoapAssertionUtil<GetCasesResponse> getCases(URL uri, String payload) throws MalformedURLException, JAXBException;
 

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.matcher;
+package uk.gov.hmcts.darts.common.utils.matcher;
 
 import com.github.tomakehurst.wiremock.matching.ContentPattern;
 import com.github.tomakehurst.wiremock.matching.MatchResult;

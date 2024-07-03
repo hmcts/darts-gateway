@@ -21,7 +21,7 @@ import javax.xml.transform.TransformerFactory;
 
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
-    implements uk.gov.hmcts.darts.utils.client.SoapTestClient {
+    implements SoapTestClient {
     private String headerContents;
 
     public AbstractSoapTestClient(SaajSoapMessageFactory messageFactory) {
@@ -44,7 +44,7 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
         }
     }
 
-    protected <I, O> uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<O> sendMessage(URL uri, String payload,
+    protected <I, O> SoapAssertionUtil<O> sendMessage(URL uri, String payload,
                                                                                       Function<I,
                                                           JAXBElement<I>> supplier,
                                                                                       Class<I> clazz, Function<Object,
@@ -61,7 +61,7 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
                 uri.toString(),
                 ijaxbElement
             );
-            return new uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<>(responseSupplier.apply(obj));
+            return new SoapAssertionUtil<>(responseSupplier.apply(obj));
         } else {
 
             Object obj = getWebServiceTemplate().marshalSendAndReceive(
@@ -83,7 +83,7 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
                     }
                 }
             );
-            return new uk.gov.hmcts.darts.utils.client.SoapAssertionUtil<>(responseSupplier.apply(obj));
+            return new SoapAssertionUtil<>(responseSupplier.apply(obj));
         }
     }
 

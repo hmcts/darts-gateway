@@ -11,7 +11,7 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import uk.gov.hmcts.darts.common.utils.client.AbstractSoapTestClient;
-import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
+import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 
 import java.net.URL;
 

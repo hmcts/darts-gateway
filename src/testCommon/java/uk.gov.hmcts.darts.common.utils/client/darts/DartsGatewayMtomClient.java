@@ -22,7 +22,7 @@ import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import uk.gov.hmcts.darts.common.utils.client.AbstractSoapTestClient;
-import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
+import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 
 import java.net.URL;
 

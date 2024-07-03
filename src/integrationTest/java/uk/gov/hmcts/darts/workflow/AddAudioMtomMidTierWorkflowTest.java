@@ -11,7 +11,7 @@ import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
-import uk.gov.hmcts.darts.utils.matcher.MultipartDartsProxyContentPattern;
+import uk.gov.hmcts.darts.common.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 import uk.gov.hmcts.darts.workflow.command.CommandFactory;
 

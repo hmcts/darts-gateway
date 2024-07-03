@@ -1,10 +1,14 @@
 package uk.gov.hmcts.darts.common.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import uk.gov.hmcts.darts.common.AccessTokenClient;
 import uk.gov.hmcts.darts.properties.AzureAdB2CAuthenticationProperties;
 
+@TestConfiguration
+@EnableConfigurationProperties
 public class AuthConfiguration {
     @Autowired
     private AzureAdB2CAuthenticationProperties azureAdB2CAuthenticationProperties;

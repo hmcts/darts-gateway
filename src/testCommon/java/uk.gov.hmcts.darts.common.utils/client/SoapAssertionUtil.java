@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.client;
+package uk.gov.hmcts.darts.common.utils.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +18,7 @@ public class SoapAssertionUtil<O> {
 
     public void assertIdenticalResponse(O assertion)
         throws JsonProcessingException {
+
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(assertion);
