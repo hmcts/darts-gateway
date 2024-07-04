@@ -87,12 +87,12 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             if (value.isPresent()) {
                 // store into redis without validation of the associated token
                 Optional<Token> createdToken = Optional.of(createNewTokenOrReuseExistingToken(value.get(), reuseTokenIfPossible, true).get());
-                log.trace("stored new token");
+                log.trace("stored refreshed shared token");
                 return createdToken;
             } else {
                 log.debug("Not looking up shared token either turned off or not  forced");
                 Optional<Token> createdToken =  Optional.of(store(createValue(context), reuseTokenIfPossible).get());
-                log.trace("stored new token");
+                log.trace("stored new shared token");
                 return createdToken;
             }
         } else {
