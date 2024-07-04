@@ -14,12 +14,6 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 public class RootController {
 
-    @PostConstruct
-    public void test() {
-        System.out.println("");
-    }
-
-
     /**
      * Root GET endpoint.
      *
