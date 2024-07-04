@@ -8,15 +8,13 @@ import documentum.contextreg.Unregister;
 import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBElement;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapper;
 import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapperProvider;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
-import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider;
 
-class TestContextRegistry extends FunctionalTest {
+class ContextRegistryTest extends FunctionalTestBase {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientWrapperProvider.class)

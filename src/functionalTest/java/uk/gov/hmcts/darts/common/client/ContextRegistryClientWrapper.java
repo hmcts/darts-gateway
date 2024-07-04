@@ -11,6 +11,7 @@ import jakarta.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
+import uk.gov.hmcts.darts.common.payload.SubstituteKey;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
@@ -36,8 +37,15 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
         client.setHeaderBlock(getHeader());
 
         String registerStr = getStringFromClass(new ObjectFactory().createRegister(register));
-        registerStr = registerStr.replace("${USER}", externalUserToInternalUserMapping.getUserName());
-        registerStr = registerStr.replace("${PASSWORD}", externalUserToInternalUserMapping.getExternalPassword());
+        registerStr = registerStr.replace(SubstituteKey.USER_NAME.getKey(), externalUserToInternalUserMapping.getUserName());
+        registerStr = registerStr.replace(SubstituteKey.PASSWORD.getKey(), externalUserToInternalUserMapping.getExternalPassword());
+
+        registerStr = registerStr.replace(SubstituteKey.USER_NAME.getKey(), externalUserToInternalUserMapping.getUserName());
+        registerStr = registerStr.replace(SubstituteKey.PASSWORD.getKey(), externalUserToInternalUserMapping.getExternalPassword());
+
+        if (hasToken()) {
+            registerStr = registerStr.replace(SubstituteKey.TOKEN.getKey(), getToken());
+        }
 
         return client.register(urlToCommunicateWith.toURL(), registerStr);
     }
@@ -49,6 +57,13 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
 
         String lookupStr = getStringFromClass(new ObjectFactory().createLookup(lookup));
 
+        lookupStr = lookupStr.replace(SubstituteKey.USER_NAME.getKey(), externalUserToInternalUserMapping.getUserName());
+        lookupStr = lookupStr.replace(SubstituteKey.PASSWORD.getKey(), externalUserToInternalUserMapping.getExternalPassword());
+
+        if (hasToken()) {
+            lookupStr = lookupStr.replace(SubstituteKey.TOKEN.getKey(), getToken());
+        }
+
         return client.lookup(urlToCommunicateWith.toURL(), lookupStr);
     }
 
@@ -58,6 +73,14 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
         client.setHeaderBlock(getHeader());
 
         String unregisterStr = getStringFromClass(new ObjectFactory().createUnregister(unregister));
+
+        // apply the token
+        unregisterStr = unregisterStr.replace(SubstituteKey.USER_NAME.getKey(), externalUserToInternalUserMapping.getUserName());
+        unregisterStr = unregisterStr.replace(SubstituteKey.PASSWORD.getKey(), externalUserToInternalUserMapping.getExternalPassword());
+
+        if (hasToken()) {
+            unregisterStr = unregisterStr.replace(SubstituteKey.TOKEN.getKey(), getToken());
+        }
 
         return client.unregister(urlToCommunicateWith.toURL(), unregisterStr);
     }
@@ -89,18 +112,18 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
 
         String fileContents = FileUtils.readFileToString(file, "UTF-8");
 
-        fileContents = fileContents.replace("${USER}", username);
-        fileContents = fileContents.replace("${PASSWORD}", password);
+        fileContents = fileContents.replace(SubstituteKey.USER_NAME.getKey(), username);
+        fileContents = fileContents.replace(SubstituteKey.PASSWORD.getKey(), password);
 
         return fileContents;
     }
 
     private String getHeader() throws IOException {
-        if (!hasToken()) {
+        if (hasToken()) {
+            return getHeaderFileToken("requestTokenHeader.xml", getToken());
+        } else {
             return getHeaderFile(
                 "requestHeaders.xml", externalUserToInternalUserMapping.getUserName(), externalUserToInternalUserMapping.getExternalPassword());
-        } else {
-            return getHeaderFileToken("requestTokenHeader.xml", getToken());
         }
     }
 
@@ -110,7 +133,7 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
 
         String fileContents = FileUtils.readFileToString(file, "UTF-8");
 
-        fileContents = fileContents.replace("${TOKEN}", token);
+        fileContents = fileContents.replace(SubstituteKey.TOKEN.getKey(), token);
 
         return fileContents;
     }

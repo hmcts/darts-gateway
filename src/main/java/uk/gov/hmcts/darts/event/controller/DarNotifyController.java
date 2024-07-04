@@ -9,18 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.event.service.DarNotifyEventService;
 
-import javax.annotation.PostConstruct;
-
 @RequiredArgsConstructor
 @RestController
 public class DarNotifyController {
 
     private final DarNotifyEventService darNotifyEventService;
 
-    @PostConstruct
-    public void test() {
-        System.out.println("");
-    }
     @PostMapping(
         value = "/events/dar-notify",
         consumes = MediaType.APPLICATION_JSON_VALUE,

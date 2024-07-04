@@ -23,11 +23,12 @@ import org.apache.jorphan.collections.ListedHashTree;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.darts.jmeter.JMeterAssertionResultListener;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
 
-class FunctionalPerformanceTest extends FunctionalTest {
+class FunctionalPerformanceTestBase extends FunctionalTestBase {
 
     @SuppressWarnings({"PMD.LooseCoupling", "PMD.AvoidThreadGroup"})
     /**
@@ -38,12 +39,9 @@ class FunctionalPerformanceTest extends FunctionalTest {
      * @param durationInMillis The duration that will be asserted for each reqyest
      * @param webContext The web context that will be used
      */
-    void testSendPerformanceTest(int numberOfThreads, int rampUpPeriodInMillis, int durationInMillis, String body, String webContext) throws Exception {
-        String jmeterHome = System.getenv("JMETER_HOME");
-
-
-        String file = Objects.requireNonNull(TestContextRegistryPerformance.class.getClassLoader().getResource("jmeter.properties")).getFile();
-        JMeterUtils.setJMeterHome(jmeterHome);
+    void testSendPerformanceTest(int numberOfThreads, int rampUpPeriodInMillis, int durationInMillis,
+                                 String body, String webContext) throws MalformedURLException {
+        String file = Objects.requireNonNull(ContextRegistryPerformanceTest.class.getClassLoader().getResource("jmeter.properties")).getFile();
         JMeterUtils.loadJMeterProperties(file);
         JMeterUtils.initLocale();
 
@@ -55,8 +53,6 @@ class FunctionalPerformanceTest extends FunctionalTest {
         ResponseAssertion responseAssertion = new ResponseAssertion();
         responseAssertion.setTestFieldResponseCode();
         responseAssertion.addTestString("200");
-
-        HTTPSamplerProxy httpSampler = getHttpSamplerProxy(new URL(getDartsGatewayOperationUrl()), body, webContext);
 
         HeaderManager headerManager = new HeaderManager();
         headerManager.add(new Header("Content-Type", "text/xml"));
@@ -73,6 +69,8 @@ class FunctionalPerformanceTest extends FunctionalTest {
 
         // add the sample configuration
         HashTree requestHashTree = new HashTree();
+        HTTPSamplerProxy httpSampler = getHttpSamplerProxy(new URL(getDartsGatewayOperationUrl()), body, webContext);
+
         requestHashTree.add(httpSampler, headerManager);
         requestHashTree.add(httpSampler, durationAssertion);
         requestHashTree.add(httpSampler, responseAssertion);

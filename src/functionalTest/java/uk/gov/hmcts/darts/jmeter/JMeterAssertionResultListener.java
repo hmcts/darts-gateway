@@ -17,9 +17,12 @@ public class JMeterAssertionResultListener implements Visualizer {
     public void add(SampleResult sampleResult) {
         for (AssertionResult result : sampleResult.getAssertionResults()) {
             if (!assertFailure && result.isFailure()) {
-                log.error(result.getFailureMessage());
+                log.error("Assertion failure " + result.getFailureMessage());
                 assertFailure = true;
             }
+
+            log.info("Response Message " + sampleResult.getResponseMessage());
+            log.info("Test Duration Millis " + (sampleResult.getEndTime() - sampleResult.getStartTime()));
         }
     }
 

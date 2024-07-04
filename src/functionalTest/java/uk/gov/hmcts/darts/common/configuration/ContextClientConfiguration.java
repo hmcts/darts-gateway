@@ -16,6 +16,9 @@ import java.net.URISyntaxException;
 @TestConfiguration
 @EnableConfigurationProperties
 public class ContextClientConfiguration {
+
+    public static final String WEB_CONTEXT = "/service/darts";
+
     @Autowired
     private FunctionalProperties functionalProperties;
 
@@ -24,21 +27,25 @@ public class ContextClientConfiguration {
 
     @Bean("viqClient")
     public ContextRegistryClientWrapper getViq() throws MalformedURLException, URISyntaxException {
-        return new ContextRegistryClientWrapper(new URI(functionalProperties.getDeployedApplicationUri() + "/service/darts"), functionalProperties.getViq(), client);
+        return new ContextRegistryClientWrapper(new URI(functionalProperties.getDeployedApplicationUri()
+                                                            + WEB_CONTEXT), functionalProperties.getViq(), client);
     }
 
     @Bean("xhibitClient")
     public ContextRegistryClientWrapper getXhibit() throws MalformedURLException, URISyntaxException {
-        return new ContextRegistryClientWrapper(new URI(functionalProperties.getDeployedApplicationUri() + "/service/darts"), functionalProperties.getXhibit(), client);
+        return new ContextRegistryClientWrapper(new URI(functionalProperties.getDeployedApplicationUri()
+                                                            + WEB_CONTEXT), functionalProperties.getXhibit(), client);
     }
 
     @Bean("cppClient")
     public ContextRegistryClientWrapper getCpp() throws MalformedURLException, URISyntaxException {
-        return new ContextRegistryClientWrapper(new URI(functionalProperties.getDeployedApplicationUri() + "/service/darts"), functionalProperties.getCpp(), client);
+        return new ContextRegistryClientWrapper(new URI(functionalProperties.getDeployedApplicationUri()
+                                                            + WEB_CONTEXT), functionalProperties.getCpp(), client);
     }
 
     @Bean
-    public FunctionalTestClient getFunctionalClient(){
-        return new FunctionalTestClient(functionalProperties.getDeployedApplicationUri().toString());
+    public FunctionalTestClient getFunctionalClient() {
+        return new FunctionalTestClient(functionalProperties
+                                            .getDeployedApplicationUri().toString());
     }
 }

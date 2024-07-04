@@ -11,7 +11,7 @@ import uk.gov.hmcts.darts.utils.IntegrationBase;
 class TestSupportControllerTest extends IntegrationBase {
 
     @Test
-    public void testCleanup() {
+    void testCleanup() {
         Response response = RestAssured.given()
             .baseUri("http://localhost:" + port + "/functional-tests/clean")
             .redirects().follow(false)

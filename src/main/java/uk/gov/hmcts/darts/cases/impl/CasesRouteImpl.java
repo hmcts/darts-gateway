@@ -20,7 +20,6 @@ import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.List;
 

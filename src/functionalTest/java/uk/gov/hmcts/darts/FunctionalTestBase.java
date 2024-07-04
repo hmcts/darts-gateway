@@ -19,13 +19,14 @@ import uk.gov.hmcts.darts.properties.FunctionalProperties;
 import java.io.IOException;
 import java.net.URI;
 
+import static uk.gov.hmcts.darts.common.configuration.ContextClientConfiguration.WEB_CONTEXT;
+
 @SpringBootTest(classes = {AuthConfiguration.class, ContextClientConfiguration.class,
     AzureAdB2CAuthenticationProperties.class, FunctionalProperties.class, MtomClientConfig.class})
 @ActiveProfiles({"functionalTest"})
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
-public class FunctionalTest {
+public class FunctionalTestBase {
 
-    protected static final String GATEWAY_WEB_CONTEXT = "/service/darts";
 
     @Autowired
     @Qualifier("viqClient")
@@ -50,7 +51,7 @@ public class FunctionalTest {
 
     @SneakyThrows
     public String getDartsGatewayOperationUrl() {
-        return baseUri + GATEWAY_WEB_CONTEXT;
+        return baseUri + WEB_CONTEXT;
     }
 
     @BeforeEach

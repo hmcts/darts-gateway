@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.common.client;
 
 import documentum.contextreg.Lookup;
-import documentum.contextreg.ObjectFactory;
 import documentum.contextreg.Register;
 import documentum.contextreg.Unregister;
 import jakarta.xml.bind.JAXBContext;
@@ -58,14 +57,6 @@ public class AbstractSoapClient {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.marshal(object, byteArrayOutputStream);
 
-        // apply the token
-        String retString = byteArrayOutputStream.toString().replace("${USER}", externalUserToInternalUserMapping.getUserName());
-        retString = retString.replace("${PASSWORD}", externalUserToInternalUserMapping.getExternalPassword());
-
-        if (hasToken()) {
-            retString = retString.replace("${TOKEN}", token);
-        }
-
-        return retString;
+        return byteArrayOutputStream.toString();
     }
 }

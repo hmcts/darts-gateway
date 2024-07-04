@@ -2,7 +2,6 @@ package uk.gov.hmcts.darts.common.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,7 +11,7 @@ import java.net.http.HttpResponse;
 
 
 /**
- * A client that drives the functional test state as pre-requisites for functional tests
+ * A client that drives the functional test state e.g. redis state as pre-requisites for functional tests.
  */
 @RequiredArgsConstructor
 public class FunctionalTestClient {
