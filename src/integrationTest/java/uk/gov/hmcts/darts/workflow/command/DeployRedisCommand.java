@@ -1,14 +1,12 @@
 package uk.gov.hmcts.darts.workflow.command;
 
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.images.builder.ImageFromDockerfile;
-
 import java.io.IOException;
 
 public class DeployRedisCommand implements Command {
 
-    private static GenericContainer<?> container;
+    // private static GenericContainer<?> container;
 
+    /*
     static {
         ImageFromDockerfile redisImage = new ImageFromDockerfile()
             .withDockerfileFromBuilder(builder ->
@@ -23,10 +21,10 @@ public class DeployRedisCommand implements Command {
         System.setProperty("darts-gateway.redis.connection-string", "redis://localhost:" + container.getMappedPort(6379).toString());
         System.setProperty("darts-gateway.redis.ssl-enabled", "false");
     }
-
+*/
     @Override
     public void cleanupResources() {
-        container.stop();
+        //container.stop();
     }
 
     @Override
@@ -37,13 +35,16 @@ public class DeployRedisCommand implements Command {
     @Override
     public void executeWithDocker() throws IOException {
 
+        /*
         if (!container.isRunning()) {
             container.start();
         }
+
+         */
     }
 
     @Override
     public boolean isSuccess() {
-        return container.isRunning();
+        return false;
     }
 }

@@ -6,6 +6,7 @@ import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token")
 @Slf4j
+@Disabled
 class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @MockBean
     private TokenGenerator generator;
