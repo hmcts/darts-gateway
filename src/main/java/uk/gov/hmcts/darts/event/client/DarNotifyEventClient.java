@@ -36,7 +36,7 @@ public class DarNotifyEventClient {
         String caseNumber = event.getCaseNumbers().getCaseNumber().toString();
 
         try {
-            log.info("Sending notification to to DAR PC with case number: {}", caseNumber);
+            log.info("Sending notification to DAR PC with case number: {}", caseNumber);
             Object responseObj = webServiceTemplate.marshalSendAndReceive(uri, request, new SoapActionCallback(soapAction));
             if (responseObj instanceof DARNotifyEventResponse response) {
                 DarNotifyEventResult result = DarNotifyEventResult.findByResult(response.getDARNotifyEventResult());
