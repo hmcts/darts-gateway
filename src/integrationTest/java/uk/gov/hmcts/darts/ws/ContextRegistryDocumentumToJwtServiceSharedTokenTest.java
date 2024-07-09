@@ -3,7 +3,6 @@ package uk.gov.hmcts.darts.ws;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
@@ -28,7 +27,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-documentum-jwt-token-shared")
-@Disabled
 class ContextRegistryDocumentumToJwtServiceSharedTokenTest extends ContextRegistryParent {
     @MockBean
     private OauthTokenGenerator oauthTokenGenerator;
