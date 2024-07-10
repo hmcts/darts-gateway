@@ -23,31 +23,6 @@ darts-gateway:
     response-validation: false
   add-audio:
     validate: true
-    allowed-media-mime-types:
-      - "audio/mpeg"
-      - "application/octet-stream"
-    allowed-media-formats:
-      - "mpeg2"
-      - "mp2"
-    allowed-media-extensions:
-      - "mp2"
-      - "a00"
-      - "a01"
-      - "a02"
-      - "a03"
-      - "a04"
-      - "a05"
-      - "a06"
-      - "a07"
-      - "b00"
-      - "b01"
-      - "b02"
-      - "b03"
-      - "b04"
-      - "b05"
-      - "b06"
-      - "b07"
-      - "b08"
   daily-list:
     validate: true
   events:
