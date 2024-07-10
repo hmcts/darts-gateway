@@ -46,7 +46,7 @@ darts-gateway:
     token-generate: jwt
     map-token-to-session: false
     share-token-for-same-credentials: true
-    entry-time-to-idle-seconds: 14400
+    entry-time-to-idle-seconds: 42900
     shared-token-early-expiration-minutes: 5
   ws:
     request-validation: true
