@@ -5,7 +5,7 @@ This application acts as a layer between external services sending SOAP requests
 
 ## Prerequisites
 
-- [Java 17](https://www.oracle.com/java)
+- [Java 21](https://www.oracle.com/java)
 
 # SoapUI
 
