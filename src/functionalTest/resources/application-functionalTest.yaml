@@ -20,7 +20,10 @@ darts-gateway:
     password: ${FUNC_TEST_ROPC_PASSWORD:#{null}}
     client-id: ${AAD_B2C_ROPC_CLIENT_ID:#{null}}
     client-secret: ${AAD_B2C_ROPC_CLIENT_SECRET:#{null}}
-
 logging:
   level:
-    root: DEBUG
+    uk:
+      gov:
+        hmcts:
+          darts: DEBUG
+  config: classpath:logback-test.xml

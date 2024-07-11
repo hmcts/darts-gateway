@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.common.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
 
 @TestConfiguration
 @EnableConfigurationProperties
+@Slf4j
 public class ContextClientConfiguration {
 
     public static final String WEB_CONTEXT = "/service/darts";
@@ -45,6 +47,8 @@ public class ContextClientConfiguration {
 
     @Bean
     public FunctionalTestClient getFunctionalClient() {
+        log.debug("URL being used for functional test client is " + functionalProperties
+            .getDeployedApplicationUri().toString());
         return new FunctionalTestClient(functionalProperties
                                             .getDeployedApplicationUri().toString());
     }

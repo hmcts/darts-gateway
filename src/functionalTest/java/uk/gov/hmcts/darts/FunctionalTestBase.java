@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.darts.common.configuration.ContextClientConfiguration
 @SpringBootTest(classes = {AuthConfiguration.class, ContextClientConfiguration.class,
     AzureAdB2CAuthenticationProperties.class, FunctionalProperties.class, MtomClientConfig.class})
 @ActiveProfiles({"functionalTest"})
+@Slf4j
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class FunctionalTestBase {
 
@@ -56,7 +58,9 @@ public class FunctionalTestBase {
 
     @BeforeEach
     public void clean() throws IOException, InterruptedException {
-        functionalClient.clear();
+        log.debug("Clearing down test for " + baseUri);
+
+        //functionalClient.clear();
         viq.clearToken();
         xhibit.clearToken();
         cpp.clearToken();

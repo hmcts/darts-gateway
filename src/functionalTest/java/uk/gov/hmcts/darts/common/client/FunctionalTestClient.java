@@ -25,9 +25,8 @@ public class FunctionalTestClient {
         log.debug("Clearing down on url " + baseLocation + "/functional-tests/clean");
         HttpRequest httpRequest = HttpRequest
             .newBuilder()
-            .DELETE().uri(URI.create("https://darts-gateway-pr-458.dev.platform.hmcts.net/functional-tests/clean"))
+            .DELETE().uri(URI.create(baseLocation + "/functional-tests/clean"))
             .build();
-
 
         HttpResponse<String> httpResponses = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         log.debug("Clearing down response is " + httpResponses.statusCode());
