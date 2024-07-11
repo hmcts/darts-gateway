@@ -23,11 +23,6 @@ darts-gateway:
     response-validation: false
   add-audio:
     validate: true
-    allowedMediaFormats:
-      - "mpeg2"
-      - "mp2"
-      - "audio/mpeg"
-      - "a00"
   daily-list:
     validate: true
   events:
