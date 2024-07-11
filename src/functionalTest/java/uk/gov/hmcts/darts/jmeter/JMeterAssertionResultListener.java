@@ -26,7 +26,7 @@ public class JMeterAssertionResultListener implements Visualizer {
                 log.error("Assertion failure " + result.getFailureMessage());
                 assertFailure = true;
                 responseString = responseString.concat(responseString.concat(
-                    "\n" ).concat(result.getFailureMessage()));
+                    "\n").concat(result.getFailureMessage()));
             }
 
             log.info("Response Message " + sampleResult.getResponseMessage());
