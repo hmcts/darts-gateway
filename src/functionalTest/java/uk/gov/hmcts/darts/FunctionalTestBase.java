@@ -60,7 +60,7 @@ public class FunctionalTestBase {
     public void clean() throws IOException, InterruptedException {
         log.debug("Clearing down test for " + baseUri);
 
-        //functionalClient.clear();
+        functionalClient.clear();
         viq.clearToken();
         xhibit.clearToken();
         cpp.clearToken();

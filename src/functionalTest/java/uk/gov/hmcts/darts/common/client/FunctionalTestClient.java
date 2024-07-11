@@ -22,10 +22,10 @@ public class FunctionalTestClient {
     public void clear() throws IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
 
-        log.debug("Clearing down on url " + baseLocation + "/functional-tests/clean");
+        log.debug("Clearing down on url " + baseLocation + "functional-tests/clean");
         HttpRequest httpRequest = HttpRequest
             .newBuilder()
-            .DELETE().uri(URI.create(baseLocation + "/functional-tests/clean"))
+            .DELETE().uri(URI.create(baseLocation + "functional-tests/clean"))
             .build();
 
         HttpResponse<String> httpResponses = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
