@@ -13,12 +13,20 @@ public class JMeterAssertionResultListener implements Visualizer {
         return assertFailure;
     }
 
+    private String responseString = "";
+
+    public String getFailureString() {
+        return responseString;
+    }
+
     @Override
     public void add(SampleResult sampleResult) {
         for (AssertionResult result : sampleResult.getAssertionResults()) {
             if (!assertFailure && result.isFailure()) {
                 log.error("Assertion failure " + result.getFailureMessage());
                 assertFailure = true;
+                responseString = responseString.concat(responseString.concat(
+                    "\n" ).concat(result.getFailureMessage()));
             }
 
             log.info("Response Message " + sampleResult.getResponseMessage());

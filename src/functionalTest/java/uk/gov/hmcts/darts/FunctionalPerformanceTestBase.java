@@ -93,7 +93,7 @@ class FunctionalPerformanceTestBase extends FunctionalTestBase {
         engine.run();
 
         // assert on the assertion results
-        Assertions.assertFalse(assertVisualiser.anyFailures());
+        Assertions.assertFalse(assertVisualiser.anyFailures(), assertVisualiser.getFailureString());
     }
 
     private static HTTPSamplerProxy getHttpSamplerProxy(URL uri, String body, String webContext) {
