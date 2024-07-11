@@ -9,11 +9,11 @@ import org.apache.jmeter.visualizers.Visualizer;
 public class JMeterAssertionResultListener implements Visualizer {
     private boolean assertFailure;
 
+    private String responseString = "";
+    
     public boolean anyFailures() {
         return assertFailure;
     }
-
-    private String responseString = "";
 
     public String getFailureString() {
         return responseString;
