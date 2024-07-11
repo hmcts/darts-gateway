@@ -26,7 +26,6 @@ import static uk.gov.hmcts.darts.common.configuration.ContextClientConfiguration
  *
  * <p>NOTE: This test does NOT act as a substitute for running performance tests within an official performance test environment.
  */
-@Disabled
 class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
 
     @Test
