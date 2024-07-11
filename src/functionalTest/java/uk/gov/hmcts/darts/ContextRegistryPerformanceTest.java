@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts;
 import documentum.contextreg.Register;
 import documentum.contextreg.RegisterResponse;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import uk.gov.hmcts.darts.common.client.ContextRegistryClientWrapper;
@@ -25,6 +26,7 @@ import static uk.gov.hmcts.darts.common.configuration.ContextClientConfiguration
  *
  * <p>NOTE: This test does NOT act as a substitute for running performance tests within an official performance test environment.
  */
+@Disabled
 class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
 
     @Test
