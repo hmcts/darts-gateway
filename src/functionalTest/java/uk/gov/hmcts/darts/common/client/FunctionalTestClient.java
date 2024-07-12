@@ -2,7 +2,7 @@ package uk.gov.hmcts.darts.common.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 import java.net.URI;
@@ -30,10 +30,7 @@ public class FunctionalTestClient {
 
         HttpResponse<String> httpResponses = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         log.debug("Clearing down response is " + httpResponses.statusCode());
-
-        if (HttpStatus.valueOf(httpResponses.statusCode()).is4xxClientError()
-            || HttpStatus.valueOf(httpResponses.statusCode()).is5xxServerError()) {
-            throw new AssertionError("Expected a successful clean down");
-        }
+        Assertions.assertEquals(200, httpResponses.statusCode(), "Expected a 200 when communicating with " + baseLocation + "/functional-tests/clean. " +
+                                "Response Status: " + httpResponses.statusCode() + "Response Body: " + httpResponses.body());
     }
 }
