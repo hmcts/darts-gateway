@@ -7,10 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 @Configuration
 @ConfigurationProperties(prefix = "darts-gateway")
@@ -31,9 +29,8 @@ public class FunctionalProperties {
     public URI getDeployedApplicationUri() {
         URI url = deployedApplicationUri;
         try {
-             url = new URI(deployedApplicationUri.toString().replace("****", "darts"));
-        }
-        catch (URISyntaxException malformedURLException) {
+            url = new URI(deployedApplicationUri.toString().replace("****", "darts"));
+        } catch (URISyntaxException malformedUrlException) {
             log.error("Could not substitute", malformedURLException);
         }
 
