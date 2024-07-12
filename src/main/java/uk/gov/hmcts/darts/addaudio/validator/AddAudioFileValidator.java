@@ -30,13 +30,13 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
-        if (addAudioFileRequest.getContentType() != null && !isWhiteListedFileType(addAudioFileRequest.getContentType())) {
+        if (addAudioFileRequest.getContentType() != null && !allowedMediaConfig.getAllowedMediaFormats().contains(addAudioFileRequest.getContentType())) {
             log.info("Add Audio failed due to invalid Content Type");
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
         String extension = FilenameUtils.getExtension(addAudioFileRequest.getOriginalFilename());
-        if (!isWhiteListedFileType(extension)) {
+        if (!allowedMediaConfig.getAllowedMediaExtensions().contains(extension)) {
             log.info("Add Audio failed due to invalid Extension");
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
@@ -47,7 +47,7 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
             String mimeType
                 = tika.detect(addAudioFileRequest.getInputStream());
 
-            if (!isWhiteListedFileType(mimeType)) {
+            if (!allowedMediaConfig.getAllowedMediaMimeTypes().contains(mimeType)) {
                 log.info("Add Audio failed due to invalid Signature");
                 throw new DartsValidationException(CodeAndMessage.ERROR);
             }
@@ -57,7 +57,4 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
         }
     }
 
-    public boolean isWhiteListedFileType(String type) {
-        return allowedMediaConfig.getAllowedMediaFormats().stream().anyMatch(type::equals);
-    }
 }

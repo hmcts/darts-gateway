@@ -73,10 +73,31 @@ darts-gateway:
     validate: false
     fileSizeInMegaBytes: ${MAX_FILE_UPLOAD_SIZE_MEGABYTES:350}
     maxFileDuration: 1440m
-    allowedMediaFormats:
+    allowed-media-mime-types:
+      - "audio/mpeg"
+      - "application/octet-stream"
+    allowed-media-formats:
       - "mpeg2"
       - "mp2"
-      - "audio/mpeg"
+    allowed-media-extensions:
+      - "mp2"
+      - "a00"
+      - "a01"
+      - "a02"
+      - "a03"
+      - "a04"
+      - "a05"
+      - "a06"
+      - "a07"
+      - "b00"
+      - "b01"
+      - "b02"
+      - "b03"
+      - "b04"
+      - "b05"
+      - "b06"
+      - "b07"
+      - "b08"
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
   redis:

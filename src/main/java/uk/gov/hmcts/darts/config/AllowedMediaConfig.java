@@ -13,4 +13,6 @@ import java.util.List;
 @Validated
 public class AllowedMediaConfig {
     private List<String> allowedMediaFormats;
+    private List<String> allowedMediaMimeTypes;
+    private List<String> allowedMediaExtensions;
 }
