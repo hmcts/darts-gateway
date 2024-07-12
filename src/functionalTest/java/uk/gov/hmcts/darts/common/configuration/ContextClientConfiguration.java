@@ -46,10 +46,9 @@ public class ContextClientConfiguration {
     }
 
     @Bean
-    public FunctionalTestClient getFunctionalClient() {
+    public FunctionalTestClient getFunctionalClient(FunctionalProperties functionalProperties) {
         log.debug("URL being used for functional test client is " + functionalProperties
             .getDeployedApplicationUri().toString());
-        return new FunctionalTestClient(functionalProperties
-                                            .getDeployedApplicationUri().toString());
+        return new FunctionalTestClient(functionalProperties);
     }
 }
