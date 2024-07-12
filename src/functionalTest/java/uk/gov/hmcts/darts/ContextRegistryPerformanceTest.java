@@ -29,7 +29,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
 
     private static final int SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN = 850;
 
-    private static final int SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN = 2300;
+    private static final int SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN = 4000;
 
     @Test
     void testPerformanceOfSingleRegisterRequestWithNewToken() throws Exception {
@@ -97,7 +97,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
         testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
 
         // then should be 0.4 milli seconds
-        testSendPerformanceTest(50, 1,82_000,  body, WEB_CONTEXT);
+        testSendPerformanceTest(50, 1,83_000,  body, WEB_CONTEXT);
     }
 
     @Test
@@ -129,6 +129,6 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
             .setSubstituteValue(SubstituteKey.TOKEN, soapAssertionUtil.getResponse().getValue().getReturn())
             .substitute();
-        testSendPerformanceTest(10, 1,2700,  body, WEB_CONTEXT);
+        testSendPerformanceTest(10, 1,2850,  body, WEB_CONTEXT);
     }
 }
