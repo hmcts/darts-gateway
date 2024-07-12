@@ -31,7 +31,7 @@ public class FunctionalProperties {
         try {
             url = new URI(deployedApplicationUri.toString().replace("****", "darts"));
         } catch (URISyntaxException malformedUrlException) {
-            log.error("Could not substitute", malformedURLException);
+            log.error("Could not substitute", malformedUrlException);
         }
 
         return url;
