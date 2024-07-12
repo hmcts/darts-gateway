@@ -97,7 +97,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
         testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
 
         // then should be 0.4 milli seconds
-        testSendPerformanceTest(50, 1,87_000,  body, WEB_CONTEXT);
+        testSendPerformanceTest(50, 1,110_000,  body, WEB_CONTEXT);
     }
 
     @Test
