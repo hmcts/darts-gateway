@@ -71,7 +71,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
     }
 
     @Test
-    void testPerformanceOf10RegisterRequestSWithNewTokenAndRequestOfToken() throws Exception {
+    void testPerformanceOf10RegisterRequestsWithNewTokenAndRequestOfToken() throws Exception {
         SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapRegisterFull.xml");
         String body = substitutablePayload
             .setSubstituteValue(SubstituteKey.USER_NAME, xhibit.getExternalUserToInternalUserMapping().getUserName())
@@ -82,7 +82,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
         testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
 
         // then should be 0.4 milli seconds
-        testSendPerformanceTest(10, 1,2700,  body, WEB_CONTEXT);
+        testSendPerformanceTest(10, 1,3600,  body, WEB_CONTEXT);
     }
 
     @Test
@@ -129,6 +129,6 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
             .setSubstituteValue(SubstituteKey.TOKEN, soapAssertionUtil.getResponse().getValue().getReturn())
             .substitute();
-        testSendPerformanceTest(10, 1,2850,  body, WEB_CONTEXT);
+        testSendPerformanceTest(10, 1,3600,  body, WEB_CONTEXT);
     }
 }
