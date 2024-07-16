@@ -1,0 +1,52 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+
+actor "client"
+
+"client" -> "Gateway" : Make a call to an gateway operation (with username/password)
+
+group Sharing check [token sharing is enabled]
+
+  "Gateway" -> Redis : check for token against header credentials
+
+  group Token not found [token not found in Redis]
+
+    Gateway -> Redis : create a redis lock
+
+    group Register [Register a new jwt token based on the credentials]]
+      "Gateway" -> "AAD" : Call AAD password credential flow to establish a token
+    end
+
+    group Store the JWT in Redis cache [Store the token in redis cache]
+      "Gateway" -> "Redis" : Store token in cache against the username/password with time to idle applied
+      "Gateway" -> "Redis" : Store token in cache with the time to idle applied
+    end
+
+    Gateway -> "Redis" : Relinquish redis lock
+  end
+
+  group Token found [token found in Redis]
+    group JWKS expiration [JWKS has expired]
+      Gateway -> AAD: download new JWKS
+    end
+
+    Gateway -> Gateway: validate token against json web key store
+  end
+end
+
+group Sharing check [token sharing is disabled]
+    group Register [Register a new jwt token based on the credentials]]
+        "Gateway" -> "AAD" : Call AAD password credential flow to establish a token
+      end
+
+      group Store the JWT in Redis cache [Store the token in redis cache]
+        "Gateway" -> "Redis" : Store token in cache with the time to idle applied
+      end
+end
+
+Gateway -> "Darts API" : Use JWT token to communicate downstream
+
+@enduml

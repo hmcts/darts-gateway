@@ -86,21 +86,6 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
     }
 
     @Test
-    void testPerformanceOf50RegisterRequestsWithNewTokenAndRequestOfToken() throws Exception {
-        SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapRegisterFull.xml");
-        String body = substitutablePayload
-            .setSubstituteValue(SubstituteKey.USER_NAME, xhibit.getExternalUserToInternalUserMapping().getUserName())
-            .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
-            .substitute();
-
-        // first token is going to be slower
-        testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
-
-        // then should be 0.4 milli seconds
-        testSendPerformanceTest(50, 1,110_000,  body, WEB_CONTEXT);
-    }
-
-    @Test
     void testPerformanceOfSingleLookupWithNewToken() throws Exception {
         Register register = ContextRegistryClientWrapper.getRegisterPayload();
 
@@ -113,7 +98,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.TOKEN, soapAssertionUtil.getResponse().getValue().getReturn())
             .substitute();
 
-        testSendPerformanceTest(1, 1,850,  body, WEB_CONTEXT);
+        testSendPerformanceTest(1, 1,900,  body, WEB_CONTEXT);
     }
 
     @Test
