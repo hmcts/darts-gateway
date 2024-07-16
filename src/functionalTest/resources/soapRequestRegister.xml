@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns8:register
+  xmlns:ns8="http://services.rt.fs.documentum.emc.com/"
+  xmlns:ns7="http://core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns6="http://content.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns5="http://query.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns4="http://profiles.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns3="http://properties.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns2="http://context.core.datamodel.fs.documentum.emc.com/">
+  <context>
+    <ns2:Identities
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:RepositoryIdentity" repositoryName="moj_darts" password="${PASSWORD}" userName="${USER}">
+    </ns2:Identities>
+    <ns2:Profiles
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:ContentTransferProfile" isProcessOLELinks="false" allowAsyncContentTransfer="false" allowCachedContentTransfer="false" transferMode="MTOM">
+    </ns2:Profiles>
+  </context>
+  <host>http://192.168.0.65:8070/service/darts/</host>
+</ns8:register>

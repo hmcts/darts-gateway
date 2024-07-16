@@ -37,6 +37,7 @@ public class CasesRouteImpl implements CasesRoute {
 
     private final CasesClient casesClient;
 
+
     @Override
     public GetCasesResponse route(GetCases getCasesRequest) {
         String dateString = getCasesRequest.getDate();

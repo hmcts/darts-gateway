@@ -11,8 +11,8 @@ import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;

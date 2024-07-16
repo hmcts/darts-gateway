@@ -17,10 +17,10 @@ import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.utils.TestUtils;
-import uk.gov.hmcts.darts.utils.client.SoapAssertionUtil;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClientProvider;
+import uk.gov.hmcts.darts.common.utils.TestUtils;
+import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

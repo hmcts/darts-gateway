@@ -20,10 +20,14 @@ services:
       - CP_EXTERNAL_PASSWORD
       - CP_INTERNAL_PASSWORD
       - EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
-    build:
+      - ACTIVE_DIRECTORY_B2C_BASE_URI
+      - ACTIVE_DIRECTORY_B2C_AUTH_URI
+      - ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI
+      - AAD_B2C_TENANT_ID
+  build:
       context: .
       dockerfile: Dockerfile
-    image: darts-gateway:latest
+    image: darts-gateway:master
     ports:
       - "8070:8070"
     networks:
