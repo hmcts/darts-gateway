@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.utils;
 
+import uk.gov.hmcts.darts.common.utils.TestUtils;
+
 import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;

@@ -75,6 +75,7 @@ public class TokenValidatorImpl implements TokenValidator {
 
     @Override
     public boolean test(Token.TokenExpiryEnum useExpiryOffset, String accessToken) {
+        log.trace("starting token validation");
         log.debug("Validating JWT: {}", accessToken);
         boolean validated;
         try {
@@ -91,6 +92,7 @@ public class TokenValidatorImpl implements TokenValidator {
             log.error("Major token validation failure", e);
             throw new CacheTokenValidationException("The token validation failed", e);
         }
+        log.trace("ended token validation");
         return validated;
     }
 

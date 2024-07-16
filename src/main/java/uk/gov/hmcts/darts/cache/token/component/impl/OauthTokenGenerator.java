@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.config.ExternalUserToInternalUserMapping;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class OauthTokenGenerator implements TokenGenerator {
     private final SecurityProperties securityProperties;
 
@@ -38,7 +40,7 @@ public class OauthTokenGenerator implements TokenGenerator {
     @SneakyThrows
     @Override
     public String acquireNewToken(String username, String password) {
-
+        log.trace("aquiring new jwt token");
         String foundPassword = password;
         // if the internal to external mapping is enabled then throw an error if we cant find an internal password
         if (securityProperties.isUserExternalInternalMappingsEnabled()) {
@@ -70,6 +72,7 @@ public class OauthTokenGenerator implements TokenGenerator {
             throw new CacheTokenCreationException("No token found for user name and password");
         }
 
+        log.trace("successfully acquired new jwt token");
         return tokenResponse.accessToken();
     }
 

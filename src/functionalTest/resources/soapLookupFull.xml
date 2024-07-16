@@ -1,0 +1,20 @@
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Header>
+    <ServiceContext token="temporary/127.0.0.1-1700061962100--7690714146928305881" xmlns="http://context.core.datamodel.fs.documentum.emc.com/" xmlns:ns2="http://properties.core.datamodel.fs.documentum.emc.com/" xmlns:ns3="http://profiles.core.datamodel.fs.documentum.emc.com/" xmlns:ns4="http://query.core.datamodel.fs.documentum.emc.com/" xmlns:ns5="http://content.core.datamodel.fs.documentum.emc.com/" xmlns:ns6="http://core.datamodel.fs.documentum.emc.com/">
+      <Identities password="${PASSWORD}" repositoryName="moj_darts" userName="${USER}" xsi:type="RepositoryIdentity" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Identities>
+      <Profiles allowAsyncContentTransfer="false" allowCachedContentTransfer="false" isProcessOLELinks="false" transferMode="MTOM" xsi:type="ns3:ContentTransferProfile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Profiles>
+    </ServiceContext>
+  </S:Header>
+  <S:Body>
+    <ns8:lookup
+      xmlns:ns8="http://services.rt.fs.documentum.emc.com/"
+      xmlns:ns7="http://core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns6="http://content.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns5="http://query.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns4="http://profiles.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns3="http://properties.core.datamodel.fs.documentum.emc.com/"
+      xmlns:ns2="http://context.core.datamodel.fs.documentum.emc.com/">
+      <token>${TOKEN}</token>
+    </ns8:lookup>
+  </S:Body>
+</S:Envelope>

@@ -4,10 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.client.ctxt.ContextRegistryMtomClient;
-import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayMtomClient;
-import uk.gov.hmcts.darts.utils.client.darts.DartsGatewayXmlClient;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryMtomClient;
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayMtomClient;
+import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayXmlClient;
 
 @Configuration
 public class MtomClientConfig {
@@ -39,7 +39,6 @@ public class MtomClientConfig {
 
     @Bean
     public ContextRegistryClient mtomClientContextRegistry(SaajSoapMessageFactory messageFactory) {
-
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setPackagesToScan("documentum.contextreg");
         marshaller.setMtomEnabled(true);

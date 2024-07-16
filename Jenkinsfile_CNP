@@ -13,8 +13,29 @@ def secrets = [
                 secret('app-insights-connection-string', 'app-insights-connection-string'),
                 secret('AzureAdB2CClientId', 'AAD_B2C_CLIENT_ID'),
                 secret('ExternalServiceBasicAuthorisationWhitelist', 'EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST'),
-        ],
+                secret('ViQExternalUserName', 'VIQ_EXTERNAL_USER_NAME'),
+                secret('ViQExternalPassword', 'VIQ_EXTERNAL_PASSWORD'),
+                secret('ViQInternalPassword', 'VIQ_INTERNAL_PASSWORD'),
+
+                secret('XhibitExternalUserName', 'XHIBIT_EXTERNAL_USER_NAME'),
+                secret('XhibitExternalPassword', 'XHIBIT_EXTERNAL_PASSWORD'),
+                secret('XhibitInternalPassword', 'XHIBIT_INTERNAL_PASSWORD'),
+
+                secret('CPExternalUserName', 'CP_EXTERNAL_USER_NAME'),
+                secret('CPExternalPassword', 'CP_EXTERNAL_PASSWORD'),
+                secret('CPInternalPassword', 'CP_INTERNAL_PASSWORD'),
+
+                secret('AzureAdB2CFuncTestROPCClientId', 'AAD_B2C_ROPC_CLIENT_ID'),
+                secret('AzureAdB2CFuncTestROPCUsername', 'FUNC_TEST_ROPC_USERNAME'),
+                secret('AzureAdB2CFuncTestROPCPassword', 'FUNC_TEST_ROPC_PASSWORD'),
+                secret('AzureAdB2CFuncTestROPCClientId', 'AAD_B2C_ROPC_CLIENT_ID'),
+                secret('AzureAdB2CFuncTestROPCClientSecret', 'AAD_B2C_ROPC_CLIENT_SECRET')
+        ]
 ]
+
+
+
+
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     [$class     : 'AzureKeyVaultSecret',
@@ -31,4 +52,3 @@ withPipeline(type, product, component) {
 
     syncBranchesWithMaster(branchesToSync)
 }
-

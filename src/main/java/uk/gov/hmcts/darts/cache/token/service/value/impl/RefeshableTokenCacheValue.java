@@ -56,6 +56,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
 
     @Override
     public void performRefresh() {
+        log.trace("refreshing the token");
         try {
             Token token = jwtCacheRegisterable.createToken(getServiceContext());
 
@@ -63,6 +64,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
         } catch (CacheTokenCreationException e) {
             log.warn("Failure in refreshing a token continuing to use existing one");
         }
+        log.trace("refreshed the token");
     }
 
     @JsonIgnore

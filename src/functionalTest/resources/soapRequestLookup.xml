@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns8:lookup
+  xmlns:ns8="http://services.rt.fs.documentum.emc.com/"
+  xmlns:ns7="http://core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns6="http://content.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns5="http://query.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns4="http://profiles.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns3="http://properties.core.datamodel.fs.documentum.emc.com/"
+  xmlns:ns2="http://context.core.datamodel.fs.documentum.emc.com/">
+  <token>${TOKEN}</token>
+</ns8:lookup>
