@@ -104,7 +104,7 @@ public class OauthTokenGenerator implements TokenGenerator {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
 
-        try(HttpClient client = HttpClient.newHttpClient()) {
+        try (HttpClient client = HttpClient.newHttpClient()) {
             return client
                 .send(request, HttpResponse.BodyHandlers.ofString())
                 .body();
