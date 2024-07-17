@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
-@Disabled
 class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @MockBean
     private TokenGenerator generator;
