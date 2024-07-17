@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 
+import java.util.Objects;
+import java.util.Set;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -20,6 +23,14 @@ public class TestSupportController {
     @SuppressWarnings({"unchecked", "PMD.CloseResource"})
     @DeleteMapping(value = "/functional-tests/clean")
     public void cleanUpDataAfterFunctionalTests() {
-        template.delete(TokenRegisterable.CACHE_PREFIX + "*");
+        deleteKeyByPattern(TokenRegisterable.CACHE_PREFIX + "*");
+    }
+
+    public boolean deleteKeyByPattern(String pattern) {
+        Set<byte[]> patternResultConf = template.getConnectionFactory().getConnection().keys(pattern.getBytes());
+        if(Objects.nonNull(patternResultConf) && !patternResultConf.isEmpty()) {
+            template.getConnectionFactory().getConnection().del(patternResultConf.toArray(new byte[0][]));
+        }
+        return true;
     }
 }
