@@ -28,7 +28,7 @@ public class TestSupportController {
 
     public boolean deleteKeyByPattern(String pattern) {
         Set<byte[]> patternResultConf = template.getConnectionFactory().getConnection().keys(pattern.getBytes());
-        if(Objects.nonNull(patternResultConf) && !patternResultConf.isEmpty()) {
+        if (Objects.nonNull(patternResultConf) && !patternResultConf.isEmpty()) {
             template.getConnectionFactory().getConnection().del(patternResultConf.toArray(new byte[0][]));
         }
         return true;
