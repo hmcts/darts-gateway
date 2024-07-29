@@ -125,27 +125,3 @@ darts-gateway:
         external-password: ${XHIBIT_EXTERNAL_PASSWORD:#{null}}
         internal-password: ${XHIBIT_INTERNAL_PASSWORD:#{null}}
     external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
-logging:
-  level:
-    org:
-      springframework:
-        web: debug
-        ws:
-          client:
-            MessageTracing:
-              sent: trace
-              received: trace
-
-    uk.gov.hmcts.darts: ${DARTS_LOG_LEVEL:INFO}
-    uk:
-      gov:
-        hmcts:
-          darts:
-            authentication:
-              component:
-                SoapRequestInterceptor: trace
-
-            ws:
-              DartsMessageDispatcherServlet: trace
-            common:
-              client: debug
