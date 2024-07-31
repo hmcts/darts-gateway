@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.log.service.DarNotificationLoggerService;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
@@ -19,7 +20,7 @@ public class DarNotificationLoggerServiceImpl implements DarNotificationLoggerSe
                 courthouse,
                 courtroom,
                 caseNumber,
-                offsetDateTime,
+                getDateTimeIsoFormatted(offsetDateTime),
                 responseCode);
     }
 
@@ -31,7 +32,7 @@ public class DarNotificationLoggerServiceImpl implements DarNotificationLoggerSe
                 courthouse,
                 courtroom,
                 caseNumber,
-                offsetDateTime,
+                getDateTimeIsoFormatted(offsetDateTime),
                 status,
                 message);
     }
@@ -53,9 +54,13 @@ public class DarNotificationLoggerServiceImpl implements DarNotificationLoggerSe
                 courthouse,
                 courtroom,
                 caseNumber,
-                offsetDateTime,
+                getDateTimeIsoFormatted(offsetDateTime),
                 status,
                 message,
                 responseCode);
+    }
+
+    private static String getDateTimeIsoFormatted(OffsetDateTime dateTime) {
+        return dateTime.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 }

@@ -28,7 +28,8 @@ import static org.slf4j.event.Level.WARN;
 class DarNotificationLoggerServiceImplTest {
 
     private static final Map<Level, Supplier<List<String>>> LOG_LEVEL_TO_CAPTURED_LOGS = new HashMap<>();
-    private static final OffsetDateTime SOME_TS = OffsetDateTime.parse("2021-01-01T02:00:00Z");
+    private static final String SOME_TS_STRING = "2021-01-01T02:00:00Z";
+    private static final OffsetDateTime SOME_TS = OffsetDateTime.parse(SOME_TS_STRING);
     private static final String SOME_URI = "some-uri";
     private static final String SOME_COURTHOUSE = "some-courthouse";
     private static final String SOME_COURTROOM = "some-courtroom";
@@ -71,7 +72,7 @@ class DarNotificationLoggerServiceImplTest {
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, 0);
 
         String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=OK, responseCode=0",
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
+                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
         assertThat(logCaptor.getInfoLogs()).containsExactly(expectedLogEntry);
     }
 
@@ -82,7 +83,7 @@ class DarNotificationLoggerServiceImplTest {
                 SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", logLevel);
 
         String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, " +
-                                             "message=some-msg", SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
+                                             "message=some-msg", SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
         assertThat(logsFor(logLevel)).containsExactly(expectedLogEntry);
     }
 
@@ -94,7 +95,7 @@ class DarNotificationLoggerServiceImplTest {
 
         String expectedLogEntry =
                 format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, message=some-msg, responseCode=1",
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS);
+                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
         assertThat(logsFor(logLevel)).containsExactly(expectedLogEntry);
     }
 
