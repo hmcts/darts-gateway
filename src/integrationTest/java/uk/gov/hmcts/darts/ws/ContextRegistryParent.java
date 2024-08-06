@@ -13,8 +13,8 @@ import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
-import uk.gov.hmcts.darts.utils.CacheUtil;
-import uk.gov.hmcts.darts.utils.IntegrationBase;
+import uk.gov.hmcts.darts.testutils.CacheUtil;
+import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 import java.io.IOException;
 import java.net.URI;

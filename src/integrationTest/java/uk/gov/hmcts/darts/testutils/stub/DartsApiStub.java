@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils;
+package uk.gov.hmcts.darts.testutils.stub;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;

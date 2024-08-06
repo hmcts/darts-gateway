@@ -38,6 +38,10 @@ java:
           alias: CP_INTERNAL_PASSWORD
         - name: ExternalServiceBasicAuthorisationWhitelist
           alias: EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
+        - name: JwksRefreshPeriod
+          alias: JWKS_REFRESH_PERIOD
+        - name: JwksLifetimePeriod
+          alias: JWKS_LIFETIME_PERIODs
   environment:
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net
     ACTIVE_DIRECTORY_B2C_BASE_URI: https://hmctsstgextid.b2clogin.com

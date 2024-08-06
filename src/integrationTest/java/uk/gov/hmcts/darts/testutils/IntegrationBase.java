@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils;
+package uk.gov.hmcts.darts.testutils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,14 @@ import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMappingOperation;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
+import uk.gov.hmcts.darts.conf.RedisConfiguration;
+import uk.gov.hmcts.darts.test.TestSupportController;
 import uk.gov.hmcts.darts.utilities.XmlParser;
+import uk.gov.hmcts.darts.testutils.stub.DailyListApiStub;
+import uk.gov.hmcts.darts.testutils.stub.EventApiStub;
+import uk.gov.hmcts.darts.testutils.stub.GetCasesApiStub;
+import uk.gov.hmcts.darts.testutils.stub.GetCourtLogsApiStub;
+import uk.gov.hmcts.darts.testutils.stub.PostCourtLogsApiStub;
 import uk.gov.hmcts.darts.workflow.command.Command;
 import uk.gov.hmcts.darts.workflow.command.CommandHolder;
 import uk.gov.hmcts.darts.workflow.command.DeployRedisCommand;
@@ -34,7 +41,7 @@ import java.util.Map;
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
 @ComponentScan("uk.gov.hmcts.darts")
 @ActiveProfiles("int-test")
-@AutoConfigureWireMock(port = 8090)
+@AutoConfigureWireMock(port = 0)
 @SpringBootTest(classes = RedisConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
 public class IntegrationBase implements CommandHolder {
@@ -54,6 +61,7 @@ public class IntegrationBase implements CommandHolder {
 
     protected static final String DEFAULT_REGISTER_PASSWORD = "pass";
 
+
     @Value("${local.server.port}")
     protected int port;
 
@@ -68,6 +76,9 @@ public class IntegrationBase implements CommandHolder {
     @Autowired
     protected RedisTemplate<String, Object> template;
 
+    @Autowired
+    private TestSupportController testSupportController;
+
     static {
         try {
             localhost = InetAddress.getByName("localhost").getHostAddress();
@@ -79,6 +90,7 @@ public class IntegrationBase implements CommandHolder {
     @BeforeEach
     void clearStubs()  {
         template.getConnectionFactory().getConnection().flushAll();
+        testSupportController.cleanUpDataAfterFunctionalTests();
         WireMock.reset();
     }
 

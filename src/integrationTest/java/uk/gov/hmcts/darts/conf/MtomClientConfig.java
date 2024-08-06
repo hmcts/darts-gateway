@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.motm.config;
+package uk.gov.hmcts.darts.conf;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

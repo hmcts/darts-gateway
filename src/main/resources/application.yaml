@@ -125,3 +125,5 @@ darts-gateway:
         external-password: ${XHIBIT_EXTERNAL_PASSWORD:#{null}}
         internal-password: ${XHIBIT_INTERNAL_PASSWORD:#{null}}
     external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
+    jwks-cache-refresh_period: ${JWKS_REFRESH_PERIOD:30m}
+    jwks-cache-lifetime_period:  ${JWKS_LIFETIME_PERIOD:60m}

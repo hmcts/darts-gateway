@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils.multipart;
+package uk.gov.hmcts.darts.testutils.request;
 
 import uk.gov.hmcts.darts.common.function.ConsumerWithIoException;
 import uk.gov.hmcts.darts.common.multipart.SizeableInputSource;
