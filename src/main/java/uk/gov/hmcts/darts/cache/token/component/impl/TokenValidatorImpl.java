@@ -2,9 +2,6 @@ package uk.gov.hmcts.darts.cache.token.component.impl;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.source.DefaultJWKSetCache;
-import com.nimbusds.jose.jwk.source.JWKSetCache;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jose.proc.JWSKeySelector;
 import com.nimbusds.jose.proc.JWSVerificationKeySelector;
@@ -14,13 +11,10 @@ import com.nimbusds.jwt.JWTClaimNames;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.SignedJWT;
-import com.nimbusds.jwt.proc.BadJWTException;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
@@ -28,15 +22,12 @@ import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenValidationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 
-import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.text.ParseException;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
 
 @Component
 @Slf4j

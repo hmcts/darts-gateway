@@ -1,10 +1,8 @@
 package uk.gov.hmcts.darts.cache.token.config.impl;
 
-import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;

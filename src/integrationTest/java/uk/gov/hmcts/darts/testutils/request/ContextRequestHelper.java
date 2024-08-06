@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.testutils.request;
 
 import documentum.contextreg.RegisterResponse;
+import jakarta.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.testutils.stub.TokenStub;
 
+import java.io.IOException;
 import java.net.URL;
 
 @Component
@@ -26,8 +28,8 @@ public class ContextRequestHelper {
      * @param gatewayUrl The gateway url to make a call
      * @return The response containing the token if successful
      */
-    public SoapAssertionUtil<RegisterResponse> registerToken(ContextRegistryClient client, URL gatewayUrl) throws Exception {
-        tokenStub.stubToken();;
+    public SoapAssertionUtil<RegisterResponse> registerToken(ContextRegistryClient client, URL gatewayUrl) throws IOException, JAXBException {
+        tokenStub.stubToken();
         tokenStub.stubJwksKeys();
 
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
@@ -50,8 +52,7 @@ public class ContextRequestHelper {
         soapRequestStr = soapRequestStr.replace("${USER}", securityProperties.getUserExternalInternalMappings().get(0).getUserName());
         soapRequestStr = soapRequestStr.replace("${PASSWORD}", securityProperties.getUserExternalInternalMappings().get(0).getExternalPassword());
 
-        SoapAssertionUtil<RegisterResponse> response = client.register(new URL(
+        return client.register(new URL(
             gatewayUrl + "ContextRegistryService?wsdl"), soapRequestStr);
-        return response;
     }
 }

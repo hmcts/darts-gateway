@@ -6,7 +6,6 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.NonNull;
-import org.springframework.validation.annotation.Validated;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 
 import java.net.MalformedURLException;
