@@ -29,9 +29,6 @@ public class ContextRequestHelper {
      * @return The response containing the token if successful
      */
     public SoapAssertionUtil<RegisterResponse> registerToken(ContextRegistryClient client, URL gatewayUrl) throws IOException, JAXBException {
-        tokenStub.stubToken();
-        tokenStub.stubJwksKeys();
-
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContext.xml");
 

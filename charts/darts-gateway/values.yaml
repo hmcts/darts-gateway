@@ -38,9 +38,9 @@ java:
           alias: CP_INTERNAL_PASSWORD
         - name: ExternalServiceBasicAuthorisationWhitelist
           alias: EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
-        - name: JwksRefreshPeriod
+        - name: ExternalJwksRefreshPeriod
           alias: JWKS_REFRESH_PERIOD
-        - name: JwksLifetimePeriod
+        - name: ExternalJwksLifetimePeriod
           alias: JWKS_LIFETIME_PERIOD
   environment:
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net

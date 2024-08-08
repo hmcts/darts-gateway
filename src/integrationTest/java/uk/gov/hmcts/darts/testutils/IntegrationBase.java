@@ -1,6 +1,8 @@
 package uk.gov.hmcts.darts.testutils;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.nimbusds.jose.JOSEException;
+import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMappingOperation;
@@ -23,6 +26,7 @@ import uk.gov.hmcts.darts.testutils.stub.EventApiStub;
 import uk.gov.hmcts.darts.testutils.stub.GetCasesApiStub;
 import uk.gov.hmcts.darts.testutils.stub.GetCourtLogsApiStub;
 import uk.gov.hmcts.darts.testutils.stub.PostCourtLogsApiStub;
+import uk.gov.hmcts.darts.testutils.stub.TokenStub;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.workflow.command.Command;
 import uk.gov.hmcts.darts.workflow.command.CommandHolder;
@@ -35,6 +39,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -61,7 +67,6 @@ public class IntegrationBase implements CommandHolder {
 
     protected static final String DEFAULT_REGISTER_PASSWORD = "pass";
 
-
     @Value("${local.server.port}")
     protected int port;
 
@@ -79,6 +84,11 @@ public class IntegrationBase implements CommandHolder {
     @Autowired
     private TestSupportController testSupportController;
 
+    @Autowired
+    protected SecurityProperties securityProperties;
+
+    protected TokenStub tokenStub = new TokenStub();
+
     static {
         try {
             localhost = InetAddress.getByName("localhost").getHostAddress();
@@ -90,7 +100,9 @@ public class IntegrationBase implements CommandHolder {
     @BeforeEach
     void clearStubs()  {
         template.getConnectionFactory().getConnection().flushAll();
-        testSupportController.cleanUpDataAfterFunctionalTests();
+
+        // populate the jkws keys endpoint with a global public key
+        tokenStub.stubExternalJwksKeys(DartsTokenGenerator.getGlobalKey());
         WireMock.reset();
     }
 
@@ -160,5 +172,18 @@ public class IntegrationBase implements CommandHolder {
     @Override
     public void setCommand(Command command) {
 
+    }
+
+    @SuppressWarnings({"PMD.DoNotUseThreads",  "PMD.SignatureDeclareThrowsException"})
+    public String runOperationExpectingJwksRefresh(String token, JkwsRefreshableRunnable runnable)
+        throws InterruptedException, IOException, JAXBException, JOSEException {
+        // make sure we have left it enough time for the refresh to place
+        Thread.sleep(securityProperties.getJwksCacheRefreshPeriod().toMillis() + Duration.of(1, ChronoUnit.SECONDS).toMillis());
+        return runnable.run(token);
+    }
+
+    @FunctionalInterface
+    public interface JkwsRefreshableRunnable {
+        String run(String token) throws InterruptedException, IOException, JAXBException, JOSEException;
     }
 }
