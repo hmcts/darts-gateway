@@ -101,9 +101,10 @@ public class IntegrationBase implements CommandHolder {
     void clearStubs()  {
         template.getConnectionFactory().getConnection().flushAll();
 
+        WireMock.reset();
+
         // populate the jkws keys endpoint with a global public key
         tokenStub.stubExternalJwksKeys(DartsTokenGenerator.getGlobalKey());
-        WireMock.reset();
     }
 
     public URL getGatewayUri() throws MalformedURLException {
