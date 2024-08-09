@@ -38,9 +38,6 @@ spring:
     log-request-details: true
 
 azure:
-  application-insights:
-    instrumentation-key: ${darts.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
-
 darts-gateway:
   testing-support-endpoints:
     enabled: ${TESTING_SUPPORT_ENDPOINTS_ENABLED:false}
@@ -125,3 +122,5 @@ darts-gateway:
         external-password: ${XHIBIT_EXTERNAL_PASSWORD:#{null}}
         internal-password: ${XHIBIT_INTERNAL_PASSWORD:#{null}}
     external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
+    jwks-cache-refresh_period: ${JWKS_REFRESH_PERIOD:30m}
+    jwks-cache-lifetime_period:  ${JWKS_LIFETIME_PERIOD:60m}

@@ -77,6 +77,8 @@ services:
       - ACTIVE_DIRECTORY_B2C_AUTH_URI=https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com
       - ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI=https://hmctsstgextid.onmicrosoft.com
       - AAD_B2C_TENANT_ID
+      - JWKS_REFRESH_PERIOD
+      - JWKS_LIFETIME_PERIOD
     ports:
       - "8070:8070"
     networks:

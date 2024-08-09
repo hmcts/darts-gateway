@@ -15,7 +15,7 @@ import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider;
-import uk.gov.hmcts.darts.utils.CacheUtil;
+import uk.gov.hmcts.darts.testutils.CacheUtil;
 
 import java.io.IOException;
 import javax.xml.transform.TransformerException;

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
-import uk.gov.hmcts.darts.utils.IntegrationBase;
+import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 @ActiveProfiles("int-test-jwt-token-shared")
 class TestSupportControllerTest extends IntegrationBase {

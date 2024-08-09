@@ -13,7 +13,6 @@ import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,13 +27,15 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import javax.annotation.PostConstruct;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class TokenValidatorImpl implements TokenValidator {
 
     private DefaultJWTProcessor<SecurityContext> jwtProcessor;
+
+    private final SecurityProperties securityProperties;
 
     private final CacheProperties cacheProperties;
 
@@ -44,9 +45,14 @@ public class TokenValidatorImpl implements TokenValidator {
     }
 
     public TokenValidatorImpl(SecurityProperties securityProperties,
-                              DefaultJWTProcessor<SecurityContext> jwtProcessor, CacheProperties cacheProperties) throws MalformedURLException {
+                              DefaultJWTProcessor<SecurityContext> jwtProcessor, CacheProperties cacheProperties)  {
         this.jwtProcessor = jwtProcessor;
         this.cacheProperties = cacheProperties;
+        this.securityProperties = securityProperties;
+    }
+
+    @PostConstruct
+    public void init() throws MalformedURLException {
         JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(
             JWSAlgorithm.RS256,
             securityProperties.getJwkSource()
@@ -60,18 +66,27 @@ public class TokenValidatorImpl implements TokenValidator {
         var claimsVerifier = new DefaultJWTClaimsVerifier<>(
             securityProperties.getClientId(),
             jwtClaimsSet,
-            new HashSet<>(Arrays.asList(
-                JWTClaimNames.AUDIENCE,
-                JWTClaimNames.ISSUER,
-                JWTClaimNames.EXPIRATION_TIME,
-                JWTClaimNames.ISSUED_AT,
-                JWTClaimNames.SUBJECT
-            ))
+            getClaimSet()
         );
+
 
         jwtProcessor.setJWTClaimsSetVerifier(claimsVerifier);
     }
 
+    private HashSet<String> getClaimSet() {
+        HashSet<String> claims = new HashSet<>(Arrays.asList(
+            JWTClaimNames.AUDIENCE,
+            JWTClaimNames.ISSUER,
+            JWTClaimNames.ISSUED_AT,
+            JWTClaimNames.SUBJECT,
+            JWTClaimNames.EXPIRATION_TIME));
+
+        return claims;
+    }
+
+    protected boolean shouldIgnoreValidationException(Exception e) {
+        return false;
+    }
 
     @Override
     public boolean test(Token.TokenExpiryEnum useExpiryOffset, String accessToken) {

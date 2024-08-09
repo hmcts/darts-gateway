@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils;
+package uk.gov.hmcts.darts.testutils.stub;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.springframework.stereotype.Component;

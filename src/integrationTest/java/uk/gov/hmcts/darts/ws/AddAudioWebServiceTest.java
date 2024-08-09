@@ -24,8 +24,8 @@ import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 import uk.gov.hmcts.darts.common.utils.matcher.MultipartDartsProxyContentPattern;
-import uk.gov.hmcts.darts.utils.IntegrationBase;
-import uk.gov.hmcts.darts.utils.multipart.DummyXmlWithFileMultiPartRequest;
+import uk.gov.hmcts.darts.testutils.IntegrationBase;
+import uk.gov.hmcts.darts.testutils.request.DummyXmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 
 import java.net.URI;

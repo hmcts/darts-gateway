@@ -19,3 +19,5 @@ export XHIBIT_EXTERNAL_USER_NAME="$(az keyvault secret show --vault-name darts-s
 export XHIBIT_EXTERNAL_PASSWORD="$(az keyvault secret show --vault-name darts-stg --name XhibitExternalPassword | jq .value -r)"
 export XHIBIT_INTERNAL_PASSWORD="$(az keyvault secret show --vault-name darts-stg --name XhibitInternalPassword | jq .value -r)"
 export EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST="$(az keyvault secret show --vault-name darts-stg --name ExternalServiceBasicAuthorisationWhitelist | jq .value -r)"
+export JWKS_REFRESH_PERIOD="$(az keyvault secret show --vault-name darts-stg --name ExternalJwksRefreshPeriod | jq .value -r)"
+export JWKS_LIFETIME_PERIOD="$(az keyvault secret show --vault-name darts-stg --name ExternalJwksLifetimePeriod | jq .value -r)"

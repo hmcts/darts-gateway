@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils;
+package uk.gov.hmcts.darts.testutils;
 
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;

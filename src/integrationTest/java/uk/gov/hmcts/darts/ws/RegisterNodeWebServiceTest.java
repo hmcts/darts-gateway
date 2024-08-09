@@ -18,7 +18,7 @@ import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
-import uk.gov.hmcts.darts.utils.IntegrationBase;
+import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
