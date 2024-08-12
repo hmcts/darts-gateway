@@ -19,7 +19,7 @@ darts-gateway:
     entry-time-to-idle-seconds: 15
     shared-token-early-expiration-minutes: 5
   darts-api:
-    base-url: http://localhost:${wiremock.server.port}
+    base-url: http://localhost:8090
   ws:
     request-validation: true
     response-validation: false
@@ -32,8 +32,8 @@ darts-gateway:
   security:
     jwks-cache-refresh_period: 5S
     jwks-cache-lifetime_period: 10S
-    token-uri: http://localhost:${wiremock.server.port}/token
-    jwk-set-uri: http://localhost:${wiremock.server.port}/keys
+    token-uri: http://localhost:8090/token
+    jwk-set-uri: http://localhost:8090/keys
     user-external-internal-mappings:
       - username: "testUser"
         external-password: "pass"

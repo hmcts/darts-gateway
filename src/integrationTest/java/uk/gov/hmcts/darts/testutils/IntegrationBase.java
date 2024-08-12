@@ -47,7 +47,7 @@ import java.util.Map;
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
 @ComponentScan("uk.gov.hmcts.darts")
 @ActiveProfiles("int-test")
-@AutoConfigureWireMock(port = 0)
+@AutoConfigureWireMock(port = 8090)
 @SpringBootTest(classes = RedisConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
 public class IntegrationBase implements CommandHolder {
