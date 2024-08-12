@@ -27,7 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("int-test-jwt-token")
+@ActiveProfiles("int-test-jwt-token-error-log-level")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
 class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
     @MockBean

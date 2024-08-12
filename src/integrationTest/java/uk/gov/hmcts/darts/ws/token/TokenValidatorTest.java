@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider;
@@ -23,6 +25,10 @@ class TokenValidatorTest extends IntegrationBase {
     @Autowired
     private ContextRequestHelper contextRequestHelper;
 
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("logging.level.root", () -> "DEBUG");
+    }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
