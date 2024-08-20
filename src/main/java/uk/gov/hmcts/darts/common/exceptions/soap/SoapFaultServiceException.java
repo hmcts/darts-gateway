@@ -19,7 +19,20 @@ public class SoapFaultServiceException extends RuntimeException {
 
     public SoapFaultServiceException(FaultErrorCodes code, Throwable cause, String arg) {
         super(getMessage(code.name(), arg), cause);
-        serviceExceptionType = new ServiceExceptionType(code.name(), cause, arg);
+        serviceExceptionType = new ServiceExceptionType(code.name(), this, arg);
+
+        if (cause != null) {
+            if (cause.getCause() != null && !(cause.getCause() instanceof SoapFaultServiceException)) {
+                serviceExceptionType.addHolderCause(getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), arg),
+                                               FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause.getCause(), arg
+                );
+            } else if (cause.getCause() instanceof SoapFaultServiceException) {
+                serviceExceptionType.addHolderCause(((SoapFaultServiceException) cause).getServiceExceptionType().getMessage(),
+                                               ((SoapFaultServiceException) cause).getServiceExceptionType().getMessageId(),
+                                               cause.getCause(), arg
+                );
+            }
+        }
     }
 
     public static String getMessage(String key, String... args) {
