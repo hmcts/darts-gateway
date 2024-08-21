@@ -22,14 +22,14 @@ public class SoapFaultServiceException extends RuntimeException {
         serviceExceptionType = new ServiceExceptionType(code.name(), this, arg);
 
         if (cause != null) {
-            if (cause.getCause() != null && !(cause.getCause() instanceof SoapFaultServiceException)) {
+            if (cause != null && !(cause instanceof SoapFaultServiceException)) {
                 serviceExceptionType.addHolderCause(getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), arg),
-                                               FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause.getCause(), arg
+                                               FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause, arg
                 );
-            } else if (cause.getCause() instanceof SoapFaultServiceException) {
+            } else if (cause instanceof SoapFaultServiceException) {
                 serviceExceptionType.addHolderCause(((SoapFaultServiceException) cause).getServiceExceptionType().getMessage(),
                                                ((SoapFaultServiceException) cause).getServiceExceptionType().getMessageId(),
-                                               cause.getCause(), arg
+                                               cause, arg
                 );
             }
         }

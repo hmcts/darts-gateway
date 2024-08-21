@@ -10,8 +10,4 @@ public class DocumentumUnknownTokenSoapException extends SoapFaultServiceExcepti
     public DocumentumUnknownTokenSoapException(String token) {
         super(FaultErrorCodes.E_UNKNOWN_TOKEN, null, token);
     }
-
-    public DocumentumUnknownTokenSoapException(String token, Throwable throwable) {
-        super(FaultErrorCodes.E_UNKNOWN_TOKEN, throwable, token);
-    }
 }
