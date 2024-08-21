@@ -217,7 +217,7 @@ public class AuthenticationAssertion {
 
     public void assertFailsWithServiceAuthorisationFailedError(SoapTestClient client,
                                                                GeneralRunnableOperationWithException runnable,
-                                                               String username, String password)
+                                                               String username, String password, FaultErrorCodes cause)
         throws IOException, TransformerException, InterruptedException {
 
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile("payloads/soapHeaderServiceContext.xml");
@@ -225,7 +225,7 @@ public class AuthenticationAssertion {
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${PASSWORD}", password);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.E_UNKNOWN_TOKEN, null);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause, null);
 
     }
 
