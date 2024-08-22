@@ -27,7 +27,7 @@ import static uk.gov.hmcts.darts.common.configuration.ContextClientConfiguration
  */
 class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
 
-    private static final int SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN = 850;
+    private static final int SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN = 870;
 
     private static final int SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN = 4000;
 

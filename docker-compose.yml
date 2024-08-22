@@ -24,7 +24,7 @@ services:
       - ACTIVE_DIRECTORY_B2C_AUTH_URI
       - ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI
       - AAD_B2C_TENANT_ID
-  build:
+    build:
       context: .
       dockerfile: Dockerfile
     image: darts-gateway:master
