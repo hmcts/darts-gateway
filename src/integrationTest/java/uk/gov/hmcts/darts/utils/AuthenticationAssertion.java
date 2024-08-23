@@ -49,7 +49,7 @@ public class AuthenticationAssertion {
             // THIS CHECK IS TO ENSURE THE LOOKUP EXCEPTION NEVER LEAVES THE DOCUMENTUM NAMESPACE.
             // THE USE OF THE DOCUMENTUM NAMESPACE IS REQUIRED FOR CPP TO CONTINUE FUNCTIONING CORRECTLY
             if (ex.getCanonicalName().equals(ServiceContextLookupException.class.getCanonicalName())) {
-                Assertions.assertTrue(ServiceContextLookupException.class.getCanonicalName().equals(EXPECTED_DOCUMENTUM_LOOKUP_CLASS));
+                Assertions.assertEquals(EXPECTED_DOCUMENTUM_LOOKUP_CLASS, ServiceContextLookupException.class.getCanonicalName());
             }
 
             assertErrorResponse(e, ex, expectedFaultCode, expectedFaultCodeCause, invalidToken);
