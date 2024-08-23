@@ -36,6 +36,8 @@ import javax.xml.transform.stream.StreamResult;
 
 public class AuthenticationAssertion {
 
+    private static final String EXPECTED_DOCUMENTUM_NAMESPACE = "com.emc.documentum.fs.rt";
+
     void runBlock(GeneralRunnableOperationWithException runnable, Class<?> ex,
                   FaultErrorCodes expectedFaultCode, FaultErrorCodes expectedFaultCodeCause, String invalidToken)
         throws IOException, TransformerException, InterruptedException {
@@ -43,6 +45,13 @@ public class AuthenticationAssertion {
             runnable.run();
             Assertions.fail("Never expect to get here");
         } catch (SoapFaultClientException e) {
+
+            // THIS CHECK IS TO ENSURE THE LOOKUP EXCEPTION NEVER LEAVES THE DOCUMENTUM NAMESPACE.
+            // THE USE OF THE DOCUMENTUM NAMESPACE IS REQUIRED FOR CPP TO CONTINUE FUNCTIONING CORRECTLY
+            if (ex.getCanonicalName().equals(ServiceContextLookupException.class.getCanonicalName())) {
+                Assertions.assertTrue(ServiceContextLookupException.class.getCanonicalName().startsWith(EXPECTED_DOCUMENTUM_NAMESPACE));
+            }
+
             assertErrorResponse(e, ex, expectedFaultCode, expectedFaultCodeCause, invalidToken);
         } catch (JAXBException e) {
             Assertions.fail("JAXBException, never expect to get here");
