@@ -302,6 +302,7 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
         verifyNoMoreInteractions(generator);
     }
 
+
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testhandleRegisterWithSharing(ContextRegistryClient client) throws Exception {
