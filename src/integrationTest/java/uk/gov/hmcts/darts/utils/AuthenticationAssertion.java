@@ -36,7 +36,7 @@ import javax.xml.transform.stream.StreamResult;
 
 public class AuthenticationAssertion {
 
-    private static final String EXPECTED_DOCUMENTUM_NAMESPACE = "com.emc.documentum.fs.rt";
+    private static final String EXPECTED_DOCUMENTUM_LOOKUP_CLASS = "com.emc.documentum.fs.rt.ServiceContextLookupException";
 
     void runBlock(GeneralRunnableOperationWithException runnable, Class<?> ex,
                   FaultErrorCodes expectedFaultCode, FaultErrorCodes expectedFaultCodeCause, String invalidToken)
@@ -49,7 +49,7 @@ public class AuthenticationAssertion {
             // THIS CHECK IS TO ENSURE THE LOOKUP EXCEPTION NEVER LEAVES THE DOCUMENTUM NAMESPACE.
             // THE USE OF THE DOCUMENTUM NAMESPACE IS REQUIRED FOR CPP TO CONTINUE FUNCTIONING CORRECTLY
             if (ex.getCanonicalName().equals(ServiceContextLookupException.class.getCanonicalName())) {
-                Assertions.assertTrue(ServiceContextLookupException.class.getCanonicalName().startsWith(EXPECTED_DOCUMENTUM_NAMESPACE));
+                Assertions.assertTrue(ServiceContextLookupException.class.getCanonicalName().equals(EXPECTED_DOCUMENTUM_LOOKUP_CLASS));
             }
 
             assertErrorResponse(e, ex, expectedFaultCode, expectedFaultCodeCause, invalidToken);
