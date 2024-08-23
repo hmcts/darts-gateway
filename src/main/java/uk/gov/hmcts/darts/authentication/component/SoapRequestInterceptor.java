@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.authentication.component;
 
+import com.emc.documentum.fs.rt.ServiceContextLookupException;
 import com.google.common.collect.Iterators;
 import documentum.contextreg.BasicIdentity;
 import documentum.contextreg.Identity;
@@ -17,7 +18,6 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
-import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
@@ -97,7 +97,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
 
             if (optRefreshableCacheValue.isEmpty()) {
-                throw new DocumentumUnknownTokenSoapException(foundTokenInCache.getTokenString());
+                throw new ServiceContextLookupException(foundTokenInCache.getTokenString());
             } else {
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
@@ -110,7 +110,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
 
         if (tokenToReturn.isEmpty()) {
-            throw new DocumentumUnknownTokenSoapException("");
+            throw new ServiceContextLookupException("");
         }
 
         return true;

@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import uk.gov.hmcts.darts.cache.token.config.KeyConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.emc.documentum.fs.rt", "uk.gov.hmcts.darts"})
 @EnableFeignClients
 @EnableRedisRepositories (keyspaceConfiguration = KeyConfiguration.class)
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class

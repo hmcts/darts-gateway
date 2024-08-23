@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.utils;
 
 import com.emc.documentum.fs.rt.DfsAttributeHolder;
 import com.emc.documentum.fs.rt.DfsExceptionHolder;
+import com.emc.documentum.fs.rt.ServiceContextLookupException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
@@ -9,7 +10,6 @@ import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.xml.transform.StringSource;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
-import uk.gov.hmcts.darts.authentication.exception.DocumentumUnknownTokenSoapException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.RegisterNullServiceContextException;
@@ -212,7 +212,7 @@ public class AuthenticationAssertion {
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${TOKEN}", invalidToken);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, DocumentumUnknownTokenSoapException.class, FaultErrorCodes.E_UNKNOWN_TOKEN, null, invalidToken);
+        runBlock(runnable, ServiceContextLookupException.class, FaultErrorCodes.E_UNKNOWN_TOKEN, null, invalidToken);
     }
 
     public void assertFailsWithServiceAuthorisationFailedError(SoapTestClient client,
