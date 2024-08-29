@@ -39,7 +39,7 @@ public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointE
         final SoapMessage response = (SoapMessage) messageContext.getResponse();
         final SoapBody soapBody = response.getSoapBody();
 
-        final SoapFault soapFault = soapBody.addServerOrReceiverFault(
+        final SoapFault soapFault = soapBody.addClientOrSenderFault(
             serviceException.getMessage(),
             Locale.ENGLISH
         );
