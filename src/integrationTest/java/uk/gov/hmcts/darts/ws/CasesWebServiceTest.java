@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.ws;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.GetCasesResponse;
 import jakarta.xml.bind.JAXBException;
@@ -23,15 +24,18 @@ import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 import uk.gov.hmcts.darts.utils.IntegrationBase;
 
 import java.io.IOException;
+import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getAllServeEvents;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -280,7 +284,12 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
+            List<ServeEvent> allServeEvents = getAllServeEvents();
+            ServeEvent request = allServeEvents.get(0);
+            String body = request.getRequest().getBodyAsString();
+            assertEquals("\"case_type\":\"1\"", body);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
