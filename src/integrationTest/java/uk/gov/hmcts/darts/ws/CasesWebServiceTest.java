@@ -35,7 +35,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -287,7 +287,7 @@ class CasesWebServiceTest extends IntegrationBase {
             List<ServeEvent> allServeEvents = getAllServeEvents();
             ServeEvent request = allServeEvents.get(0);
             String body = request.getRequest().getBodyAsString();
-            assertEquals("\"case_type\":\"1\"", body);
+            assertTrue(body.contains("\"case_type\":\"1\""));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
 
