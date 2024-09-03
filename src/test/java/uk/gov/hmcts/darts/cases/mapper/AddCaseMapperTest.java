@@ -27,6 +27,7 @@ class AddCaseMapperTest {
 
         caseRequest.setCourthouse(COURTHOUSE);
         caseRequest.setCourtroom(COURTROOM);
+        caseRequest.setType("1");
 
         Case.Defendants defendants = new Case.Defendants();
         defendants.getDefendant().add("Defendant1");
@@ -60,5 +61,7 @@ class AddCaseMapperTest {
 
         assert result.getDefenders() != null;
         assertEquals(1, result.getDefenders().size());
+
+        assertEquals("1", result.getCaseType());
     }
 }

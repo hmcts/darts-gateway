@@ -1,15 +1,11 @@
 <configuration>
 
   <springProperty scope="context" name="dartsLogLevel" source="DARTS_LOG_LEVEL" defaultValue="INFO" />
+  <springProperty scope="context" name="dartsSoapRequestLogLevel" source="DARTS_SOAP_REQUEST_LOG_LEVEL" defaultValue="INFO" />
 
-  <logger name="org.springframework.web" level="DEBUG" />
-  <logger name="org.springframework.ws.client.MessageTracing.sent" level="TRACE" />
-  <logger name="org.springframework.ws.client.MessageTracing.received" level="TRACE" />
 
   <logger name="uk.gov.hmcts.darts" level="${dartsLogLevel}" />
-  <logger name="uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor" level="TRACE" />
-  <logger name="uk.gov.hmcts.darts.ws.DartsMessageDispatcherServlet" level="TRACE" />
-  <logger name="uk.gov.hmcts.darts.common.client" level="DEBUG" />
+  <logger name="uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor" level="${dartsSoapRequestLogLevel}" />
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>

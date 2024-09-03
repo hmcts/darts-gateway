@@ -73,7 +73,7 @@ class BasicAuthorisationTest extends ContextRegistryParent {
             String soapRequestStr = TestUtils.getContentsFromFile("payloads/getCases/soapRequest.xml");
 
             client.getCases(getGatewayUri(), soapRequestStr);
-        }, "not_whitelisted_service", DEFAULT_HEADER_PASSWORD);
+        }, "not_whitelisted_service", DEFAULT_HEADER_PASSWORD, null);
     }
 
     @ParameterizedTest

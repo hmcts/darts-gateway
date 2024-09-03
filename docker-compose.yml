@@ -26,7 +26,7 @@ services:
       - AAD_B2C_TENANT_ID
       - JWKS_REFRESH_PERIOD
       - JWKS_LIFETIME_PERIOD
-  build:
+    build:
       context: .
       dockerfile: Dockerfile
     image: darts-gateway:master

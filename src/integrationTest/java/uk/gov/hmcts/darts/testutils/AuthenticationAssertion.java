@@ -2,12 +2,17 @@ package uk.gov.hmcts.darts.testutils;
 
 import com.emc.documentum.fs.rt.DfsAttributeHolder;
 import com.emc.documentum.fs.rt.DfsExceptionHolder;
+import com.emc.documentum.fs.rt.ServiceContextLookupException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.xml.transform.StringSource;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
+import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
+import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
+import uk.gov.hmcts.darts.authentication.exception.RegisterNullServiceContextException;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
@@ -31,13 +36,23 @@ import javax.xml.transform.stream.StreamResult;
 
 public class AuthenticationAssertion {
 
-    void runBlock(GeneralRunnableOperationWithException runnable, FaultErrorCodes expectedFaultCode, String invalidToken)
+    private static final String EXPECTED_DOCUMENTUM_LOOKUP_CLASS = "com.emc.documentum.fs.rt.ServiceContextLookupException";
+
+    void runBlock(GeneralRunnableOperationWithException runnable, Class<?> ex,
+                  FaultErrorCodes expectedFaultCode, FaultErrorCodes expectedFaultCodeCause, String invalidToken)
         throws IOException, TransformerException, InterruptedException {
         try {
             runnable.run();
             Assertions.fail("Never expect to get here");
         } catch (SoapFaultClientException e) {
-            assertErrorResponse(e, expectedFaultCode, invalidToken);
+
+            // THIS CHECK IS TO ENSURE THE LOOKUP EXCEPTION NEVER LEAVES THE DOCUMENTUM NAMESPACE.
+            // THE USE OF THE DOCUMENTUM NAMESPACE IS REQUIRED FOR CPP TO CONTINUE FUNCTIONING CORRECTLY
+            if (ex.getCanonicalName().equals(ServiceContextLookupException.class.getCanonicalName())) {
+                Assertions.assertEquals(EXPECTED_DOCUMENTUM_LOOKUP_CLASS, ServiceContextLookupException.class.getCanonicalName());
+            }
+
+            assertErrorResponse(e, ex, expectedFaultCode, expectedFaultCodeCause, invalidToken);
         } catch (JAXBException e) {
             Assertions.fail("JAXBException, never expect to get here");
         }
@@ -93,7 +108,7 @@ public class AuthenticationAssertion {
      */
     public void assertWithNoHeaderInvalidCredentials(GeneralRunnableOperationWithException runnable)
         throws TransformerException, IOException, InterruptedException {
-        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, null);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.E_UNKNOWN_TOKEN, null);
     }
 
     public void assertFailBasedOnNoIdentities(SoapTestClient client,
@@ -101,7 +116,7 @@ public class AuthenticationAssertion {
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderServiceContextNoIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
-        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_NO_IDENTITIES, null);
+        runBlock(runnable, NoIdentitiesFoundException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_NO_IDENTITIES, null, null);
     }
 
     public String assertFailsWithRegisterNullServiceContextException(SoapTestClient client, GeneralRunnableOperationWithException runnable,
@@ -124,7 +139,7 @@ public class AuthenticationAssertion {
         String headerWithToken = soapHeaderServiceContextStr.replace("${TOKEN}", token);
         client.setHeaderBlock(headerWithToken);
 
-        runBlock(runnable, FaultErrorCodes.E_NULL_CONTEXT_CHECK_LIBRARIES, null);
+        runBlock(runnable, RegisterNullServiceContextException.class, FaultErrorCodes.E_NULL_CONTEXT_CHECK_LIBRARIES, null, null);
 
         return token;
     }
@@ -136,7 +151,7 @@ public class AuthenticationAssertion {
             "payloads/soapHeaderServiceContextInvalidIdentities.xml");
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, null);
+        runBlock(runnable, InvalidIdentitiesFoundException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED_INVALID_IDENTITIES, null, null);
     }
 
     public void assertFailBasedOnNotAuthenticatedForUsernameAndPassword(SoapTestClient client,
@@ -150,23 +165,33 @@ public class AuthenticationAssertion {
 
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, null);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.E_UNKNOWN_TOKEN, null);
     }
 
-    private void assertErrorResponse(SoapFaultClientException faultClientException, FaultErrorCodes code, String messageArgs) throws TransformerException {
+    private void assertErrorResponse(SoapFaultClientException faultClientException,
+                                     Class<?> ex, FaultErrorCodes code, FaultErrorCodes cause, String messageArgs) throws TransformerException {
         ServiceExceptionType type = getSoapFaultDetails(faultClientException);
         Assertions.assertEquals(faultClientException.getMessage(), type.getMessage());
         Assertions.assertEquals(SoapFaultServiceException.getMessage(code.name(), messageArgs), type.getMessage());
         Assertions.assertEquals(code, FaultErrorCodes.valueOf(type.getMessageId()));
-        Assertions.assertEquals(1, type.getExceptionBean().size());
+
+        if (cause != null) {
+            DfsExceptionHolder exceptionHolder = type.getExceptionBean().get(0);
+            Assertions.assertEquals(cause.name(), exceptionHolder.getMessageId());
+            assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
+                                 String.class.getCanonicalName(), cause.name(), exceptionHolder.getAttribute()
+            );
+        }
+
+        Assertions.assertEquals(cause == null ? 1 : 2, type.getExceptionBean().size());
         Assertions.assertNotNull(type.getStackTraceAsString());
 
         // assert the exception block
-        DfsExceptionHolder exceptionHolder = type.getExceptionBean().get(0);
+        DfsExceptionHolder exceptionHolder = type.getExceptionBean().get(cause == null ? 0 : 1);
         Assertions.assertEquals(type.getMessageId(), exceptionHolder.getMessageId());
         Assertions.assertEquals(faultClientException.getMessage(), exceptionHolder.getMessage());
         Assertions.assertEquals(Exception.class.getCanonicalName(), exceptionHolder.getGenericType());
-        Assertions.assertEquals("com.emc.documentum.fs.rt.ServiceContextLookupException", exceptionHolder.getExceptionClass());
+        Assertions.assertEquals(ex.getCanonicalName(), exceptionHolder.getExceptionClass());
 
         // assert the three core attributes
         assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
@@ -196,12 +221,12 @@ public class AuthenticationAssertion {
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${TOKEN}", invalidToken);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, FaultErrorCodes.E_UNKNOWN_TOKEN, invalidToken);
+        runBlock(runnable, ServiceContextLookupException.class, FaultErrorCodes.E_UNKNOWN_TOKEN, null, invalidToken);
     }
 
     public void assertFailsWithServiceAuthorisationFailedError(SoapTestClient client,
                                                                GeneralRunnableOperationWithException runnable,
-                                                               String username, String password)
+                                                               String username, String password, FaultErrorCodes cause)
         throws IOException, TransformerException, InterruptedException {
 
         String soapHeaderServiceContextStr = TestUtils.getContentsFromFile("payloads/soapHeaderServiceContext.xml");
@@ -209,7 +234,7 @@ public class AuthenticationAssertion {
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${PASSWORD}", password);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, null);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause, null);
 
     }
 

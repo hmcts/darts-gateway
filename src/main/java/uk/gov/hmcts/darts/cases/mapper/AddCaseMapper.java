@@ -11,6 +11,7 @@ public class AddCaseMapper {
         var addCaseRequest = new AddCaseRequest();
         addCaseRequest.setCourthouse(legacyCase.getCourthouse());
         addCaseRequest.setCaseNumber(legacyCase.getId());
+        addCaseRequest.setCaseType(legacyCase.getType());
 
         legacyCase.getDefendants().stream()
             .findFirst()

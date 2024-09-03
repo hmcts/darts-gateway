@@ -20,8 +20,6 @@ public class ServiceExceptionType extends ServiceException {
     public static final String ATTRIBUTE_MESSAGE_ARGS = "messageArgs";
     public static final String ATTRIBUTE_MESSAGE_ID = "messageId";
 
-    private static final String DOCUMENTUM_SERVICE_CONTEXT_EXCEPTION_NAME = "com.emc.documentum.fs.rt.ServiceContextLookupException";
-
     @SuppressWarnings("PMD.CallSuperInConstructor")
     public ServiceExceptionType() {
         //Empty constructor
@@ -31,6 +29,7 @@ public class ServiceExceptionType extends ServiceException {
     public ServiceExceptionType(String code, Throwable cause, String arg) {
         setMessageId(code);
         setMessage(SoapFaultServiceException.getMessage(code, arg));
+        setMessageArgs(arg);
 
         if (cause != null) {
             StringWriter sw = new StringWriter();
@@ -42,6 +41,14 @@ public class ServiceExceptionType extends ServiceException {
             setStackTraceAsString("");
         }
 
+        List<DfsExceptionHolder> exceptionHolders = new ArrayList<>();
+        setExceptionBean(exceptionHolders);
+
+        DfsExceptionHolder holder = addHolder(getMessage(), getMessageId(), cause, arg);
+        getExceptionBean().add(holder);
+    }
+
+    public DfsExceptionHolder addHolder(String message, String messageId, Throwable cause, String arg) {
         DfsAttributeHolder exceptionTypeAttribute = new DfsAttributeHolder();
         exceptionTypeAttribute.setName(ATTRIBUTE_EXCEPTION_TYPE);
         exceptionTypeAttribute.setType(String.class.getName());
@@ -53,23 +60,26 @@ public class ServiceExceptionType extends ServiceException {
 
         DfsAttributeHolder messageIdAttribute = new DfsAttributeHolder();
         messageIdAttribute.setName(ATTRIBUTE_MESSAGE_ID);
-        messageIdAttribute.setType(getMessage().getClass().getCanonicalName());
-        messageIdAttribute.setValue(getMessageId());
+        messageIdAttribute.setType(message.getClass().getCanonicalName());
+        messageIdAttribute.setValue(messageId);
 
         // add one exception
         DfsExceptionHolder holder = new DfsExceptionHolder();
-        holder.setExceptionClass(DOCUMENTUM_SERVICE_CONTEXT_EXCEPTION_NAME);
+        holder.setExceptionClass(cause.getClass().getCanonicalName());
         holder.setGenericType(Exception.class.getCanonicalName());
-        holder.setMessage(getMessage());
-        holder.setMessageId(getMessageId());
+        holder.setMessage(message);
+        holder.setMessageId(messageId);
 
         holder.getAttribute().add(exceptionTypeAttribute);
         holder.getAttribute().add(messageArgsAttribute);
         holder.getAttribute().add(messageIdAttribute);
 
-        List<DfsExceptionHolder> exceptionHolders = new ArrayList<>();
-        exceptionHolders.add(holder);
-        setExceptionBean(exceptionHolders);
+        return holder;
+    }
+
+    public void addHolderCause(String message, String messageId, Throwable cause, String arg) {
+        DfsExceptionHolder holder = addHolder(message, messageId, cause, arg);
+        getExceptionBean().addFirst(holder);
     }
 
     public void setMessageArgs(Object... args) {
