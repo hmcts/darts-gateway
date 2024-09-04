@@ -24,7 +24,6 @@ public class DeployRedisCommand implements Command {
 
     @Override
     public void cleanupResources() {
-        //container.stop();
     }
 
     @Override
@@ -34,13 +33,6 @@ public class DeployRedisCommand implements Command {
 
     @Override
     public void executeWithDocker() throws IOException {
-
-        /*
-        if (!container.isRunning()) {
-            container.start();
-        }
-
-         */
     }
 
     @Override

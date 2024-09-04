@@ -22,7 +22,7 @@ import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 import uk.gov.hmcts.darts.model.dailylist.DailyListErrorCode;
-import uk.gov.hmcts.darts.utils.IntegrationBase;
+import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 import java.nio.charset.Charset;
 

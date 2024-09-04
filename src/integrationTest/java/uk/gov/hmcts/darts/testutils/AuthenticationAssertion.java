@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.utils;
+package uk.gov.hmcts.darts.testutils;
 
 import com.emc.documentum.fs.rt.DfsAttributeHolder;
 import com.emc.documentum.fs.rt.DfsExceptionHolder;
