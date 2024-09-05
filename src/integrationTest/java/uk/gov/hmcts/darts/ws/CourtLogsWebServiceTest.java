@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
 import com.service.mojdarts.synapps.com.GetCourtLogResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
+import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -204,6 +206,9 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequest(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            // reset to make sure we do not log for the core darts operation
+            logAppender.reset();
+
             List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
@@ -222,6 +227,10 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             assertEquals("some-log-text-1", actualResponse.getCourtLog().getEntry().get(0).getValue());
             assertEquals("some-log-text-2", actualResponse.getCourtLog().getEntry().get(1).getValue());
             assertEquals("some-log-text-3", actualResponse.getCourtLog().getEntry().get(2).getValue());
+
+            // ensure that the payload logging is turned off for this api call
+            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
+
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
 

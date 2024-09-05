@@ -14,6 +14,7 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
@@ -48,8 +49,10 @@ import java.util.Map;
 @ComponentScan("uk.gov.hmcts.darts")
 @ActiveProfiles("int-test")
 @AutoConfigureWireMock(port = 8090)
-@SpringBootTest(classes = RedisConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = RedisConfiguration.class,
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
+@TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE"})
 public class IntegrationBase implements CommandHolder {
 
     protected EventApiStub theEventApi = new EventApiStub();
@@ -58,6 +61,7 @@ public class IntegrationBase implements CommandHolder {
     protected PostCourtLogsApiStub postCourtLogsApi = new PostCourtLogsApiStub();
     protected GetCasesApiStub getCasesApiStub = new GetCasesApiStub();
     protected AuthenticationAssertion authenticationStub = new AuthenticationAssertion();
+    protected MemoryLogAppender logAppender = LogUtil.getMemoryLogger();
 
     protected static final String DEFAULT_HEADER_USERNAME = "some-user";
 
@@ -105,6 +109,8 @@ public class IntegrationBase implements CommandHolder {
 
         // populate the jkws keys endpoint with a global public key
         tokenStub.stubExternalJwksKeys(DartsTokenGenerator.getGlobalKey());
+
+        logAppender.reset();
     }
 
     public URL getGatewayUri() throws MalformedURLException {

@@ -101,14 +101,14 @@ darts-gateway:
     connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
     ssl-enabled: ${REDIS_SSL_ENABLED:true}
   security:
-    base-uri: ${ACTIVE_DIRECTORY_B2C_BASE_URI:#{null}}
-    auth-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:#{null}}
-    token-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:#{null}}/${darts-gateway.security.signin-policy}/oauth2/v2.0/token
-    scope: ${ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI:#{null}}/${AAD_B2C_CLIENT_ID:00000000-0000-0000-0000-000000000000}/Darts.ExternalService
+    base-uri: ${ACTIVE_DIRECTORY_B2C_BASE_URI:https://hmctsstgextid.b2clogin.com}
+    auth-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com}
+    token-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com}/${darts-gateway.security.signin-policy}/oauth2/v2.0/token
+    scope: ${ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI:https://hmctsstgextid.onmicrosoft.com}/${AAD_B2C_CLIENT_ID:00000000-0000-0000-0000-000000000000}/Darts.ExternalService
     client-id: ${AAD_B2C_CLIENT_ID:#{null}}
     jwk-set-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com}/${darts-gateway.security.signin-policy}/discovery/v2.0/keys
     sign-in-policy: B2C_1_ropc_darts_signin
-    issuer-uri: ${ACTIVE_DIRECTORY_B2C_BASE_URI:#{null}}/${AAD_B2C_TENANT_ID:00000000-0000-0000-0000-000000000000}/v2.0/
+    issuer-uri: ${ACTIVE_DIRECTORY_B2C_BASE_URI:${darts-gateway.security.base-uri}}/${AAD_B2C_TENANT_ID:00000000-0000-0000-0000-000000000000}/v2.0/
     claims: emails
     user-external-internal-mappings-enabled: true
     user-external-internal-mappings:
@@ -124,3 +124,13 @@ darts-gateway:
     external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
     jwks-cache-refresh_period: ${JWKS_REFRESH_PERIOD:30m}
     jwks-cache-lifetime_period:  ${JWKS_LIFETIME_PERIOD:60m}
+
+  # Default payload logging to be disabled for add document payloads
+  logging:
+    exclude-payload-request-logging-based-on-payload-namespace-and-tag:
+      - namespace:  http://com.synapps.mojdarts.service.com
+        tag: addDocument
+        type: CPPDL
+      - namespace: http://com.synapps.mojdarts.service.com
+        tag: addDocument
+        type: DL

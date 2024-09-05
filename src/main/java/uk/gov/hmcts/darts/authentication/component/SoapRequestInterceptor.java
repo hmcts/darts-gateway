@@ -26,12 +26,15 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
+import uk.gov.hmcts.darts.log.conf.ExcludePayloadLogging;
+import uk.gov.hmcts.darts.log.conf.LogProperties;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.namespace.QName;
+import javax.xml.transform.dom.DOMSource;
 
 @Component
 @RequiredArgsConstructor
@@ -51,6 +54,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private static final String MESSAGE_SEPERATOR = "----------------------------";
 
+    private final LogProperties logProperties;
+
+    public static String REQUEST_PAYLOAD_PREFIX = "REQUEST PAYLOAD";
+
+    public static String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD";
+
+    public static String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS";
+
     @Override
     public boolean understands(SoapHeaderElement header) {
         return true;
@@ -58,7 +69,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     @Override
     public boolean handleRequest(MessageContext messageContext, Object endpoint) {
-        logPayloadMessage("REQUEST PAYLOAD IS {}", messageContext.getRequest());
+        logPayloadMessage(REQUEST_PAYLOAD_PREFIX + "{}", messageContext.getRequest());
 
         SaajSoapMessage message = (SaajSoapMessage) messageContext.getRequest();
         handleRequest(message);
@@ -217,13 +228,13 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     @Override
     public boolean handleResponse(MessageContext messageContext, Object endpoint) {
-        logPayloadMessage("RESPONSE PAYLOAD IS {}", messageContext.getResponse());
+        logPayloadMessage(RESPONSE_PAYLOAD_PREFIX + "{}", messageContext.getResponse());
         return true;
     }
 
     @Override
     public boolean handleFault(MessageContext messageContext, Object endpoint) {
-        logPayloadMessage("FAULT PAYLOAD IS {}", messageContext.getResponse());
+        logPayloadMessage(FAULT_PAYLOAD_IS + "{}", messageContext.getResponse());
         return true;
     }
 
@@ -233,18 +244,33 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private void logPayloadMessage(String messagePrefix, WebServiceMessage message) {
-        try {
-            ByteArrayTransportOutputStream byteArrayTransportOutputStream =
-                new ByteArrayTransportOutputStream();
-            message.writeTo(byteArrayTransportOutputStream);
+        // lets not process any of the payloads if trace level is disabled
+        if (log.isTraceEnabled()) {
+            try {
+                ByteArrayTransportOutputStream byteArrayTransportOutputStream =
+                    new ByteArrayTransportOutputStream();
+                message.writeTo(byteArrayTransportOutputStream);
 
-            String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
-                + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
-                + MESSAGE_SEPERATOR + NEW_LINE;
+                Optional<ExcludePayloadLogging> excludePayloadLogging;
+                if (message.getPayloadSource() instanceof DOMSource) {
+                    excludePayloadLogging =  logProperties.excludePayload((DOMSource) message.getPayloadSource());
 
-            log.trace(messagePrefix, payloadMessage);
-        } catch (IOException ex) {
-            log.error("Failed to write SOAP message", ex);
+                    if (excludePayloadLogging.isEmpty()) {
+                        String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
+                            + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
+                            + MESSAGE_SEPERATOR + NEW_LINE;
+
+                        log.trace(messagePrefix, payloadMessage);
+                    } else {
+                        log.trace("Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
+                                  excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
+                    }
+                } else {
+                    log.warn("Could not log due to suitable xml source not be identified");
+                }
+            } catch (IOException ex) {
+                log.error("Failed to write SOAP message", ex);
+            }
         }
     }
 

@@ -53,6 +53,9 @@ services:
   darts-gateway:
     container_name: darts-gateway
     image: darts-gateway:master
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - AAD_B2C_ROPC_CLIENT_ID
       - AAD_B2C_CLIENT_ID
@@ -79,11 +82,20 @@ services:
       - AAD_B2C_TENANT_ID
       - JWKS_REFRESH_PERIOD
       - JWKS_LIFETIME_PERIOD
+
+      # Allow local debugging
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:8002,server=y,suspend=n
+
+      # Enabled request payload logging
+      - DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE
+
+      # Enabled the local logging for all payloads, no exclusions
+      - DARTS-GATEWAY_LOGGING_EXCLUDE-PAYLOAD-REQUEST-LOGGING-BASED-ON-PAYLOAD-NAMESPACE-AND-TAG=
     ports:
       - "8070:8070"
+      - "8002:8002"
     networks:
       - darts-network
-
   darts-stub-services:
     container_name: darts-stub-services
     image: darts-stub-services:master

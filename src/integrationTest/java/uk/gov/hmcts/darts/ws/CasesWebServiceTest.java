@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
+import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -181,6 +182,9 @@ class CasesWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCases(DartsGatewayClient client) throws IOException, JAXBException, InterruptedException {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            // reset to make sure we do not log for the core darts operation
+            logAppender.reset();
+
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
@@ -198,6 +202,9 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
+
+            // ensure that the payload logging is turned off for this api call
+            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);

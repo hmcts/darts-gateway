@@ -27,3 +27,5 @@ darts-gateway:
     validate: false
   security:
     external-service-basic-authorisation-whitelist: some-user, some-user2
+  logging:
+    exclude-payload-request-logging-based-on-payload-namespace-and-tag:
