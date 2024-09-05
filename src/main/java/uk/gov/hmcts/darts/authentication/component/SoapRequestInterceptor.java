@@ -247,15 +247,15 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         // lets not process any of the payloads if trace level is disabled
         if (log.isTraceEnabled()) {
             try {
-                ByteArrayTransportOutputStream byteArrayTransportOutputStream =
-                    new ByteArrayTransportOutputStream();
-                message.writeTo(byteArrayTransportOutputStream);
-
                 Optional<ExcludePayloadLogging> excludePayloadLogging;
                 if (message.getPayloadSource() instanceof DOMSource) {
                     excludePayloadLogging =  logProperties.excludePayload((DOMSource) message.getPayloadSource());
 
                     if (excludePayloadLogging.isEmpty()) {
+                        ByteArrayTransportOutputStream byteArrayTransportOutputStream =
+                            new ByteArrayTransportOutputStream();
+                        message.writeTo(byteArrayTransportOutputStream);
+
                         String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
                             + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
                             + MESSAGE_SEPERATOR + NEW_LINE;

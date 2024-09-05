@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts.ws;
+package uk.gov.hmcts.darts.log;
 
 
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
@@ -19,6 +19,7 @@ import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
+import uk.gov.hmcts.darts.ws.ContextRegistryParent;
 
 import java.nio.charset.Charset;
 
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("int-test-jwt-token-shared")
+@ActiveProfiles({"int-test-jwt-token-shared", "no-payload-log-exclusions"})
 class EventWebServiceLoggingTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
