@@ -203,8 +203,6 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     void testHandlesRegisterNode(DartsGatewayClient client) throws Exception {
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-            // reset to make sure we do not log for the core darts operation
-            logAppender.reset();
 
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/registernode/soapRequest.xml");

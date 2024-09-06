@@ -163,9 +163,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
     void testAddAudioWithAuthenticationToken(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithTokenHeader(client, () -> {
 
-            // reset to make sure we do not log for the core darts operation
-            logAppender.reset();
-
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
@@ -186,9 +183,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
-
-            // ensure that the payload logging is turned off for this api call
-            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
 
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
@@ -238,6 +232,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudio(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -258,6 +253,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
+
+            // ensure that the payload logging is turned off for this api call
+            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 

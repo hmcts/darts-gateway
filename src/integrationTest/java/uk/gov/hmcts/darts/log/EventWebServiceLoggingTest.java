@@ -57,9 +57,6 @@ class EventWebServiceLoggingTest extends IntegrationBase {
         DartsGatewayClient client
     ) throws Exception {
 
-        // reset to make sure we do not log for the core darts operation
-        logAppender.reset();
-
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.willRespondSuccessfully();
 

@@ -182,9 +182,6 @@ class CasesWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesGetCases(DartsGatewayClient client) throws IOException, JAXBException, InterruptedException {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-            // reset to make sure we do not log for the core darts operation
-            logAppender.reset();
-
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 

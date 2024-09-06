@@ -206,9 +206,6 @@ class EventWebServiceTest extends IntegrationBase {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             theEventApi.willRespondSuccessfully();
 
-            // reset to make sure we do not log for the core darts operation
-            logAppender.reset();
-
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                 getGatewayUri(),
                 validEvent.getContentAsString(
@@ -283,10 +280,6 @@ class EventWebServiceTest extends IntegrationBase {
     void testRoutesValidDailyListPayload(
         DartsGatewayClient client
     ) throws Exception {
-
-        // reset to make sure we do not log for the core darts operation
-        logAppender.reset();
-
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.willRespondSuccessfully();
 

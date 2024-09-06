@@ -206,8 +206,6 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogRequest(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
-            // reset to make sure we do not log for the core darts operation
-            logAppender.reset();
 
             List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
