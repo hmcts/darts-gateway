@@ -365,7 +365,7 @@ dependencies {
   implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
   implementation group: 'org.springframework', name: 'spring-context'
   implementation 'org.springframework.integration:spring-integration-redis:6.3.3'
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.40'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.41'
 
   implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
