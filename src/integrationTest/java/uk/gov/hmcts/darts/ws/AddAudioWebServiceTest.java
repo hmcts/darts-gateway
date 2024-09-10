@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.unit.DataSize;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
+import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -161,8 +162,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioWithAuthenticationToken(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithTokenHeader(client, () -> {
-            String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/soapRequest.xml");
 
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
@@ -176,11 +175,15 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
+
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -229,6 +232,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testAddAudio(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
@@ -249,6 +253,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             verify(postRequestedFor(urlPathEqualTo("/audios"))
                        .withRequestBody(new MultipartDartsProxyContentPattern()));
+
+            // ensure that the payload logging is turned off for this api call
+            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 

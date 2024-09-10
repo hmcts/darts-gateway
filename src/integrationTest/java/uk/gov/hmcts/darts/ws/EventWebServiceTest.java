@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
+import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -219,6 +220,9 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
+        // ensure that the payload logging is turned off for this api call
+        Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
+
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-request.json");
 
@@ -276,7 +280,6 @@ class EventWebServiceTest extends IntegrationBase {
     void testRoutesValidDailyListPayload(
         DartsGatewayClient client
     ) throws Exception {
-
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.willRespondSuccessfully();
 
@@ -290,6 +293,9 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
 
             dailyListApiStub.verifyPostRequest();
+
+            // ensure that the payload logging is turned off for this api call
+            Assertions.assertTrue(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         dailyListApiStub.verifyPostRequest();

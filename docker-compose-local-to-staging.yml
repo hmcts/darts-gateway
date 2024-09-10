@@ -3,10 +3,18 @@ version: '2.1'
 services:
   darts-gateway:
     container_name: darts-gateway
+    image: darts-gateway:latest
     environment:
       - AAD_B2C_ROPC_CLIENT_ID
       - AAD_B2C_CLIENT_ID
-      - DARTS_API_URL
+      - AAD_TENANT_ID
+      - REDIS_CONNECTION_STRING
+      - REDIS_SSL_ENABLED
+      - VIQ_EXTERNAL_USER_NAME
+      - VIQ_EXTERNAL_PASSWORD
+      - AAD_B2C_ROPC_CLIENT_ID
+      - AAD_B2C_CLIENT_ID
+      - DARTS_API_URL=https://darts-api.demo.platform.hmcts.net
       - AAD_TENANT_ID
       - REDIS_CONNECTION_STRING
       - REDIS_SSL_ENABLED
@@ -20,20 +28,32 @@ services:
       - CP_EXTERNAL_PASSWORD
       - CP_INTERNAL_PASSWORD
       - EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
+      - REDIS_SSL_ENABLED
+      - TESTING_SUPPORT_ENDPOINTS_ENABLED=true
+      - REDIS_CONNECTION_STRING
       - ACTIVE_DIRECTORY_B2C_BASE_URI
       - ACTIVE_DIRECTORY_B2C_AUTH_URI
       - ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI
       - AAD_B2C_TENANT_ID
       - JWKS_REFRESH_PERIOD
       - JWKS_LIFETIME_PERIOD
+      # Allow local debugging
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:8002,server=y,suspend=n
+
+      # Enabled request payload logging
+      - DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE
+
+      # Enabled the local logging for all payloads, no exclusions
+      - DARTS-GATEWAY_LOGGING_EXCLUDE-PAYLOAD-REQUEST-LOGGING-BASED-ON-PAYLOAD-NAMESPACE-AND-TAG=
     build:
       context: .
       dockerfile: Dockerfile
-    image: darts-gateway:master
     ports:
       - "8070:8070"
+      - "8002:8002"
     networks:
       - darts-network
+
 networks:
   darts-network:
     driver: bridge

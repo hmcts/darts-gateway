@@ -1,16 +1,29 @@
 <configuration>
-    <appender name="MEMORY" class="uk.gov.hmcts.darts.testutils.MemoryLogAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <root level="error">
-        <appender-ref ref="MEMORY"/>
-        <appender-ref ref="CONSOLE"/>
-    </root>
+<springProperty scope="context" name="dartsLogLevel" source="DARTS_LOG_LEVEL" defaultValue="INFO" />
+<springProperty scope="context" name="dartsSoapRequestLogLevel" source="DARTS_SOAP_REQUEST_LOG_LEVEL" defaultValue="INFO" />
+
+<logger name="uk.gov.hmcts.darts" level="${dartsLogLevel}" />
+<logger name="uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor" level="${dartsSoapRequestLogLevel}" />
+
+<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+  <encoder>
+    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+  </encoder>
+</appender>
+
+<appender name="MEMORY" class="uk.gov.hmcts.darts.testutils.MemoryLogAppender">
+  <encoder>
+    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+  </encoder>
+</appender>
+
+<appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+  <appender-ref ref="CONSOLE" />
+</appender>
+
+<root level="INFO">
+  <appender-ref ref="MEMORY"/>
+  <appender-ref ref="ASYNC_CONSOLE" />
+</root>
+
 </configuration>

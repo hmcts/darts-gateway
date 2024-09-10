@@ -1,0 +1,3 @@
+darts-gateway:
+  logging:
+    exclude-payload-request-logging-based-on-payload-namespace-and-tag:

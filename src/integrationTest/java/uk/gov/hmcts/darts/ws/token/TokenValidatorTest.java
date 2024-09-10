@@ -14,7 +14,6 @@ import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClientProvider
 import uk.gov.hmcts.darts.testutils.DartsTokenAndJwksKey;
 import uk.gov.hmcts.darts.testutils.DartsTokenGenerator;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
-import uk.gov.hmcts.darts.testutils.LogUtil;
 import uk.gov.hmcts.darts.testutils.request.ContextRequestHelper;
 
 import java.net.URL;
@@ -82,7 +81,7 @@ class TokenValidatorTest extends IntegrationBase {
         }
         );
 
-        Assertions.assertFalse(LogUtil.getMemoryLogger().searchLogs("JWT Token could not be validated", "Expired JWT", Level.ERROR).isEmpty());
+        Assertions.assertFalse(logAppender.searchLogs("JWT Token could not be validated", "Expired JWT", Level.ERROR).isEmpty());
     }
 
     @ParameterizedTest
@@ -100,7 +99,7 @@ class TokenValidatorTest extends IntegrationBase {
             }
         );
 
-        Assertions.assertFalse(LogUtil.getMemoryLogger().searchLogs("JWT Token could not be validated", "JWT audience rejected", Level.ERROR).isEmpty());
+        Assertions.assertFalse(logAppender.searchLogs("JWT Token could not be validated", "JWT audience rejected", Level.ERROR).isEmpty());
     }
 
     @ParameterizedTest
@@ -118,7 +117,7 @@ class TokenValidatorTest extends IntegrationBase {
             }
         );
 
-        Assertions.assertFalse(LogUtil.getMemoryLogger().searchLogs(
+        Assertions.assertFalse(logAppender.searchLogs(
             "JWT Token could not be validated", "JWT iss claim has value invalidIssuer, must be test-issuer", Level.ERROR).isEmpty());
     }
 
@@ -138,7 +137,7 @@ class TokenValidatorTest extends IntegrationBase {
             }
         );
 
-        Assertions.assertFalse(LogUtil.getMemoryLogger().searchLogs(
+        Assertions.assertFalse(logAppender.searchLogs(
             "JWT Token could not be validated", "Signed JWT rejected: Invalid signature", Level.ERROR).isEmpty());
     }
 }

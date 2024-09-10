@@ -53,6 +53,9 @@ services:
   darts-gateway:
     container_name: darts-gateway
     image: darts-gateway:master
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - AAD_B2C_ROPC_CLIENT_ID
       - AAD_B2C_CLIENT_ID
@@ -73,17 +76,23 @@ services:
       - REDIS_SSL_ENABLED=false
       - TESTING_SUPPORT_ENDPOINTS_ENABLED=true
       - REDIS_CONNECTION_STRING=redis://darts-redis:6379
-      - ACTIVE_DIRECTORY_B2C_BASE_URI=https://hmctsstgextid.b2clogin.com
-      - ACTIVE_DIRECTORY_B2C_AUTH_URI=https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com
-      - ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI=https://hmctsstgextid.onmicrosoft.com
       - AAD_B2C_TENANT_ID
       - JWKS_REFRESH_PERIOD
       - JWKS_LIFETIME_PERIOD
+
+      # Allow local debugging
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:8002,server=y,suspend=n
+
+      # Enabled request payload logging
+      - DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE
+
+      # Enabled the local logging for all payloads, no exclusions
+      - DARTS-GATEWAY_LOGGING_EXCLUDE-PAYLOAD-REQUEST-LOGGING-BASED-ON-PAYLOAD-NAMESPACE-AND-TAG=
     ports:
       - "8070:8070"
+      - "8002:8002"
     networks:
       - darts-network
-
   darts-stub-services:
     container_name: darts-stub-services
     image: darts-stub-services:master

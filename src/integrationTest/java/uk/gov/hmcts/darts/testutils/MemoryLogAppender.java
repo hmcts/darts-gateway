@@ -22,8 +22,7 @@ public class MemoryLogAppender extends AppenderBase<ILoggingEvent> {
         synchronized (GENERAL_LOGS) {
             return GENERAL_LOGS.stream()
                 .filter(event -> event.getLoggerName().startsWith(LOG_API_LOGGER_NAME_PACKAGE_PREFIX)
-                    && event.toString().contains(string)
-                    && event.getLevel().equals(level))
+                    && level == null || level != null && level.equals(event.getLevel()))
                 .collect(Collectors.toList());
         }
     }
@@ -32,8 +31,9 @@ public class MemoryLogAppender extends AppenderBase<ILoggingEvent> {
         synchronized (GENERAL_LOGS) {
             return GENERAL_LOGS.stream()
                 .filter(event -> event.toString().contains(string)
+                    && causeMessage == null || causeMessage != null && event.getThrowableProxy() != null
                     && event.getThrowableProxy().getMessage().contains(causeMessage)
-                    && event.getLevel().equals(level))
+                    && level == null || level != null && level.equals(event.getLevel()))
                 .collect(Collectors.toList());
         }
     }
