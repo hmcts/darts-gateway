@@ -35,6 +35,7 @@ import uk.gov.hmcts.darts.log.conf.ExcludePayloadLogging;
 import uk.gov.hmcts.darts.log.conf.LogProperties;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
@@ -260,7 +261,9 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
             // find the cookie value
             String cookie = connection.getHttpServletRequest().getHeader("Cookie");
+
             if (cookie != null) {
+                cookie = cookie.split(";")[0];
                 cookie = new String(Base64.getDecoder()
                                              .decode(cookie.replace("JSESSIONID=", "").getBytes()));
             }
