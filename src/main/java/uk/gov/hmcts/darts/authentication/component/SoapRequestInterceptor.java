@@ -268,7 +268,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             }
 
             HttpServletRequest curRequest =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();;
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
             // if the incoming cookie value is empty then we have to set a new cookie value
             if (cookie == null || cookie.isEmpty()) {
