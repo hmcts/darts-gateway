@@ -6,6 +6,7 @@ import documentum.contextreg.BasicIdentity;
 import documentum.contextreg.Identity;
 import documentum.contextreg.ServiceContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,9 +20,6 @@ import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.SoapEndpointInterceptor;
-import org.springframework.ws.transport.context.TransportContext;
-import org.springframework.ws.transport.context.TransportContextHolder;
-import org.springframework.ws.transport.http.HttpServletConnection;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
@@ -36,7 +34,6 @@ import uk.gov.hmcts.darts.log.conf.LogProperties;
 
 import java.io.IOException;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -235,14 +232,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     @Override
     public boolean handleResponse(MessageContext messageContext, Object endpoint) {
-        logResponseHeaders(RESPONSE_PAYLOAD_PREFIX + "{}");
+        logCookieInformation();
         logPayloadMessage(RESPONSE_PAYLOAD_PREFIX + "{}", messageContext.getResponse());
         return true;
     }
 
     @Override
     public boolean handleFault(MessageContext messageContext, Object endpoint) {
-        logResponseHeaders(FAULT_PAYLOAD_IS + "{}");
+        logCookieInformation();
         logPayloadMessage(FAULT_PAYLOAD_IS + "{}", messageContext.getResponse());
         return true;
     }
@@ -251,45 +248,48 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     public void afterCompletion(MessageContext messageContext, Object endpoint, Exception ex) {
     }
 
-    private void logResponseHeaders(String messagePrefix) {
+    public void logCookieInformation() {
+        HttpServletRequest curRequest =
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
         if (log.isTraceEnabled()) {
-
-            // log the request headers
-            TransportContext context = TransportContextHolder.getTransportContext();
-            HttpServletConnection connection = (HttpServletConnection) context.getConnection();
-
-            // find the cookie value
-            String cookie = connection.getHttpServletRequest().getHeader("Cookie");
-
-            if (cookie != null) {
-                cookie = cookie.split(";")[0];
-                cookie = new String(Base64.getDecoder()
-                                             .decode(cookie.replace("JSESSIONID=", "").getBytes()));
-            }
-
-            HttpServletRequest curRequest =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-            // if the incoming cookie value is empty then we have to set a new cookie value
-            if (cookie == null || cookie.isEmpty()) {
-                if (curRequest.getSession() != null) {
-                    log.trace(messagePrefix, " Header Details - %s : %s".formatted("Set-Cookie", curRequest.getSession().getId()));
-                } else {
-                    log.trace(messagePrefix, " An inbound cookie was not found and an outbound cookie was not set");
-                }
-            } else if (curRequest.getSession() != null && !curRequest.getSession().getId().equals(cookie)) {
-                log.trace(messagePrefix, (" An inbound cookie was present but not found. " +
-                    "A new cookie was generated. Inbound: %s Outbound Set-Cookie: %s").formatted(cookie, curRequest.getSession().getId()));
-            } else {
-                log.trace(messagePrefix, " Using the same session as the inbound cookie %s".formatted(cookie));
-            }
-
-            Collection<String> responseHeaders = connection.getHttpServletResponse().getHeaderNames();
-            for (String header : responseHeaders) {
-                String headerValue = connection.getHttpServletResponse().getHeader(header);
-                log.trace(messagePrefix, " Header Details - %s : %s".formatted(header, headerValue));
-            }
+            getCookieInformation(RESPONSE_PAYLOAD_PREFIX + "{}", curRequest);
         }
+    }
+
+    public static String getCookieInformation(String messagePrefix, HttpServletRequest request) {
+        String returnCookieString = "";
+
+        HttpSession session = request.getSession();
+
+        // find the cookie value
+        String cookie = request.getHeader("Cookie");
+
+        if (cookie != null) {
+            cookie = cookie.split(";")[0];
+            cookie = new String(Base64.getDecoder()
+                                         .decode(cookie.replace("JSESSIONID=", "").getBytes()));
+        }
+
+        // if the incoming cookie value is empty then we have to set a new cookie value
+        if (cookie == null || cookie.isEmpty()) {
+            if (session != null) {
+                returnCookieString = " Header Details - %s : %s".formatted("Set-Cookie", session.getId());
+                log.trace(messagePrefix, returnCookieString);
+            } else {
+                returnCookieString = " An inbound cookie was not found and an outbound cookie was not set";
+                log.trace(messagePrefix, returnCookieString);
+            }
+        } else if (session != null && !session.getId().equals(cookie)) {
+            returnCookieString = " An inbound cookie was present but not found. " +
+                "A new cookie was generated. Inbound: %s Outbound Set-Cookie: %s".formatted(cookie, session.getId());
+            log.trace(messagePrefix, returnCookieString);
+        } else {
+            returnCookieString = " Using the same session as the inbound cookie %s".formatted(cookie);
+            log.trace(messagePrefix, returnCookieString);
+        }
+
+        return returnCookieString;
     }
 
     private void logPayloadMessage(String messagePrefix, WebServiceMessage message) {
