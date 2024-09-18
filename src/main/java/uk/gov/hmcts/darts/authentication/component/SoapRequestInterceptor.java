@@ -257,7 +257,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                 getCookieInformation(RESPONSE_PAYLOAD_PREFIX + "{}", curRequest);
             }
         } catch (Exception e) {
-            log.warn("Unable to log cookie information.");
+            log.error("Unable to log cookie information.", e);
         }
     }
 
@@ -300,7 +300,12 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         for (String cookiePart : cookieParts) {
             String[] cookiePartKV = StringUtils.split(cookiePart, "=");
             if (cookiePartKV[0].equals(JSESSIONID_KEY)) {
-                return new String(Base64.getDecoder().decode(cookiePartKV[1].getBytes()));
+                try {
+                    return new String(Base64.getDecoder().decode(cookiePartKV[1].getBytes()));
+                } catch (IllegalArgumentException e) {
+                    log.error("Failed to decode the cookie value, {}", cookiePartKV[1], e);
+                    return cookiePartKV[1];
+                }
             }
         }
         return null;

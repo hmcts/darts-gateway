@@ -14,10 +14,10 @@ services:
       - VIQ_EXTERNAL_PASSWORD
       - AAD_B2C_ROPC_CLIENT_ID
       - AAD_B2C_CLIENT_ID
-      - DARTS_API_URL=https://darts-api.demo.platform.hmcts.net
+      - DARTS_API_URL=https://darts-api.staging.platform.hmcts.net
       - AAD_TENANT_ID
-      - REDIS_CONNECTION_STRING
-      - REDIS_SSL_ENABLED
+      - REDIS_CONNECTION_STRING=redis://darts-redis:6379
+      - REDIS_SSL_ENABLED=false
       - VIQ_EXTERNAL_USER_NAME
       - VIQ_EXTERNAL_PASSWORD
       - VIQ_INTERNAL_PASSWORD
@@ -53,7 +53,19 @@ services:
       - "8002:8002"
     networks:
       - darts-network
-
+  darts-redis:
+    container_name: darts-redis
+    image: redis:7.4.0-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - darts-cache:/var/lib/redis/data
+    networks:
+      - darts-network
+volumes:
+  darts-cache:
+    driver: local
 networks:
   darts-network:
     driver: bridge
