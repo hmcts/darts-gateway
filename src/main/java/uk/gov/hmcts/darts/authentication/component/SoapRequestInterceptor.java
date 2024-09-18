@@ -267,8 +267,12 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
         if (cookie != null) {
             cookie = cookie.split(";")[0];
-            cookie = new String(Base64.getDecoder()
-                                         .decode(cookie.replace("JSESSIONID=", "").getBytes()));
+            try {
+                cookie = new String(Base64.getDecoder()
+                                        .decode(cookie.replace("JSESSIONID=", "").getBytes()));
+            } catch (IllegalArgumentException e) {
+                log.error("Failed to decode the cookie value", e);
+            }
         }
 
         // if the incoming cookie value is empty then we have to set a new cookie value
