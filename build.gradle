@@ -398,7 +398,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.3'
   constraints {
-    implementation('com.squareup.okio:okio:3.9.0') {
+    implementation('com.squareup.okio:okio:3.9.1') {
       because 'version 3.0.0 has vulnerability CVE-2023-3635'
     }
   }
