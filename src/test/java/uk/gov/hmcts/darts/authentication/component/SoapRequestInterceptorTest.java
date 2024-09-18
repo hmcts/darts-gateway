@@ -41,6 +41,21 @@ class SoapRequestInterceptorTest {
     }
 
     @Test
+    void testInvalidCookie() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpSession session = Mockito.mock(HttpSession.class);
+        String requestSessionInBase64 = "MDQzNzVkNDEtZTdkNi00MzUzLWE5NWItZjBjNzFkZmU2ZTFl";
+        String sessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes()));
+        String cookieInRequest = "ROUTEID=.0;SameSite=Lax;JSESSIONID=MDQzNzVkNDEtZTdkNi00MzUzLWE5NWItZjBjNzFkZmU2ZTFl1;";
+        Mockito.when(request.getHeader("Cookie")).thenReturn(cookieInRequest);
+        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(session.getId()).thenReturn(sessionIdDecoded);
+        String prefix = "prefix {}";
+        String cookieInformation = SoapRequestInterceptor.getCookieInformation(prefix, request).trim();
+        Assertions.assertTrue(cookieInformation.contains("An inbound cookie was present but not found. A new cookie was generated."));
+    }
+
+    @Test
     void testCookieAndSessionDoNotMatch() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);

@@ -66,7 +66,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
         // first token is going to be slower
         testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
 
-        // then should be 0.4 milli seconds
+        // then should be 0.4 milliseconds
         testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN, body, WEB_CONTEXT);
     }
 
