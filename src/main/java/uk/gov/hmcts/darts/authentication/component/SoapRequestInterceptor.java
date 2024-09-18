@@ -48,6 +48,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private static final String SERVICE_CONTEXT_HEADER = "{http://context.core.datamodel.fs.documentum.emc.com/}ServiceContext";
     private static final String SECURITY_HEADER = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security";
+    private static final String JSESSIONID_KEY = "JSESSIONID";
 
     private final SoapHeaderConverter soapHeaderConverter;
     private final SoapBodyConverter soapBodyConverter;
@@ -249,11 +250,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     public void logCookieInformation() {
-        HttpServletRequest curRequest =
-            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-        if (log.isTraceEnabled()) {
-            getCookieInformation(RESPONSE_PAYLOAD_PREFIX + "{}", curRequest);
+        try {
+            HttpServletRequest curRequest =
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            if (log.isTraceEnabled()) {
+                getCookieInformation(RESPONSE_PAYLOAD_PREFIX + "{}", curRequest);
+            }
+        } catch (Exception e) {
+            log.warn("Unable to log cookie information.");
         }
     }
 
@@ -265,14 +269,10 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         // find the cookie value
         String cookie = request.getHeader("Cookie");
 
-        if (cookie != null) {
-            cookie = cookie.split(";")[0];
-            cookie = new String(Base64.getDecoder()
-                                         .decode(cookie.replace("JSESSIONID=", "").getBytes()));
-        }
+        String decodedJSessionId = getJSessionFromCookie(cookie);
 
         // if the incoming cookie value is empty then we have to set a new cookie value
-        if (cookie == null || cookie.isEmpty()) {
+        if (StringUtils.isEmpty(decodedJSessionId)) {
             if (session != null) {
                 returnCookieString = " Header Details - %s : %s".formatted("Set-Cookie", session.getId());
                 log.trace(messagePrefix, returnCookieString);
@@ -280,16 +280,30 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                 returnCookieString = " An inbound cookie was not found and an outbound cookie was not set";
                 log.trace(messagePrefix, returnCookieString);
             }
-        } else if (session != null && !session.getId().equals(cookie)) {
+        } else if (session != null && !session.getId().equals(decodedJSessionId)) {
             returnCookieString = " An inbound cookie was present but not found. " +
-                "A new cookie was generated. Inbound: %s Outbound Set-Cookie: %s".formatted(cookie, session.getId());
+                "A new cookie was generated. Inbound: %s Outbound Set-Cookie: %s".formatted(decodedJSessionId, session.getId());
             log.trace(messagePrefix, returnCookieString);
         } else {
-            returnCookieString = " Using the same session as the inbound cookie %s".formatted(cookie);
+            returnCookieString = " Using the same session as the inbound cookie %s".formatted(decodedJSessionId);
             log.trace(messagePrefix, returnCookieString);
         }
 
         return returnCookieString;
+    }
+
+    private static String getJSessionFromCookie(String cookie) {
+        if (cookie == null) {
+            return null;
+        }
+        String[] cookieParts = StringUtils.split(cookie, ";");
+        for (String cookiePart : cookieParts) {
+            String[] cookiePartKV = StringUtils.split(cookiePart, "=");
+            if (cookiePartKV[0].equals(JSESSIONID_KEY)) {
+                return new String(Base64.getDecoder().decode(cookiePartKV[1].getBytes()));
+            }
+        }
+        return null;
     }
 
     private void logPayloadMessage(String messagePrefix, WebServiceMessage message) {
