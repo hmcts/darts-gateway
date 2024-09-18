@@ -349,7 +349,7 @@ sourceSets {
 dependencies {
   implementation group: 'io.rest-assured', name: 'rest-assured'
   implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.30'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.29'
+  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.30'
   implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.30'
   implementation 'org.apache.santuario:xmlsec:4.0.2'
 
