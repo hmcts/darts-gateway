@@ -38,12 +38,10 @@ java:
           alias: CP_INTERNAL_PASSWORD
         - name: ExternalServiceBasicAuthorisationWhitelist
           alias: EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST
-        - name: ExternalJwksRefreshPeriod
-          alias: JWKS_REFRESH_PERIOD
-        - name: ExternalJwksLifetimePeriod
-          alias: JWKS_LIFETIME_PERIOD
   environment:
     DARTS_API_URL: https://darts-api.{{ .Values.global.environment }}.platform.hmcts.net
     ACTIVE_DIRECTORY_B2C_BASE_URI: https://hmctsstgextid.b2clogin.com
     ACTIVE_DIRECTORY_B2C_AUTH_URI: https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com
     ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI: https://hmctsstgextid.onmicrosoft.com
+    JWKS_REFRESH_PERIOD: 30m
+    JWKS_LIFETIME_PERIOD: 60m
