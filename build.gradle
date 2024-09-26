@@ -426,7 +426,7 @@ dependencies {
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-  testImplementation(platform('org.junit:junit-bom:5.11.0'))
+  testImplementation(platform('org.junit:junit-bom:5.11.1'))
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
