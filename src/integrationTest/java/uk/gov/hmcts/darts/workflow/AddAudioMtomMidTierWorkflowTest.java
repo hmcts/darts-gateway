@@ -57,7 +57,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         stubFor(post(urlPathEqualTo("/audios"))
                 .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
-        getCommand().executeWithDocker();
+        getCommand().executeWithDocker(getCommand().getArguments());
+        Assertions.assertTrue(getCommand().getLogOutput().contains("Code: 200"));
 
         homeDirForTempFiles = new File(System.getProperty("user.home"));
         int fileCountAfter = Objects.requireNonNull(homeDirForTempFiles.list()).length;

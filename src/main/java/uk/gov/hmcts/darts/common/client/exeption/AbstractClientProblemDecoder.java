@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.common.client.exeption;
 import feign.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,11 +22,14 @@ import java.util.Optional;
 public abstract class AbstractClientProblemDecoder {
 
     private final List<APIProblemResponseMapper> responseMappers;
+    public static final String RESPONSE_PREFIX = "Problem response from upstream : ";
 
     public Exception decode(String methodKey, Response response) {
         Exception returnEx;
-        try (InputStream is = response.body().asInputStream()) {
-            Problem problem = getProblem(is);
+        try {
+            String payload = IOUtils.toString(response.body().asInputStream(), Charset.defaultCharset());
+            log.trace(RESPONSE_PREFIX.concat("{}"), response.status() + " Server Error:" + payload);
+            Problem problem = getProblem(IOUtils.toInputStream(payload, Charset.defaultCharset()));
             returnEx = getExceptionForProblem(problem);
         } catch (Exception ioEx) {
             log.error("Failed to read the problem json", ioEx);
@@ -35,11 +40,12 @@ public abstract class AbstractClientProblemDecoder {
     }
 
     public DartsException decode(HttpStatusCodeException response) {
+        log.trace(RESPONSE_PREFIX.concat("{}"), response.getMessage());
         try (ByteArrayInputStream is = new ByteArrayInputStream(response.getResponseBodyAsByteArray())) {
             Problem problem = getProblem(is);
             return getExceptionForProblem(problem);
         } catch (Exception ioEx) {
-            log.error("Failed to read the problem json", ioEx);
+            log.error("Failed to read the problem json so");
             return new DartsException(ioEx, CodeAndMessage.ERROR);
         }
     }

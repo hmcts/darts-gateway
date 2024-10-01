@@ -15,7 +15,7 @@ public class RedisConfiguration {
 
     @PostConstruct
     public void postConstruct() throws IOException {
-        REDIS_COMMAND.executeWithDocker();
+        REDIS_COMMAND.executeWithDocker(REDIS_COMMAND.getArguments());
     }
 
     public static DeployRedisCommand getDeployRedisCommand() {
