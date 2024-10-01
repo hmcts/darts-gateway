@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.utils;
 
+import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 import uk.gov.hmcts.darts.workflow.command.Command;
@@ -18,6 +19,7 @@ public final class MtomLocalClient {
             Command command = CommandFactory.getAudioCommand(IntegrationBase.getIp() + ":8070",
                                                              AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE);
             command.executeWithDocker(command.getArguments());
+            Assertions.assertTrue(command.getLogOutput().contains("Code: 200"));
         }
     }
 }
