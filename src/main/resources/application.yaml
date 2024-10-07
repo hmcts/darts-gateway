@@ -125,7 +125,7 @@ darts-gateway:
     jwks-cache-refresh_period: ${JWKS_REFRESH_PERIOD:30m}
     jwks-cache-lifetime_period:  ${JWKS_LIFETIME_PERIOD:60m}
 
-  # Default payload logging to be disabled for daily list payloads 
+  # Default payload logging to be disabled for daily list payloads
   logging:
     exclude-payload-request-logging-based-on-payload-namespace-and-tag:
       - namespace:  http://com.synapps.mojdarts.service.com
