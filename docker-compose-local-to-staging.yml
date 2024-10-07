@@ -14,7 +14,7 @@ services:
       - VIQ_EXTERNAL_PASSWORD
       - AAD_B2C_ROPC_CLIENT_ID
       - AAD_B2C_CLIENT_ID
-      - DARTS_API_URL=https://kowr9.wiremockapi.cloud/
+      - DARTS_API_URL=https://darts-api.staging.platform.hmcts.net
       - AAD_TENANT_ID
       - REDIS_CONNECTION_STRING=redis://darts-redis:6379
       - REDIS_SSL_ENABLED=false
