@@ -1,4 +1,4 @@
-package uk.gov.hmcts.darts;
+package uk.gov.hmcts.darts.performance;
 
 import org.apache.jmeter.assertions.DurationAssertion;
 import org.apache.jmeter.assertions.ResponseAssertion;
@@ -21,6 +21,7 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.junit.jupiter.api.Assertions;
+import uk.gov.hmcts.darts.FunctionalTestBase;
 import uk.gov.hmcts.darts.jmeter.JMeterAssertionResultListener;
 
 import java.net.MalformedURLException;
