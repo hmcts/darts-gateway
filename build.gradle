@@ -11,7 +11,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '5.1.0.4882'
   id 'java-library'
-  id "org.openapi.generator" version "7.8.0"
+  id "org.openapi.generator" version "7.9.0"
   id("com.github.bjornvester.wsdl2java") version "2.0.2"
 }
 
@@ -158,6 +158,16 @@ task functional(type: Test) {
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  exclude '**/performance/*'
+  classpath = sourceSets.functionalTest.runtimeClasspath
+}
+
+task functionalPerformance(type: Test) {
+  useJUnitPlatform()
+  description = "Runs functional tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  include '**/performance/*'
   classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
@@ -394,7 +404,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.8'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.8'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.9'
 
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.4'
   constraints {
