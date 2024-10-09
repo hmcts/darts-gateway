@@ -158,6 +158,16 @@ task functional(type: Test) {
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  exclude '**/performance/*'
+  classpath = sourceSets.functionalTest.runtimeClasspath
+}
+
+task functionalPerformance(type: Test) {
+  useJUnitPlatform()
+  description = "Runs functional tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  include '**/performance/*'
   classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
