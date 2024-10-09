@@ -149,7 +149,7 @@ public class AddAudioMidTierCommand implements Command {
 
             logOutput = result.getStdout();
             log.info("Container output {} ", result.getStdout());
-            log.info("Container output error {} ", result.getStdout());
+            log.info("Container output error {} ", result.getStderr());
 
             if (!isSuccess()) {
                 throw new CommandException(exitCode, null);

@@ -45,7 +45,7 @@ public abstract class AbstractClientProblemDecoder {
             Problem problem = getProblem(is);
             return getExceptionForProblem(problem);
         } catch (Exception ioEx) {
-            log.error("Failed to read the problem json so");
+            log.error("Failed to read the problem json", ioEx);
             return new DartsException(ioEx, CodeAndMessage.ERROR);
         }
     }

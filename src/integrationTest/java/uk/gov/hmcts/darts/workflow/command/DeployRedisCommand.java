@@ -26,6 +26,7 @@ public class DeployRedisCommand implements Command {
 
     @Override
     public void cleanupResources() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -35,11 +36,12 @@ public class DeployRedisCommand implements Command {
 
     @Override
     public void execute(Map<String, String> envVariables) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void executeWithDocker(Map<String, String> envVariables) throws IOException {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
