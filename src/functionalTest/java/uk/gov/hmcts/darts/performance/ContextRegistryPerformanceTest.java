@@ -34,7 +34,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
 
     private static final int SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN = 3300;
 
-    private static final int SINGLE_LOOKUP = 150;
+    private static final int SINGLE_LOOKUP = 120;
 
     @BeforeEach
     @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "PMD.DoNotUseThreads"})

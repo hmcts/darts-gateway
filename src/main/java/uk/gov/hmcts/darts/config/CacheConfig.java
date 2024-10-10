@@ -34,7 +34,9 @@ import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
+import uk.gov.hmcts.darts.cache.token.service.CacheProvider;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.service.impl.GuavaCacheWithRedisFallbackProvider;
 import uk.gov.hmcts.darts.cache.token.service.impl.TokenDocumentumIdToJwtCache;
 import uk.gov.hmcts.darts.cache.token.service.impl.TokenJwtCache;
 
@@ -170,18 +172,18 @@ public class CacheConfig {
         havingValue = "documentum-to-jwt",
         matchIfMissing = true)
     @Bean(value = "primarycache")
-    TokenDocumentumIdToJwtCache getDefaultTokenCache(RedisTemplate<String, Object> template,
+    TokenDocumentumIdToJwtCache getDefaultTokenCache(CacheProvider provider,
                                                      CacheProperties properties,
                                                      TokenGeneratable cache,
                                                      LockRegistry registry) {
-        return new TokenDocumentumIdToJwtCache(template, cache, properties, registry);
+        return new TokenDocumentumIdToJwtCache(provider, cache, properties, registry);
     }
 
 
     @Bean
-    TokenGeneratable getTokenGeneratable(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
+    TokenGeneratable getTokenGeneratable(CacheProvider provider, TokenGenerator jwtGenerator,
                                          CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
-        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
+        return new TokenJwtCache(provider, jwtGenerator, cxtProperties, registry, jwtValidator);
     }
 
     @SuppressWarnings("PMD.UnnecessaryAnnotationValueElement")
@@ -190,9 +192,9 @@ public class CacheConfig {
         havingValue = "jwt",
         matchIfMissing = false)
     @Bean(value = "primarycache")
-    TokenJwtCache getJwtTokenCache(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
+    TokenJwtCache getJwtTokenCache(CacheProvider provider, TokenGenerator jwtGenerator,
                                    CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
-        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
+        return new TokenJwtCache(provider, jwtGenerator, cxtProperties, registry, jwtValidator);
     }
 
     @Bean
@@ -210,6 +212,11 @@ public class CacheConfig {
                                   RELEASE_TIME_DURATION.toMillis());
         registry.setRedisLockType(RedisLockRegistry.RedisLockType.PUB_SUB_LOCK);
         return registry;
+    }
+
+    @Bean
+    public CacheProvider getProvider(RedisTemplate<String,Object> redisTemplate) {
+        return new GuavaCacheWithRedisFallbackProvider(redisTemplate);
     }
 
     private static GenericJackson2JsonRedisSerializer redisSerializer() {

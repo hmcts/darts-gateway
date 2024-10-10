@@ -4,13 +4,13 @@ import documentum.contextreg.BasicIdentity;
 import documentum.contextreg.Identity;
 import documentum.contextreg.ServiceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
-import uk.gov.hmcts.darts.cache.token.service.AbstractRedisTokenCache;
+import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
+import uk.gov.hmcts.darts.cache.token.service.CacheProvider;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
@@ -24,15 +24,15 @@ import java.util.List;
  * stores and manages a downstream jwt token.
  */
 @Slf4j
-public class TokenJwtCache extends AbstractRedisTokenCache implements TokenGeneratable {
+public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratable {
 
     private final TokenGenerator generator;
 
     private final TokenValidator validator;
 
-    public TokenJwtCache(RedisTemplate<String, Object> template, TokenGenerator generator,
+    public TokenJwtCache(CacheProvider provider, TokenGenerator generator,
                          CacheProperties ctxtregproperties, LockRegistry registry, TokenValidator validator) {
-        super(template, registry, ctxtregproperties);
+        super(provider, registry, ctxtregproperties);
         this.generator = generator;
         this.validator = validator;
     }

@@ -1,11 +1,9 @@
 package uk.gov.hmcts.darts.cache.token.service;
 
 import documentum.contextreg.ServiceContext;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
@@ -33,7 +31,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Slf4j
-public abstract class AbstractRedisTokenCache implements TokenRegisterable {
+public abstract class AbstractTokenCache implements TokenRegisterable {
 
     private final CacheProvider provider;
 
@@ -234,14 +232,17 @@ public abstract class AbstractRedisTokenCache implements TokenRegisterable {
 
             if (tokenWithStatusFromCache.getStatus() == TokenStatus.OK) {
                 consumerToken = tokenWithStatusFromCache.getToken();
+                storeToRedis(consumerToken, cachedValueIncludingDartsApiToken);
             } else {
+                // we create and store within the lock to prevent a run on the idp
                 consumerToken = createConsumerTokenWithSharedRedisLock(cachedValueIncludingDartsApiToken);
             }
         } else {
             consumerToken = createToken(cachedValueIncludingDartsApiToken.getServiceContext());
+            storeToRedis(consumerToken, cachedValueIncludingDartsApiToken);
         }
 
-        storeToRedis(consumerToken, cachedValueIncludingDartsApiToken);
+
         log.trace("Token value stored in cache");
         return Optional.of(consumerToken);
     }
@@ -286,6 +287,7 @@ public abstract class AbstractRedisTokenCache implements TokenRegisterable {
             Token token =  createToken(value.getServiceContext());
 
             log.trace("Locking finished");
+            storeToRedis(token, value);
             return token;
         }, value.getSharedKey());
     }

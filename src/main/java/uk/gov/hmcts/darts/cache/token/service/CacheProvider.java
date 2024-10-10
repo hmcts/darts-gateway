@@ -8,39 +8,45 @@ import java.time.Duration;
 @Component
 public interface CacheProvider {
     /**
-     * gets a string for a key
+     * gets a string for a key.
      * @param key The key
      * @return The string
      */
-    String getStringFromString(String string);
+    String getStringFromString(String key);
 
     /**
-     * gets the cache value key
+     * gets the cache value key.
      * @return The cache value
      */
     CacheValue getCacheValue(String key);
 
     /**
-     * deletes a key from the cache
+     * deletes a key from the cache.
+     * @param key The key
      */
-    boolean delete(String string);
+    boolean delete(String key);
 
     /**
-     * sets the key and associated expiry
+     * sets the key and associated expiry.
      * @param key The key to use
      * @param value The string value
      */
     void setKeyValue(String key, String value);
 
     /**
-     * sets the key and associated expiry
+     * sets the key and associated expiry.
      * @param key The key to use
      * @param value The cache value
      */
     void setKeyValue(String key, CacheValue value);
 
     /**
-     * set the expiry for a key
+     * set the expiry for a key.
      */
     void setExpire(String key, Duration duration);
+
+    /**
+     * clean down all values.
+     */
+    void cleanAll();
 }
