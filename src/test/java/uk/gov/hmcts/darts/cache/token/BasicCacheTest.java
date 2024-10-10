@@ -18,7 +18,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
+import uk.gov.hmcts.darts.cache.token.service.AbstractRedisTokenCache;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
@@ -331,7 +331,7 @@ class BasicCacheTest {
     }
 
 
-    class DummyCache extends AbstractTokenCache implements TokenGeneratable {
+    class DummyCache extends AbstractRedisTokenCache implements TokenGeneratable {
         private final TokenValidator validate;
 
         private final String token;

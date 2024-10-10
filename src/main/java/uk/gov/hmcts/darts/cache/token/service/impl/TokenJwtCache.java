@@ -10,7 +10,7 @@ import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
-import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
+import uk.gov.hmcts.darts.cache.token.service.AbstractRedisTokenCache;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
@@ -24,7 +24,7 @@ import java.util.List;
  * stores and manages a downstream jwt token.
  */
 @Slf4j
-public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratable {
+public class TokenJwtCache extends AbstractRedisTokenCache implements TokenGeneratable {
 
     private final TokenGenerator generator;
 
