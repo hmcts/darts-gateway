@@ -30,17 +30,28 @@ import static uk.gov.hmcts.darts.common.configuration.ContextClientConfiguration
 @Slf4j
 class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
 
-    private static final int SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN = 100;
+    private static final int SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN = 65;
 
     private static final int SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN = 3300;
 
-    private static final int SINGLE_LOOKUP = 120;
+    private static final int SINGLE_LOOKUP_MILLIS = 31;
+
+    private static final int SINGLE_BENCHMARK_MILLIS = 400;
+
+    private static final int SINGLE_BENCHMARK_CONCURRENT_THREADS = 120;
+
+    private SoapAssertionUtil<RegisterResponse> soapAssertionUtil;
 
     @BeforeEach
     @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "PMD.DoNotUseThreads"})
     public void before() throws Exception {
         // wait 5 seconds to give the gateway a break
         Thread.sleep(5000);
+
+        Register register = ContextRegistryClientWrapper.getRegisterPayload();
+
+        soapAssertionUtil = xhibit.register(register);
+        xhibit.setToken(soapAssertionUtil.getResponse().getValue().getReturn());
     }
 
     @Test
@@ -51,7 +62,7 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
             .substitute();
 
-        testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
+        testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN, body, WEB_CONTEXT);
     }
 
     @Test
@@ -75,6 +86,8 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
             .substitute();
 
+        clean();
+
         // first token is going to be slower
         testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
 
@@ -83,41 +96,19 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
     }
 
     @Test
-    void testPerformanceOf10RegisterRequestsWithNewTokenAndRequestOfToken() throws Exception {
+    void testPerformanceOf4RegisterRequestsWithNewTokenAndRequestOfToken() throws Exception {
         SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapRegisterFull.xml");
         String body = substitutablePayload
             .setSubstituteValue(SubstituteKey.USER_NAME, xhibit.getExternalUserToInternalUserMapping().getUserName())
             .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
             .substitute();
 
-        // first token is going to be slower
-        testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
-
         // then should be much faster
-        testSendPerformanceTest(10, 1,SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN,  body, WEB_CONTEXT);
-    }
-
-    @Test
-    void testPerformanceOf50RegisterThresholdWithExistingToken() throws Exception {
-        SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapRegisterFull.xml");
-        String body = substitutablePayload
-            .setSubstituteValue(SubstituteKey.USER_NAME, xhibit.getExternalUserToInternalUserMapping().getUserName())
-            .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
-            .substitute();
-
-        // first token is going to be slower
-        testSendPerformanceTest(1, 1, SINGLE_REQUEST_TIME_MILLIS_INITIAL_TOKEN, body, WEB_CONTEXT);
-
-        // then should be much faster
-        testSendPerformanceTest(50, 1,SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN,  body, WEB_CONTEXT);
+        testSendPerformanceTest(4, 1,SINGLE_REQUEST_TIME_MILLIS_SECONDARY_TOKEN,  body, WEB_CONTEXT);
     }
 
     @Test
     void testPerformanceOfSingleLookupWithNewToken() throws Exception {
-        Register register = ContextRegistryClientWrapper.getRegisterPayload();
-
-        SoapAssertionUtil<RegisterResponse> soapAssertionUtil = xhibit.register(register);
-
         SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapLookupFull.xml");
         String body = substitutablePayload
             .setSubstituteValue(SubstituteKey.USER_NAME, xhibit.getExternalUserToInternalUserMapping().getUserName())
@@ -125,15 +116,11 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.TOKEN, soapAssertionUtil.getResponse().getValue().getReturn())
             .substitute();
 
-        testSendPerformanceTest(1, 1,SINGLE_LOOKUP,  body, WEB_CONTEXT);
+        testSendPerformanceTest(1, 1,SINGLE_LOOKUP_MILLIS,  body, WEB_CONTEXT);
     }
 
     @Test
-    void testPerformanceOf10LookupWithNewToken() throws Exception {
-        Register register = ContextRegistryClientWrapper.getRegisterPayload();
-
-        SoapAssertionUtil<RegisterResponse> soapAssertionUtil = xhibit.register(register);
-        xhibit.setToken(soapAssertionUtil.getResponse().getValue().getReturn());
+    void testPerformanceOf20LookupWithNewToken() throws Exception {
 
         SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapLookupFull.xml");
         String body = substitutablePayload
@@ -141,15 +128,11 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
             .setSubstituteValue(SubstituteKey.TOKEN, soapAssertionUtil.getResponse().getValue().getReturn())
             .substitute();
-        testSendPerformanceTest(10, 1,SINGLE_LOOKUP,  body, WEB_CONTEXT);
+        testSendPerformanceTest(20, 1,SINGLE_LOOKUP_MILLIS,  body, WEB_CONTEXT);
     }
 
     @Test
-    void testPerformanceOf70LookupThresholdWithNewToken() throws Exception {
-        Register register = ContextRegistryClientWrapper.getRegisterPayload();
-
-        SoapAssertionUtil<RegisterResponse> soapAssertionUtil = xhibit.register(register);
-        xhibit.setToken(soapAssertionUtil.getResponse().getValue().getReturn());
+    void testBenchmarkPerformanceLookupWithNewToken() throws Exception {
 
         SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapLookupFull.xml");
         String body = substitutablePayload
@@ -157,6 +140,18 @@ class ContextRegistryPerformanceTest extends FunctionalPerformanceTestBase {
             .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
             .setSubstituteValue(SubstituteKey.TOKEN, soapAssertionUtil.getResponse().getValue().getReturn())
             .substitute();
-        testSendPerformanceTest(70, 1,SINGLE_LOOKUP,  body, WEB_CONTEXT);
+        testSendPerformanceTest(SINGLE_BENCHMARK_CONCURRENT_THREADS, 1, SINGLE_BENCHMARK_MILLIS,  body, WEB_CONTEXT);
+    }
+
+    @Test
+    void testBenchmarkPerformanceOfSingleRegisterRequestWithToken() throws Exception {
+        SubstitutablePayload substitutablePayload = new SubstitutablePayload("soapRegisterFull.xml");
+        String body = substitutablePayload
+            .setSubstituteValue(SubstituteKey.USER_NAME, xhibit.getExternalUserToInternalUserMapping().getUserName())
+            .setSubstituteValue(SubstituteKey.PASSWORD, xhibit.getExternalUserToInternalUserMapping().getExternalPassword())
+            .substitute();
+
+        // then should be much faster
+        testSendPerformanceTest(SINGLE_BENCHMARK_CONCURRENT_THREADS, 1, SINGLE_BENCHMARK_MILLIS, body, WEB_CONTEXT);
     }
 }
