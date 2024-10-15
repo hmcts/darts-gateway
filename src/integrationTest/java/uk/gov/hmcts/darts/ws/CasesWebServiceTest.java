@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.soap.client.SoapFaultClientException;
+import org.springframework.ws.transport.http.HttpUrlConnection;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
@@ -36,6 +37,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -201,7 +203,36 @@ class CasesWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
 
             // ensure that the payload logging is turned off for this api call
-            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
+            assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testHandlesGetCasesWithSetCookieResponse(DartsGatewayClient client) throws IOException, JAXBException, InterruptedException {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/dartsApiResponse.json");
+
+            stubFor(get(urlPathEqualTo("/cases"))
+                        .willReturn(aResponse()
+                                        .withHeader("Content-Type", "application/json")
+                                        .withBody(dartsApiResponseStr)));
+
+            HttpUrlConnection response = client.sendMessageWithResponse(getGatewayUri(), soapRequestStr);
+            String cookieString = response.getResponseHeaders("Set-Cookie").next();
+            assertTrue(cookieString.contains("JSESSIONID"));
+            assertTrue(cookieString.contains("Path=/"));
+            assertFalse(cookieString.contains("SameSite"));
+            assertFalse(cookieString.contains("HttpOnly"));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
