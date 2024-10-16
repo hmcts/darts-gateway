@@ -60,22 +60,13 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
         StreamResult result = new StreamResult(outputStream);
         final ApplyHeaderWebServiceMessageCallback message = new ApplyHeaderWebServiceMessageCallback();
 
-        // if we have no header don't add one otherwise add the header contents we have specified
-        if (headerContents == null || headerContents.isEmpty()) {
-            getWebServiceTemplate().sendSourceAndReceiveToResult(
-                uri.toString(),
-                stringSource,
-                message,
-                result
-            );
-        } else {
-            getWebServiceTemplate().sendSourceAndReceiveToResult(
-                uri.toString(),
-                stringSource,
-                message,
-                result
-            );
-        }
+        getWebServiceTemplate().sendSourceAndReceiveToResult(
+            uri.toString(),
+            stringSource,
+            message,
+            result
+        );
+
         return message.getConnection();
     }
 
@@ -90,28 +81,18 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
         JAXBElement<I> unmarshal = jaxbUnmarshaller.unmarshal(new StringSource(payload), clazz);
         JAXBElement<I> ijaxbElement = supplier.apply(unmarshal.getValue());
 
-        // if we have no header don't add one otherwise add the header contents we have specified
-        if (headerContents == null || headerContents.isEmpty()) {
-            Object obj = getWebServiceTemplate().marshalSendAndReceive(
-                uri.toString(),
-                ijaxbElement
-            );
-            return new SoapAssertionUtil<>(responseSupplier.apply(obj));
-        } else {
-            final ApplyHeaderWebServiceMessageCallback messageTransformer = new ApplyHeaderWebServiceMessageCallback();
+        final ApplyHeaderWebServiceMessageCallback messageTransformer = new ApplyHeaderWebServiceMessageCallback();
 
-            Object obj = getWebServiceTemplate().marshalSendAndReceive(
-                uri.toString(),
-                ijaxbElement,
-                messageTransformer
-            );
-            return new SoapAssertionUtil<>(responseSupplier.apply(obj));
-        }
+        Object obj = getWebServiceTemplate().marshalSendAndReceive(
+            uri.toString(),
+            ijaxbElement,
+            messageTransformer
+        );
+        return new SoapAssertionUtil<>(responseSupplier.apply(obj));
     }
 
     private WebServiceMessageCallback getSoapRequestHeader() {
-        final ApplyHeaderWebServiceMessageCallback messageTransformer = new ApplyHeaderWebServiceMessageCallback();
-        return messageTransformer;
+        return new ApplyHeaderWebServiceMessageCallback();
     }
 
     @Override
@@ -127,40 +108,22 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
     public void send(URL uri, String payload) {
         WebServiceMessageCallback addHeader = getSoapRequestHeader();
 
-        if (headerContents == null || headerContents.isEmpty()) {
-            getWebServiceTemplate().sendSourceAndReceiveToResult(
-                uri.toString(),
-                new StringSource(payload),
-                new javax.xml.transform.Result() {
-                    @Override
-                    public void setSystemId(String systemId) {
+        getWebServiceTemplate().sendSourceAndReceiveToResult(
+            uri.toString(),
+            new StringSource(payload),
+            addHeader,
+            new javax.xml.transform.Result() {
+                @Override
+                public void setSystemId(String systemId) {
 
-                    }
-
-                    @Override
-                    public String getSystemId() {
-                        return null;
-                    }
                 }
-            );
-        } else {
-            getWebServiceTemplate().sendSourceAndReceiveToResult(
-                uri.toString(),
-                new StringSource(payload),
-                addHeader,
-                new javax.xml.transform.Result() {
-                    @Override
-                    public void setSystemId(String systemId) {
 
-                    }
-
-                    @Override
-                    public String getSystemId() {
-                        return null;
-                    }
+                @Override
+                public String getSystemId() {
+                    return null;
                 }
-            );
-        }
+            }
+        );
     }
 
     @Override
@@ -176,11 +139,13 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
             TransportContext context = TransportContextHolder.getTransportContext();
             connection = (org.springframework.ws.transport.http.HttpUrlConnection) context.getConnection();
 
-            SoapMessage soapMessage = (SoapMessage) message;
-            SoapHeader header = soapMessage.getSoapHeader();
-            StringSource headerSource = new StringSource(headerContents);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.transform(headerSource, header.getResult());
+            if (headerContents != null) {
+                SoapMessage soapMessage = (SoapMessage) message;
+                SoapHeader header = soapMessage.getSoapHeader();
+                StringSource headerSource = new StringSource(headerContents);
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                transformer.transform(headerSource, header.getResult());
+            }
         }
 
         /**
