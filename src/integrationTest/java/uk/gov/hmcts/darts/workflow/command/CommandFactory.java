@@ -33,7 +33,7 @@ public final class CommandFactory {
         return start;
     }
 
-    public static AddAudioMidTierCommand getAudioCommand(String ipadddress, File mediaPayload) {
+    public static AddAudioMidTierCommand getAudioCommand(String ipadddress, File mediaPayload, String username, String password) {
         Audio audio = new Audio();
         Audio.Start start = getStart(new AddAudioDate("23", "10", "2023"), new AddAudioTime("09", "00", "00"));
 
@@ -53,10 +53,10 @@ public final class CommandFactory {
         Audio.CaseNumbers numbers = new Audio.CaseNumbers();
         audio.setCaseNumbers(numbers);
 
-        return new AddAudioMidTierCommand(ipadddress, audio, mediaPayload);
+        return new AddAudioMidTierCommand(ipadddress, audio, mediaPayload, username, password);
     }
 
-    public static AddAudioMidTierCommand getAudioCommand(String ipadddress, File xmlPayload, File mediaPayload) {
-        return new AddAudioMidTierCommand(ipadddress, xmlPayload, mediaPayload, false);
+    public static AddAudioMidTierCommand getAudioCommand(String ipadddress, File xmlPayload, File mediaPayload, String username, String password) {
+        return new AddAudioMidTierCommand(ipadddress, xmlPayload, mediaPayload, username, password);
     }
 }

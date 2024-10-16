@@ -35,9 +35,11 @@ public class AddAudioMidTierCommand implements Command {
 
     private File tempFile;
 
-    private boolean ucfTransfer;
-
     private String logOutput;
+
+    private final String username;
+
+    private final String password;
 
     public static final File SAMPLE_FILE =
         new File(Thread.currentThread().getContextClassLoader().getResource("addaudio/sample6.mp2").getFile());
@@ -65,20 +67,23 @@ public class AddAudioMidTierCommand implements Command {
         }
     }
 
-    public AddAudioMidTierCommand(String ipaddress, Audio audio, File fileToSend) {
+    public AddAudioMidTierCommand(String ipaddress, Audio audio, File fileToSend, String username, String password) {
         audio.setMediafile(fileToSend.getName());
         this.ipToGateway = ipaddress;
         this.audio = audio;
         this.fileToSend = fileToSend;
         exitCode = 0;
+        this.username = username;
+        this.password = password;
     }
 
-    public AddAudioMidTierCommand(String ipaddress, File audioFile, File fileToSend, boolean ucf) {
+    public AddAudioMidTierCommand(String ipaddress, File audioFile, File fileToSend, String username, String password) {
         this.ipToGateway = ipaddress;
         this.audioFile = audioFile;
         this.fileToSend = fileToSend;
         exitCode = 0;
-        this.ucfTransfer = ucf;
+        this.username = username;
+        this.password = password;
     }
 
     @Override
@@ -109,12 +114,10 @@ public class AddAudioMidTierCommand implements Command {
         try {
             File xmlFile = getAudioFile();
 
-            File file =
-                ucfTransfer ? new File(Thread.currentThread().getContextClassLoader().getResource("addaudio/addaudioucf.sh").getFile())
-                    : new File(Thread.currentThread().getContextClassLoader().getResource("addaudio/addaudio.sh").getFile());
+            File file = new File(Thread.currentThread().getContextClassLoader().getResource("addaudio/addaudio.sh").getFile());
 
             ProcessBuilder builder = new ProcessBuilder();
-            builder.command(file.getAbsolutePath(), "http://" + ipToGateway + BASE_WEB_CONTEXT, xmlFile.getAbsolutePath(), fileToSend.getAbsolutePath());
+            builder.command(file.getAbsolutePath(), "http://" + ipToGateway + BASE_WEB_CONTEXT, xmlFile.getAbsolutePath(), fileToSend.getAbsolutePath(),username,password);
             Process process = builder.start();
             exitCode = process.exitValue();
 
@@ -142,7 +145,7 @@ public class AddAudioMidTierCommand implements Command {
                 "sh", "addaudio.sh",
                 "http://" + ipToGateway + BASE_DOCKER_COMMAND_WEB_CONTEXT,
                 xmlFile.getName(),
-                fileToSend.getName());
+                fileToSend.getName(),username, password);
 
             exitCode = result.getExitCode();
 
