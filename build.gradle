@@ -683,4 +683,10 @@ compileJava.dependsOn generateCodeFromSpecification
 generateCodeFromSpecification.dependsOn extractOpenSpecification
 compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio, genJaxbViqEvent
 
-tasks.named { it == "generateEffectiveLombokConfig" }.configureEach { dependsOn(genJaxbAddAudio) }
+tasks.named { it == "generateEffectiveLombokConfig" }.configureEach {
+  dependsOn(genJaxb)
+  dependsOn(genJaxbAddAudio)
+  dependsOn(genJaxbAddCase)
+  dependsOn(genJaxbRegisterNode)
+  dependsOn(genJaxbViqEvent)
+}
