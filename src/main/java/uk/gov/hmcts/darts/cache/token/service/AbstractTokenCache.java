@@ -1,11 +1,9 @@
 package uk.gov.hmcts.darts.cache.token.service;
 
 import documentum.contextreg.ServiceContext;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
@@ -35,20 +33,14 @@ import java.util.Optional;
 @Slf4j
 public abstract class AbstractTokenCache implements TokenRegisterable {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final CacheProvider provider;
 
     private final LockRegistry lockRegistry;
 
     protected final CacheProperties properties;
 
-
     private Duration secondsToExpire() {
         return Duration.of(properties.getEntryTimeToIdleSeconds(), ChronoUnit.SECONDS);
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        redisTemplate.setEnableTransactionSupport(true);
     }
 
     @Override
@@ -79,7 +71,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         log.trace("storing new token");
         String sharedId = getIdForServiceContext(context);
         if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
-            Object sharedToken = redisTemplate.opsForValue().get(sharedId);
+            String sharedToken = provider.getStringFromString(sharedId);
             Token token = Token.readToken((String) sharedToken, properties.isMapTokenToSession(),
                                           getTokenValidator()
             );
@@ -119,7 +111,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
         boolean tokenIsValid = tokenToLookup.validate();
         if (val.isPresent() && !tokenIsValid) {
-            redisTemplate.delete(tokenToLookup.getKey());
+            provider.delete(tokenToLookup.getKey());
             val = Optional.empty();
             log.debug("Token manually removed as it is no longer valid");
         } else {
@@ -131,8 +123,8 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             if (val.isPresent()) {
                 log.debug("Resetting token expiration");
-                redisTemplate.opsForValue().set(tokenToLookup.getKey(), val.get(), secondsToExpire());
-                redisTemplate.expire(tokenToLookup.getKey(), secondsToExpire());
+                provider.setKeyValue(tokenToLookup.getKey(), val.get());
+                provider.setExpire(tokenToLookup.getKey(), secondsToExpire());
                 log.debug("Reset token expiration");
             }
         }
@@ -158,7 +150,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         if (properties.isShareTokenForSameCredentials()) {
             log.debug("Token was not evicted as it can be shared. The token expiration timeout is still applicable");
         } else {
-            redisTemplate.delete(holder.getKey());
+            provider.delete(holder.getKey());
             log.debug("Evicted the token");
         }
     }
@@ -172,7 +164,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     }
 
     private Optional<CacheValue> getRefreshValueWithResetExpiration(Token token) {
-        Object value = redisTemplate.opsForValue().get(token.getKey());
+        Object value = provider.getCacheValue(token.getKey());
 
         if (value != null) {
             return Optional.of(getValue((CacheValue) value));
@@ -182,7 +174,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     }
 
     private Optional<Token> getTokenValueWithResetExpiration(CacheValue holder) {
-        Object value = redisTemplate.opsForValue().get(holder.getSharedKey());
+        Object value = provider.getStringFromString(holder.getSharedKey());
 
         if (value != null) {
             return Optional.of(Token.readToken((String) value, properties.isMapTokenToSession(), getTokenValidator()));
@@ -240,14 +232,17 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             if (tokenWithStatusFromCache.getStatus() == TokenStatus.OK) {
                 consumerToken = tokenWithStatusFromCache.getToken();
+                storeToRedis(consumerToken, cachedValueIncludingDartsApiToken);
             } else {
+                // we create and store within the lock to prevent a run on the idp
                 consumerToken = createConsumerTokenWithSharedRedisLock(cachedValueIncludingDartsApiToken);
             }
         } else {
             consumerToken = createToken(cachedValueIncludingDartsApiToken.getServiceContext());
+            storeToRedis(consumerToken, cachedValueIncludingDartsApiToken);
         }
 
-        storeToRedis(consumerToken, cachedValueIncludingDartsApiToken);
+
         log.trace("Token value stored in cache");
         return Optional.of(consumerToken);
     }
@@ -257,15 +252,15 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
         Duration secondsToExpire = secondsToExpire();
 
         // map the token to the cache value
-        redisTemplate.opsForValue().set(consumerToken.getKey(), cachedValueIncludingdartsApiToken, secondsToExpire);
+        provider.setKeyValue(consumerToken.getKey(), cachedValueIncludingdartsApiToken);
 
         // map the cache value shared key to the token - This is the shared id for the context registry and acts as a reverse lookup when
         // shared tokens are required
-        redisTemplate.opsForValue().set(cachedValueIncludingdartsApiToken.getSharedKey(), consumerToken.getTokenString(), secondsToExpire);
+        provider.setKeyValue(cachedValueIncludingdartsApiToken.getSharedKey(), consumerToken.getTokenString());
 
         // now explicitly set the time to idle on the keys
-        redisTemplate.expire(consumerToken.getKey(), secondsToExpire);
-        redisTemplate.expire(cachedValueIncludingdartsApiToken.getSharedKey(), secondsToExpire);
+        provider.setExpire(consumerToken.getKey(), secondsToExpire);
+        provider.setExpire(cachedValueIncludingdartsApiToken.getSharedKey(), secondsToExpire);
     }
 
     private Token createConsumerTokenWithSharedRedisLock(CacheValue value) {
@@ -285,13 +280,14 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
 
             if (tokenWithStatusFromCache.getStatus() == TokenStatus.INVALID) {
                 log.debug("Cached token is invalid. Deleting from Cache.");
-                redisTemplate.delete(value.getSharedKey());
-                redisTemplate.delete(tokenWithStatusFromCache.getToken().getKey());
+                provider.delete(value.getSharedKey());
+                provider.delete(tokenWithStatusFromCache.getToken().getKey());
             }
 
             Token token =  createToken(value.getServiceContext());
 
             log.trace("Locking finished");
+            storeToRedis(token, value);
             return token;
         }, value.getSharedKey());
     }
