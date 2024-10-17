@@ -32,7 +32,12 @@ spring:
   session:
     redis:
       namespace: darts-gateway
-
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            loggerLevel: ${FEIGN_LOG_LEVEL:none}
   # To be removed before go-live
   mvc:
     log-request-details: true

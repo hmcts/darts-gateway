@@ -52,7 +52,7 @@ import java.util.Map;
 @SpringBootTest(classes = RedisConfiguration.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
-@TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE"})
+@TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE", "DARTS_LOG_LEVEL=TRACE"})
 public class IntegrationBase implements CommandHolder {
 
     protected EventApiStub theEventApi = new EventApiStub();
@@ -123,6 +123,10 @@ public class IntegrationBase implements CommandHolder {
     }
 
     public String getIpAndPort() {
+        return getIp() + ":" + port;
+    }
+
+    public static String getIp() {
         String ipaddressStr = null;
         try {
             Enumeration<NetworkInterface> networkEnum = NetworkInterface.getNetworkInterfaces();
@@ -132,12 +136,12 @@ public class IntegrationBase implements CommandHolder {
                 while (ipaddressesOfNic.hasMoreElements()) {
                     InetAddress ipaddress = ipaddressesOfNic.nextElement();
                     if (!ipaddress.isLoopbackAddress() && ipaddress.getHostAddress().contains(".")) {
-                        ipaddressStr = ipaddress.getHostAddress() + ":" + port;
+                        ipaddressStr = ipaddress.getHostAddress();
                     }
                 }
             }
         } catch (SocketException s) {
-            ipaddressStr = localhost + ":" + port;
+            ipaddressStr = localhost;
         }
 
         return ipaddressStr;
@@ -168,7 +172,7 @@ public class IntegrationBase implements CommandHolder {
     }
 
     protected void startRedis() throws IOException {
-        RedisConfiguration.getDeployRedisCommand().executeWithDocker();
+        RedisConfiguration.getDeployRedisCommand().executeWithDocker(RedisConfiguration.getDeployRedisCommand().getArguments());
     }
 
     @Override
@@ -193,4 +197,6 @@ public class IntegrationBase implements CommandHolder {
     public interface JkwsRefreshableRunnable {
         String run(String token) throws InterruptedException, IOException, JAXBException, JOSEException;
     }
+
+
 }

@@ -1,1 +1,1 @@
-java -classpath lib:lib/commons-logging-1.1.jar:addAudio.jar:dfs-libs.jar:darts-remote.jar com.logica.darts.webservice.client.DARTSAddAudioClient $1 $2 $3
+java -classpath lib:lib/commons-logging-1.1.jar:addAudio.jar:dfs-libs.jar:darts-remote.jar uk.gov.hmcts.darts.mtom.DARTSAddAudioMTOMClient $1 $2 $3 $4 $5

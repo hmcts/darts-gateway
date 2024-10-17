@@ -42,6 +42,8 @@ services:
 
       # Enabled request payload logging
       - DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE
+      - DARTS_LOG_LEVEL=TRACE
+      - FEIGN_LOG_LEVEL=FULL
 
       # Enabled the local logging for all payloads, no exclusions
       - DARTS-GATEWAY_LOGGING_EXCLUDE-PAYLOAD-REQUEST-LOGGING-BASED-ON-PAYLOAD-NAMESPACE-AND-TAG=

@@ -43,7 +43,7 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
-                AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE);
+                AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE, "testuser", "testpassword");
         setCommand(audioMidTierCommand);
     }
 
@@ -57,7 +57,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         stubFor(post(urlPathEqualTo("/audios"))
                 .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
-        getCommand().executeWithDocker();
+        getCommand().executeWithDocker(getCommand().getArguments());
+        Assertions.assertTrue(getCommand().getLogOutput().contains("Code: 200"));
 
         homeDirForTempFiles = new File(System.getProperty("user.home"));
         int fileCountAfter = Objects.requireNonNull(homeDirForTempFiles.list()).length;

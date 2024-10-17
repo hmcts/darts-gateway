@@ -17,6 +17,7 @@ import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.component.impl.OauthTokenGenerator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.common.client.exeption.AbstractClientProblemDecoder;
 import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
@@ -489,6 +490,68 @@ class AddAudioWebServiceTest extends IntegrationBase {
             CodeAndMessage responseCode = CodeAndMessage.ERROR;
             Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
 
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioWithNoProblemEmptyResponse(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsApiResponse.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withStatus(500)));
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            Assertions.assertFalse(logAppender
+                                       .searchLogs(
+                                           AbstractClientProblemDecoder.RESPONSE_PREFIX +
+                                                       "500 Server Error: \"{<EOL>" +
+                                               "  \"code\": \"200\",<EOL>  \"message\": \"OK\"<EOL>}<EOL>\"", null, null).isEmpty());
+
+            verify(postRequestedFor(urlPathEqualTo("/audios"))
+                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+
+            // ensure that the payload logging is turned off for this api call
+            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testAddAudioWithNoProblemHtmlResponse(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/soapRequest.xml");
+
+            String dartsApiResponseStr = TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsApiResponse.json");
+
+            stubFor(post(urlPathEqualTo("/audios"))
+                        .willReturn(ok(dartsApiResponseStr).withStatus(500).withBody("<html><body>Internal Server Error</body></html>")));
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
+                                                              + "500 Server Error: \"<html><body>Internal Server Error</body></html>\"", null, null).isEmpty());
+            verify(postRequestedFor(urlPathEqualTo("/audios"))
+                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+
+            // ensure that the payload logging is turned off for this api call
+            Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 }
