@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
  * Simple client that demonstrates standard web services flow using text/xml format.
  */
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
-public class DartsGatewayXmlClient extends uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayMtomClient {
+public class DartsGatewayXmlClient extends DartsGatewayMtomClient {
 
     @PostConstruct
     public void init() throws Exception {
