@@ -12,7 +12,7 @@ import org.slf4j.event.Level;
 import uk.gov.hmcts.darts.log.service.DarNotificationLoggerService;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -27,7 +27,7 @@ import static org.slf4j.event.Level.WARN;
 
 class DarNotificationLoggerServiceImplTest {
 
-    private static final Map<Level, Supplier<List<String>>> LOG_LEVEL_TO_CAPTURED_LOGS = new HashMap<>();
+    private static final Map<Level, Supplier<List<String>>> LOG_LEVEL_TO_CAPTURED_LOGS = new EnumMap<>(Level.class);
     private static final String SOME_TS_STRING = "2021-01-01T02:00:00Z";
     private static final OffsetDateTime SOME_TS = OffsetDateTime.parse(SOME_TS_STRING);
     private static final String SOME_URI = "some-uri";
@@ -69,10 +69,10 @@ class DarNotificationLoggerServiceImplTest {
     @Test
     void logsSuccess() {
         notificationLogger.notificationSucceeded(
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, 0);
+            SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, 0);
 
         String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=OK, responseCode=0",
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
+                                         SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
         assertThat(logCaptor.getInfoLogs()).containsExactly(expectedLogEntry);
     }
 
@@ -80,7 +80,7 @@ class DarNotificationLoggerServiceImplTest {
     @EnumSource(Level.class)
     void logsFailureWithMessage(Level logLevel) {
         notificationLogger.notificationFailed(
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", logLevel);
+            SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", logLevel);
 
         String expectedLogEntry = format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, " +
                                              "message=some-msg", SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
@@ -91,11 +91,11 @@ class DarNotificationLoggerServiceImplTest {
     @EnumSource(Level.class)
     void logsFailureWithMessageAndCode(Level logLevel) {
         notificationLogger.notificationFailedWithCode(
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", 1, logLevel);
+            SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS, "FAILED", "some-msg", 1, logLevel);
 
         String expectedLogEntry =
-                format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, message=some-msg, responseCode=1",
-                SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
+            format("DAR Notify: uri=%s, courthouse=%s, courtroom=%s, caseNumber=%s, date_time=%s, response_status=FAILED, message=some-msg, responseCode=1",
+                   SOME_URI, SOME_COURTHOUSE, SOME_COURTROOM, SOME_CASE_NUMBER, SOME_TS_STRING);
         assertThat(logsFor(logLevel)).containsExactly(expectedLogEntry);
     }
 
