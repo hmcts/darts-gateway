@@ -61,11 +61,11 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private final LogProperties logProperties;
 
-    public final static String REQUEST_PAYLOAD_PREFIX = "REQUEST PAYLOAD";
+    public static final String REQUEST_PAYLOAD_PREFIX = "REQUEST PAYLOAD";
 
-    public final static String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD";
+    public static final String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD";
 
-    public final static String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS";
+    public static final String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS";
 
     @Override
     public boolean understands(SoapHeaderElement header) {
@@ -317,7 +317,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             try {
                 Optional<ExcludePayloadLogging> excludePayloadLogging;
                 if (message.getPayloadSource() instanceof DOMSource) {
-                    excludePayloadLogging =  logProperties.excludePayload((DOMSource) message.getPayloadSource());
+                    excludePayloadLogging = logProperties.excludePayload((DOMSource) message.getPayloadSource());
 
                     if (excludePayloadLogging.isEmpty()) {
                         ByteArrayTransportOutputStream byteArrayTransportOutputStream =
@@ -354,7 +354,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private boolean isContextRegistryRequest(SaajSoapMessage message) {
         return ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)
-                || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.LOOKUP_OPERATION)
-                || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.UNREGISTER_OPERATION);
+            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.LOOKUP_OPERATION)
+            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.UNREGISTER_OPERATION);
     }
 }
