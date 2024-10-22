@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
+import uk.gov.hmcts.darts.cache.token.service.CacheProvider;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
 import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMappingOperation;
@@ -63,6 +64,9 @@ public class IntegrationBase implements CommandHolder {
     protected AuthenticationAssertion authenticationStub = new AuthenticationAssertion();
     protected MemoryLogAppender logAppender = LogUtil.getMemoryLogger();
 
+    @Autowired
+    protected CacheProvider cacheProvider;
+
     protected static final String DEFAULT_HEADER_USERNAME = "some-user";
 
     protected static final String DEFAULT_HEADER_PASSWORD = "password";
@@ -103,7 +107,7 @@ public class IntegrationBase implements CommandHolder {
 
     @BeforeEach
     void clearStubs()  {
-        template.getConnectionFactory().getConnection().flushAll();
+        cacheProvider.cleanAll();
 
         WireMock.reset();
 

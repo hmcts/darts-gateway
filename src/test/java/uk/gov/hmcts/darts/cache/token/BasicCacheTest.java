@@ -19,8 +19,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.service.AbstractTokenCache;
+import uk.gov.hmcts.darts.cache.token.service.CacheProvider;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
+import uk.gov.hmcts.darts.cache.token.service.impl.GuavaCacheWithRedisFallbackProvider;
 import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
 import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 import uk.gov.hmcts.darts.cache.token.service.value.impl.RefeshableTokenCacheValue;
@@ -97,7 +99,10 @@ class BasicCacheTest {
 
         generatable = Mockito.mock(TokenGeneratable.class);
 
-        cache = new DummyCache(template, properties, registry, validateToken, TOKEN_STRING, generatable);
+        GuavaCacheWithRedisFallbackProvider provider = new GuavaCacheWithRedisFallbackProvider(template);
+        provider.postConstruct();
+
+        cache = new DummyCache(provider, properties, registry, validateToken, TOKEN_STRING, generatable);
 
         Mockito.when(properties.isShareTokenForSameCredentials()).thenReturn(false);
         Mockito.when(properties.getEntryTimeToIdleSeconds()).thenReturn(TOKEN_EXPIRE_SECONDS);
@@ -338,9 +343,9 @@ class BasicCacheTest {
 
         private final TokenGeneratable generatable;
 
-        public DummyCache(RedisTemplate<String, Object> template, CacheProperties properties,
+        public DummyCache(CacheProvider provider, CacheProperties properties,
                           LockRegistry registry, TokenValidator validate, String token, TokenGeneratable generatable) {
-            super(template, registry, properties);
+            super(provider, registry, properties);
             this.validate = validate;
             this.token = token;
             this.generatable = generatable;
