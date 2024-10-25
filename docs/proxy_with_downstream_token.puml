@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+
+actor "client"
+
+"client" -> "DartsEndpoint" : SOAP addCase call
+"DartsEndpoint" -> "CasesRouteImpl" : route()
+"CasesRouteImpl" -> "CasesClient" : casesGet()
+"CasesClient" -> "AuthenticationHttpEntityInterceptor" : set the feign header with the downstream token
+"CasesClient" -> "darts api" : make the call to darts api
+@enduml
