@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 
 @Component
@@ -40,12 +41,12 @@ public class TokenValidatorImpl implements TokenValidator {
     private final CacheProperties cacheProperties;
 
     @Autowired
-    public TokenValidatorImpl(SecurityProperties securityProperties, CacheProperties properties)  throws MalformedURLException {
+    public TokenValidatorImpl(SecurityProperties securityProperties, CacheProperties properties) throws MalformedURLException {
         this(securityProperties, new DefaultJWTProcessor<>(), properties);
     }
 
     public TokenValidatorImpl(SecurityProperties securityProperties,
-                              DefaultJWTProcessor<SecurityContext> jwtProcessor, CacheProperties cacheProperties)  {
+                              DefaultJWTProcessor<SecurityContext> jwtProcessor, CacheProperties cacheProperties) {
         this.jwtProcessor = jwtProcessor;
         this.cacheProperties = cacheProperties;
         this.securityProperties = securityProperties;
@@ -73,19 +74,13 @@ public class TokenValidatorImpl implements TokenValidator {
         jwtProcessor.setJWTClaimsSetVerifier(claimsVerifier);
     }
 
-    private HashSet<String> getClaimSet() {
-        HashSet<String> claims = new HashSet<>(Arrays.asList(
+    private Set<String> getClaimSet() {
+        return new HashSet<>(Arrays.asList(
             JWTClaimNames.AUDIENCE,
             JWTClaimNames.ISSUER,
             JWTClaimNames.ISSUED_AT,
             JWTClaimNames.SUBJECT,
             JWTClaimNames.EXPIRATION_TIME));
-
-        return claims;
-    }
-
-    protected boolean shouldIgnoreValidationException(Exception e) {
-        return false;
     }
 
     @Override

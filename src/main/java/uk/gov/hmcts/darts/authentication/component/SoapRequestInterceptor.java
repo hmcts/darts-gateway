@@ -61,11 +61,11 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private final LogProperties logProperties;
 
-    public static String REQUEST_PAYLOAD_PREFIX = "REQUEST PAYLOAD";
+    public static final String REQUEST_PAYLOAD_PREFIX = "REQUEST PAYLOAD";
 
-    public static String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD";
+    public static final String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD";
 
-    public static String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS";
+    public static final String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS";
 
     @Override
     public boolean understands(SoapHeaderElement header) {
@@ -262,7 +262,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     public static String getCookieInformation(String messagePrefix, HttpServletRequest request) {
-        String returnCookieString = "";
+        String returnCookieString;
 
         HttpSession session = request.getSession();
 
@@ -299,7 +299,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         String[] cookieParts = StringUtils.split(cookie, ";");
         for (String cookiePart : cookieParts) {
             String[] cookiePartKV = StringUtils.split(cookiePart, "=");
-            if (cookiePartKV[0].equals(JSESSIONID_KEY)) {
+            if (JSESSIONID_KEY.equals(cookiePartKV[0])) {
                 try {
                     return new String(Base64.getDecoder().decode(cookiePartKV[1].getBytes()));
                 } catch (IllegalArgumentException e) {
@@ -317,7 +317,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             try {
                 Optional<ExcludePayloadLogging> excludePayloadLogging;
                 if (message.getPayloadSource() instanceof DOMSource) {
-                    excludePayloadLogging =  logProperties.excludePayload((DOMSource) message.getPayloadSource());
+                    excludePayloadLogging = logProperties.excludePayload((DOMSource) message.getPayloadSource());
 
                     if (excludePayloadLogging.isEmpty()) {
                         ByteArrayTransportOutputStream byteArrayTransportOutputStream =
@@ -354,7 +354,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private boolean isContextRegistryRequest(SaajSoapMessage message) {
         return ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)
-                || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.LOOKUP_OPERATION)
-                || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.UNREGISTER_OPERATION);
+            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.LOOKUP_OPERATION)
+            || ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.UNREGISTER_OPERATION);
     }
 }

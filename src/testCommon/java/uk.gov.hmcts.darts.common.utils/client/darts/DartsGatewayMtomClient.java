@@ -30,7 +30,7 @@ import java.net.URL;
  * Simple client that demonstrates Mtom interaction for the darts api.
  */
 @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "unchecked"})
-public class DartsGatewayMtomClient extends AbstractSoapTestClient implements uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient {
+public class DartsGatewayMtomClient extends AbstractSoapTestClient implements DartsGatewayClient {
 
     public DartsGatewayMtomClient(SaajSoapMessageFactory messageFactory) {
         super(messageFactory);
