@@ -33,14 +33,17 @@ public class LogProperties {
         Stream<ExcludePayloadLogging> excludeFromLogging = getExcludePayloadRequestLoggingBasedOnPayloadNamespaceAndTag()
             .stream().filter(payloadFilterDetails -> {
                 NamespaceContext ctx = new NamespaceContext() {
+                    @Override
                     public String getNamespaceURI(String prefix) {
-                        return prefix.equals("docNamespace") ? payloadFilterDetails.getNamespace() : null;
+                        return "docNamespace".equals(prefix) ? payloadFilterDetails.getNamespace() : null;
                     }
 
+                    @Override
                     public Iterator<String> getPrefixes(String val) {
                         return null;
                     }
 
+                    @Override
                     public String getPrefix(String uri) {
                         return null;
                     }

@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
  * Simple client that demonstrates standard web services context registry = flow using text/xml format.
  */
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
-public class ContextRegistryXmlClient extends uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryMtomClient {
+public class ContextRegistryXmlClient extends ContextRegistryMtomClient {
 
     @PostConstruct
     public void init() throws Exception {

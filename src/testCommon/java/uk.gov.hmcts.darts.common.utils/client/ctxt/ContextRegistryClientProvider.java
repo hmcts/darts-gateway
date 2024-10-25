@@ -20,8 +20,8 @@ public class ContextRegistryClientProvider implements ArgumentsProvider {
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
 
         // get the injected client
-        Map<String, uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient> beans = SpringExtension.getApplicationContext(context).getBeansOfType(
-            uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient.class);
+        Map<String, ContextRegistryClient> beans = SpringExtension.getApplicationContext(context).getBeansOfType(
+            ContextRegistryClient.class);
 
         Arguments[] clientable = new Arguments[0];
         clientable = getCollection(beans.values()).toArray(clientable);
@@ -29,9 +29,9 @@ public class ContextRegistryClientProvider implements ArgumentsProvider {
         return Stream.of(clientable);
     }
 
-    private List<Arguments> getCollection(Collection<uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient> col) {
+    private List<Arguments> getCollection(Collection<ContextRegistryClient> col) {
         List<Arguments> arguments = new ArrayList<>();
-        for (uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient clientable : col) {
+        for (ContextRegistryClient clientable : col) {
             arguments.add(Arguments.arguments(clientable));
         }
 
