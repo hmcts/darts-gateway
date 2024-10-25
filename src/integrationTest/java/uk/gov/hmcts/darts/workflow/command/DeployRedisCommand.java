@@ -4,6 +4,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DeployRedisCommand implements Command {
 
@@ -24,19 +26,41 @@ public class DeployRedisCommand implements Command {
 
     @Override
     public void cleanupResources() {
-    }
-
-    @Override
-    public void execute() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void executeWithDocker() throws IOException {
     }
 
     @Override
     public boolean isSuccess() {
         return false;
+    }
+
+    @Override
+    public void execute(Map<String, String> envVariables) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void executeWithDocker(Map<String, String> envVariables) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<String, String> getArguments() {
+        return new HashMap<>();
+    }
+
+    @Override
+    public Integer getPortForContainer() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getLogOutput() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isRunning() {
+        throw new UnsupportedOperationException();
     }
 }
