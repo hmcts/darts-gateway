@@ -6,7 +6,7 @@ plugins {
   id 'idea'
   id "io.freefair.lombok" version "8.10.2"
   id 'io.spring.dependency-management' version '1.1.6'
-  id 'org.springframework.boot' version '3.3.4'
+  id 'org.springframework.boot' version '3.3.5'
   id 'org.owasp.dependencycheck' version '10.0.4'
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '5.1.0.4882'
@@ -374,22 +374,22 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
   implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
   implementation group: 'org.springframework', name: 'spring-context'
-  implementation 'org.springframework.integration:spring-integration-redis:6.3.4'
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.41.2'
+  implementation 'org.springframework.integration:spring-integration-redis:6.3.5'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.42'
 
   implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
     exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
   }
   implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
-  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.78.1'
-  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78.1'
-  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.78.1'
+  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.79'
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.79'
+  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.79'
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.5')
   implementation( 'org.glassfish.jaxb:jaxb-runtime:4.0.5')
-  implementation group: 'org.apache.tika', name: 'tika-core', version: '2.9.2'
+  implementation group: 'org.apache.tika', name: 'tika-core', version: '3.0.0'
 
   // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
   implementation 'com.fasterxml.jackson.core:jackson-databind'
@@ -403,8 +403,8 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.7'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.11'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.11'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.12'
 
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.5'
   constraints {
@@ -435,7 +435,7 @@ dependencies {
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-  testImplementation(platform('org.junit:junit-bom:5.11.2'))
+  testImplementation(platform('org.junit:junit-bom:5.11.3'))
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -446,11 +446,11 @@ dependencies {
   testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
   testImplementation 'org.xmlunit:xmlunit-core:2.10.0'
   testImplementation 'org.xmlunit:xmlunit-matchers:2.10.0'
-  testImplementation 'org.testcontainers:testcontainers:1.20.2'
+  testImplementation 'org.testcontainers:testcontainers:1.20.3'
   testImplementation 'org.springframework.boot:spring-boot-testcontainers'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.1.4'
 
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.2'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.3'
   testImplementation 'it.ozimov:embedded-redis:0.7.3'
   testImplementation 'io.github.hakky54:logcaptor:2.9.3'
   testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.6.3', {
