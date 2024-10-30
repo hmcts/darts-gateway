@@ -7,67 +7,6 @@ This application acts as a layer between external services sending SOAP requests
 
 - [Java 21](https://www.oracle.com/java)
 
-# SoapUI
-
-* [SoapUI](https://www.soapui.org/downloads/soapui/) can be used for "Try it out" functionality
-  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
-  following properties within SoapUI
-
-    * username - The user to authenticate with
-    * password - The password to authenticate with
-    * token - The token (either jwt or documentum) to authenticate with
-
-* **IMPORTANT! Do not add the properties as project properties as they will be saved back to the committed xml files. Instead set them as global properties.
-  See https://www.soapui.org/docs/soap-and-wsdl/**
-
-## DARTSService SoapUI
-
-* To View the application SOAP Web Services:
-    * http://localhost:8070/service/darts/DARTSService?wsdl
-* Import SOAP Project [README-DARTSService](README-DARTSService-soapui-project.xml) with
-  initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
-* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g.
-  addCase will use the ServiceContext Soap Header with some custom project
-  properties: `userName="${#Project#userName}" password="${#Project#password}"`
-* When testing the add audio endpoint make sure to change the properties to support MTOM and Multipart. Additionally, attach an mp2 file
-
-## ContextRegistryService SoapUI
-
-* To View the application SOAP Web Services:
-    * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
-* Import SOAP Project [README-ContextRegistryService](README-ContextRegistryService-soapui-project.xml) with
-  initial [ContextRegistryService WSDL](context/src/main/resources/ws/ContextRegistryService.wsdl).
-* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g.
-  register will use the ServiceContext Soap Header with some custom project
-  properties: `userName="${#Project#userName}" password="${#Project#password}"`
-* Requests for lookup / unregister operations use the JWT token property provided in the Soap Body, so you will need to remember to update it using the register
-  response: `<token>${#Project#token}</token>`
-
-# Postman
-
-* [Postman](https://www.postman.com/)  can be used for "Try it out" functionality
-  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
-  following properties within Postman NOTE: This excludes the add audio test. SoapUi must be used in the case of addaudio
-
-    * userToUse - The user to authenticate with
-    * passwordToUse - The password to authenticate with
-    * tokenToUse - The token (jwt by default) to authenticate with
-    * gatewayurl - The gateway url to use
-
-## DARTSService Postman
-
-* To View the application SOAP Web Services:
-    * http://localhost:8070/service/darts/DARTSService?wsdl
-* Import Project [README-DARTSService](README-DARTSService-postman-project.json)
-* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication)`
-
-## ContextRegistryService Postman
-
-* To View the application SOAP Web Services:
-    * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
-* Import Postman Project [README-ContextRegistryService](README-ContextRegistryService-postman-project.json)
-* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication).
-
 ## Building and deploying the application
 
 External dependencies:-
@@ -82,19 +21,12 @@ The project uses [Gradle](https://gradle.org) as a build tool. It already contai
 
 To build the project execute the following command:
 
-### Prerequisites
+#### Prerequisites
 
-For this project to build successfully and run against the local darts api code you need the darts open api artifact in the local
-maven repository. To do this manually then follow these steps:-
+For this project to build successfully and run against the local darts api code, you need the darts open api artifact 
+in your local repository. This is likely already in jitpack anyhow.
 
-1) Checkout https://github.com/hmcts/darts-api
-2) Run publishToMavenLocal to install the openapi artifact into the local maven repository
-
-```bash
-  ./gradlew build
-```
-
-### Environment variables
+#### Environment variables
 
 To run the service locally, you must set the following environment variables on your machine.
 The required value of each variable is stored in Azure Key Vault as a Secret.
@@ -165,7 +97,15 @@ export AAD_B2C_CLIENT_ID=
 
 ```
 
-### Running the application
+<style>
+r { color: Red }
+o { color: Orange }
+g { color: Green }
+</style>
+
+<r>NOTE: Also, you will need to run the above command from the darts api repository in order to also install the api secrets</r
+
+### Running the application locally
 
 Create the image of the application by executing the following command:
 
@@ -180,10 +120,35 @@ Create docker image:
 ```
 
 Run the distribution (created in `build/install/darts-gateway` directory)
-by executing the following command:
+by executing one of the following command:
+
+If you wish to run the whole set of services locally (obviously excluding the Azure components) 
+then run:-
+```bash
+  docker-compose -f docker-compose-local build
+  docker-compose -f docker-compose-local up  
+```
+
+This will start the API container exposing the application's port
+(set to `8070` in this template app).
+
+In order to test if the application is up, you can call its health endpoint:
 
 ```bash
-  docker-compose up
+  curl http://localhost:8070/health
+```
+
+<r> You may find that darts api fails to run on your first attempt. This will  
+relate to the db contents not being correct. Please copy the staging api database 
+to your local db and retry starting the darts api
+</r>
+
+Alternatively, if you wish to run the single gateway service and redis database 
+locally against staging infrastructure then run:-
+
+```bash
+  docker-compose -f docker-compose-local-to-staging.yml build
+  docker-compose -f docker-compose-local-to-staging.yml up  
 ```
 
 This will start the API container exposing the application's port
@@ -201,36 +166,75 @@ You should get a response similar to this:
   {"status":"UP","diskSpace":{"status":"UP","total":249644974080,"free":137188298752,"threshold":10485760}}
 ```
 
-### Alternative script to run application
+### Debugging application locally
 
-To skip all the setting up and building, just execute the following command:
+Use intellij to connect to the docker debug port 8002 if you wish to test 
+on a production like system configuration
 
-```bash
-./bin/run-in-docker.sh
-```
+## SoapUI
 
-For more information:
+* [SoapUI](https://www.soapui.org/downloads/soapui/) can be used for "Try it out" functionality
+  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
+  following properties within SoapUI
 
-```bash
-./bin/run-in-docker.sh -h
-```
+  * username - The user to authenticate with
+  * password - The password to authenticate with
+  * token - The token (either jwt or documentum) to authenticate with
 
-Script includes bare minimum environment variables necessary to start api instance. Whenever any variable is changed or any other script regarding docker
-image/container build, the suggested way to ensure all is cleaned up properly is by this command:
+* **IMPORTANT! Do not add the properties as project properties as they will be saved back to the committed xml files. Instead set them as global properties.
+  See https://www.soapui.org/docs/soap-and-wsdl/**
 
-```bash
-docker-compose rm
-```
+### DARTSService SoapUI
 
-It clears stopped containers correctly. Might consider removing clutter of images too, especially the ones fiddled with:
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/DARTSService?wsdl
+* Import SOAP Project [README-DARTSService](README-DARTSService-soapui-project.xml) with
+  initial [DARTSService WSDL](src/main/resources/ws/dartsService.wsdl).
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g.
+  addCase will use the ServiceContext Soap Header with some custom project
+  properties: `userName="${#Project#userName}" password="${#Project#password}"`
+* When testing the add audio endpoint make sure to change the properties to support MTOM and Multipart. Additionally, attach an mp2 file
 
-```bash
-docker images
+### ContextRegistryService SoapUI
 
-docker image rm <image-id>
-```
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
+* Import SOAP Project [README-ContextRegistryService](README-ContextRegistryService-soapui-project.xml) with
+  initial [ContextRegistryService WSDL](context/src/main/resources/ws/ContextRegistryService.wsdl).
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication). Initial requests e.g.
+  register will use the ServiceContext Soap Header with some custom project
+  properties: `userName="${#Project#userName}" password="${#Project#password}"`
+* Requests for lookup / unregister operations use the JWT token property provided in the Soap Body, so you will need to remember to update it using the register
+  response: `<token>${#Project#token}</token>`
 
-There is no need to remove postgres and java or similar core images.
+## Postman
+
+* [Postman](https://www.postman.com/)  can be used for "Try it out" functionality
+  using the ServiceContext Header with a valid system user (CPP / XHIBIT / MID_TIER). Firstly you will need to set the
+  following properties within Postman NOTE: This excludes the add audio test. SoapUi must be used in the case of addaudio
+
+  * userToUse - The user to authenticate with
+  * passwordToUse - The password to authenticate with
+  * tokenToUse - The token (jwt by default) to authenticate with
+  * gatewayurl - The gateway url to use
+
+### DARTSService Postman
+
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/DARTSService?wsdl
+* Import Project [README-DARTSService](README-DARTSService-postman-project.json)
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication)`
+
+### ContextRegistryService Postman
+
+* To View the application SOAP Web Services:
+  * http://localhost:8070/service/darts/runtime/ContextRegistryService?wsdl
+* Import Postman Project [README-ContextRegistryService](README-ContextRegistryService-postman-project.json)
+* Sample requests for all operations have been created (using both user name and password authentication as well as token authentication).
+
+## Transfer MTOM Media to the gateway by running
+
+uk.gov.hmcts.darts.testutils.MtomAddAudioLauncher $URL $USER, $PASSWORD
 
 ### Configuring the WSDL APIs
 
@@ -248,7 +252,7 @@ This project can be built by the gradle command :-
 
 gradle clean build
 
-Post build, you will find that the wsdl files directly under [here](src/main/resources/ws) will have updated and are ready for git commit. If you
+Post build, you will find that the wsdl files directly under [here](src/main/resources/ws) and/or [here](context/src/main/resources/ws) will have updated and are ready for git commit. If you
 are happy with the wsdl changes then commit them
 
 #### Building just the new darts context registry wsdl
@@ -258,17 +262,6 @@ gradle clean processContextRegistryWSDL
 #### Building just the new legacy darts wsdl
 
 gradle clean processDartsServiceWSDL
-
-### Other
-
-Hystrix offers much more than Circuit Breaker pattern implementation or command monitoring.
-Here are some other functionalities it provides:
-
-* [Separate, per-dependency thread pools](https://github.com/Netflix/Hystrix/wiki/How-it-Works#isolation)
-* [Semaphores](https://github.com/Netflix/Hystrix/wiki/How-it-Works#semaphores), which you can use to limit
-  the number of concurrent calls to any given dependency
-* [Request caching](https://github.com/Netflix/Hystrix/wiki/How-it-Works#request-caching), allowing
-  different code paths to execute Hystrix Commands without worrying about duplicating work
 
 ### Troubleshooting
 
