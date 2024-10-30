@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+@SuppressWarnings("PMD.UnitTestShouldIncludeAssert")
 class GetCasesMapperTest {
 
     @Test
