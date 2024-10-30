@@ -375,16 +375,16 @@ dependencies {
   implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
   implementation group: 'org.springframework', name: 'spring-context'
   implementation 'org.springframework.integration:spring-integration-redis:6.3.5'
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.41.2'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.42'
 
   implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
   implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
     exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
   }
   implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
-  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.78.1'
-  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78.1'
-  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.78.1'
+  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.79'
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.79'
+  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.79'
 
   implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
   jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.5')
@@ -403,8 +403,8 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.7'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.11'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.11'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.12'
 
   implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.5'
   constraints {
