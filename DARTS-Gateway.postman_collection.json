@@ -1,0 +1,59 @@
+{
+  "info": {
+    "_postman_id": "28e5e695-db9d-409d-8e54-e0a9042b8dbc",
+    "name": "DARTS-Gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30362290"
+  },
+  "item": [
+    {
+      "name": "dar-notify",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const moment = require('moment');",
+              "pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DDTHH:mm:ssZ\"));",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"notification_url\": \"http://xxxx/VIQDARNotifyEvent/DARNotifyEvent.asmx\",\n    \"notification_type\": \"1\",\n    \"timestamp\": \"{{timestamp}}\",\n    \"courthouse\": \"YORK\",\n    \"courtroom\": \"2\",\n    \"case_numbers\": [\n        \"T20240034\"\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://darts-gateway.{{environment}}.platform.hmcts.net/events/dar-notify",
+          "protocol": "http",
+          "host": [
+            "darts-gateway",
+            "{{environment}}",
+            "platform",
+            "hmcts",
+            "net"
+          ],
+          "path": [
+            "events",
+            "dar-notify"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
