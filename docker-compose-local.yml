@@ -12,7 +12,6 @@ services:
       - DARTS_API_DB_USERNAME=darts
       - DARTS_API_DB_PASSWORD=darts
       - DARTS_API_DB_SCHEMA=darts
-      - SPRING_PROFILES_ACTIVE=local
       - AAD_B2C_CLIENT_ID
       - AAD_B2C_CLIENT_SECRET
       - AAD_B2C_TENANT_ID
