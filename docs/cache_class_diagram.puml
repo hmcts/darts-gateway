@@ -1,0 +1,96 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+allowmixing
+
+skinparam class {
+    BackgroundColor<<Spring>> #66ffcc
+}
+
+skinparam component {
+    BackgroundColor<<Spring>> #ccff66
+}
+
+class TokenJwtCache
+class TokenDocumentumIdToJwtCache
+
+class CacheConfig {
+    TokenRegisterable getDefaultTokenCache();
+}
+
+CacheConfig -> TokenJwtCache : <<create>>
+CacheConfig -> TokenDocumentumIdToJwtCache : <<create>>
+
+component Redis
+AbstractTokenCache -> Redis : <<write/read>>
+
+class AbstractTokenCache
+
+interface TokenRegisterable {
+    Optional<Token> store(CacheValue value);
+    Optional<CacheValue> lookup(Token holder);
+}
+
+class DownstreamTokenisableValue
+
+
+TokenRegisterable <|-- AbstractTokenCache
+AbstractTokenCache <|-- TokenDocumentumIdToJwtCache
+AbstractTokenCache <|-- TokenJwtCache
+
+TokenDocumentumIdToJwtCache -> RefreshableTokenCacheValue
+TokenJwtCache -> RefreshableTokenCacheValue
+
+
+TokenDocumentumIdToJwtCache -> Token
+TokenJwtCache -> Token
+
+interface SoapEndpointInterceptor {
+    boolean handleRequest(MessageContext messageContext, Object endpoint)
+}
+
+class SoapRequestInterceptor
+
+SoapEndpointInterceptor <|-- SoapRequestInterceptor
+SoapRequestInterceptor -> TokenRegisterable
+SoapRequestInterceptor -> RequestAttributes : <<write token value>>
+class [RequestAttributes] <<Spring>>
+
+interface CacheValue {
+    String getContextString();
+    String getSharedKey();
+}
+
+interface DownstreamTokenisableValue {
+    Token getToken();
+}
+class ServiceContextCacheValue
+class RefreshableTokenCacheValue
+
+interface TokenValidator {
+ boolean test()
+}
+
+
+Token  -> TokenValidator
+RefreshableTokenCacheValue  -> TokenGenerator
+
+TokenDocumentumIdToJwtCache -> TokenGenerator
+
+
+class TokenGenerator {
+    String acquireNewToken(String username, String password)
+}
+
+class Token {
+ String tokenString;
+ boolean validate();
+}
+
+CacheValue  <|-- DownstreamTokenisableValue
+DownstreamTokenisableValue  <|-- ServiceContextCacheValue
+ServiceContextCacheValue  <|-- RefreshableTokenCacheValue
+
+
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+
+actor "client"
+
+"client" -> "DartsEndpoint" : SOAP addCase call with credentials or token
+"DartsEndpoint" -> "SoapEndpointInterceptor" : handleRequest()
+"SoapEndpointInterceptor" -> "TokenRegisterable" : create or lookup token
+
+    group if authentication failed
+         "SoapEndpointInterceptor" -> "client": respond with a SOAP authentication failure
+    end
+
+"DartsEndpoint" -> "CasesRouteImpl" : route()
+"CasesRouteImpl" -> "CasesClient" : casesGet()
+"CasesClient" -> "AuthenticationHttpEntityInterceptor" : set the feign header with the authenticated downstream token
+"CasesClient" -> "darts api" : make the call to darts api
+
+    group if rest error
+         "CasesClient" -> "client" : respond with SOAP message
+    end
+
+@enduml
