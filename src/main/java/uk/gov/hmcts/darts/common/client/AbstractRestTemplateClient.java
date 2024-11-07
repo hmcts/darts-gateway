@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.common.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.darts.common.client.component.HttpHeadersInterceptor;
 import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
+import uk.gov.hmcts.darts.config.ServiceConfig;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +45,15 @@ public abstract class AbstractRestTemplateClient {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         try {
+            String metaDataString = "Unknown request payload";
+            try {
+                ObjectMapper mapper = ServiceConfig.getServiceObjectMapper();
+                metaDataString = mapper.writeValueAsString(metadata);
+            } catch (JsonProcessingException jsonProcessingException) {
+                log.warn("Problem marshalling meta data payload", jsonProcessingException);
+            }
+
+            log.trace("Making call to darts api client with url: {} with meta data: {} and media file", url, metaDataString);
             map.put("metadata", Collections.singletonList(metadata));
             map.put("file", List.of(multipartFile.getResource()));
 

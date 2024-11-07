@@ -18,6 +18,7 @@ import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.common.client.exeption.AbstractClientProblemDecoder;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
@@ -297,5 +298,51 @@ class CasesWebServiceTest extends IntegrationBase {
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testHandlesGetCasesFeignFailureWithNoProblem(DartsGatewayClient client) throws IOException, JAXBException, InterruptedException {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/soapRequest.xml");
+
+            stubFor(get(urlPathEqualTo("/cases"))
+                        .willReturn(aResponse()
+                                        .withStatus(500)));
+
+            SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
+                                                              + "500 Server Error:", null, null).isEmpty());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void testHandlesGetCasesFeignFailureWithHtmlProblem(DartsGatewayClient client) throws IOException, JAXBException, InterruptedException {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String soapRequestStr = TestUtils.getContentsFromFile(
+                "payloads/getCases/soapRequest.xml");
+
+            stubFor(get(urlPathEqualTo("/cases"))
+                        .willReturn(aResponse()
+                                        .withStatus(500).withBody("<html><body>Internal Server Error</body></html>")));
+
+            SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
+                                                              + "500 Server Error:<html><body>Internal Server Error</body></html>", null, null).isEmpty());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
     }
 }

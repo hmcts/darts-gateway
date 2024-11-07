@@ -41,9 +41,14 @@ services:
       - AZURE_AD_FUNCTIONAL_TEST_GLOBAL_USERNAME
       - AZURE_AD_FUNCTIONAL_TEST_GLOBAL_PASSWORD
       - ARM_STORAGE_CONNECTION_STRING
+      - ARM_SERVICE_PROFILE
+      - ARM_SERVICE_ENTITLEMENT
+      - ARM_STORAGE_ACCOUNT_NAME
+      - ARM_USERNAME
+      - ARM_PASSWORD
+      - ARM_URL=http://darts-stub-services:4551
     build:
       context: .
-      dockerfile: Dockerfile
     image: darts-api:latest
     ports:
       - "4550:4550"
@@ -93,6 +98,7 @@ services:
       - "8002:8002"
     networks:
       - darts-network
+
   darts-stub-services:
     container_name: darts-stub-services
     image: darts-stub-services:master
