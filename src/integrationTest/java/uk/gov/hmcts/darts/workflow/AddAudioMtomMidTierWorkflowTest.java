@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.workflow;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
-import uk.gov.hmcts.darts.common.utils.matcher.MultipartDartsProxyContentPattern;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 import uk.gov.hmcts.darts.workflow.command.CommandFactory;
 
@@ -43,7 +43,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
-                AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE, "testuser", "testpassword");
+                                                                                    AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE,
+                                                                                    "testuser", "testpassword");
         setCommand(audioMidTierCommand);
     }
 
@@ -52,10 +53,10 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         File homeDirForTempFiles = new File(System.getProperty("user.home"));
         final int fileCountBefore = Objects.requireNonNull(homeDirForTempFiles.list()).length;
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/dartsApiResponse.json");
+            "payloads/addAudio/register/dartsApiResponse.json");
 
-        stubFor(post(urlPathEqualTo("/audios"))
-                .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
+        stubFor(post(urlPathEqualTo("/audios/metadata"))
+                    .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
         getCommand().executeWithDocker(getCommand().getArguments());
         Assertions.assertTrue(getCommand().getLogOutput().contains("Code: 200"));
@@ -66,14 +67,16 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         Assertions.assertTrue(getCommand().isSuccess());
         Assertions.assertEquals(fileCountBefore, fileCountAfter);
 
-        verify(postRequestedFor(urlPathEqualTo("/audios"))
-                   .withHeader("Authorization", new RegexPattern("Bearer test"))
-                .withRequestBody(new MultipartDartsProxyContentPattern()));
+        verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+            WireMock.matching(
+                "\\{\"started_at\":1698048000.000000000,\"ended_at\":1698051600.000000000,\"channel\":0,\"total_channels\":3,\"format\":\"mp2\"," +
+                    "\"filename\":\"sample6.mp2\",\"courthouse\":\"CARDIFF\",\"courtroom\":\"1\",\"media_file\":\"sample6.mp2\",\"file_size\":5854354," +
+                    "\"checksum\":null,\"cases\":\\[\"123456789\"],\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
         Mockito.verify(validator, times(2)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
         Mockito.verify(validator, times(3)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
 
-        verify(postRequestedFor(urlPathEqualTo("/audios"))
-                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+        verify(postRequestedFor(urlPathEqualTo("/audios/metadata"))
+                   .withHeader("Authorization", new RegexPattern("Bearer test")));
     }
 }

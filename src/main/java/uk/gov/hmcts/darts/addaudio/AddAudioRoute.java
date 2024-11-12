@@ -13,12 +13,16 @@ import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
+import uk.gov.hmcts.darts.datastore.DataManagementConfiguration;
+import uk.gov.hmcts.darts.datastore.DataManagementService;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
+import uk.gov.hmcts.darts.utilities.DataUtil;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +34,8 @@ public class AddAudioRoute {
     private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
     private final AddAudioValidator addAudioValidator;
     private final AddAudioFileValidator multipartFileValidator;
+    private final DataManagementService dataManagementService;
+    private final DataManagementConfiguration dataManagementConfiguration;
 
     public DARTSResponse route(AddAudio addAudio) {
 
@@ -58,7 +64,12 @@ public class AddAudioRoute {
                     AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
                     metaData.setFileSize(request.get().getBinarySize());
                     multipartFileValidator.validate(multipartFile);
-                    audiosClient.addAudio(multipartFile, metaData);
+
+                    UUID blobStoreUuid = dataManagementService.saveBlobData(
+                        dataManagementConfiguration.getInboundContainerName(),
+                        multipartFile.getInputStream(),
+                        DataUtil.toMap(metaData));
+                    audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid));
                 });
             } else {
                 log.error("The add audio endpoint requires a file to be specified. No file was found");

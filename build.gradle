@@ -1,18 +1,18 @@
 plugins {
-  id 'application'
-  id 'checkstyle'
-  id 'pmd'
-  id 'jacoco'
-  id 'idea'
-  id "io.freefair.lombok" version "8.10.2"
-  id 'io.spring.dependency-management' version '1.1.6'
-  id 'org.springframework.boot' version '3.3.5'
-  id 'org.owasp.dependencycheck' version '11.1.0'
-  id 'com.github.ben-manes.versions' version '0.51.0'
-  id 'org.sonarqube' version '5.1.0.4882'
-  id 'java-library'
-  id "org.openapi.generator" version "7.9.0"
-  id("com.github.bjornvester.wsdl2java") version "2.0.2"
+    id 'application'
+    id 'checkstyle'
+    id 'pmd'
+    id 'jacoco'
+    id 'idea'
+    id "io.freefair.lombok" version "8.10.2"
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'org.owasp.dependencycheck' version '11.1.0'
+    id 'com.github.ben-manes.versions' version '0.51.0'
+    id 'org.sonarqube' version '5.1.0.4882'
+    id 'java-library'
+    id "org.openapi.generator" version "7.9.0"
+    id("com.github.bjornvester.wsdl2java") version "2.0.2"
 }
 
 import static groovy.io.FileType.FILES
@@ -21,201 +21,201 @@ group = 'uk.gov.hmcts'
 version = '0.0.1'
 
 java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
-  }
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 configurations.all {
-  exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
-  exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on' // bcprov-jdk15on-1.69.jar CVE-2023-33201
-  exclude group: 'org.bouncycastle', module: 'bcutil-jdk15on'
+    exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
+    exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on' // bcprov-jdk15on-1.69.jar CVE-2023-33201
+    exclude group: 'org.bouncycastle', module: 'bcutil-jdk15on'
 
-  resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy-json') {
-    selectHighestVersion()
-  }
-  resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy-xml') {
-    selectHighestVersion()
-  }
-  resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy-jso') {
-    selectHighestVersion()
-  }
-  resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy') {
-    selectHighestVersion()
-  }
+    resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy-json') {
+        selectHighestVersion()
+    }
+    resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy-xml') {
+        selectHighestVersion()
+    }
+    resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy-jso') {
+        selectHighestVersion()
+    }
+    resolutionStrategy.capabilitiesResolution.withCapability('org.codehaus.groovy:groovy') {
+        selectHighestVersion()
+    }
 }
 
 configurations {
-  jaxb
-  openapispec
+    jaxb
+    openapispec
 }
 
 sourceSets {
-  main {
-    java.srcDir "$buildDir/generated/openapi/src/main/java"
-  }
-
-  testCommon {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/testCommon/java')
+    main {
+        java.srcDir "$buildDir/generated/openapi/src/main/java"
     }
-    resources.srcDir file('src/testCommon/resources')
-  }
 
-  functionalTest {
-    java {
-      compileClasspath += main.output
-      compileClasspath += testCommon.output
-      runtimeClasspath += main.output
-      runtimeClasspath += testCommon.output
-      srcDir file('src/functionalTest/java')
+    testCommon {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/testCommon/java')
+        }
+        resources.srcDir file('src/testCommon/resources')
     }
-    resources.srcDir file('src/functionalTest/resources')
-  }
 
-  integrationTest {
-    java {
-      compileClasspath += main.output
-      compileClasspath += testCommon.output
-      runtimeClasspath += main.output
-      runtimeClasspath += testCommon.output
-      srcDir file('src/integrationTest/java')
+    functionalTest {
+        java {
+            compileClasspath += main.output
+            compileClasspath += testCommon.output
+            runtimeClasspath += main.output
+            runtimeClasspath += testCommon.output
+            srcDir file('src/functionalTest/java')
+        }
+        resources.srcDir file('src/functionalTest/resources')
     }
-    resources.srcDir file('src/integrationTest/resources')
-  }
 
-  smokeTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/smokeTest/java')
+    integrationTest {
+        java {
+            compileClasspath += main.output
+            compileClasspath += testCommon.output
+            runtimeClasspath += main.output
+            runtimeClasspath += testCommon.output
+            srcDir file('src/integrationTest/java')
+        }
+        resources.srcDir file('src/integrationTest/resources')
     }
-    resources.srcDir file('src/smokeTest/resources')
-  }
 
-  test {
-    java {
-      compileClasspath += main.output
-      compileClasspath += testCommon.output
-      runtimeClasspath += main.output
-      runtimeClasspath += testCommon.output
-      srcDir file('src/test/java')
+    smokeTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/smokeTest/java')
+        }
+        resources.srcDir file('src/smokeTest/resources')
     }
-    resources.srcDir file('src/test/resources')
-  }
+
+    test {
+        java {
+            compileClasspath += main.output
+            compileClasspath += testCommon.output
+            runtimeClasspath += main.output
+            runtimeClasspath += testCommon.output
+            srcDir file('src/test/java')
+        }
+        resources.srcDir file('src/test/resources')
+    }
 }
 
 idea {
-  module {
-    testSources.from(sourceSets.integrationTest.allSource.srcDirs)
-    testResources.from(sourceSets.integrationTest.resources.srcDirs)
-    testSources.from(sourceSets.functionalTest.allSource.srcDirs)
-    testResources.from(sourceSets.functionalTest.resources.srcDirs)
-    testSources.from(sourceSets.smokeTest.allSource.srcDirs)
-    testResources.from(sourceSets.smokeTest.resources.srcDirs)
-    testSources.from(sourceSets.testCommon.allSource.srcDirs)
-    testResources.from(sourceSets.testCommon.resources.srcDirs)
-  }
+    module {
+        testSources.from(sourceSets.integrationTest.allSource.srcDirs)
+        testResources.from(sourceSets.integrationTest.resources.srcDirs)
+        testSources.from(sourceSets.functionalTest.allSource.srcDirs)
+        testResources.from(sourceSets.functionalTest.resources.srcDirs)
+        testSources.from(sourceSets.smokeTest.allSource.srcDirs)
+        testResources.from(sourceSets.smokeTest.resources.srcDirs)
+        testSources.from(sourceSets.testCommon.allSource.srcDirs)
+        testResources.from(sourceSets.testCommon.resources.srcDirs)
+    }
 }
 
 configurations {
-  testCommonImplementation.extendsFrom testImplementation
+    testCommonImplementation.extendsFrom testImplementation
 
-  functionalTestImplementation.extendsFrom testCommonImplementation
-  functionalTestRuntimeOnly.extendsFrom runtimeOnly
+    functionalTestImplementation.extendsFrom testCommonImplementation
+    functionalTestRuntimeOnly.extendsFrom runtimeOnly
 
-  integrationTestImplementation.extendsFrom testCommonImplementation
-  integrationTestRuntimeOnly.extendsFrom runtimeOnly
+    integrationTestImplementation.extendsFrom testCommonImplementation
+    integrationTestRuntimeOnly.extendsFrom runtimeOnly
 
-  smokeTestImplementation.extendsFrom testImplementation
-  smokeTestRuntimeOnly.extendsFrom runtimeOnly
+    smokeTestImplementation.extendsFrom testImplementation
+    smokeTestRuntimeOnly.extendsFrom runtimeOnly
 }
 
 tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+    options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
 // https://github.com/gradle/gradle/issues/16791
 tasks.withType(JavaExec).configureEach {
-  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
 tasks.withType(Test) {
-  useJUnitPlatform()
+    useJUnitPlatform()
 
-  testLogging {
-    exceptionFormat = 'full'
-  }
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
 
 test {
-  failFast = false
+    failFast = false
 }
 
 task functional(type: Test) {
-  description = "Runs functional tests"
-  group = "Verification"
-  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-  exclude '**/performance/*'
-  classpath = sourceSets.functionalTest.runtimeClasspath
+    description = "Runs functional tests"
+    group = "Verification"
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    exclude '**/performance/*'
+    classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
 task functionalPerformance(type: Test) {
-  useJUnitPlatform()
-  description = "Runs functional tests"
-  group = "Verification"
-  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-  include '**/performance/*'
-  classpath = sourceSets.functionalTest.runtimeClasspath
+    useJUnitPlatform()
+    description = "Runs functional tests"
+    group = "Verification"
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    include '**/performance/*'
+    classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
 task integration(type: Test) {
-  description = "Runs integration tests"
-  group = "Verification"
-  testClassesDirs = sourceSets.integrationTest.output.classesDirs
-  classpath = sourceSets.integrationTest.runtimeClasspath
-  failFast = false
+    description = "Runs integration tests"
+    group = "Verification"
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    failFast = false
 }
 
 task smoke(type: Test) {
-  description = "Runs Smoke Tests"
-  testClassesDirs = sourceSets.smokeTest.output.classesDirs
-  classpath = sourceSets.smokeTest.runtimeClasspath
+    description = "Runs Smoke Tests"
+    testClassesDirs = sourceSets.smokeTest.output.classesDirs
+    classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
 
 checkstyle {
-  maxWarnings = 0
+    maxWarnings = 0
 }
 
 var sourceSetsCopy = sourceSets
 pmd {
-  toolVersion = "7.7.0"
-  sourceSets = [sourceSetsCopy.main]
-  reportsDir = file("$project.buildDir/reports/pmd")
-  // https://github.com/pmd/pmd/issues/876
-  ruleSets = []
-  ruleSetFiles = files("config/pmd/main-ruleset.xml")
+    toolVersion = "7.7.0"
+    sourceSets = [sourceSetsCopy.main]
+    reportsDir = file("$project.buildDir/reports/pmd")
+    // https://github.com/pmd/pmd/issues/876
+    ruleSets = []
+    ruleSetFiles = files("config/pmd/main-ruleset.xml")
 }
 
 pmd {
-  toolVersion = "7.7.0"
-  sourceSets = [sourceSetsCopy.test, sourceSetsCopy.functionalTest, sourceSetsCopy.integrationTest, sourceSetsCopy.smokeTest]
-  reportsDir = file("$project.buildDir/reports/pmd")
-  // https://github.com/pmd/pmd/issues/876
-  ruleSets = []
-  ruleSetFiles = files("config/pmd/test-ruleset.xml")
+    toolVersion = "7.7.0"
+    sourceSets = [sourceSetsCopy.test, sourceSetsCopy.functionalTest, sourceSetsCopy.integrationTest, sourceSetsCopy.smokeTest]
+    reportsDir = file("$project.buildDir/reports/pmd")
+    // https://github.com/pmd/pmd/issues/876
+    ruleSets = []
+    ruleSetFiles = files("config/pmd/test-ruleset.xml")
 }
 
 jacocoTestReport {
-  executionData(test, integration)
-  reports {
-    xml.required = true
-    csv.required = false
-    html.required = true
-  }
+    executionData(test, integration)
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+    }
 }
 
 
@@ -224,457 +224,458 @@ project.tasks['check'].finalizedBy integration
 
 
 def sonarExclusions = [
-  '**/com/emc/**',
-  '**/com/service/**',
-  '**/com/synapps/**',
-  '**/com/viqsoultions/**',
-  '**/uk/gov/courtservice/**',
-  '**/uk/gov/addcase/**',
-  'src/main/java/generated/**',
-  '**/uk/gov/hmcts/darts/**/model/**',
-  '**/uk/gov/hmcts/darts/**/config/**',
-  '**/enums/**',
-  '**/DocumentumIdToJwtCache*',
-  '**/CacheValueWithJwt*',
-  '**/com/service/viq/event/**',
-  '**/uk/gov/hmcts/darts/cache/token/service/**',
-  '**/uk/gov/hmcts/darts/test/**'
+        '**/com/emc/**',
+        '**/com/service/**',
+        '**/com/synapps/**',
+        '**/com/viqsoultions/**',
+        '**/uk/gov/courtservice/**',
+        '**/uk/gov/addcase/**',
+        'src/main/java/generated/**',
+        '**/uk/gov/hmcts/darts/**/model/**',
+        '**/uk/gov/hmcts/darts/**/config/**',
+        '**/enums/**',
+        '**/DocumentumIdToJwtCache*',
+        '**/CacheValueWithJwt*',
+        '**/com/service/viq/event/**',
+        '**/uk/gov/hmcts/darts/cache/token/service/**',
+        '**/uk/gov/hmcts/darts/test/**'
 ]
 
 sonarqube {
-  properties {
-    property "sonar.projectName", "DARTS :: darts-gateway"
-    property "sonar.projectKey", "uk.gov.hmcts.reform:darts-gateway"
-    property "sonar.exclusions", sonarExclusions.join(', ')
-  }
+    properties {
+        property "sonar.projectName", "DARTS :: darts-gateway"
+        property "sonar.projectKey", "uk.gov.hmcts.reform:darts-gateway"
+        property "sonar.exclusions", sonarExclusions.join(', ')
+    }
 }
 
 // before committing a change, make sure task still works
 dependencyUpdates {
-  def isNonStable = { String version ->
-    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { qualifier -> version.toUpperCase().contains(qualifier) }
-    def regex = /^[0-9,.v-]+$/
-    return !stableKeyword && !(version ==~ regex)
-  }
-  rejectVersionIf { selection -> // <---- notice how the closure argument is named
-    return isNonStable(selection.candidate.version) && !isNonStable(selection.currentVersion)
-  }
+    def isNonStable = { String version ->
+        def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { qualifier -> version.toUpperCase().contains(qualifier) }
+        def regex = /^[0-9,.v-]+$/
+        return !stableKeyword && !(version ==~ regex)
+    }
+    rejectVersionIf { selection -> // <---- notice how the closure argument is named
+        return isNonStable(selection.candidate.version) && !isNonStable(selection.currentVersion)
+    }
 }
 
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
-  // Specifies if the build should be failed if a CVSS score above a specified level is identified.
-  // range of 0-10 fails the build, anything greater and it doesn't fail the build
-  failBuildOnCVSS = 0
-  suppressionFile = 'config/owasp/suppressions.xml'
+    // Specifies if the build should be failed if a CVSS score above a specified level is identified.
+    // range of 0-10 fails the build, anything greater and it doesn't fail the build
+    failBuildOnCVSS = 0
+    suppressionFile = 'config/owasp/suppressions.xml'
 
-  analyzers {
-    // Disable scanning of .NET related binaries
-    assemblyEnabled = false
-  }
-  skipConfigurations = [
-    "compileOnly",
-    "pmd",
-    "integrationTest",
-    "functionalTest",
-    "smokeTest",
-    "contractTestRuntimeClasspath",
-    "contractTestCompileClasspath"
-  ]
+    analyzers {
+        // Disable scanning of .NET related binaries
+        assemblyEnabled = false
+    }
+    skipConfigurations = [
+            "compileOnly",
+            "pmd",
+            "integrationTest",
+            "functionalTest",
+            "smokeTest",
+            "contractTestRuntimeClasspath",
+            "contractTestCompileClasspath"
+    ]
 }
 
 repositories {
-  mavenLocal()
-  mavenCentral()
-  maven { url 'https://jitpack.io' }
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 ext {
-  log4JVersion = "2.24.1"
-  wsdl4jVersion = "1.6.3"
+    log4JVersion = "2.24.1"
+    wsdl4jVersion = "1.6.3"
 }
 
 ext['snakeyaml.version'] = '2.0'
 
 
 task generateCodeFromSpecification() {
-  doFirst {
+    doFirst {
 
-    def openApiGenerateTaskList = []
+        def openApiGenerateTaskList = []
 
-    //here we are going to store swagger files
-    def swaggerList = []
+        //here we are going to store swagger files
+        def swaggerList = []
 
-    //iteration by swagger file root folder and save into swaggerList variable
-    def dir = new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath)
+        //iteration by swagger file root folder and save into swaggerList variable
+        def dir = new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath)
 
-    dir.eachFileRecurse(FILES) { file ->
-      if (file.getName().endsWith(".yaml") && !file.getName().contains("problem"))
-        swaggerList << file
-    }
+        dir.eachFileRecurse(FILES) { file ->
+            if (file.getName().endsWith(".yaml") && !file.getName().contains("problem"))
+                swaggerList << file
+        }
 
-    // Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
-    swaggerList.each {
-        def apiName = it.getName().replace(".yaml", "");
-        def apiLocation = it.getAbsolutePath();
+        // Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
+        swaggerList.each {
+            def apiName = it.getName().replace(".yaml", "");
+            def apiLocation = it.getAbsolutePath();
 
-        def taskName = "openApiGenerate" + apiName.capitalize()
-        openApiGenerateTaskList << taskName
+            def taskName = "openApiGenerate" + apiName.capitalize()
+            openApiGenerateTaskList << taskName
 
-        Task task = tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
-          generatorName = "spring"
-          inputSpec = "${apiLocation}"
-          outputDir = "$buildDir/generated/openapi".toString()
-          modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
-          outputDir = "$buildDir/generated/openapi"
-          apiPackage = "uk.gov.hmcts.darts.api.${apiName}"
-          modelPackage = "uk.gov.hmcts.darts.model.${apiName}"
-          invokerPackage = "uk.gov.hmcts.darts.invoker.${apiName}"
-          library="spring-cloud"
-          //    https://openapi-generator.tech/docs/generators/java/#config-options
-          skipOperationExample = true
-          skipValidateSpec = true
-          configOptions = [
-            dateLibrary   : "java8",
-            serializationLibrary       : "jackson",
-            useJakartaEe :"true",
-            library : "spring-cloud",
-            interfaceOnly : "true"
-          ]
-        })
+            Task task = tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
+                generatorName = "spring"
+                inputSpec = "${apiLocation}"
+                outputDir = "$buildDir/generated/openapi".toString()
+                modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
+                outputDir = "$buildDir/generated/openapi"
+                apiPackage = "uk.gov.hmcts.darts.api.${apiName}"
+                modelPackage = "uk.gov.hmcts.darts.model.${apiName}"
+                invokerPackage = "uk.gov.hmcts.darts.invoker.${apiName}"
+                library = "spring-cloud"
+                //    https://openapi-generator.tech/docs/generators/java/#config-options
+                skipOperationExample = true
+                skipValidateSpec = true
+                configOptions = [
+                        dateLibrary         : "java8",
+                        serializationLibrary: "jackson",
+                        useJakartaEe        : "true",
+                        library             : "spring-cloud",
+                        interfaceOnly       : "true"
+                ]
+            })
 
-        task.actions.each { it.execute(task) }
-      }
+            task.actions.each { it.execute(task) }
+        }
     }
 }
 
 sourceSets {
-  main {
-    java {
-      srcDir("$buildDir/generated/openapi/src/main/java")
+    main {
+        java {
+            srcDir("$buildDir/generated/openapi/src/main/java")
+        }
     }
-  }
 }
 
 dependencies {
-  implementation group: 'io.rest-assured', name: 'rest-assured'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.31'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.31'
-  implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.31'
-  implementation 'org.apache.santuario:xmlsec:4.0.3'
+    implementation group: 'io.rest-assured', name: 'rest-assured'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.31'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.31'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.31'
+    implementation 'org.apache.santuario:xmlsec:4.0.3'
 
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
-  implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
-  implementation group: 'org.springframework', name: 'spring-context'
-  implementation 'org.springframework.integration:spring-integration-redis:6.3.5'
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.46'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
+    implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
+    implementation group: 'org.springframework', name: 'spring-context'
+    implementation 'org.springframework.integration:spring-integration-redis:6.3.5'
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.46'
 
-  implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
-  implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
-    exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
-  }
-  implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
-  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.79'
-  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.79'
-  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.79'
-
-  implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
-  jaxb( 'org.glassfish.jaxb:jaxb-xjc:4.0.5')
-  implementation( 'org.glassfish.jaxb:jaxb-runtime:4.0.5')
-  implementation group: 'org.apache.tika', name: 'tika-core', version: '3.0.0'
-
-  // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
-  implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.3', {
-    exclude group: 'commons-fileupload', module: 'commons-fileupload'
-  }
-  implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
-
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.7'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.12'
-
-  implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.5'
-  constraints {
-    implementation('com.squareup.okio:okio:3.9.1') {
-      because 'version 3.0.0 has vulnerability CVE-2023-3635'
+    implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
+    implementation group: 'org.springframework.ws', name: 'spring-ws-security', {
+        exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
     }
-  }
+    implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.79'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.79'
+    implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.79'
 
-  implementation 'org.zalando:problem-spring-web-starter:0.29.1'
-  implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
+    jaxb('org.glassfish.jaxb:jaxb-xjc:4.0.5')
+    implementation('org.glassfish.jaxb:jaxb-runtime:4.0.5')
+    implementation group: 'org.apache.tika', name: 'tika-core', version: '3.0.0'
 
-  implementation 'org.mapstruct:mapstruct:1.6.3'
-  implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
-  implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.2.2'
+    // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-  // https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
-  implementation group: 'org.apache.ws.xmlschema', name: 'xmlschema-core', version: '2.3.1'
-  // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-  implementation group: 'javax.mail', name: 'javax.mail-api', version: '1.6.2'
-  // https://mvnrepository.com/artifact/javax.activation/activation
-  implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
-  // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
-  implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.3', {
+        exclude group: 'commons-fileupload', module: 'commons-fileupload'
+    }
+    implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
 
-  implementation project(path: ':context')
-  implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.7'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12'
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.12'
 
-  annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.5'
+    constraints {
+        implementation('com.squareup.okio:okio:3.9.1') {
+            because 'version 3.0.0 has vulnerability CVE-2023-3635'
+        }
+    }
 
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-  testImplementation(platform('org.junit:junit-bom:5.11.3'))
-  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
-    exclude group: 'junit', module: 'junit'
-    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-  }
-  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
-  testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.0.11'
-  testImplementation group: 'commons-io', name: 'commons-io', version: '2.17.0'// CVE-2021-29425
-  testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
-  testImplementation 'org.xmlunit:xmlunit-core:2.10.0'
-  testImplementation 'org.xmlunit:xmlunit-matchers:2.10.0'
-  testImplementation 'org.testcontainers:testcontainers:1.20.3'
-  testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.1.4'
+    implementation 'org.zalando:problem-spring-web-starter:0.29.1'
+    implementation 'org.apache.commons:commons-collections4:4.4'
 
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.3'
-  testImplementation 'it.ozimov:embedded-redis:0.7.3'
-  testImplementation 'io.github.hakky54:logcaptor:2.9.3'
-  testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.6.3', {
-    exclude group: 'org.codehaus.groovy', module: 'groovy-json'
-    exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
-    exclude group: 'org.codehaus.groovy', module: 'groovy-jso'
-    exclude group: 'org.codehaus.groovy', module: 'groovy'
-  }
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.2.2'
 
-  testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_http', version: '5.6.3'
+    // https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
+    implementation group: 'org.apache.ws.xmlschema', name: 'xmlschema-core', version: '2.3.1'
+    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+    implementation group: 'javax.mail', name: 'javax.mail-api', version: '1.6.2'
+    // https://mvnrepository.com/artifact/javax.activation/activation
+    implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
+    // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+    implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+
+    implementation project(path: ':context')
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation platform('com.azure:azure-sdk-bom:1.2.29')
+    implementation 'com.azure:azure-storage-blob'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation(platform('org.junit:junit-bom:5.11.3'))
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
+    testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.0.11'
+    testImplementation group: 'commons-io', name: 'commons-io', version: '2.17.0'// CVE-2021-29425
+    testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
+    testImplementation 'org.xmlunit:xmlunit-core:2.10.0'
+    testImplementation 'org.xmlunit:xmlunit-matchers:2.10.0'
+    testImplementation 'org.testcontainers:testcontainers:1.20.3'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.1.4'
+
+    testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.3'
+    testImplementation 'it.ozimov:embedded-redis:0.7.3'
+    testImplementation 'io.github.hakky54:logcaptor:2.9.3'
+    testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.6.3', {
+        exclude group: 'org.codehaus.groovy', module: 'groovy-json'
+        exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
+        exclude group: 'org.codehaus.groovy', module: 'groovy-jso'
+        exclude group: 'org.codehaus.groovy', module: 'groovy'
+    }
+
+    testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_http', version: '5.6.3'
 
 
-  openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
+    openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
 
 bootJar {
-  archiveFileName = "darts-gateway.jar"
+    archiveFileName = "darts-gateway.jar"
 
-  manifest {
-    attributes('Implementation-Version': project.version.toString())
-  }
+    manifest {
+        attributes('Implementation-Version': project.version.toString())
+    }
 
 }
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
 rootProject.tasks.named("processSmokeTestResources") {
-  duplicatesStrategy = 'include'
+    duplicatesStrategy = 'include'
 }
 
 rootProject.tasks.named("processIntegrationTestResources") {
-  duplicatesStrategy = 'include'
+    duplicatesStrategy = 'include'
 }
 
 rootProject.tasks.named("processFunctionalTestResources") {
-  duplicatesStrategy = 'include'
+    duplicatesStrategy = 'include'
 }
 
 wrapper {
-  distributionType = Wrapper.DistributionType.ALL
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 tasks.withType(Checkstyle) {
-  exclude 'com/service/mojdarts/synapps/com/**'
-  exclude 'com/synapps/moj/dfs/response/*.java'
-  exclude 'com/emc/**/*.java'
-  exclude 'uk/gov/courtservice/**/*.java'
-  exclude 'uk/gov/addcase/**/*.java'
-  exclude 'com/viqsoultions/**/*.java'
-  exclude 'com/service/viq/event/**/*.java'
+    exclude 'com/service/mojdarts/synapps/com/**'
+    exclude 'com/synapps/moj/dfs/response/*.java'
+    exclude 'com/emc/**/*.java'
+    exclude 'uk/gov/courtservice/**/*.java'
+    exclude 'uk/gov/addcase/**/*.java'
+    exclude 'com/viqsoultions/**/*.java'
+    exclude 'com/service/viq/event/**/*.java'
 }
 
 tasks.withType(Pmd) {
-  exclude 'com/service/mojdarts/synapps/com/**'
-  exclude 'com/synapps/moj/dfs/response/**'
-  exclude 'com/emc/**/*.java'
-  exclude 'uk/gov/courtservice/**/*.java'
-  exclude 'uk/gov/addcase/**/*.java'
-  exclude 'com/viqsoultions/**/*.java'
-  exclude 'com/service/viq/event/**/*.java'
+    exclude 'com/service/mojdarts/synapps/com/**'
+    exclude 'com/synapps/moj/dfs/response/**'
+    exclude 'com/emc/**/*.java'
+    exclude 'uk/gov/courtservice/**/*.java'
+    exclude 'uk/gov/addcase/**/*.java'
+    exclude 'com/viqsoultions/**/*.java'
+    exclude 'com/service/viq/event/**/*.java'
 }
 
 sourceSets {
-  main {
-    java {
-      srcDir 'src/main/java'
-      srcDir 'src/main/java/generated'
-      srcDir 'build/generated-sources/jaxb'
-      srcDir 'build/generated-sources/jaxbViqEvent'
-      srcDir 'build/generated-sources/jaxbRegisterNode'
-      srcDir 'build/generated-sources/jaxbAddCase'
-      srcDir 'build/generated-sources/jaxbAddAudio'
-      srcDir 'build/generated-sources/jaxbViqEvent'
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir 'src/main/java/generated'
+            srcDir 'build/generated-sources/jaxb'
+            srcDir 'build/generated-sources/jaxbViqEvent'
+            srcDir 'build/generated-sources/jaxbRegisterNode'
+            srcDir 'build/generated-sources/jaxbAddCase'
+            srcDir 'build/generated-sources/jaxbAddAudio'
+            srcDir 'build/generated-sources/jaxbViqEvent'
+        }
     }
-  }
 }
 
 tasks.named('processTestResources', Copy) {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 task genJaxb {
-  ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
-  ext.schema = "src/main/resources/schemas/dar-notify-event.xsd"
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+    ext.schema = "src/main/resources/schemas/dar-notify-event.xsd"
 
-  outputs.dir sourcesDir
+    outputs.dir sourcesDir
 
-  doLast() {
-    project.ant {
-      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
-      mkdir(dir: sourcesDir)
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, schema: schema) {
-        arg(value: "-wsdl")
-        produces(dir: sourcesDir, includes: "**/*.java")
-      }
+            xjc(destdir: sourcesDir, schema: schema) {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+        }
     }
-  }
 }
 
 task genJaxbViqEvent {
-  ext.sourcesDir = "${buildDir}/generated-sources/jaxbViqEvent"
-  ext.schema = "src/main/resources/schemas/event.xsd"
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxbViqEvent"
+    ext.schema = "src/main/resources/schemas/event.xsd"
 
-  outputs.dir sourcesDir
+    outputs.dir sourcesDir
 
-  doLast() {
-    project.ant {
-      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
-      mkdir(dir: sourcesDir)
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, package: "com.service.viq.event",  schema: schema) {
-        arg(value: "-wsdl")
-        produces(dir: sourcesDir, includes: "**/*.java")
-      }
+            xjc(destdir: sourcesDir, package: "com.service.viq.event", schema: schema) {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+        }
     }
-  }
 }
 
 task genJaxbRegisterNode {
-  ext.sourcesDir = "${buildDir}/generated-sources/jaxbRegisterNode"
-  ext.schema = "src/main/resources/schemas/darts-register-node.xsd"
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxbRegisterNode"
+    ext.schema = "src/main/resources/schemas/darts-register-node.xsd"
 
-  outputs.dir sourcesDir
+    outputs.dir sourcesDir
 
-  doLast() {
-    project.ant {
-      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
-      mkdir(dir: sourcesDir)
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.registernode",  schema: schema) {
-        arg(value: "-wsdl")
+            xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.registernode", schema: schema) {
+                arg(value: "-wsdl")
 
-        produces(dir: sourcesDir, includes: "**/*.java")
-      }
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+        }
     }
-  }
 }
 
 task genJaxbAddCase {
-  ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddCase"
-  ext.schema = "src/main/resources/schemas/darts-add-case.xsd"
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddCase"
+    ext.schema = "src/main/resources/schemas/darts-add-case.xsd"
 
-  outputs.dir sourcesDir
+    outputs.dir sourcesDir
 
-  doLast() {
-    project.ant {
-      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
-      mkdir(dir: sourcesDir)
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addcase",  schema: schema) {
-        arg(value: "-wsdl")
+            xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addcase", schema: schema) {
+                arg(value: "-wsdl")
 
-        produces(dir: sourcesDir, includes: "**/*.java")
-      }
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+        }
     }
-  }
 }
 
 task genJaxbAddAudio {
-  ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddAudio"
-  ext.schema = "src/main/resources/schemas/addAudio.xsd"
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxbAddAudio"
+    ext.schema = "src/main/resources/schemas/addAudio.xsd"
 
-  outputs.dir sourcesDir
+    outputs.dir sourcesDir
 
-  doLast() {
-    project.ant {
-      taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
-      mkdir(dir: sourcesDir)
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
 
-      xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addaudio",  schema: schema) {
-        arg(value: "-wsdl")
+            xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.addaudio", schema: schema) {
+                arg(value: "-wsdl")
 
-        produces(dir: sourcesDir, includes: "**/*.java")
-      }
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+        }
     }
-  }
 }
 
 wsdl2java {
     wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws/dartsService"))
     includes = [
-        "**/*.wsdl"
-      ]
+            "**/*.wsdl"
+    ]
 }
 
 compileJava.dependsOn genJaxb
 
 task extractOpenSpecification() {
-  doFirst {
-    configurations.openapispec.getFiles()
-      .each {
-        def zip = new java.util.zip.ZipFile(it)
-        for (def entry : zip.entries()) {
-          if (entry == null) return
+    doFirst {
+        configurations.openapispec.getFiles()
+                .each {
+                    def zip = new java.util.zip.ZipFile(it)
+                    for (def entry : zip.entries()) {
+                        if (entry == null) return
 
-          String contents = zip.getInputStream(entry).text
+                        String contents = zip.getInputStream(entry).text
 
-          String name = entry.name
+                        String name = entry.name
 
-          if (name.endsWith(".yaml")) {
-            //  Finally, we write the contents to a file
-            new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath).mkdirs()
-            String newFileName = "${layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath}/$name"
+                        if (name.endsWith(".yaml")) {
+                            //  Finally, we write the contents to a file
+                            new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath).mkdirs()
+                            String newFileName = "${layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath}/$name"
 
-            def newFile = new File(newFileName)
-            newFile.createNewFile()
-            newFile.text = contents
-          }
-        }
-      }
-  }
+                            def newFile = new File(newFileName)
+                            newFile.createNewFile()
+                            newFile.text = contents
+                        }
+                    }
+                }
+    }
 }
 
 /**
  * Run the custom task with the defaults to process the legacy darts service
  */
 tasks.register('processDartsServiceWSDL', CreateAPIMWSDLFile)
-{
-  wsdlFile = new File("src/main/resources/ws/dartsService/DARTSService.wsdl")
-  urlToReplace = "http://test"
-  outputFile = new File("src/main/resources/ws/dartsService.wsdl")
-}
+        {
+            wsdlFile = new File("src/main/resources/ws/dartsService/DARTSService.wsdl")
+            urlToReplace = "http://test"
+            outputFile = new File("src/main/resources/ws/dartsService.wsdl")
+        }
 
 project.tasks.processResources.dependsOn processDartsServiceWSDL
 project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
@@ -683,9 +684,25 @@ generateCodeFromSpecification.dependsOn extractOpenSpecification
 compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio, genJaxbViqEvent
 
 tasks.named { it == "generateEffectiveLombokConfig" }.configureEach {
-  dependsOn(genJaxb)
-  dependsOn(genJaxbAddAudio)
-  dependsOn(genJaxbAddCase)
-  dependsOn(genJaxbRegisterNode)
-  dependsOn(genJaxbViqEvent)
+    dependsOn(genJaxb)
+    dependsOn(genJaxbAddAudio)
+    dependsOn(genJaxbAddCase)
+    dependsOn(genJaxbRegisterNode)
+    dependsOn(genJaxbViqEvent)
+}
+
+task runAllStyleChecks {
+    dependsOn 'checkstyleMain'
+    dependsOn 'checkstyleTest'
+    dependsOn 'checkstyleIntegrationTest'
+    dependsOn 'checkstyleSmokeTest'
+    dependsOn 'checkstyleFunctionalTest'
+    dependsOn 'checkstyleTestCommon'
+
+    dependsOn 'pmdMain'
+    dependsOn 'pmdTest'
+    dependsOn 'pmdIntegrationTest'
+    dependsOn 'pmdSmokeTest'
+    dependsOn 'pmdFunctionalTest'
+    dependsOn 'pmdTestCommon'
 }

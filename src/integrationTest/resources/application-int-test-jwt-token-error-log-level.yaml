@@ -10,6 +10,10 @@ logging:
     root: ERROR
 
 darts-gateway:
+  storage:
+    blob:
+      client:
+        disable-upload: true
   cache:
     token-generate: jwt
     map-token-to-session: false
