@@ -18,7 +18,11 @@ import static org.apache.commons.codec.digest.DigestUtils.md5;
  */
 @Component
 @Slf4j
-public class FileContentChecksum {
+public final class FileContentChecksum {
+
+    private FileContentChecksum() {
+
+    }
 
     public static String calculate(InputStream inputStream) throws IOException {
         return encodeToString(md5(inputStream));
