@@ -17,12 +17,14 @@ import uk.gov.hmcts.darts.datastore.DataManagementConfiguration;
 import uk.gov.hmcts.darts.datastore.DataManagementService;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.utilities.DataUtil;
+import uk.gov.hmcts.darts.utilities.FileContentChecksum;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +56,9 @@ public class AddAudioRoute {
 
             if (request.isPresent()) {
                 addAudioValidator.validateCourtroom(addAudioLegacy);
+
+                AtomicReference<String> checksum = new AtomicReference<>(null);
+                request.get().consumeFileBinaryStream(uploadedStream -> checksum.set(FileContentChecksum.calculate(uploadedStream.getInputStream())));
                 // consume the uploaded file and proxy downstream
                 request.get().consumeFileBinaryStream(uploadedStream -> {
                     StreamingMultipart multipartFile = new StreamingMultipart(
@@ -69,6 +74,8 @@ public class AddAudioRoute {
                         dataManagementConfiguration.getInboundContainerName(),
                         multipartFile.getInputStream(),
                         DataUtil.toMap(metaData));
+                    log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
+                    metaData.setChecksum(checksum.get());
                     audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid));
                 });
             } else {

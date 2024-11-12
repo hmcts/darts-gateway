@@ -69,6 +69,7 @@ public class AudiosClient extends AbstractRestTemplateClient implements AudiosAp
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(List.of());
             HttpEntity<AddAudioMetadataRequestWithStorageGUID> requestEntity = new HttpEntity<>(addAudioMetadataRequestWithStorageGuid, headers);
             processHttpHeaderInterceptors(headers);
             return getTemplate().postForEntity(baseUrl + "/audios/metadata", requestEntity, Void.class);
