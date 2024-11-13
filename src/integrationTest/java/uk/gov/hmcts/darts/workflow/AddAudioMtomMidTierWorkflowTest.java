@@ -71,7 +71,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
             WireMock.matching(
                 "\\{\"started_at\":1698048000.000000000,\"ended_at\":1698051600.000000000,\"channel\":0,\"total_channels\":3,\"format\":\"mp2\"," +
                     "\"filename\":\"sample6.mp2\",\"courthouse\":\"CARDIFF\",\"courtroom\":\"1\",\"media_file\":\"sample6.mp2\",\"file_size\":5854354," +
-                    "\"checksum\":null,\"cases\":\\[\"123456789\"],\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
+                    "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"123456789\"]," +
+                    "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
         Mockito.verify(validator, times(2)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
         Mockito.verify(validator, times(3)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());

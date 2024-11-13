@@ -184,7 +184,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
                         "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
-                        "\"checksum\":null,\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
@@ -224,7 +224,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
                         "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
-                        "\"checksum\":null,\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
@@ -260,7 +260,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
                         "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
-                        "\"checksum\":null,\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
             // ensure that the payload logging is turned off for this api call
@@ -323,7 +323,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             WireMock.matching(
                 "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
                     "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
-                    "\"checksum\":null,\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                    "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                     "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
     }
 
@@ -372,7 +372,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
                         "\"filename\":\"0001.a00\",\"courthouse\":\"theunknowncourthouse\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\"" +
-                        ",\"file_size\":5854354,\"checksum\":null,\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        ",\"file_size\":5854354,\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
@@ -538,7 +538,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
                         "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
-                        "\"checksum\":null,\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
             // ensure that the payload logging is turned off for this api call
@@ -571,7 +571,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
                         "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
-                        "\"checksum\":null,\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
             // ensure that the payload logging is turned off for this api call
