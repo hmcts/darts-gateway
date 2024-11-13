@@ -15,5 +15,11 @@ echo "EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST=$(az keyvault secret show -
 echo "VIQ_EXTERNAL_USER_NAME=$(az keyvault secret show --vault-name darts-stg --name ViQExternalUserName | jq .value -r)"
 echo "VIQ_EXTERNAL_PASSWORD=$(az keyvault secret show --vault-name darts-stg --name ViQExternalPassword | jq .value -r)"
 echo "VIQ_INTERNAL_PASSWORD=$(az keyvault secret show --vault-name darts-stg --name ViQInternalPassword | jq .value -r)"
+echo "CP_EXTERNAL_USER_NAME=$(az keyvault secret show --vault-name darts-stg --name CPExternalUserName | jq .value -r)"
+echo "CP_EXTERNAL_PASSWORD=$(az keyvault secret show --vault-name darts-stg --name CPExternalPassword | jq .value -r)"
+echo "CP_INTERNAL_PASSWORD=$(az keyvault secret show --vault-name darts-stg --name CPInternalPassword | jq .value -r)"
+echo "XHIBIT_EXTERNAL_USER_NAME=$(az keyvault secret show --vault-name darts-stg --name XhibitExternalUserName | jq .value -r)"
+echo "XHIBIT_EXTERNAL_PASSWORD=$(az keyvault secret show --vault-name darts-stg --name XhibitExternalPassword | jq .value -r)"
+echo "XHIBIT_INTERNAL_PASSWORD=$(az keyvault secret show --vault-name darts-stg --name XhibitInternalPassword | jq .value -r)"
 
 echo "AZURE_STORAGE_CONNECTION_STRING=$(az keyvault secret show --vault-name darts-stg --name AzureStorageConnectionString | jq .value -r)"
