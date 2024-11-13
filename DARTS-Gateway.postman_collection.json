@@ -1,59 +1,814 @@
 {
-  "info": {
-    "_postman_id": "28e5e695-db9d-409d-8e54-e0a9042b8dbc",
-    "name": "DARTS-Gateway",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "30362290"
-  },
-  "item": [
-    {
-      "name": "dar-notify",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              "const moment = require('moment');",
-              "pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DDTHH:mm:ssZ\"));",
-              ""
-            ],
-            "type": "text/javascript",
-            "packages": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"notification_url\": \"http://xxxx/VIQDARNotifyEvent/DARNotifyEvent.asmx\",\n    \"notification_type\": \"1\",\n    \"timestamp\": \"{{timestamp}}\",\n    \"courthouse\": \"YORK\",\n    \"courtroom\": \"2\",\n    \"case_numbers\": [\n        \"T20240034\"\n    ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://darts-gateway.{{environment}}.platform.hmcts.net/events/dar-notify",
-          "protocol": "http",
-          "host": [
-            "darts-gateway",
-            "{{environment}}",
-            "platform",
-            "hmcts",
-            "net"
-          ],
-          "path": [
-            "events",
-            "dar-notify"
-          ]
-        }
-      },
-      "response": []
-    }
-  ]
+	"info": {
+		"_postman_id": "2a1c6ef9-c012-4398-ae08-316f56e6e00a",
+		"name": "DARTS-Gateway",
+		"description": "This collection needs the following environment variables:-\n\n- environment  \n    Should be one of \"demo\", \"staging\", \"test\" etc.\n    \n- darts-gateway-external-username  \n    Retrieved from Azure vault, can be Viq, CPP, or XHIBIT user\n    \n- darts-gateway-external-password  \n    Retrieved from Azure vault, can be Viq, CPP, or XHIBIT user",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30362290"
+	},
+	"item": [
+		{
+			"name": "ContextRegistry",
+			"item": [
+				{
+					"name": "register",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const xml2js = require('xml2js');   ",
+									" xml2js.parseString(pm.response.text(), {",
+									"    ignoreAttrs: true, ",
+									"    explicitArray: false,",
+									"}, function (err, result) {",
+									"        pm.collectionVariables.set(\"gateway_auth_token\", result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns3:registerResponse']['return']);",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <S:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1700061962100--7690714146928305881\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\" xmlns:ns2=\"http://properties.core.datamodel.fs.documentum.emc.com/\" xmlns:ns3=\"http://profiles.core.datamodel.fs.documentum.emc.com/\" xmlns:ns4=\"http://query.core.datamodel.fs.documentum.emc.com/\" xmlns:ns5=\"http://content.core.datamodel.fs.documentum.emc.com/\" xmlns:ns6=\"http://core.datamodel.fs.documentum.emc.com/\">\n         <Identities password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" userName=\"{{darts-gateway-external-username}}\" xsi:type=\"RepositoryIdentity\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></Identities>\n         <Profiles allowAsyncContentTransfer=\"false\" allowCachedContentTransfer=\"false\" isProcessOLELinks=\"false\" transferMode=\"MTOM\" xsi:type=\"ns3:ContentTransferProfile\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></Profiles>\n      </ServiceContext>\n   </S:Header>\n   <S:Body>\n      <ns8:register xmlns:ns8=\"http://services.rt.fs.documentum.emc.com/\" xmlns:ns7=\"http://core.datamodel.fs.documentum.emc.com/\" xmlns:ns6=\"http://content.core.datamodel.fs.documentum.emc.com/\" xmlns:ns5=\"http://query.core.datamodel.fs.documentum.emc.com/\" xmlns:ns4=\"http://profiles.core.datamodel.fs.documentum.emc.com/\" xmlns:ns3=\"http://properties.core.datamodel.fs.documentum.emc.com/\" xmlns:ns2=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <context>\n            <ns2:Identities xsi:type=\"ns2:RepositoryIdentity\" repositoryName=\"moj_darts\" password=\"{{darts-gateway-external-password}}\" userName=\"{{darts-gateway-external-username}}\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></ns2:Identities>\n            <ns2:Profiles xsi:type=\"ns4:ContentTransferProfile\" isProcessOLELinks=\"false\" allowAsyncContentTransfer=\"false\" allowCachedContentTransfer=\"false\" transferMode=\"MTOM\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></ns2:Profiles>\n         </context>\n         <host>http://localhost:8070/service/darts/</host>\n      </ns8:register>\n   </S:Body>\n</S:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ContextRegistryUrl}}",
+							"host": [
+								"{{ContextRegistryUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register with auth token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const xml2js = require('xml2js');   ",
+									" xml2js.parseString(pm.response.text(), {",
+									"    ignoreAttrs: true, ",
+									"    explicitArray: false,",
+									"}, function (err, result) {",
+									"        pm.collectionVariables.set(\"gateway_auth_token\", result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns3:registerResponse']['return']);",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <S:Header>\n      <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}</wsse:BinarySecurityToken></wsse:Security>\n   </S:Header>\n   <S:Body>\n      <ns8:register xmlns:ns8=\"http://services.rt.fs.documentum.emc.com/\" xmlns:ns7=\"http://core.datamodel.fs.documentum.emc.com/\" xmlns:ns6=\"http://content.core.datamodel.fs.documentum.emc.com/\" xmlns:ns5=\"http://query.core.datamodel.fs.documentum.emc.com/\" xmlns:ns4=\"http://profiles.core.datamodel.fs.documentum.emc.com/\" xmlns:ns3=\"http://properties.core.datamodel.fs.documentum.emc.com/\" xmlns:ns2=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <context>\n            <ns2:Identities xsi:type=\"ns2:RepositoryIdentity\" repositoryName=\"moj_darts\" password=\"{{darts-gateway-external-password}}\" userName=\"{{darts-gateway-external-username}}\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></ns2:Identities>\n            <ns2:Profiles xsi:type=\"ns4:ContentTransferProfile\" isProcessOLELinks=\"false\" allowAsyncContentTransfer=\"false\" allowCachedContentTransfer=\"false\" transferMode=\"MTOM\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></ns2:Profiles>\n         </context>\n         <host>http://localhost:8070/service/darts/</host>\n      </ns8:register>\n   </S:Body>\n</S:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ContextRegistryUrl}}",
+							"host": [
+								"{{ContextRegistryUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "lookup",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " <S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">\n       <S:Header>\n            <ServiceContext token=\"temporary/127.0.0.1-1700061962100--7690714146928305881\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\" xmlns:ns2=\"http://properties.core.datamodel.fs.documentum.emc.com/\" xmlns:ns3=\"http://profiles.core.datamodel.fs.documentum.emc.com/\" xmlns:ns4=\"http://query.core.datamodel.fs.documentum.emc.com/\" xmlns:ns5=\"http://content.core.datamodel.fs.documentum.emc.com/\" xmlns:ns6=\"http://core.datamodel.fs.documentum.emc.com/\">\n                <Identities repositoryName=\"moj_darts\" password=\"{{darts-gateway-external-password}}\" userName=\"{{darts-gateway-external-username}}\" xsi:type=\"RepositoryIdentity\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></Identities>\n                 <Profiles allowAsyncContentTransfer=\"false\" allowCachedContentTransfer=\"false\" isProcessOLELinks=\"false\" transferMode=\"MTOM\" xsi:type=\"ns3:ContentTransferProfile\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"></Profiles>\n            </ServiceContext>\n         </S:Header>\n       <S:Body>\n           <ns8:lookup\n                     xmlns:ns8=\"http://services.rt.fs.documentum.emc.com/\">\n                <token>{{gateway_auth_token}}</token>\n         </ns8:lookup>\n        </S:Body>\n </S:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ContextRegistryUrl}}",
+							"host": [
+								"{{ContextRegistryUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "lookup token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " <S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <S:Header>\n        <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\n            <wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}</wsse:BinarySecurityToken>\n        </wsse:Security>\n    </S:Header>\n    <S:Body>\n        <ns8:lookup\n                     xmlns:ns8=\"http://services.rt.fs.documentum.emc.com/\">\n            <token>{{gateway_auth_token}}</token>\n        </ns8:lookup>\n    </S:Body>\n</S:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ContextRegistryUrl}}",
+							"host": [
+								"{{ContextRegistryUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unregister",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							},
+							{
+								"key": "Client-Type",
+								"value": "Postman Gateway Suite",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://services.rt.fs.documentum.emc.com/\">\n   <soapenv:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1699627775508-1813438193751837662\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\" xmlns:ns2=\"http://properties.core.datamodel.fs.documentum.emc.com/\" xmlns:ns3=\"http://profiles.core.datamodel.fs.documentum.emc.com/\" xmlns:ns4=\"http://query.core.datamodel.fs.documentum.emc.com/\" xmlns:ns5=\"http://content.core.datamodel.fs.documentum.emc.com/\" xmlns:ns6=\"http://core.datamodel.fs.documentum.emc.com/\">\n         <Identities password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" userName=\"{{darts-gateway-external-username}}\" xsi:type=\"RepositoryIdentity\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <Profiles allowAsyncContentTransfer=\"false\" allowCachedContentTransfer=\"false\" isProcessOLELinks=\"false\" transferMode=\"MTOM\" xsi:type=\"ns3:ContentTransferProfile\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n      </ServiceContext>\n   </soapenv:Header>\n   <soapenv:Body>\n      <ser:unregister>\n         <token>{{gateway_auth_token}}</token>\n      </ser:unregister>\n   </soapenv:Body>\n</soapenv:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ContextRegistryUrl}}",
+							"host": [
+								"{{ContextRegistryUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unregister with auth token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							},
+							{
+								"key": "Client-Type",
+								"value": "Postman Gateway Suite",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://services.rt.fs.documentum.emc.com/\">\n   <soapenv:Header>\n      <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}</wsse:BinarySecurityToken></wsse:Security>\n   </soapenv:Header>\n   <soapenv:Body>\n      <ser:unregister>\n         <token>{{gateway_auth_token}}</token>\n      </ser:unregister>\n   </soapenv:Body>\n</soapenv:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ContextRegistryUrl}}",
+							"host": [
+								"{{ContextRegistryUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "dar-notify",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const moment = require('moment');",
+							"pm.collectionVariables.set(\"timestamp\", moment().format(\"YYYY-MM-DDTHH:mm:ssZ\"));",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"notification_url\": \"http://xxxx/VIQDARNotifyEvent/DARNotifyEvent.asmx\",\n    \"notification_type\": \"1\",\n    \"timestamp\": \"{{timestamp}}\",\n    \"courthouse\": \"YORK\",\n    \"courtroom\": \"2\",\n    \"case_numbers\": [\n        \"T20240034\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://darts-gateway.{{environment}}.platform.hmcts.net/events/dar-notify",
+					"protocol": "http",
+					"host": [
+						"darts-gateway",
+						"{{environment}}",
+						"platform",
+						"hmcts",
+						"net"
+					],
+					"path": [
+						"events",
+						"dar-notify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addAudio",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/related;boundary=--------------------------052264622326845208430844",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "application/xop+xml",
+							"value": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <s:Header>\n        <ServiceContext xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\" token=\"temporary/127.0.0.1-1694086218480-789961425\">\n            <Identities xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" domain=\"\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" xsi:type=\"RepositoryIdentity\"/>\n            <RuntimeProperties/>\n        </ServiceContext>\n    </s:Header>\n    <s:Body>\n       <addAudio xmlns=\"http://com.synapps.mojdarts.service.com\"><document xmlns=\"\">&lt;audio&gt;&lt;start Y=\"2023\" M=\"9\" D=\"7\" H=\"11\" MIN=\"26\" S=\"51\" /&gt;&lt;end Y=\"2023\" M=\"9\" D=\"7\" H=\"11\" MIN=\"29\" S=\"49\" /&gt;&lt;channel&gt;1&lt;/channel&gt;&lt;max_channels&gt;4&lt;/max_channels&gt;&lt;mediaformat&gt;mpeg2&lt;/mediaformat&gt;&lt;mediafile&gt;0001.a00&lt;/mediafile&gt;&lt;courthouse&gt;SWANSEA&lt;/courthouse&gt;&lt;courtroom&gt;32&lt;/courtroom&gt;&lt;case_numbers&gt;&lt;case_number&gt;T20230294&lt;/case_number&gt;&lt;case_number&gt;U20230907-112949&lt;/case_number&gt;&lt;/case_numbers&gt;&lt;/audio&gt;</document></addAudio>\n    </s:Body>\n</s:Envelope>",
+							"contentType": "application/xop+xml",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"contentType": "application/octet-stream",
+							"type": "file",
+							"src": "/Users/chrismagowan/Downloads/1 to 2m.mp2"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{darts-gateway-addAudio-url}}",
+					"host": [
+						"{{darts-gateway-addAudio-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addAudio with auth token",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/related;boundary=--------------------------052264622326845208430844",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "application/xop+xml",
+							"value": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n      <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}</wsse:BinarySecurityToken></wsse:Security>\n   </s:Header>\n    <s:Body>\n       <addAudio xmlns=\"http://com.synapps.mojdarts.service.com\"><document xmlns=\"\">&lt;audio&gt;&lt;start Y=\"2023\" M=\"9\" D=\"7\" H=\"11\" MIN=\"26\" S=\"51\" /&gt;&lt;end Y=\"2023\" M=\"9\" D=\"7\" H=\"11\" MIN=\"29\" S=\"49\" /&gt;&lt;channel&gt;1&lt;/channel&gt;&lt;max_channels&gt;4&lt;/max_channels&gt;&lt;mediaformat&gt;mpeg2&lt;/mediaformat&gt;&lt;mediafile&gt;0001.a00&lt;/mediafile&gt;&lt;courthouse&gt;SWANSEA&lt;/courthouse&gt;&lt;courtroom&gt;32&lt;/courtroom&gt;&lt;case_numbers&gt;&lt;case_number&gt;T20230294&lt;/case_number&gt;&lt;case_number&gt;U20230907-112949&lt;/case_number&gt;&lt;/case_numbers&gt;&lt;/audio&gt;</document></addAudio>\n    </s:Body>\n</s:Envelope>",
+							"contentType": "application/xop+xml",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"contentType": "application/octet-stream",
+							"type": "file",
+							"src": "/Users/chrismagowan/Downloads/1 to 2m.mp2"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{darts-gateway-addAudio-url}}",
+					"host": [
+						"{{darts-gateway-addAudio-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addCase",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1694086218480-789961425\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <Identities xsi:type=\"RepositoryIdentity\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" domain=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <RuntimeProperties/>\n      </ServiceContext>\n   </s:Header>\n   <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n      <ns2:addCase xmlns:ns2=\"http://com.synapps.mojdarts.service.com\">\n         <document><![CDATA[<case type=\"1\" id=\"U20231129-1733\"><courthouse>Bristol</courthouse><courtroom>1</courtroom><defendants><defendant>U20221006-143541</defendant><defendant>U20221007-143542</defendant></defendants><judges><judge>Mr\n    Judge</judge><judge>Mrs Judge</judge></judges><prosecutors><prosecutor>Mr\n    Prosecutor</prosecutor><prosecutor>Mrs Prosecutor</prosecutor></prosecutors></case>]]></document>\n      </ns2:addCase>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addCase with auth token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n      <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}</wsse:BinarySecurityToken></wsse:Security>\n   </s:Header>\n   <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n      <ns2:addCase xmlns:ns2=\"http://com.synapps.mojdarts.service.com\">\n         <document><![CDATA[<case type=\"1\" id=\"U20231129-1733\"><courthouse>Bristol</courthouse><courtroom>1</courtroom><defendants><defendant>U20221006-143541</defendant><defendant>U20221007-143542</defendant></defendants><judges><judge>Mr\n    Judge</judge><judge>Mrs Judge</judge></judges><prosecutors><prosecutor>Mr\n    Prosecutor</prosecutor><prosecutor>Mrs Prosecutor</prosecutor></prosecutors></case>]]></document>\n      </ns2:addCase>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addDocument",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1694086218480-789961425\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <Identities xsi:type=\"RepositoryIdentity\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" domain=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <RuntimeProperties/>\n      </ServiceContext>\n   </s:Header>\n   <s:Body>\n      <ns5:addDocument xmlns:ns5=\"http://com.synapps.mojdarts.service.com\">\n         <messageId>18418</messageId>\n         <type>DL</type>\n         <subType>DL</subType>\n         <document><![CDATA[<cs:DailyList xmlns:cs=\"http://www.courtservice.gov.uk/schemas/courtservice\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.courtservice.gov.uk/schemas/courtservice DailyList-v5-2.xsd\" xmlns:apd=\"http://www.govtalk.gov.uk/people/AddressAndPersonalDetails\"><cs:DocumentID><cs:DocumentName>DL 18/02/10 FINAL v1</cs:DocumentName><cs:UniqueID>CSDDL000000000576147</cs:UniqueID><cs:DocumentType>DL</cs:DocumentType><cs:TimeStamp>2010-02-18T11:13:23.030</cs:TimeStamp><cs:Version>1.0</cs:Version><cs:SecurityClassification>NPM</cs:SecurityClassification><cs:SellByDate>2010-12-15</cs:SellByDate><cs:XSLstylesheetURL>http://www.courtservice.gov.uk/transforms/courtservice/dailyListHtml.xsl</cs:XSLstylesheetURL></cs:DocumentID><cs:ListHeader><cs:ListCategory>Criminal</cs:ListCategory><cs:StartDate>2010-02-18</cs:StartDate><cs:EndDate>2010-02-18</cs:EndDate><cs:Version>FINAL v1</cs:Version><cs:CRESTprintRef>MCD/112585</cs:CRESTprintRef><cs:PublishedTime>2010-02-17T16:16:50</cs:PublishedTime><cs:CRESTlistID>12298</cs:CRESTlistID></cs:ListHeader><cs:CrownCourt><cs:CourtHouseType>Crown Court</cs:CourtHouseType><cs:CourtHouseCode CourtHouseShortName=\"SNARE\">453</cs:CourtHouseCode><cs:CourtHouseName>Bristol</cs:CourtHouseName><cs:CourtHouseAddress><apd:Line>THE CROWN COURT AT Bristol</apd:Line><apd:Line>75 HOLLYBUSH HILL</apd:Line><apd:Line>Bristol, LONDON</apd:Line><apd:PostCode>E11 1QW</apd:PostCode></cs:CourtHouseAddress><cs:CourtHouseDX>DX 98240 WANSTEAD 2</cs:CourtHouseDX><cs:CourtHouseTelephone>02085300000</cs:CourtHouseTelephone><cs:CourtHouseFax>02085300072</cs:CourtHouseFax></cs:CrownCourt><cs:CourtLists><cs:CourtList><cs:CourtHouse><cs:CourtHouseType>Crown Court</cs:CourtHouseType><cs:CourtHouseCode>453</cs:CourtHouseCode><cs:CourtHouseName>Bristol</cs:CourtHouseName></cs:CourtHouse><cs:Sittings><cs:Sitting><cs:CourtRoomNumber>1</cs:CourtRoomNumber><cs:SittingSequenceNo>1</cs:SittingSequenceNo><cs:SittingAt>10:00:00</cs:SittingAt><cs:SittingPriority>T</cs:SittingPriority><cs:Judiciary><cs:Judge><apd:CitizenNameSurname>N&#47;A</apd:CitizenNameSurname><apd:CitizenNameRequestedName>N&#47;A</apd:CitizenNameRequestedName><cs:CRESTjudgeID>0</cs:CRESTjudgeID></cs:Judge></cs:Judiciary><cs:Hearings><cs:Hearing><cs:HearingSequenceNumber>1</cs:HearingSequenceNumber><cs:HearingDetails HearingType=\"TRL\"><cs:HearingDescription>For Trial</cs:HearingDescription><cs:HearingDate>2010-02-18</cs:HearingDate></cs:HearingDetails><cs:CRESThearingID>1</cs:CRESThearingID><cs:TimeMarkingNote>10:00 AM</cs:TimeMarkingNote><cs:CaseNumber>T20107001</cs:CaseNumber><cs:Prosecution ProsecutingAuthority=\"Crown Prosecution Service\"><cs:ProsecutingReference>CPS</cs:ProsecutingReference><cs:ProsecutingOrganisation><cs:OrganisationName>Crown Prosecution Service</cs:OrganisationName></cs:ProsecutingOrganisation></cs:Prosecution><cs:CommittingCourt><cs:CourtHouseType>Magistrates Court</cs:CourtHouseType><cs:CourtHouseCode CourtHouseShortName=\"BAM\">2725</cs:CourtHouseCode><cs:CourtHouseName>BARNET MAGISTRATES COURT</cs:CourtHouseName><cs:CourtHouseAddress><apd:Line>7C HIGH STREET</apd:Line><apd:Line>-</apd:Line><apd:Line>BARNET</apd:Line><apd:PostCode>EN5 5UE</apd:PostCode></cs:CourtHouseAddress><cs:CourtHouseDX>DX 8626 BARNET</cs:CourtHouseDX><cs:CourtHouseTelephone>02084419042</cs:CourtHouseTelephone></cs:CommittingCourt><cs:Defendants><cs:Defendant><cs:PersonalDetails><cs:Name><apd:CitizenNameForename>Franz</apd:CitizenNameForename><apd:CitizenNameSurname>KAFKA</apd:CitizenNameSurname></cs:Name><cs:IsMasked>no</cs:IsMasked><cs:DateOfBirth><apd:BirthDate>1962-06-12</apd:BirthDate><apd:VerifiedBy>not verified</apd:VerifiedBy></cs:DateOfBirth><cs:Sex>male</cs:Sex><cs:Address><apd:Line>ADDRESS LINE 1</apd:Line><apd:Line>ADDRESS LINE 2</apd:Line><apd:Line>ADDRESS LINE 3</apd:Line><apd:Line>ADDRESS LINE 4</apd:Line><apd:Line>SOMETOWN, SOMECOUNTY</apd:Line><apd:PostCode>GU12 7RT</apd:PostCode></cs:Address></cs:PersonalDetails><cs:ASNs><cs:ASN>0723XH1000000262665K</cs:ASN></cs:ASNs><cs:CRESTdefendantID>29161</cs:CRESTdefendantID><cs:PNCnumber>20123456789L</cs:PNCnumber><cs:URN>62AA1010646</cs:URN><cs:CustodyStatus>In custody</cs:CustodyStatus></cs:Defendant></cs:Defendants></cs:Hearing></cs:Hearings></cs:Sitting></cs:Sittings></cs:CourtList></cs:CourtLists></cs:DailyList>]]></document>\n      </ns5:addDocument>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addDocument with auth token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n      <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}</wsse:BinarySecurityToken></wsse:Security>\n   </s:Header>\n   <s:Body>\n      <ns5:addDocument xmlns:ns5=\"http://com.synapps.mojdarts.service.com\">\n         <messageId>18418</messageId>\n         <type>DL</type>\n         <subType>DL</subType>\n         <document><![CDATA[<cs:DailyList xmlns:cs=\"http://www.courtservice.gov.uk/schemas/courtservice\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.courtservice.gov.uk/schemas/courtservice DailyList-v5-2.xsd\" xmlns:apd=\"http://www.govtalk.gov.uk/people/AddressAndPersonalDetails\"><cs:DocumentID><cs:DocumentName>DL 18/02/10 FINAL v1</cs:DocumentName><cs:UniqueID>CSDDL000000000576147</cs:UniqueID><cs:DocumentType>DL</cs:DocumentType><cs:TimeStamp>2010-02-18T11:13:23.030</cs:TimeStamp><cs:Version>1.0</cs:Version><cs:SecurityClassification>NPM</cs:SecurityClassification><cs:SellByDate>2010-12-15</cs:SellByDate><cs:XSLstylesheetURL>http://www.courtservice.gov.uk/transforms/courtservice/dailyListHtml.xsl</cs:XSLstylesheetURL></cs:DocumentID><cs:ListHeader><cs:ListCategory>Criminal</cs:ListCategory><cs:StartDate>2010-02-18</cs:StartDate><cs:EndDate>2010-02-18</cs:EndDate><cs:Version>FINAL v1</cs:Version><cs:CRESTprintRef>MCD/112585</cs:CRESTprintRef><cs:PublishedTime>2010-02-17T16:16:50</cs:PublishedTime><cs:CRESTlistID>12298</cs:CRESTlistID></cs:ListHeader><cs:CrownCourt><cs:CourtHouseType>Crown Court</cs:CourtHouseType><cs:CourtHouseCode CourtHouseShortName=\"SNARE\">453</cs:CourtHouseCode><cs:CourtHouseName>Bristol</cs:CourtHouseName><cs:CourtHouseAddress><apd:Line>THE CROWN COURT AT Bristol</apd:Line><apd:Line>75 HOLLYBUSH HILL</apd:Line><apd:Line>Bristol, LONDON</apd:Line><apd:PostCode>E11 1QW</apd:PostCode></cs:CourtHouseAddress><cs:CourtHouseDX>DX 98240 WANSTEAD 2</cs:CourtHouseDX><cs:CourtHouseTelephone>02085300000</cs:CourtHouseTelephone><cs:CourtHouseFax>02085300072</cs:CourtHouseFax></cs:CrownCourt><cs:CourtLists><cs:CourtList><cs:CourtHouse><cs:CourtHouseType>Crown Court</cs:CourtHouseType><cs:CourtHouseCode>453</cs:CourtHouseCode><cs:CourtHouseName>Bristol</cs:CourtHouseName></cs:CourtHouse><cs:Sittings><cs:Sitting><cs:CourtRoomNumber>1</cs:CourtRoomNumber><cs:SittingSequenceNo>1</cs:SittingSequenceNo><cs:SittingAt>10:00:00</cs:SittingAt><cs:SittingPriority>T</cs:SittingPriority><cs:Judiciary><cs:Judge><apd:CitizenNameSurname>N&#47;A</apd:CitizenNameSurname><apd:CitizenNameRequestedName>N&#47;A</apd:CitizenNameRequestedName><cs:CRESTjudgeID>0</cs:CRESTjudgeID></cs:Judge></cs:Judiciary><cs:Hearings><cs:Hearing><cs:HearingSequenceNumber>1</cs:HearingSequenceNumber><cs:HearingDetails HearingType=\"TRL\"><cs:HearingDescription>For Trial</cs:HearingDescription><cs:HearingDate>2010-02-18</cs:HearingDate></cs:HearingDetails><cs:CRESThearingID>1</cs:CRESThearingID><cs:TimeMarkingNote>10:00 AM</cs:TimeMarkingNote><cs:CaseNumber>T20107001</cs:CaseNumber><cs:Prosecution ProsecutingAuthority=\"Crown Prosecution Service\"><cs:ProsecutingReference>CPS</cs:ProsecutingReference><cs:ProsecutingOrganisation><cs:OrganisationName>Crown Prosecution Service</cs:OrganisationName></cs:ProsecutingOrganisation></cs:Prosecution><cs:CommittingCourt><cs:CourtHouseType>Magistrates Court</cs:CourtHouseType><cs:CourtHouseCode CourtHouseShortName=\"BAM\">2725</cs:CourtHouseCode><cs:CourtHouseName>BARNET MAGISTRATES COURT</cs:CourtHouseName><cs:CourtHouseAddress><apd:Line>7C HIGH STREET</apd:Line><apd:Line>-</apd:Line><apd:Line>BARNET</apd:Line><apd:PostCode>EN5 5UE</apd:PostCode></cs:CourtHouseAddress><cs:CourtHouseDX>DX 8626 BARNET</cs:CourtHouseDX><cs:CourtHouseTelephone>02084419042</cs:CourtHouseTelephone></cs:CommittingCourt><cs:Defendants><cs:Defendant><cs:PersonalDetails><cs:Name><apd:CitizenNameForename>Franz</apd:CitizenNameForename><apd:CitizenNameSurname>KAFKA</apd:CitizenNameSurname></cs:Name><cs:IsMasked>no</cs:IsMasked><cs:DateOfBirth><apd:BirthDate>1962-06-12</apd:BirthDate><apd:VerifiedBy>not verified</apd:VerifiedBy></cs:DateOfBirth><cs:Sex>male</cs:Sex><cs:Address><apd:Line>ADDRESS LINE 1</apd:Line><apd:Line>ADDRESS LINE 2</apd:Line><apd:Line>ADDRESS LINE 3</apd:Line><apd:Line>ADDRESS LINE 4</apd:Line><apd:Line>SOMETOWN, SOMECOUNTY</apd:Line><apd:PostCode>GU12 7RT</apd:PostCode></cs:Address></cs:PersonalDetails><cs:ASNs><cs:ASN>0723XH1000000262665K</cs:ASN></cs:ASNs><cs:CRESTdefendantID>29161</cs:CRESTdefendantID><cs:PNCnumber>20123456789L</cs:PNCnumber><cs:URN>62AA1010646</cs:URN><cs:CustodyStatus>In custody</cs:CustodyStatus></cs:Defendant></cs:Defendants></cs:Hearing></cs:Hearings></cs:Sitting></cs:Sittings></cs:CourtList></cs:CourtLists></cs:DailyList>]]></document>\n      </ns5:addDocument>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addLogEntry",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:com=\"http://com.synapps.mojdarts.service.com\">\n   <soapenv:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1694086218480-789961425\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <Identities xsi:type=\"RepositoryIdentity\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" domain=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <RuntimeProperties/>\n      </ServiceContext>\n   </soapenv:Header>\n   <soapenv:Body>\n      <addLogEntry xmlns=\"http://com.synapps.mojdarts.service.com\">\n  <document xmlns=\"\"><![CDATA[<log_entry Y=\"2023\" M=\"01\" D=\"01\" H=\"10\" MIN=\"00\" S=\"00\"><courthouse>SWANSEA</courthouse><courtroom>CR1</courtroom><case_numbers><case_number>CASE000001</case_number></case_numbers><text>THISISEVENTTEXT</text></log_entry>]]></document>\n</addLogEntry>\n   </soapenv:Body>\n</soapenv:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addLogEntry with auth token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<soapenv:Envelope\n\txmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n\txmlns:com=\"http://com.synapps.mojdarts.service.com\">\n\t<soapenv:Header>\n\t\t<wsse:Security\n\t\t\txmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\n\t\t\t<wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\"\n\t\t\t\txmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}\n\t\t\t</wsse:BinarySecurityToken>\n\t\t</wsse:Security>\n\t</soapenv:Header>\n\t<soapenv:Body>\n\t\t<addLogEntry\n\t\t\txmlns=\"http://com.synapps.mojdarts.service.com\">\n\t\t\t<document\n\t\t\t\txmlns=\"\"><![CDATA[<log_entry Y=\"2023\" M=\"01\" D=\"01\" H=\"10\" MIN=\"00\" S=\"00\"><courthouse>SWANSEA</courthouse><courtroom>CR1</courtroom><case_numbers><case_number>CASE000001</case_number></case_numbers><text>THISISEVENTTEXT</text></log_entry>]]></document>\n\t\t</addLogEntry>\n\t</soapenv:Body>\n</soapenv:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCases",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1694086218480-789961425\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <Identities xsi:type=\"RepositoryIdentity\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" domain=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <RuntimeProperties/>\n      </ServiceContext>\n   </s:Header>\n   <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n      <ns2:getCases xmlns:ns2=\"http://com.synapps.mojdarts.service.com\">\n         <courthouse>Bristol</courthouse>\n         <courtroom>1</courtroom>\n         <date>2023-11-29</date>\n      </ns2:getCases>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCases with auth token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n          <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}</wsse:BinarySecurityToken></wsse:Security>\n   </s:Header>\n   <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n      <ns2:getCases xmlns:ns2=\"http://com.synapps.mojdarts.service.com\">\n         <courthouse>Bristol</courthouse>\n         <courtroom>1</courtroom>\n         <date>2023-11-29</date>\n      </ns2:getCases>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCourtLog",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:com=\"http://com.synapps.mojdarts.service.com\">\n   <soapenv:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1694086218480-789961425\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <Identities xsi:type=\"RepositoryIdentity\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" domain=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <RuntimeProperties/>\n      </ServiceContext>\n   </soapenv:Header>\n   <soapenv:Body><addLogEntry xmlns=\"http://com.synapps.mojdarts.service.com\">\n  <document xmlns=\"\"><![CDATA[<log_entry Y=\"2023\" M=\"01\" D=\"01\" H=\"10\" MIN=\"00\" S=\"00\"><courthouse>SWANSEA</courthouse><courtroom>CR1</courtroom><case_numbers><case_number>CASE000001</case_number></case_numbers><text>THISISEVENTTEXT</text></log_entry>]]></document>\n</addLogEntry>\n\n   </soapenv:Body>\n</soapenv:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCourtLog with auth token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:com=\"http://com.synapps.mojdarts.service.com\">\n   <soapenv:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1694086218480-789961425\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <Identities xsi:type=\"RepositoryIdentity\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" domain=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <RuntimeProperties/>\n      </ServiceContext>\n   </soapenv:Header>\n   <soapenv:Body>\n      <addLogEntry xmlns=\"http://com.synapps.mojdarts.service.com\">\n  <document xmlns=\"\"><![CDATA[<log_entry Y=\"2023\" M=\"01\" D=\"01\" H=\"10\" MIN=\"00\" S=\"00\"><courthouse>SWANSEA</courthouse><courtroom>CR1</courtroom><case_numbers><case_number>CASE000001</case_number></case_numbers><text>THISISEVENTTEXT</text></log_entry>]]></document>\n</addLogEntry>\n\n   </soapenv:Body>\n</soapenv:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerNode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n      <ServiceContext token=\"temporary/127.0.0.1-1694086218480-789961425\" xmlns=\"http://context.core.datamodel.fs.documentum.emc.com/\">\n         <Identities xsi:type=\"RepositoryIdentity\" userName=\"{{darts-gateway-external-username}}\" password=\"{{darts-gateway-external-password}}\" repositoryName=\"moj_darts\" domain=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>\n         <RuntimeProperties/>\n      </ServiceContext>\n   </s:Header>\n   <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n      <registerNode xmlns=\"http://com.synapps.mojdarts.service.com\">\n         <document xmlns=\"\"><![CDATA[<node type=\"DAR\"><courthouse>Bristol</courthouse><courtroom>1</courtroom><hostname>hostname</hostname><ip_address>ip_address</ip_address><mac_address>mac_address</mac_address></node>]]></document>\n      </registerNode>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerNode with auth token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n   <s:Header>\n   \t<wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><wsse:BinarySecurityToken QualificationValueType=\"http://schemas.emc.com/documentum#ResourceAccessToken\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"RAD\">{{gateway_auth_token}}}</wsse:BinarySecurityToken></wsse:Security>\n   </s:Header>\n   <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n      <registerNode xmlns=\"http://com.synapps.mojdarts.service.com\">\n         <document xmlns=\"\"><![CDATA[<node type=\"DAR\"><courthouse>Bristol</courthouse><courtroom>1</courtroom><hostname>hostname</hostname><ip_address>ip_address</ip_address><mac_address>mac_address</mac_address></node>]]></document>\n      </registerNode>\n   </s:Body>\n</s:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-gateway-url}}",
+					"host": [
+						"{{darts-gateway-url}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "darts-gateway-url",
+			"value": "http://darts-gateway.{{environment}}.platform.hmcts.net/service/darts/DARTSService",
+			"type": "string"
+		},
+		{
+			"key": "ContextRegistryUrl",
+			"value": "http://darts-gateway.{{environment}}.platform.hmcts.net/service/darts/runtime/ContextRegistryService",
+			"type": "string"
+		},
+		{
+			"key": "gateway_auth_token",
+			"value": ""
+		},
+		{
+			"key": "darts-gateway-addAudio-url",
+			"value": "http://darts-gateway.{{environment}}.platform.hmcts.net/service/darts",
+			"type": "string"
+		},
+		{
+			"key": "timestamp",
+			"value": ""
+		}
+	]
 }
