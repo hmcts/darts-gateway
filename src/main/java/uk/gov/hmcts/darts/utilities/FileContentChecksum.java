@@ -24,6 +24,7 @@ public final class FileContentChecksum {
 
     }
 
+    @SuppressWarnings("java:S4790")
     public static String calculate(InputStream inputStream) throws IOException {
         return encodeToString(md5(inputStream));
     }
