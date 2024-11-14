@@ -54,6 +54,27 @@ class DataUtilTest {
     }
 
     @Test
+    void positiveToMapBlankRequest() {
+        AddAudioMetadataRequest addAudioMetadataRequest = new AddAudioMetadataRequest();
+
+        Map<String, String> expectedMap = new HashMap<>();
+        expectedMap.put("startedAt", null);
+        expectedMap.put("endedAt", null);
+        expectedMap.put("channel", null);
+        expectedMap.put("totalChannels", null);
+        expectedMap.put("format", null);
+        expectedMap.put("filename", null);
+        expectedMap.put("courthouse", null);
+        expectedMap.put("courtroom", null);
+        expectedMap.put("mediaFile", null);
+        expectedMap.put("fileSize", null);
+        expectedMap.put("checksum", null);
+        expectedMap.put("cases", "");
+
+        Map<String, String> actualMap = DataUtil.toMap(addAudioMetadataRequest);
+        Assertions.assertEquals(expectedMap, actualMap);
+    }
+    @Test
     void positiveConvertToStorageGuid() {
         AddAudioMetadataRequest addAudioMetadataRequest = getAddAudioMetadataRequest();
         UUID uuid = UUID.randomUUID();
@@ -75,4 +96,16 @@ class DataUtilTest {
         AddAudioMetadataRequestWithStorageGUID actual = DataUtil.convertToStorageGuid(addAudioMetadataRequest, uuid);
         Assertions.assertEquals(expected, actual);
     }
+
+    @Test
+    void positiveConvertToStorageGuidBlankRequest() {
+        AddAudioMetadataRequest addAudioMetadataRequest = new AddAudioMetadataRequest();
+        AddAudioMetadataRequestWithStorageGUID expected = new AddAudioMetadataRequestWithStorageGUID();
+        UUID uuid = UUID.randomUUID();
+        expected.setStorageGuid(uuid);
+
+        AddAudioMetadataRequestWithStorageGUID actual = DataUtil.convertToStorageGuid(addAudioMetadataRequest, uuid);
+        Assertions.assertEquals(expected, actual);
+    }
+
 }
