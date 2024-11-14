@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# To set the secrets in your shell, source this file ie. source ./bin/secrets-stg.sh
+# To set the secrets in your shell, source this file ie. source ./bin/secrets-stg-environment.sh
 
 echo "Exporting secrets from Azure keyvault (darts-stg), please ensure you have \"az\" installed and you have logged in, using \"az login\"."
 
