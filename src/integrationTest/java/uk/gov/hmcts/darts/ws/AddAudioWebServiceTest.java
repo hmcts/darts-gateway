@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
 import org.junit.jupiter.api.Assertions;
@@ -25,19 +26,16 @@ import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
-import uk.gov.hmcts.darts.common.utils.matcher.MultipartDartsProxyContentPattern;
+import uk.gov.hmcts.darts.datastore.DataManagementService;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
 import uk.gov.hmcts.darts.testutils.request.DummyXmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.workflow.command.AddAudioMidTierCommand;
 
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -46,6 +44,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -63,15 +62,13 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
     @MockBean
     private TokenValidator validator;
+    @MockBean
+    private DataManagementService dataManagementService;
 
     @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")
     private DataSize maxByteSize;
 
-    @Value("${darts-gateway.add-audio.maxFileDuration}")
-    private Duration maxFileDuration;
-
-    private static final OffsetDateTime STARTED_AT = OffsetDateTime.of(2024, 10, 10, 10, 0, 0, 0, ZoneOffset.UTC);
-    private static final URI ENDPOINT = URI.create("/audios");
+    private final UUID uuid = UUID.randomUUID();
 
     @BeforeEach
     public void before() {
@@ -82,6 +79,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
         when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
             .thenReturn("test");
+        when(dataManagementService.saveBlobData(any(), any(), any())).thenReturn(uuid);
     }
 
     @ParameterizedTest
@@ -98,7 +96,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
@@ -122,7 +120,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
@@ -146,7 +144,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
@@ -167,7 +165,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
             String expectedResponseStr = TestUtils.getContentsFromFile(
@@ -182,8 +180,12 @@ class AddAudioWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
 
-            verify(postRequestedFor(urlPathEqualTo("/audios"))
-                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+            verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+                WireMock.matching(
+                    "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
+                        "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
@@ -192,8 +194,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesAddAudioWithAuthenticationTokenWithRefresh(DartsGatewayClient client) throws Exception {
 
-        when(validator.test(Mockito.any(),
-                                     Mockito.eq("downstreamtoken"))).thenReturn(true);
+        when(validator.test(any(), Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
@@ -205,7 +206,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
             String expectedResponseStr = TestUtils.getContentsFromFile(
@@ -214,18 +215,21 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            when(validator.test(Mockito.any(),
-                                         Mockito.eq("downstreamtoken"))).thenReturn(false);
+            when(validator.test(any(), Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
 
-            verify(postRequestedFor(urlPathEqualTo("/audios"))
-                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+            verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+                WireMock.matching(
+                    "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
+                        "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(postRequestedFor(urlPathEqualTo("/audios"))
-                            .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
+        verify(postRequestedFor(urlPathEqualTo("/audios/metadata"))
+                   .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
         Mockito.verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -240,7 +244,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
 
             String expectedResponseStr = TestUtils.getContentsFromFile(
@@ -252,8 +256,12 @@ class AddAudioWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
 
-            verify(postRequestedFor(urlPathEqualTo("/audios"))
-                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+            verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+                WireMock.matching(
+                    "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
+                        "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
             // ensure that the payload logging is turned off for this api call
             Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
@@ -301,7 +309,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(aResponse().withStatus(404).withBody("this is not a valid error format")));
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
@@ -311,8 +319,12 @@ class AddAudioWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(postRequestedFor(urlPathEqualTo("/audios"))
-                   .withRequestBody(new MultipartDartsProxyContentPattern()));
+        verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+            WireMock.matching(
+                "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
+                    "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
+                    "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                    "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
     }
 
     @ParameterizedTest
@@ -343,7 +355,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/problemResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(aResponse().withStatus(404)
                                         .withBody(dartsApiResponseStr)));
 
@@ -356,8 +368,12 @@ class AddAudioWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
 
-            verify(postRequestedFor(urlPathEqualTo("/audios"))
-                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+            verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+                WireMock.matching(
+                    "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
+                        "\"filename\":\"0001.a00\",\"courthouse\":\"theunknowncourthouse\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\"" +
+                        ",\"file_size\":5854354,\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -453,7 +469,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/problemResponse500.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(aResponse().withStatus(500)
                                         .withBody(dartsApiResponseStr)));
 
@@ -478,7 +494,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/problemResponse500.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(aResponse().withStatus(500)
                                         .withBody(dartsApiResponseStr)));
 
@@ -504,7 +520,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withStatus(500)));
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
@@ -515,11 +531,15 @@ class AddAudioWebServiceTest extends IntegrationBase {
             Assertions.assertFalse(logAppender
                                        .searchLogs(
                                            AbstractClientProblemDecoder.RESPONSE_PREFIX +
-                                                       "500 Server Error: \"{<EOL>" +
+                                               "500 Server Error: \"{<EOL>" +
                                                "  \"code\": \"200\",<EOL>  \"message\": \"OK\"<EOL>}<EOL>\"", null, null).isEmpty());
 
-            verify(postRequestedFor(urlPathEqualTo("/audios"))
-                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+            verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+                WireMock.matching(
+                    "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
+                        "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
             // ensure that the payload logging is turned off for this api call
             Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
@@ -537,7 +557,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/audios"))
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
                         .willReturn(ok(dartsApiResponseStr).withStatus(500).withBody("<html><body>Internal Server Error</body></html>")));
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
@@ -547,8 +567,12 @@ class AddAudioWebServiceTest extends IntegrationBase {
             Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error: \"<html><body>Internal Server Error</body></html>\"", null, null).isEmpty());
-            verify(postRequestedFor(urlPathEqualTo("/audios"))
-                       .withRequestBody(new MultipartDartsProxyContentPattern()));
+            verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
+                WireMock.matching(
+                    "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
+                        "\"filename\":\"0001.a00\",\"courthouse\":\"SWANSEA\",\"courtroom\":\"32\",\"media_file\":\"0001.a00\",\"file_size\":5854354," +
+                        "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
+                        "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
             // ensure that the payload logging is turned off for this api call
             Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());

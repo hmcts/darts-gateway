@@ -6,6 +6,8 @@ java:
   keyVaults:
     "darts":
       secrets:
+        - name: AzureStorageConnectionString
+          alias: AZURE_STORAGE_CONNECTION_STRING
         - name: AzureAdB2CFuncTestROPCClientId
           alias: AAD_B2C_ROPC_CLIENT_ID
         - name: AzureAdB2CClientId

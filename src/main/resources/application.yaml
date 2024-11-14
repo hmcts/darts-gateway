@@ -44,6 +44,18 @@ spring:
 
 azure:
 darts-gateway:
+  storage:
+    blob:
+      client:
+        connection-string: ${AZURE_STORAGE_CONNECTION_STRING:}
+        ## See https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-tune-upload-download-java
+        block-size-bytes: 10_000_000
+        max-single-upload-size-bytes: 10_000_000
+        max-concurrency: 5
+        timeout: 15m
+        disable-upload: false
+      container-name:
+        inbound: darts-inbound-container
   testing-support-endpoints:
     enabled: ${TESTING_SUPPORT_ENDPOINTS_ENABLED:false}
   cache:

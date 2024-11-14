@@ -67,19 +67,15 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
             Object obj = getWebServiceTemplate().marshalSendAndReceive(
                 uri.toString(),
                 ijaxbElement,
-                new WebServiceMessageCallback() {
-
-                    @Override
-                    public void doWithMessage(WebServiceMessage message) {
-                        try {
-                            SoapMessage soapMessage = (SoapMessage) message;
-                            SoapHeader header = soapMessage.getSoapHeader();
-                            StringSource headerSource = new StringSource(headerContents);
-                            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                            transformer.transform(headerSource, header.getResult());
-                        } catch (Exception e) {
-                            // exception handling
-                        }
+                message -> {
+                    try {
+                        SoapMessage soapMessage = (SoapMessage) message;
+                        SoapHeader header = soapMessage.getSoapHeader();
+                        StringSource headerSource = new StringSource(headerContents);
+                        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                        transformer.transform(headerSource, header.getResult());
+                    } catch (Exception e) {
+                        // exception handling
                     }
                 }
             );

@@ -20,17 +20,15 @@ public class TestSupportController {
 
     private final RedisTemplate<String, Object> template;
 
-    @SuppressWarnings({"unchecked", "PMD.CloseResource"})
     @DeleteMapping(value = "/functional-tests/clean")
     public void cleanUpDataAfterFunctionalTests() {
         deleteKeyByPattern(TokenRegisterable.CACHE_PREFIX + "*");
     }
 
-    public boolean deleteKeyByPattern(String pattern) {
+    public void deleteKeyByPattern(String pattern) {
         Set<byte[]> patternResultConf = template.getConnectionFactory().getConnection().keys(pattern.getBytes());
         if (Objects.nonNull(patternResultConf) && !patternResultConf.isEmpty()) {
             template.getConnectionFactory().getConnection().del(patternResultConf.toArray(new byte[0][]));
         }
-        return true;
     }
 }

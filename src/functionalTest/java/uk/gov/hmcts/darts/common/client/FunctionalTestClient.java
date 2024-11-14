@@ -24,19 +24,20 @@ public class FunctionalTestClient {
     private final FunctionalProperties functionalProperties;
 
     public void clear() throws IOException, InterruptedException {
-        HttpClient httpClient = HttpClient.newHttpClient();
+        try (HttpClient httpClient = HttpClient.newHttpClient()) {
 
-        log.debug("Clearing down on url " + functionalProperties.getDeployedApplicationUri() + "/functional-tests/clean");
-        HttpRequest httpRequest = HttpRequest
-            .newBuilder()
-            .DELETE().uri(URI.create(functionalProperties.getDeployedApplicationUri().toString() + "/functional-tests/clean"))
-            .build();
+            log.debug("Clearing down on url {}/functional-tests/clean", functionalProperties.getDeployedApplicationUri());
+            HttpRequest httpRequest = HttpRequest
+                .newBuilder()
+                .DELETE().uri(URI.create(functionalProperties.getDeployedApplicationUri().toString() + "/functional-tests/clean"))
+                .build();
 
-        HttpResponse<String> httpResponses = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        log.debug("Clearing down response is " + httpResponses.statusCode());
-        Assertions.assertEquals(200, httpResponses.statusCode(),
-                                "Expected a 200 when communicating with "
-                                    + functionalProperties.getDeployedApplicationUri().toString() + "/functional-tests/clean. " +
-                                "Response Status: " + httpResponses.statusCode() + "Response Body: " + httpResponses.body());
+            HttpResponse<String> httpResponses = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            log.debug("Clearing down response is {}", httpResponses.statusCode());
+            Assertions.assertEquals(200, httpResponses.statusCode(),
+                                    "Expected a 200 when communicating with "
+                                        + functionalProperties.getDeployedApplicationUri().toString() + "/functional-tests/clean. " +
+                                        "Response Status: " + httpResponses.statusCode() + " Response Body: " + httpResponses.body());
+        }
     }
 }

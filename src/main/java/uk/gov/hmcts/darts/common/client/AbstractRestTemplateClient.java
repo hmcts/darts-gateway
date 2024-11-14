@@ -34,10 +34,11 @@ public abstract class AbstractRestTemplateClient {
     /**
      * Uploads a file by streaming NOTE: This mechanism does not use feign for the reason that feign loads files into memory (see
      * https://github.com/OpenFeign/feign-form/issues/88)
+     *
      * @param multipartFile The multipart file to transfer. A default one that disables in memory loading
      *                      can be found {@link uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart}
-     * @param metadata The meta data
-     * @param url The url to use
+     * @param metadata      The meta data
+     * @param url           The url to use
      */
     public <T> void streamFileWithMetaData(MultipartFile multipartFile, T metadata, String url) {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
@@ -68,12 +69,15 @@ public abstract class AbstractRestTemplateClient {
         }
     }
 
-    private <T> void processHttpHeaderInterceptors(HttpHeaders headers) {
+
+
+    protected <T> void processHttpHeaderInterceptors(HttpHeaders headers) {
         interceptors.forEach(intercept -> intercept.accept(headers));
     }
 
     /**
      * The template to send the request.
+     *
      * @return The template
      */
     protected abstract RestTemplate getTemplate();
@@ -81,6 +85,7 @@ public abstract class AbstractRestTemplateClient {
 
     /**
      * handles the error. This is the feign {@link feign.codec.ErrorDecoder} equivalent
+     *
      * @return The decoder
      */
     protected abstract DartsClientProblemDecoder getProblemDecoder();
