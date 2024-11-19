@@ -2,14 +2,22 @@ package uk.gov.hmcts.darts.event.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.darts.testutils.stub.DarPcStub;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,7 +64,7 @@ class DarNotifyControllerTest {
 
     @Test
     void shouldSendDarNotifyEventSoapAction() throws Exception {
-        darPcStub.respondWithSuccessResponse();
+        darPcStub.respondWithSuccessResponse(OffsetDateTime.now());
 
         mockMvc.perform(post("/events/dar-notify")
                             .contentType(APPLICATION_JSON_VALUE)
@@ -64,6 +72,42 @@ class DarNotifyControllerTest {
             .andExpect(status().is2xxSuccessful());
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void shouldSendDarNotifyEventSoapActionDarPcDateOutSide2MinRangeBehind(CapturedOutput capturedOutput) throws Exception {
+        OffsetDateTime responseDateTime = OffsetDateTime.now().minusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
+        darPcStub.respondWithSuccessResponse(responseDateTime);
+
+        mockMvc.perform(post("/events/dar-notify")
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .content(VALID_NOTIFICATION_JSON))
+            .andExpect(status().is2xxSuccessful());
+
+        darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+        assertThat(capturedOutput)
+            .containsPattern("Response time from DAR PC is not within 2 minutes of current time. DarPC Response time: "
+                                 + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
+                                 + ", Current time: [0-9\\-.T:]+Z for url: http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx");
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void shouldSendDarNotifyEventSoapActionDarPcDateOutSide2MinRangeAhead(CapturedOutput capturedOutput) throws Exception {
+        OffsetDateTime responseDateTime = OffsetDateTime.now().plusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
+        darPcStub.respondWithSuccessResponse(responseDateTime);
+
+        mockMvc.perform(post("/events/dar-notify")
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .content(VALID_NOTIFICATION_JSON))
+            .andExpect(status().is2xxSuccessful());
+
+        darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+        assertThat(capturedOutput)
+            .containsPattern("Response time from DAR PC is not within 2 minutes of current time. DarPC Response time: "
+                                 + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
+                                 + ", Current time: [0-9\\-.T:]+Z for url: http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx");
     }
 
     @Test
@@ -77,5 +121,4 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
     }
-
 }

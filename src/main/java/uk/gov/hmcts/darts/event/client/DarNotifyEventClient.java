@@ -5,15 +5,23 @@ import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.DARNotifyEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.Header;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.WebServiceException;
+import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpComponentsConnection;
 import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 import uk.gov.hmcts.darts.log.api.LogApi;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import javax.annotation.PostConstruct;
 
 import static java.lang.Integer.parseInt;
 import static org.slf4j.event.Level.ERROR;
@@ -29,10 +37,14 @@ public class DarNotifyEventClient {
     private final WebServiceTemplate webServiceTemplate;
     private final LogApi logApi;
 
+    @PostConstruct
+    void postConstruct() {
+        webServiceTemplate.setInterceptors(new ClientInterceptor[]{new DarPcTimeLogInterceptor()});
+    }
+
     // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
     public boolean darNotifyEvent(String uri, DARNotifyEvent request, Event event) {
         boolean successful = false;
-
         String caseNumber = event.getCaseNumbers().getCaseNumber().toString();
 
         try {
@@ -43,7 +55,7 @@ public class DarNotifyEventClient {
 
                 if (OK.equals(result)) {
                     logApi.notificationSucceeded(uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(event),
-                         response.getDARNotifyEventResult());
+                                                 response.getDARNotifyEventResult());
                     successful = true;
                 } else if (result != null) {
                     logApi.notificationFailedWithCode(
@@ -97,4 +109,41 @@ public class DarNotifyEventClient {
         );
     }
 
+    static class DarPcTimeLogInterceptor implements ClientInterceptor {
+
+        @Override
+        public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
+            return true;
+        }
+
+        @Override
+        public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
+            return true;
+        }
+
+        @Override
+        public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
+            return true;
+        }
+
+        @Override
+        public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
+            try {
+                HttpComponentsConnection connection = (HttpComponentsConnection) TransportContextHolder.getTransportContext().getConnection();
+
+                Header dateHeader = connection.getHttpResponse().getFirstHeader("Date");
+                OffsetDateTime responseDateTime = OffsetDateTime.parse(dateHeader.getValue(), DateTimeFormatter.RFC_1123_DATE_TIME);
+                OffsetDateTime currentTime = OffsetDateTime.now();
+
+                if (currentTime.minusMinutes(2).isBefore(responseDateTime) || currentTime.plusMinutes(2).isAfter(responseDateTime)) {
+                    log.warn("Response time from DAR PC is not within 2 minutes of current time. DarPC Response time: {}, Current time: {} for url: {}",
+                             responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME),
+                             currentTime.format(DateTimeFormatter.ISO_DATE_TIME),
+                             connection.getHttpPost().getURI());
+                }
+            } catch (Exception e) {
+                log.error("Error in DarPcTimeLogInterceptor", e);
+            }
+        }
+    }
 }

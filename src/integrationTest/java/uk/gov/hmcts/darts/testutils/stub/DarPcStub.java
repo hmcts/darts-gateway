@@ -3,6 +3,9 @@ package uk.gov.hmcts.darts.testutils.stub;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToXml;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -23,9 +26,10 @@ public class DarPcStub {
         <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><DARNotifyEventResponse xmlns="http://www.VIQSoultions.com"><DARNotifyEventResult>1</DARNotifyEventResult></DARNotifyEventResponse></soap:Body></soap:Envelope>""";
 
 
-    public void respondWithSuccessResponse() {
+    public void respondWithSuccessResponse(OffsetDateTime responseDateTime) {
         stubFor(post(urlEqualTo(BASE_API_URL)).willReturn(
             aResponse().withHeader("Content-Type", "text/xml")
+                .withHeader("Date", responseDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME))
                 .withBody(DAR_PC_SUCCESS_RESPONSE)));
     }
 
