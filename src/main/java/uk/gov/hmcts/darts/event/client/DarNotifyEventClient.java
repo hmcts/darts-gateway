@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.WebServiceException;
-import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
@@ -112,22 +111,22 @@ public class DarNotifyEventClient {
     static class DarPcTimeLogInterceptor implements ClientInterceptor {
 
         @Override
-        public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
+        public boolean handleRequest(MessageContext messageContext) {
             return true;
         }
 
         @Override
-        public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
+        public boolean handleResponse(MessageContext messageContext) {
             return true;
         }
 
         @Override
-        public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
+        public boolean handleFault(MessageContext messageContext) {
             return true;
         }
 
         @Override
-        public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
+        public void afterCompletion(MessageContext messageContext, Exception ex) {
             try {
                 HttpComponentsConnection connection = (HttpComponentsConnection) TransportContextHolder.getTransportContext().getConnection();
 
