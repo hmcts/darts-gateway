@@ -32,7 +32,6 @@ public class CasesRouteImpl implements CasesRoute {
     @Value("${darts-gateway.addcase.validate}")
     private boolean validateAddCase;
     private final XmlValidator xmlValidator;
-    private final XmlParser xmlParser;
     private final AddCaseMapper addCaseMapper;
 
     private final CasesClient casesClient;
@@ -57,7 +56,7 @@ public class CasesRouteImpl implements CasesRoute {
             xmlValidator.validate(caseDocumentXmlStr, addCaseSchemaPath);
         }
 
-        Case caseDocument = xmlParser.unmarshal(caseDocumentXmlStr, Case.class);
+        Case caseDocument = XmlParser.unmarshal(caseDocumentXmlStr, Case.class);
         AddCaseRequest addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
 
         casesClient.casesPost(addCaseRequest);

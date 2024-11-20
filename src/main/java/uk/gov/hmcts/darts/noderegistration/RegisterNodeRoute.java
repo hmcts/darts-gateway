@@ -22,7 +22,6 @@ public class RegisterNodeRoute {
     private boolean validateAddCase;
 
     private final XmlValidator xmlValidator;
-    private final XmlParser xmlParser;
 
     private final RegisterNodeClient registerNodeClient;
     private final RegisterNodeMapper registerNodeMapper;
@@ -33,12 +32,12 @@ public class RegisterNodeRoute {
             xmlValidator.validate(caseDocumentXmlStr, addCaseSchemaPath);
         }
 
-        Node registerNodeObj = xmlParser.unmarshal(caseDocumentXmlStr, Node.class);
+        Node registerNodeObj = XmlParser.unmarshal(caseDocumentXmlStr, Node.class);
 
         ResponseEntity<PostNodeRegistrationResponse> registerNodeResponse =
             registerNodeClient.registerDevicesPost(registerNodeObj.getType(), registerNodeObj.getCourthouse(),
-                                                                           registerNodeObj.getCourtroom(), registerNodeObj.getHostname(),
-                                                                           registerNodeObj.getIpAddress(), registerNodeObj.getMacAddress());
+                                                   registerNodeObj.getCourtroom(), registerNodeObj.getHostname(),
+                                                   registerNodeObj.getIpAddress(), registerNodeObj.getMacAddress());
 
         return registerNodeMapper.mapToDfsResponse(registerNodeResponse.getBody());
     }
