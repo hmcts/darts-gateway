@@ -2,15 +2,17 @@ package uk.gov.hmcts.darts.utilities;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.StringReader;
 import javax.xml.transform.Source;
 
-@Service
-public class XmlParser {
+public final class XmlParser {
+
+    private XmlParser() {
+
+    }
 
     public static <T> T unmarshal(String xml, Class<T> clazz) {
         JAXBContext context;

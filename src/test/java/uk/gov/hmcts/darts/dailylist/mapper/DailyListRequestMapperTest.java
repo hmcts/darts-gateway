@@ -27,8 +27,6 @@ import java.time.OffsetDateTime;
 @SuppressWarnings({"PMD.UnitTestShouldIncludeAssert"})
 class DailyListRequestMapperTest {
 
-    final XmlParser xmlParser = new XmlParser();
-
     @Autowired
     DailyListRequestMapper dailyListRequestMapper;
 
@@ -36,7 +34,7 @@ class DailyListRequestMapperTest {
     void test1() throws IOException, JSONException {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test1/request.xml");
-        DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
+        DailyListStructure legacyDailyList = XmlParser.unmarshal(requestXml, DailyListStructure.class);
         DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
         JavaTimeModule module = new JavaTimeModule();
@@ -46,7 +44,7 @@ class DailyListRequestMapperTest {
             .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
             .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
             .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
-        ObjectMapper mapper =  new ObjectMapper()
+        ObjectMapper mapper = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(module);
 
@@ -61,7 +59,7 @@ class DailyListRequestMapperTest {
     void test2() throws IOException, JSONException {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListRequestMapperTest/test2/request.xml");
-        DailyListStructure legacyDailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
+        DailyListStructure legacyDailyList = XmlParser.unmarshal(requestXml, DailyListStructure.class);
         DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyList);
 
         JavaTimeModule module = new JavaTimeModule();
@@ -71,7 +69,7 @@ class DailyListRequestMapperTest {
             .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
             .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
             .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
-        ObjectMapper mapper =  new ObjectMapper()
+        ObjectMapper mapper = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(module);
 

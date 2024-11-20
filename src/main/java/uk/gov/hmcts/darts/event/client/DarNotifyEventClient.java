@@ -3,8 +3,6 @@ package uk.gov.hmcts.darts.event.client;
 import com.service.viq.event.Event;
 import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.DARNotifyEventResponse;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
@@ -23,19 +21,14 @@ import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 import uk.gov.hmcts.darts.log.api.LogApi;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 
-import java.io.StringWriter;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.PostConstruct;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import static java.lang.Integer.parseInt;
 import static org.slf4j.event.Level.ERROR;

@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 @Slf4j
 public class AddAudioRoute {
-    private final XmlParser xmlParser;
     private final AudiosApi audiosClient;
     private final AddAudioMapper addAudioMapper;
     private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
@@ -48,7 +47,7 @@ public class AddAudioRoute {
         Audio addAudioLegacy;
 
         try {
-            addAudioLegacy = xmlParser.unmarshal(audioXml, Audio.class);
+            addAudioLegacy = XmlParser.unmarshal(audioXml, Audio.class);
 
             addAudioValidator.validate(addAudioLegacy);
 

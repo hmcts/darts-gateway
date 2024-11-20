@@ -44,11 +44,9 @@ class XmlParserTest {
             <be:EventText>test</be:EventText>
         </be:xxx>""";
 
-    final XmlParser xmlParser = new XmlParser();
-
     @Test
     void unmarshalEvent() {
-        DartsEvent dartsEvent = xmlParser.unmarshal(eventXML, DartsEvent.class);
+        DartsEvent dartsEvent = XmlParser.unmarshal(eventXML, DartsEvent.class);
 
         assertThat(dartsEvent.getID()).isEqualTo(0);
         assertThat(dartsEvent.getY()).isEqualTo(2019);
@@ -64,7 +62,7 @@ class XmlParserTest {
 
     @Test
     void throwsWhenXmlNotParsable() {
-        assertThatThrownBy(() -> xmlParser.unmarshal(notParsableXML, DartsEvent.class))
+        assertThatThrownBy(() -> XmlParser.unmarshal(notParsableXML, DartsEvent.class))
             .isInstanceOf(DartsException.class);
     }
 }
