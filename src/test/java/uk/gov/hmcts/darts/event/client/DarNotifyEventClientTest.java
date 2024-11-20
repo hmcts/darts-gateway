@@ -16,6 +16,7 @@ import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.log.api.impl.LogApiImpl;
 import uk.gov.hmcts.darts.log.service.impl.DarNotificationLoggerServiceImpl;
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -67,7 +68,8 @@ class DarNotifyEventClientTest {
         darNotifyEventClient = new DarNotifyEventClient(
             "http://www.viqsoultions.com/DARNotifyEvent",
             mockWebServiceTemplate,
-            logApi);
+            logApi,
+            new DarNotifyEventClient.DarPcTimeLogInterceptor(Clock.systemDefaultZone()));
     }
 
     @Test
