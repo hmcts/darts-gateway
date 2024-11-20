@@ -3,25 +3,39 @@ package uk.gov.hmcts.darts.event.client;
 import com.service.viq.event.Event;
 import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.DARNotifyEventResponse;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.SoapBody;
+import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.transport.context.TransportContextHolder;
 import org.springframework.ws.transport.http.HttpComponentsConnection;
 import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 import uk.gov.hmcts.darts.log.api.LogApi;
+import uk.gov.hmcts.darts.utilities.XmlParser;
 
+import java.io.StringWriter;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.PostConstruct;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import static java.lang.Integer.parseInt;
 import static org.slf4j.event.Level.ERROR;
@@ -116,6 +130,9 @@ public class DarNotifyEventClient {
 
         private final Clock clock;
 
+        @Value("${darts-gateway.dar-pc-max-time-draft}")
+        private Duration maxTimeDrift;
+
         @Override
         public boolean handleRequest(MessageContext messageContext) {
             return true;
@@ -136,15 +153,27 @@ public class DarNotifyEventClient {
             try {
                 HttpComponentsConnection connection = (HttpComponentsConnection) TransportContextHolder.getTransportContext().getConnection();
 
+
                 Header dateHeader = connection.getHttpResponse().getFirstHeader("Date");
                 OffsetDateTime responseDateTime = OffsetDateTime.parse(dateHeader.getValue(), DateTimeFormatter.RFC_1123_DATE_TIME);
                 OffsetDateTime currentTime = OffsetDateTime.now(clock);
 
-                if (currentTime.minusMinutes(2).isBefore(responseDateTime) || currentTime.plusMinutes(2).isAfter(responseDateTime)) {
-                    log.warn("Response time from DAR PC is not within 2 minutes of current time. DarPC Response time: {}, Current time: {} for url: {}",
+                if (currentTime.minus(maxTimeDrift).isBefore(responseDateTime) || currentTime.plus(maxTimeDrift).isAfter(responseDateTime)) {
+                    SoapMessage message = (SoapMessage) messageContext.getRequest();
+                    SoapBody soapBody = message.getSoapBody();
+                    Source bodySource = soapBody.getPayloadSource();
+                    DOMSource bodyDomSource = (DOMSource) bodySource;
+
+                    DARNotifyEvent darNotifyEvent = XmlParser.unmarshal(bodyDomSource, DARNotifyEvent.class);
+                    Event event = XmlParser.unmarshal(darNotifyEvent.getXMLEventDocument(), Event.class);
+
+                    log.warn("Response time from DAR PC is outside max drift limits of {}. " +
+                                 "DAR PC Response time: {}, Current time: {} for courthouse: {} in courtroom: {}",
+                             maxTimeDrift,
                              responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME),
                              currentTime.format(DateTimeFormatter.ISO_DATE_TIME),
-                             connection.getHttpPost().getURI());
+                             event.getCourthouse(),
+                             event.getCourtroom());
                 }
             } catch (Exception e) {
                 log.error("Error in DarPcTimeLogInterceptor", e);

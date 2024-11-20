@@ -80,8 +80,8 @@ class DarNotifyControllerTest {
 
     @Test
     @ExtendWith(OutputCaptureExtension.class)
-    void shouldSendDarNotifyEventSoapActionDarPcDateOutSide2MinRangeBehind(CapturedOutput capturedOutput) throws Exception {
-        OffsetDateTime responseDateTime = OffsetDateTime.now(clock).minusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
+    void shouldSendDarNotifyEventSoapActionDarPcDateOutSideDriftLimitsRangeBehind(CapturedOutput capturedOutput) throws Exception {
+        OffsetDateTime responseDateTime = OffsetDateTime.now(clock).minusSeconds(90).truncatedTo(ChronoUnit.SECONDS);
         darPcStub.respondWithSuccessResponse(responseDateTime);
 
         mockMvc.perform(post("/events/dar-notify")
@@ -91,14 +91,14 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
         assertThat(capturedOutput)
-            .containsPattern("Response time from DAR PC is not within 2 minutes of current time. DarPC Response time: "
+            .containsPattern("Response time from DAR PC is outside max drift limits of PT1M30S. DAR PC Response time: "
                                  + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
-                                 + ", Current time: [0-9\\-.T:]+Z for url: http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx");
+                                 + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
     }
 
     @Test
     @ExtendWith(OutputCaptureExtension.class)
-    void shouldSendDarNotifyEventSoapActionDarPcDateOutSide2MinRangeAhead(CapturedOutput capturedOutput) throws Exception {
+    void shouldSendDarNotifyEventSoapActionDarPcDateOutSideDriftLimitsRangeAhead(CapturedOutput capturedOutput) throws Exception {
         OffsetDateTime responseDateTime = OffsetDateTime.now(clock).plusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
         darPcStub.respondWithSuccessResponse(responseDateTime);
 
@@ -109,9 +109,9 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
         assertThat(capturedOutput)
-            .containsPattern("Response time from DAR PC is not within 2 minutes of current time. DarPC Response time: "
+            .containsPattern("Response time from DAR PC is outside max drift limits of PT1M30S. DAR PC Response time: "
                                  + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
-                                 + ", Current time: [0-9\\-.T:]+Z for url: http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx");
+                                 + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
     }
 
     @Test
