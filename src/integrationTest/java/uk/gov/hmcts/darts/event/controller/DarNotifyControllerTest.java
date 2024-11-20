@@ -99,7 +99,7 @@ class DarNotifyControllerTest {
     @Test
     @ExtendWith(OutputCaptureExtension.class)
     void shouldSendDarNotifyEventSoapActionDarPcDateOutSide2MinRangeAhead(CapturedOutput capturedOutput) throws Exception {
-        OffsetDateTime responseDateTime = OffsetDateTime.now().plusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime responseDateTime = OffsetDateTime.now(clock).plusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
         darPcStub.respondWithSuccessResponse(responseDateTime);
 
         mockMvc.perform(post("/events/dar-notify")
