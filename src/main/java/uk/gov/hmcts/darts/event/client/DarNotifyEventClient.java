@@ -17,6 +17,7 @@ import org.springframework.ws.transport.http.HttpComponentsConnection;
 import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 import uk.gov.hmcts.darts.log.api.LogApi;
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -35,10 +36,11 @@ public class DarNotifyEventClient {
     private final String soapAction;
     private final WebServiceTemplate webServiceTemplate;
     private final LogApi logApi;
+    private final DarPcTimeLogInterceptor darPcTimeLogInterceptor;
 
     @PostConstruct
     void postConstruct() {
-        webServiceTemplate.setInterceptors(new ClientInterceptor[]{new DarPcTimeLogInterceptor()});
+        webServiceTemplate.setInterceptors(new ClientInterceptor[]{darPcTimeLogInterceptor});
     }
 
     // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
@@ -108,7 +110,11 @@ public class DarNotifyEventClient {
         );
     }
 
+    @Component
+    @RequiredArgsConstructor
     static class DarPcTimeLogInterceptor implements ClientInterceptor {
+
+        private final Clock clock;
 
         @Override
         public boolean handleRequest(MessageContext messageContext) {
@@ -132,7 +138,7 @@ public class DarNotifyEventClient {
 
                 Header dateHeader = connection.getHttpResponse().getFirstHeader("Date");
                 OffsetDateTime responseDateTime = OffsetDateTime.parse(dateHeader.getValue(), DateTimeFormatter.RFC_1123_DATE_TIME);
-                OffsetDateTime currentTime = OffsetDateTime.now();
+                OffsetDateTime currentTime = OffsetDateTime.now(clock);
 
                 if (currentTime.minusMinutes(2).isBefore(responseDateTime) || currentTime.plusMinutes(2).isAfter(responseDateTime)) {
                     log.warn("Response time from DAR PC is not within 2 minutes of current time. DarPC Response time: {}, Current time: {} for url: {}",

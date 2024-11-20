@@ -11,8 +11,10 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.darts.conf.ServiceTestConfiguration;
 import uk.gov.hmcts.darts.testutils.stub.DarPcStub;
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -23,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureWireMock(port = 8090)
-@SpringBootTest
+@SpringBootTest(classes = ServiceTestConfiguration.class)
 @ActiveProfiles({"int-test"})
 @AutoConfigureMockMvc
 class DarNotifyControllerTest {
@@ -56,6 +58,8 @@ class DarNotifyControllerTest {
 
     @Autowired
     private DarPcStub darPcStub;
+    @Autowired
+    private Clock clock;
 
     @BeforeEach
     void setup() {
@@ -64,7 +68,7 @@ class DarNotifyControllerTest {
 
     @Test
     void shouldSendDarNotifyEventSoapAction() throws Exception {
-        darPcStub.respondWithSuccessResponse(OffsetDateTime.now());
+        darPcStub.respondWithSuccessResponse(OffsetDateTime.now(clock));
 
         mockMvc.perform(post("/events/dar-notify")
                             .contentType(APPLICATION_JSON_VALUE)
@@ -77,7 +81,7 @@ class DarNotifyControllerTest {
     @Test
     @ExtendWith(OutputCaptureExtension.class)
     void shouldSendDarNotifyEventSoapActionDarPcDateOutSide2MinRangeBehind(CapturedOutput capturedOutput) throws Exception {
-        OffsetDateTime responseDateTime = OffsetDateTime.now().minusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime responseDateTime = OffsetDateTime.now(clock).minusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
         darPcStub.respondWithSuccessResponse(responseDateTime);
 
         mockMvc.perform(post("/events/dar-notify")

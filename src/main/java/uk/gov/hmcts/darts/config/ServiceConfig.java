@@ -37,6 +37,7 @@ import uk.gov.hmcts.darts.utilities.serializer.LocalDateTimeTypeSerializer;
 import uk.gov.hmcts.darts.utilities.serializer.LocalDateTypeSerializer;
 import uk.gov.hmcts.darts.utilities.serializer.OffsetDateTimeTypeSerializer;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -70,15 +71,20 @@ public class ServiceConfig {
         JavaTimeModule module = new JavaTimeModule();
 
         module.addSerializer(LocalDateTime.class, new LocalDateTimeTypeSerializer())
-                .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
-                .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
-                .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
-                .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
-                .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
+            .addSerializer(LocalDate.class, new LocalDateTypeSerializer())
+            .addSerializer(OffsetDateTime.class, new OffsetDateTimeTypeSerializer())
+            .addDeserializer(LocalDateTime.class, new LocalDateTimeTypeDeserializer())
+            .addDeserializer(LocalDate.class, new LocalDateTypeDeserializer())
+            .addDeserializer(OffsetDateTime.class, new OffsetDateTimeTypeDeserializer());
 
         return new ObjectMapper()
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .registerModule(module);
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .registerModule(module);
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 
     @Bean
