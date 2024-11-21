@@ -5,6 +5,7 @@ import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.DARNotifyEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.http.Header;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -123,7 +124,7 @@ public class DarNotifyEventClient {
 
         private final Clock clock;
 
-        @Value("${darts-gateway.dar-pc-max-time-draft}")
+        @Value("${darts-gateway.dar-pc-max-time-drift}")
         private Duration maxTimeDrift;
 
         @Override
@@ -151,7 +152,7 @@ public class DarNotifyEventClient {
                 OffsetDateTime responseDateTime = OffsetDateTime.parse(dateHeader.getValue(), DateTimeFormatter.RFC_1123_DATE_TIME);
                 OffsetDateTime currentTime = OffsetDateTime.now(clock);
 
-                if (currentTime.minus(maxTimeDrift).isBefore(responseDateTime) || currentTime.plus(maxTimeDrift).isAfter(responseDateTime)) {
+                if (currentTime.minus(maxTimeDrift).isAfter(responseDateTime) || currentTime.plus(maxTimeDrift).isBefore(responseDateTime)) {
                     SoapMessage message = (SoapMessage) messageContext.getRequest();
                     SoapBody soapBody = message.getSoapBody();
                     Source bodySource = soapBody.getPayloadSource();
@@ -162,7 +163,7 @@ public class DarNotifyEventClient {
 
                     log.warn("Response time from DAR PC is outside max drift limits of {}. " +
                                  "DAR PC Response time: {}, Current time: {} for courthouse: {} in courtroom: {}",
-                             maxTimeDrift,
+                             DurationFormatUtils.formatDurationWords(maxTimeDrift.toMillis(), true, true),
                              responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME),
                              currentTime.format(DateTimeFormatter.ISO_DATE_TIME),
                              event.getCourthouse(),

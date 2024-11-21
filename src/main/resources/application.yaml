@@ -44,7 +44,7 @@ spring:
 
 azure:
 darts-gateway:
-  dar-pc-max-time-draft: 90s
+  dar-pc-max-time-drift: 90s
   storage:
     blob:
       client:

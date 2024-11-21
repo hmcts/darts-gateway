@@ -67,7 +67,8 @@ class DarNotifyControllerTest {
     }
 
     @Test
-    void shouldSendDarNotifyEventSoapAction() throws Exception {
+    @ExtendWith(OutputCaptureExtension.class)
+    void shouldSendDarNotifyEventSoapAction(CapturedOutput capturedOutput) throws Exception {
         darPcStub.respondWithSuccessResponse(OffsetDateTime.now(clock));
 
         mockMvc.perform(post("/events/dar-notify")
@@ -76,6 +77,8 @@ class DarNotifyControllerTest {
             .andExpect(status().is2xxSuccessful());
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+        assertThat(capturedOutput)
+            .doesNotContain("Response time from DAR PC is outside max drift limits of");
     }
 
     @Test
@@ -91,7 +94,7 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
         assertThat(capturedOutput)
-            .containsPattern("Response time from DAR PC is outside max drift limits of PT1M30S. DAR PC Response time: "
+            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: "
                                  + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
                                  + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
     }
@@ -109,7 +112,7 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
         assertThat(capturedOutput)
-            .containsPattern("Response time from DAR PC is outside max drift limits of PT1M30S. DAR PC Response time: "
+            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: "
                                  + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
                                  + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
     }
