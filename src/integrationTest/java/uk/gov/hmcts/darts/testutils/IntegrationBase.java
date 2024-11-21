@@ -77,9 +77,6 @@ public class IntegrationBase implements CommandHolder {
     @Autowired
     private Map<String, ContextRegistryClient> contextClients;
 
-    @Autowired
-    protected XmlParser parser;
-
     private static String localhost;
 
     @Autowired
