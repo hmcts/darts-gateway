@@ -68,6 +68,7 @@ public class AddAudioRoute {
                     );
                     AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
                     metaData.setFileSize(request.get().getBinarySize());
+                    metaData.setChecksum(checksum.get());
                     multipartFileValidator.validate(multipartFile);
 
                     UUID blobStoreUuid = dataManagementService.saveBlobData(
@@ -75,7 +76,6 @@ public class AddAudioRoute {
                         multipartFile.getInputStream(),
                         DataUtil.toMap(metaData));
                     log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
-                    metaData.setChecksum(checksum.get());
                     audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid));
                 });
             } else {
