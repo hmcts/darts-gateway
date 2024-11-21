@@ -28,7 +28,6 @@ import uk.gov.hmcts.darts.testutils.stub.GetCasesApiStub;
 import uk.gov.hmcts.darts.testutils.stub.GetCourtLogsApiStub;
 import uk.gov.hmcts.darts.testutils.stub.PostCourtLogsApiStub;
 import uk.gov.hmcts.darts.testutils.stub.TokenStub;
-import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.workflow.command.Command;
 import uk.gov.hmcts.darts.workflow.command.CommandHolder;
 import uk.gov.hmcts.darts.workflow.command.DeployRedisCommand;
