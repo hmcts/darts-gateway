@@ -17,8 +17,6 @@ import uk.gov.hmcts.darts.utilities.XmlParser;
 @Service
 @Slf4j
 public class AddCourtLogsRoute {
-
-    private final XmlParser xmlParser;
     private final AddCourtLogsMapper mapper;
     private final CourtLogsClient courtLogsClient;
 
@@ -26,7 +24,7 @@ public class AddCourtLogsRoute {
 
         ResponseEntity<EventsResponse> response;
 
-        LogEntry logEntry = xmlParser.unmarshal(document, LogEntry.class);
+        LogEntry logEntry = XmlParser.unmarshal(document, LogEntry.class);
         CourtLogsPostRequestBody postRequestBody = mapper.mapToApi(logEntry);
 
         try {

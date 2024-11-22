@@ -5,15 +5,31 @@ import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.DARNotifyEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.http.Header;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.SoapBody;
+import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpComponentsConnection;
 import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 import uk.gov.hmcts.darts.log.api.LogApi;
+import uk.gov.hmcts.darts.utilities.XmlParser;
 
+import java.time.Clock;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import javax.annotation.PostConstruct;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 
 import static java.lang.Integer.parseInt;
 import static org.slf4j.event.Level.ERROR;
@@ -28,11 +44,16 @@ public class DarNotifyEventClient {
     private final String soapAction;
     private final WebServiceTemplate webServiceTemplate;
     private final LogApi logApi;
+    private final DarPcTimeLogInterceptor darPcTimeLogInterceptor;
+
+    @PostConstruct
+    void postConstruct() {
+        webServiceTemplate.setInterceptors(new ClientInterceptor[]{darPcTimeLogInterceptor});
+    }
 
     // This SOAP Web Service operation (DARNotifyEvent) still needs to be fully integration tested
     public boolean darNotifyEvent(String uri, DARNotifyEvent request, Event event) {
         boolean successful = false;
-
         String caseNumber = event.getCaseNumbers().getCaseNumber().toString();
 
         try {
@@ -43,7 +64,7 @@ public class DarNotifyEventClient {
 
                 if (OK.equals(result)) {
                     logApi.notificationSucceeded(uri, event.getCourthouse(), event.getCourtroom(), caseNumber, dateTimeFrom(event),
-                         response.getDARNotifyEventResult());
+                                                 response.getDARNotifyEventResult());
                     successful = true;
                 } else if (result != null) {
                     logApi.notificationFailedWithCode(
@@ -97,4 +118,60 @@ public class DarNotifyEventClient {
         );
     }
 
+    @Component
+    @RequiredArgsConstructor
+    static class DarPcTimeLogInterceptor implements ClientInterceptor {
+
+        private final Clock clock;
+
+        @Value("${darts-gateway.dar-pc-max-time-drift}")
+        private Duration maxTimeDrift;
+
+        @Override
+        public boolean handleRequest(MessageContext messageContext) {
+            return true;
+        }
+
+        @Override
+        public boolean handleResponse(MessageContext messageContext) {
+            return true;
+        }
+
+        @Override
+        public boolean handleFault(MessageContext messageContext) {
+            return true;
+        }
+
+        @Override
+        public void afterCompletion(MessageContext messageContext, Exception ex) {
+            try {
+                HttpComponentsConnection connection = (HttpComponentsConnection) TransportContextHolder.getTransportContext().getConnection();
+
+
+                Header dateHeader = connection.getHttpResponse().getFirstHeader("Date");
+                OffsetDateTime responseDateTime = OffsetDateTime.parse(dateHeader.getValue(), DateTimeFormatter.RFC_1123_DATE_TIME);
+                OffsetDateTime currentTime = OffsetDateTime.now(clock);
+
+                if (currentTime.minus(maxTimeDrift).isAfter(responseDateTime) || currentTime.plus(maxTimeDrift).isBefore(responseDateTime)) {
+                    SoapMessage message = (SoapMessage) messageContext.getRequest();
+                    SoapBody soapBody = message.getSoapBody();
+                    Source bodySource = soapBody.getPayloadSource();
+                    DOMSource bodyDomSource = (DOMSource) bodySource;
+
+                    DARNotifyEvent darNotifyEvent = XmlParser.unmarshal(bodyDomSource, DARNotifyEvent.class);
+                    Event event = XmlParser.unmarshal(darNotifyEvent.getXMLEventDocument(), Event.class);
+
+                    log.warn("Response time from DAR PC is outside max drift limits of {}. " +
+                                 "DAR PC Response time: {}, Current time: {} for courthouse: {} in courtroom: {}",
+                             DurationFormatUtils.formatDurationWords(maxTimeDrift.toMillis(), true, true),
+                             responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME),
+                             currentTime.format(DateTimeFormatter.ISO_DATE_TIME),
+                             event.getCourthouse(),
+                             event.getCourtroom());
+                }
+            } catch (Exception e) {
+                log.error("Error in DarPcTimeLogInterceptor", e);
+            }
+        }
+    }
 }

@@ -13,13 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DailyListXmlRequestMapperTest {
 
-    private final XmlParser xmlParser = new XmlParser();
-
     @Test
     void testPublishedTimeBstWithTimeZone() throws IOException {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListXmlRequestMapperTest/publishedDateBstWithTimeZone.xml");
-        DailyListStructure dailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
+        DailyListStructure dailyList = XmlParser.unmarshal(requestXml, DailyListStructure.class);
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(dailyList, requestXml, "XHB", "12345");
 
         OffsetDateTime publishedTime = postDailyListRequest.getPublishedTs();
@@ -30,7 +28,7 @@ class DailyListXmlRequestMapperTest {
     void testPublishedTimeBstWithoutTimeZone() throws IOException {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListXmlRequestMapperTest/publishedDateBstWithoutTimeZone.xml");
-        DailyListStructure dailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
+        DailyListStructure dailyList = XmlParser.unmarshal(requestXml, DailyListStructure.class);
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(dailyList, requestXml, "XHB", "12345");
 
         OffsetDateTime publishedTime = postDailyListRequest.getPublishedTs();
@@ -41,7 +39,7 @@ class DailyListXmlRequestMapperTest {
     void testPublishedTimeGmtWithTimeZone() throws IOException {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListXmlRequestMapperTest/publishedDateGmtWithTimeZone.xml");
-        DailyListStructure dailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
+        DailyListStructure dailyList = XmlParser.unmarshal(requestXml, DailyListStructure.class);
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(dailyList, requestXml, "XHB", "12345");
 
         OffsetDateTime publishedTime = postDailyListRequest.getPublishedTs();
@@ -52,7 +50,7 @@ class DailyListXmlRequestMapperTest {
     void testPublishedTimeGmtWithoutTimeZone() throws IOException {
         String requestXml = TestUtils.getContentsFromFile(
             "tests/dailylist/DailyListXmlRequestMapperTest/publishedDateGmtWithoutTimeZone.xml");
-        DailyListStructure dailyList = xmlParser.unmarshal(requestXml, DailyListStructure.class);
+        DailyListStructure dailyList = XmlParser.unmarshal(requestXml, DailyListStructure.class);
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(dailyList, requestXml, "XHB", "12345");
 
         OffsetDateTime publishedTime = postDailyListRequest.getPublishedTs();

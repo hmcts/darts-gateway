@@ -32,7 +32,6 @@ import java.util.Optional;
 public class DailyListRoute {
 
     private final DailyListsClient dailyListsClient;
-    private final XmlParser xmlParser;
     private final DailyListRequestMapper dailyListRequestMapper;
     private final XmlValidator xmlValidator;
 
@@ -58,15 +57,15 @@ public class DailyListRoute {
             }
         }
 
-        DailyListStructure legacyDailyListObject = xmlParser.unmarshal(document.trim(), DailyListStructure.class);
+        DailyListStructure legacyDailyListObject = XmlParser.unmarshal(document.trim(), DailyListStructure.class);
 
         DailyListJsonObject modernisedDailyList = dailyListRequestMapper.mapToEntity(legacyDailyListObject);
 
         PostDailyListRequest postDailyListRequest = DailyListXmlRequestMapper.mapToPostDailyListRequest(
-                legacyDailyListObject,
-                document,
-                systemType.get().getModernisedSystemType(),
-                addDocument.getMessageId()
+            legacyDailyListObject,
+            document,
+            systemType.get().getModernisedSystemType(),
+            addDocument.getMessageId()
         );
 
         ResponseEntity<PostDailyListResponse> postDailyListResponse = dailyListsClient.dailylistsPost(

@@ -22,7 +22,6 @@ public class EventRoute {
     private boolean validateEvent;
     private final XmlValidator xmlValidator;
     private final EventsClient eventsClient;
-    private final XmlParser xmlParser;
     private final EventRequestMapper dartsXmlMapper;
 
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
@@ -31,7 +30,7 @@ public class EventRoute {
             xmlValidator.validate(document, schemaPath);
         }
 
-        DartsEvent dartsEvent = xmlParser.unmarshal(document, DartsEvent.class);
+        DartsEvent dartsEvent = XmlParser.unmarshal(document, DartsEvent.class);
         uk.gov.hmcts.darts.model.event.DartsEvent eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
 
         ResponseEntity<EventsResponse> eventResponse = eventsClient.eventsPost(eventRequest);

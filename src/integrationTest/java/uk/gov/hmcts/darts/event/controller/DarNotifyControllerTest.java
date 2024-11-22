@@ -2,20 +2,30 @@ package uk.gov.hmcts.darts.event.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.darts.conf.ServiceTestConfiguration;
 import uk.gov.hmcts.darts.testutils.stub.DarPcStub;
 
+import java.time.Clock;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureWireMock(port = 8090)
-@SpringBootTest
+@SpringBootTest(classes = ServiceTestConfiguration.class)
 @ActiveProfiles({"int-test"})
 @AutoConfigureMockMvc
 class DarNotifyControllerTest {
@@ -48,6 +58,8 @@ class DarNotifyControllerTest {
 
     @Autowired
     private DarPcStub darPcStub;
+    @Autowired
+    private Clock clock;
 
     @BeforeEach
     void setup() {
@@ -55,8 +67,9 @@ class DarNotifyControllerTest {
     }
 
     @Test
-    void shouldSendDarNotifyEventSoapAction() throws Exception {
-        darPcStub.respondWithSuccessResponse();
+    @ExtendWith(OutputCaptureExtension.class)
+    void shouldSendDarNotifyEventSoapAction(CapturedOutput capturedOutput) throws Exception {
+        darPcStub.respondWithSuccessResponse(OffsetDateTime.now(clock));
 
         mockMvc.perform(post("/events/dar-notify")
                             .contentType(APPLICATION_JSON_VALUE)
@@ -64,6 +77,44 @@ class DarNotifyControllerTest {
             .andExpect(status().is2xxSuccessful());
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+        assertThat(capturedOutput)
+            .doesNotContain("Response time from DAR PC is outside max drift limits of");
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void shouldSendDarNotifyEventSoapActionDarPcDateOutSideDriftLimitsRangeBehind(CapturedOutput capturedOutput) throws Exception {
+        OffsetDateTime responseDateTime = OffsetDateTime.now(clock).minusSeconds(90).truncatedTo(ChronoUnit.SECONDS);
+        darPcStub.respondWithSuccessResponse(responseDateTime);
+
+        mockMvc.perform(post("/events/dar-notify")
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .content(VALID_NOTIFICATION_JSON))
+            .andExpect(status().is2xxSuccessful());
+
+        darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+        assertThat(capturedOutput)
+            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: "
+                                 + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
+                                 + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void shouldSendDarNotifyEventSoapActionDarPcDateOutSideDriftLimitsRangeAhead(CapturedOutput capturedOutput) throws Exception {
+        OffsetDateTime responseDateTime = OffsetDateTime.now(clock).plusMinutes(2).truncatedTo(ChronoUnit.SECONDS);
+        darPcStub.respondWithSuccessResponse(responseDateTime);
+
+        mockMvc.perform(post("/events/dar-notify")
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .content(VALID_NOTIFICATION_JSON))
+            .andExpect(status().is2xxSuccessful());
+
+        darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
+        assertThat(capturedOutput)
+            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: "
+                                 + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
+                                 + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
     }
 
     @Test
@@ -77,5 +128,4 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
     }
-
 }
