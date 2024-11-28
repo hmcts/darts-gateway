@@ -290,7 +290,7 @@ repositories {
 }
 
 ext {
-    log4JVersion = "2.24.1"
+    log4JVersion = "2.24.2"
     wsdl4jVersion = "1.6.3"
 }
 
