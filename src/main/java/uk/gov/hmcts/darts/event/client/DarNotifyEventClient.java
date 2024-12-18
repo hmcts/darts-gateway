@@ -162,10 +162,10 @@ public class DarNotifyEventClient {
                     Event event = XmlParser.unmarshal(darNotifyEvent.getXMLEventDocument(), Event.class);
 
                     log.warn("Response time from DAR PC is outside max drift limits of {}. " +
-                                 "DAR PC Response time: {}, Current time: {} for courthouse: {} in courtroom: {}",
+                                 "DAR PC Response time: '{}', Current time: '{}' for courthouse: {} in courtroom: {}",
                              DurationFormatUtils.formatDurationWords(maxTimeDrift.toMillis(), true, true),
-                             responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME),
-                             currentTime.format(DateTimeFormatter.ISO_DATE_TIME),
+                             dateHeader.getValue(),
+                             currentTime.format(DateTimeFormatter.RFC_1123_DATE_TIME),
                              event.getCourthouse(),
                              event.getCourtroom());
                 }
