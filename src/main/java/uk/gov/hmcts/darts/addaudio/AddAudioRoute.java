@@ -88,7 +88,7 @@ public class AddAudioRoute {
                             metaData.getChecksum(),
                             null
                         );
-                        throw new DartsException(CodeAndMessage.ERROR);
+                        throw new DartsException(e, CodeAndMessage.ERROR);
                     }
                     log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
                     audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid));

@@ -1,8 +1,5 @@
 package uk.gov.hmcts.darts.log.api;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.slf4j.event.Level;
 
 import java.time.OffsetDateTime;

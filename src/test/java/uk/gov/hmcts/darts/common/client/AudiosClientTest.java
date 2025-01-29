@@ -65,6 +65,7 @@ class AudiosClientTest {
     }
 
 
+    @SuppressWarnings("PMD.TestClassWithoutTestCases")//False positive
     public static class TestHttpStatusCodeException extends HttpStatusCodeException {
         protected TestHttpStatusCodeException() {
             super(HttpStatus.BAD_REQUEST);
