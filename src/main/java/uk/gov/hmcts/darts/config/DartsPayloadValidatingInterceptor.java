@@ -77,9 +77,6 @@ public class DartsPayloadValidatingInterceptor extends PayloadValidatingIntercep
     public boolean handleRequest(MessageContext messageContext, Object endpoint)
         throws IOException, SAXException, TransformerException {
         String request = messageContext.getRequest().toString();
-        if (request.endsWith("addAudio") && !validateAddCase) {
-            return true;
-        }
-        return super.handleRequest(messageContext, endpoint);
+        return (request.endsWith("addAudio") && !validateAddCase) || super.handleRequest(messageContext, endpoint);
     }
 }

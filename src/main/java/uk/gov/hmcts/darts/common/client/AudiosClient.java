@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
 import uk.gov.hmcts.darts.common.client.component.HttpHeadersInterceptor;
 import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
+import uk.gov.hmcts.darts.log.api.LogApi;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequestWithStorageGUID;
 
@@ -29,11 +30,14 @@ public class AudiosClient extends AbstractRestTemplateClient implements AudiosAp
     private final DartsClientProblemDecoder decoder;
 
     private final RestTemplate template;
+    private final LogApi logApi;
 
-    public AudiosClient(List<HttpHeadersInterceptor> interceptors, DartsClientProblemDecoder decoder, RestTemplate template) {
+    public AudiosClient(List<HttpHeadersInterceptor> interceptors, DartsClientProblemDecoder decoder, RestTemplate template,
+                        LogApi logApi) {
         super(interceptors);
         this.decoder = decoder;
         this.template = template;
+        this.logApi = logApi;
     }
 
     /**
@@ -74,6 +78,15 @@ public class AudiosClient extends AbstractRestTemplateClient implements AudiosAp
             processHttpHeaderInterceptors(headers);
             return getTemplate().postForEntity(baseUrl + "/audios/metadata", requestEntity, Void.class);
         } catch (HttpStatusCodeException e) {
+            logApi.failedToLinkAudioToCases(
+                addAudioMetadataRequestWithStorageGuid.getCourthouse(),
+                addAudioMetadataRequestWithStorageGuid.getCourtroom(),
+                addAudioMetadataRequestWithStorageGuid.getStartedAt(),
+                addAudioMetadataRequestWithStorageGuid.getEndedAt(),
+                addAudioMetadataRequestWithStorageGuid.getCases(),
+                addAudioMetadataRequestWithStorageGuid.getChecksum(),
+                addAudioMetadataRequestWithStorageGuid.getStorageGuid()
+            );
             log.error("Darts api client exception", e);
             throw getProblemDecoder().decode(e);
         }
