@@ -10,8 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.unit.DataSize;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
@@ -54,15 +54,15 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("int-test-jwt-token-shared")
 class AddAudioWebServiceTest extends IntegrationBase {
 
-    @MockBean
+    @MockitoBean
     private XmlWithFileMultiPartRequestHolder requestHolder;
 
-    @MockBean
+    @MockitoBean
     private OauthTokenGenerator mockOauthTokenGenerator;
 
-    @MockBean
+    @MockitoBean
     private TokenValidator validator;
-    @MockBean
+    @MockitoBean
     private DataManagementService dataManagementService;
 
     @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")

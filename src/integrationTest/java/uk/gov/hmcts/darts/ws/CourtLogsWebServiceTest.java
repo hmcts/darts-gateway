@@ -10,9 +10,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
@@ -53,10 +53,10 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     private @Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs;
 
-    @MockBean
+    @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
-    @MockBean
+    @MockitoBean
     private TokenValidator tokenValidator;
 
     @BeforeEach
