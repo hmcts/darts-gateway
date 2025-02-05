@@ -11,6 +11,7 @@ import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.SoapMessageFactory;
@@ -27,6 +28,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
@@ -45,6 +48,9 @@ public abstract class AbstractSoapTestClient extends WebServiceGatewaySupport
                 @SneakyThrows
                 @Override
                 protected Object handleFault(WebServiceConnection connection, MessageContext messageContext) {
+                    SoapFault soapFault = ((SoapMessage) messageContext.getResponse()).getSoapBody().getFault();
+                    assertThat(soapFault).isNotNull();
+
                     String responseXml = toXmlString(new DOMSource(((SoapMessage) messageContext.getResponse()).getDocument()));
                     String fault = responseXml
                         .replaceFirst("</ns3:ServiceException>(.|\\n)*$", "</ns3:ServiceException>");
