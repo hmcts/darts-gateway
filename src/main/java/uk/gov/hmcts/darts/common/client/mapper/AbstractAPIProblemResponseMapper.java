@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractAPIProblemResponseMapper implements APIProblemResponseMapper {
-    private final List<ProblemResponseMappingOperation> operationErrorResponseMappingList = Collections.synchronizedList(
+    private final List<ProblemResponseMappingOperation<?>> operationErrorResponseMappingList = Collections.synchronizedList(
         new ArrayList<>());
 
     @Override
@@ -18,7 +18,7 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
     }
 
     @Override
-    public List<ProblemResponseMappingOperation> getResponseMappings() {
+    public List<ProblemResponseMappingOperation<?>> getResponseMappings() {
         return operationErrorResponseMappingList;
     }
 
@@ -30,7 +30,7 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
             Optional<? extends ProblemResponseMapping<?>> fnd = mappingList.stream().filter(m -> m.match(problem)).findFirst();
 
             if (fnd.isPresent()) {
-                return (Optional<ProblemResponseMapping<?>>)fnd;
+                return (Optional<ProblemResponseMapping<?>>) fnd;
             }
         }
 
@@ -54,7 +54,6 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
         return Optional.empty();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Optional<ClientProblemException> getExceptionForProblem(Problem problem) {
         Optional<ProblemResponseMappingOperation<?>> operation = getOperationForProblem(problem);
@@ -64,7 +63,7 @@ public abstract class AbstractAPIProblemResponseMapper implements APIProblemResp
 
             if (mapping.isPresent()) {
                 returnEx = operation.get().getException()
-                        .apply(new ProblemAndMapping(problem, mapping.get()));
+                    .apply(new ProblemAndMapping(problem, mapping.get()));
                 return Optional.of(returnEx);
             }
         }

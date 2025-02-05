@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:ServiceException xmlns:ns2="http://rt.fs.documentum.emc.com/">
+   <exceptionBean>
+      <attribute>
+         <name>exceptionType</name>
+         <value>uk.gov.hmcts.darts.common.client.exeption.ClientProblemException</value>
+      </attribute>
+      <attribute>
+         <name>messageArgs</name>
+         <type>java.lang.String</type>
+         <value>Courthouse Not Found</value>
+      </attribute>
+      <attribute>
+         <name>messageId</name>
+         <type>java.lang.String</type>
+         <value>E_UNKNOWN_CODE</value>
+      </attribute>
+      <exceptionClass>uk.gov.hmcts.darts.common.client.exeption.ClientProblemException</exceptionClass>
+      <genericType>java.lang.Exception</genericType>
+      <message>An unknown exception occurred</message>
+      <messageId>E_UNKNOWN_CODE</messageId>
+   </exceptionBean>
+   <message>An unknown exception occurred</message>
+   <messageArgs xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:type="xs:string">Courthouse Not Found</messageArgs>
+   <messageId>E_UNKNOWN_CODE</messageId>
+</ns2:ServiceException>
