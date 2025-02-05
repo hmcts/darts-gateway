@@ -49,7 +49,7 @@ public final class ServiceExceptionType extends ServiceException {
     public DfsExceptionHolder addHolder(String message, String messageId, Throwable cause, String arg) {
         DfsAttributeHolder exceptionTypeAttribute = new DfsAttributeHolder();
         exceptionTypeAttribute.setName(ATTRIBUTE_EXCEPTION_TYPE);
-        exceptionTypeAttribute.setValue(cause.getClass().getCanonicalName());
+        exceptionTypeAttribute.setValue(cause == null ? String.class.getCanonicalName() : cause.getClass().getCanonicalName());
 
         DfsAttributeHolder messageArgsAttribute = new DfsAttributeHolder();
         messageArgsAttribute.setName(ATTRIBUTE_MESSAGE_ARGS);
@@ -63,7 +63,7 @@ public final class ServiceExceptionType extends ServiceException {
 
         // add one exception
         DfsExceptionHolder holder = new DfsExceptionHolder();
-        holder.setExceptionClass(cause.getClass().getCanonicalName());
+        holder.setExceptionClass(cause == null ? Exception.class.getCanonicalName() : cause.getClass().getCanonicalName());
         holder.setGenericType(Exception.class.getCanonicalName());
         holder.setMessage(message);
         holder.setMessageId(messageId);
