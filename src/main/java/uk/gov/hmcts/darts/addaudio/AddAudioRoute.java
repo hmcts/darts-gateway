@@ -5,6 +5,7 @@ import com.service.mojdarts.synapps.com.addaudio.Audio;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioFileValidator;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
@@ -39,6 +40,9 @@ public class AddAudioRoute {
     private final DataManagementService dataManagementService;
     private final DataManagementConfiguration dataManagementConfiguration;
     private final LogApi logApi;
+
+    @Value("${temp.force-checksum-failure:false}")
+    private boolean tempForceChecksumFailure;
 
     public DARTSResponse route(AddAudio addAudio) {
 
@@ -91,6 +95,9 @@ public class AddAudioRoute {
                         throw new DartsException(e, CodeAndMessage.ERROR);
                     }
                     log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
+                    if (tempForceChecksumFailure) {
+                        metaData.setChecksum(metaData.getChecksum() + "1");
+                    }
                     audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid));
                 });
             } else {
