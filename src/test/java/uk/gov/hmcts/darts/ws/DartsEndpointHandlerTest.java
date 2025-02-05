@@ -1,9 +1,11 @@
 package uk.gov.hmcts.darts.ws;
 
 import com.synapps.moj.dfs.response.DARTSResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DartsEndpointHandlerTest {
 
@@ -11,14 +13,12 @@ class DartsEndpointHandlerTest {
 
     @Test
     void testEndpointExecution() {
-        DARTSResponse response = new DartsEndpointHandler().makeAPICall(
+        DartsException exception = assertThrows(DartsException.class, () -> new DartsEndpointHandler().makeAPICall(
             "",
             this::executeWithCourtHouseError,
-            () -> new DARTSResponse()
-        );
-
-        Assertions.assertEquals(ASSERT_MESSAGE.getCode(), response.getCode());
-        Assertions.assertEquals(ASSERT_MESSAGE.getMessage(), response.getMessage());
+            DARTSResponse::new
+        ));
+        assertThat(exception.getCodeAndMessage()).isEqualTo(ASSERT_MESSAGE);
     }
 
     private DARTSResponse executeWithCourtHouseError() {

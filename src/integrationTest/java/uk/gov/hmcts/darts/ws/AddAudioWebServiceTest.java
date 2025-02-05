@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.emc.documentum.fs.rt.ServiceException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
@@ -279,9 +280,10 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()) + 1);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionAudioTooLargeResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -296,9 +298,10 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(request.getBinarySize()).thenReturn(maxByteSize.toBytes());
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            CodeAndMessage responseCode = CodeAndMessage.INVALID_XML;
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionInvalidXmlDocumentResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -315,9 +318,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            CodeAndMessage responseCode = CodeAndMessage.ERROR;
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile(
+                "payloads/addAudio/register/dartsExceptionResponse.xml"), ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
             WireMock.matching(
@@ -339,9 +342,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(request.getBinarySize()).thenReturn(maxByteSize.toBytes());
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            CodeAndMessage responseCode = CodeAndMessage.ERROR;
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsExceptionResponse.xml"),
+                                                     ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -360,13 +363,13 @@ class AddAudioWebServiceTest extends IntegrationBase {
                                         .withBody(dartsApiResponseStr)));
 
             String expectedResponseStr = TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/problemResponse.xml");
+                "payloads/addAudio/register/courtHouseNotFoundResponse.xml");
 
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(expectedResponseStr, ServiceException.class);
 
             verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
                 WireMock.matching(
@@ -453,9 +456,10 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()));
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            CodeAndMessage responseCode = CodeAndMessage.AUDIO_TOO_LARGE;
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionAudioTooLargeResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -476,10 +480,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-
-            CodeAndMessage responseCode = CodeAndMessage.ERROR;
-            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionResponse.xml"),
+                                                     ServiceException.class);
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
@@ -501,10 +504,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.BAD_SIGNATURE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-
-            CodeAndMessage responseCode = CodeAndMessage.ERROR;
-            Assertions.assertEquals(responseCode.getCode(), response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionResponse.xml"),
+                                                     ServiceException.class);
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
@@ -526,8 +528,10 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsExceptionResponse.xml"),
+                                                     ServiceException.class);
+
             Assertions.assertFalse(logAppender
                                        .searchLogs(
                                            AbstractClientProblemDecoder.RESPONSE_PREFIX +
@@ -563,8 +567,9 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsExceptionResponse.xml"),
+                                                     ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error: \"<html><body>Internal Server Error</body></html>\"", null, null).isEmpty());
             verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(

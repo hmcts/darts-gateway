@@ -14,5 +14,5 @@ public interface APIProblemResponseMapper {
 
     Optional<ProblemResponseMapping<?>> getMapping(Problem problem);
 
-    List<ProblemResponseMappingOperation> getResponseMappings();
+    List<ProblemResponseMappingOperation<?>> getResponseMappings();
 }

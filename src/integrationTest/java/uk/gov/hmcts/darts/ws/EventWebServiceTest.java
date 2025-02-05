@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.emc.documentum.fs.rt.ServiceException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
@@ -18,11 +19,10 @@ import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
-import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
+import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
-import uk.gov.hmcts.darts.model.dailylist.DailyListErrorCode;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 import java.nio.charset.Charset;
@@ -79,7 +79,7 @@ class EventWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                 getGatewayUri(),
                 validEvent.getContentAsString(
-                   Charset.defaultCharset())
+                    Charset.defaultCharset())
             );
             response.assertIdenticalResponse(client.convertData(
                 validEventResponse.getContentAsString(Charset.defaultCharset()),
@@ -167,7 +167,7 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws Exception {
 
         when(tokenValidator.test(Mockito.any(),
-                                     Mockito.eq("downstreamtoken"))).thenReturn(true);
+                                 Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
@@ -176,7 +176,7 @@ class EventWebServiceTest extends IntegrationBase {
             theEventApi.willRespondSuccessfully();
 
             when(tokenValidator.test(Mockito.any(),
-                                         Mockito.eq("downstreamtoken"))).thenReturn(false);
+                                     Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                 getGatewayUri(),
@@ -330,18 +330,11 @@ class EventWebServiceTest extends IntegrationBase {
     ) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.returnsFailureWhenPostingDailyList();
-            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-                   getGatewayUri(),
-                    validDlEvent.getContentAsString(Charset.defaultCharset())
-               );
-
-            ProblemResponseMapping<?> op = getSpecificSoapErrorCode(
-                DailyListErrorCode.FAILED_TO_PROCESS_DAILYLIST.getValue(),
-                DAILY_LIST_API_PROBLEM_RESPONSE_MAPPER
-            );
-
-            SoapAssertionUtil.assertErrorResponse(op.getMessage().getCode(), op.getMessage().getMessage(), response.getResponse().getValue().getReturn());
-
+            SoapAssertionUtil<ServiceException> response = client.addDocumentException(getGatewayUri(),
+                                                                                       validDlEvent.getContentAsString(Charset.defaultCharset()));
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/events/invalidPayloadResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
@@ -351,16 +344,16 @@ class EventWebServiceTest extends IntegrationBase {
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesInvalidDailyListPayloadNoDartsAPIProblemBody(
-            DartsGatewayClient client
+        DartsGatewayClient client
     ) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.returnsFailureWhenPostingDailyList(false);
-            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
-                    getGatewayUri(),
-                    validDlEvent.getContentAsString(Charset.defaultCharset())
-            );
 
-            SoapAssertionUtil.assertErrorResponse(String.valueOf(500), response.getResponse().getValue().getReturn());
+            SoapAssertionUtil<ServiceException> response = client.addDocumentException(getGatewayUri(),
+                                                                                       validDlEvent.getContentAsString(Charset.defaultCharset()));
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/events/dartsExceptionResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);

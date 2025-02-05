@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.emc.documentum.fs.rt.ServiceException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
@@ -144,7 +145,7 @@ class CasesWebServiceTest extends IntegrationBase {
     void testHandlesGetCasesWithAuthenticationTokenWithRefresh(DartsGatewayClient client) throws IOException, JAXBException, InterruptedException {
 
         when(tokenValidator.test(Mockito.any(),
-                                     Mockito.eq("downstreamtoken"))).thenReturn(true);
+                                 Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         // setup the tokens so that we refresh the backend token before making the restful darts calls
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
@@ -166,7 +167,7 @@ class CasesWebServiceTest extends IntegrationBase {
                 "payloads/getCases/expectedResponse.xml");
 
             when(tokenValidator.test(Mockito.any(),
-                                         Mockito.eq("downstreamtoken"))).thenReturn(false);
+                                     Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
@@ -221,8 +222,10 @@ class CasesWebServiceTest extends IntegrationBase {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
-            SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
-            SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found", response.getResponse().getValue().getReturn());
+            SoapAssertionUtil<ServiceException> response = client.getCasesException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/getCases/courtHouseNotFoundResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -311,8 +314,10 @@ class CasesWebServiceTest extends IntegrationBase {
                         .willReturn(aResponse()
                                         .withStatus(500)));
 
-            SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.getCasesException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/getCases/dartsExceptionResponse.xml"),
+                ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error:", null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
@@ -334,8 +339,10 @@ class CasesWebServiceTest extends IntegrationBase {
                         .willReturn(aResponse()
                                         .withStatus(500).withBody("<html><body>Internal Server Error</body></html>")));
 
-            SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
-            Assertions.assertEquals("500", response.getResponse().getValue().getReturn().getCode());
+            SoapAssertionUtil<ServiceException> response = client.getCasesException(getGatewayUri(), soapRequestStr);
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/getCases/dartsExceptionResponse.xml"),
+                ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error:<html><body>Internal Server Error</body></html>", null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
