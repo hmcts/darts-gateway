@@ -142,7 +142,6 @@ darts-gateway:
     external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
     jwks-cache-refresh_period: ${JWKS_REFRESH_PERIOD:30m}
     jwks-cache-lifetime_period:  ${JWKS_LIFETIME_PERIOD:60m}
-
   # Default payload logging to be disabled for daily list payloads 
   logging:
     exclude-payload-request-logging-based-on-payload-namespace-and-tag:
@@ -152,3 +151,5 @@ darts-gateway:
       - namespace: http://com.synapps.mojdarts.service.com
         tag: addDocument
         type: DL
+temp:
+  force-checksum-failure: ${FORCE_CHECKSUM_FAILURE:false}
