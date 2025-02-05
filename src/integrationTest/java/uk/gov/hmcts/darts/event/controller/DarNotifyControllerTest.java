@@ -94,9 +94,9 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
         assertThat(capturedOutput)
-            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: "
-                                 + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
-                                 + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
+            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: '"
+                                 + responseDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME)
+                                 + "', Current time: '[A-Za-z]{3}, \\d{1,2} [A-Za-z]{3} \\d{4} \\d{2}:\\d{2}:\\d{2} [A-Z]{3}' for courthouse: York in courtroom: 1");
     }
 
     @Test
@@ -112,9 +112,9 @@ class DarNotifyControllerTest {
 
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
         assertThat(capturedOutput)
-            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: "
-                                 + responseDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
-                                 + ", Current time: [0-9\\-.T:]+Z for courthouse: York in courtroom: 1");
+            .containsPattern("Response time from DAR PC is outside max drift limits of 1 minute 30 seconds. DAR PC Response time: '"
+                                 + responseDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME)
+                                 + "', Current time: '[A-Za-z]{3}, \\d{1,2} [A-Za-z]{3} \\d{4} \\d{2}:\\d{2}:\\d{2} [A-Z]{3}' for courthouse: York in courtroom: 1");
     }
 
     @Test

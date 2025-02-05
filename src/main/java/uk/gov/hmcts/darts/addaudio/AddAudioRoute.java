@@ -15,6 +15,7 @@ import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.datastore.DataManagementConfiguration;
 import uk.gov.hmcts.darts.datastore.DataManagementService;
+import uk.gov.hmcts.darts.log.api.LogApi;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.utilities.DataUtil;
 import uk.gov.hmcts.darts.utilities.FileContentChecksum;
@@ -37,6 +38,7 @@ public class AddAudioRoute {
     private final AddAudioFileValidator multipartFileValidator;
     private final DataManagementService dataManagementService;
     private final DataManagementConfiguration dataManagementConfiguration;
+    private final LogApi logApi;
 
     public DARTSResponse route(AddAudio addAudio) {
 
@@ -69,11 +71,25 @@ public class AddAudioRoute {
                     metaData.setFileSize(request.get().getBinarySize());
                     metaData.setChecksum(checksum.get());
                     multipartFileValidator.validate(multipartFile);
-
-                    UUID blobStoreUuid = dataManagementService.saveBlobData(
-                        dataManagementConfiguration.getInboundContainerName(),
-                        multipartFile.getInputStream(),
-                        DataUtil.toMap(metaData));
+                    UUID blobStoreUuid;
+                    try {
+                        blobStoreUuid = dataManagementService.saveBlobData(
+                            dataManagementConfiguration.getInboundContainerName(),
+                            multipartFile.getInputStream(),
+                            DataUtil.toMap(metaData));
+                    } catch (Exception e) {
+                        log.error("Failed to upload audio file to the inbound blob store", e);
+                        logApi.failedToLinkAudioToCases(
+                            metaData.getCourthouse(),
+                            metaData.getCourtroom(),
+                            metaData.getStartedAt(),
+                            metaData.getEndedAt(),
+                            metaData.getCases(),
+                            metaData.getChecksum(),
+                            null
+                        );
+                        throw new DartsException(e, CodeAndMessage.ERROR);
+                    }
                     log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
                     audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid));
                 });

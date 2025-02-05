@@ -30,6 +30,9 @@ import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.CommonApiProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.EventAPIProblemResponseMapper;
+import uk.gov.hmcts.darts.metadata.ContextRegistryEndpointMetaData;
+import uk.gov.hmcts.darts.metadata.DartsEndpointMetaData;
+import uk.gov.hmcts.darts.metadata.EndpointMetaData;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTimeTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.LocalDateTypeDeserializer;
 import uk.gov.hmcts.darts.utilities.deserializer.OffsetDateTimeTypeDeserializer;
@@ -41,6 +44,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -135,5 +139,13 @@ public class ServiceConfig {
     @Bean
     public RestTemplate getTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    List<EndpointMetaData> getEndpointMetaData() {
+        List<EndpointMetaData> endpointMetaData = new ArrayList<>();
+        endpointMetaData.add(new DartsEndpointMetaData(SoapWebServiceConfig.BASE_WEB_CONTEXT));
+        endpointMetaData.add(new ContextRegistryEndpointMetaData(SoapWebServiceConfig.BASE_WEB_CONTEXT));
+        return endpointMetaData;
     }
 }
