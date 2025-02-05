@@ -30,7 +30,7 @@ public abstract class AbstractClientProblemDecoder {
             String payload = IOUtils.toString(response.body().asInputStream(), Charset.defaultCharset());
             log.trace(RESPONSE_PREFIX.concat("{}"), response.status() + " Server Error:" + payload);
             Problem problem = getProblem(IOUtils.toInputStream(payload, Charset.defaultCharset()));
-            returnEx = getExceptionForProblem(problem);
+            returnEx = getExceptionForProblem(problem, null);
         } catch (Exception ioEx) {
             log.error("Failed to read the problem json", ioEx);
             returnEx = new DartsException(ioEx, CodeAndMessage.ERROR);
@@ -43,14 +43,14 @@ public abstract class AbstractClientProblemDecoder {
         log.trace(RESPONSE_PREFIX.concat("{}"), response.getMessage());
         try (ByteArrayInputStream is = new ByteArrayInputStream(response.getResponseBodyAsByteArray())) {
             Problem problem = getProblem(is);
-            return getExceptionForProblem(problem);
+            return getExceptionForProblem(problem, response);
         } catch (Exception ioEx) {
             log.error("Failed to read the problem json", ioEx);
             return new DartsException(ioEx, CodeAndMessage.ERROR);
         }
     }
 
-    private ClientProblemException getExceptionForProblem(Problem problem) {
+    private ClientProblemException getExceptionForProblem(Problem problem, Throwable cause) {
         ClientProblemException returnEx = null;
         Optional<APIProblemResponseMapper> identifiedProblem
             = responseMappers.stream().filter(e -> e.getExceptionForProblem(problem).isPresent()).findFirst();
@@ -62,7 +62,7 @@ public abstract class AbstractClientProblemDecoder {
                 returnEx = exception.get();
             }
         } else {
-            returnEx = new ClientProblemException(problem);
+            returnEx = new ClientProblemException(cause, CodeAndMessage.ERROR, problem);
         }
 
         return returnEx;

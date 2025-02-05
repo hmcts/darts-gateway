@@ -4,6 +4,7 @@ import com.emc.documentum.fs.rt.DfsAttributeHolder;
 import com.emc.documentum.fs.rt.DfsExceptionHolder;
 import com.emc.documentum.fs.rt.ServiceException;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 
@@ -15,18 +16,15 @@ import java.util.List;
 
 @XmlRootElement
 @Setter
-public class ServiceExceptionType extends ServiceException {
+@NoArgsConstructor
+public final class ServiceExceptionType extends ServiceException {
     public static final String ATTRIBUTE_EXCEPTION_TYPE = "exceptionType";
     public static final String ATTRIBUTE_MESSAGE_ARGS = "messageArgs";
     public static final String ATTRIBUTE_MESSAGE_ID = "messageId";
 
-    @SuppressWarnings("PMD.CallSuperInConstructor")
-    public ServiceExceptionType() {
-        //Empty constructor
-    }
 
-    @SuppressWarnings({"PMD.ConstructorCallsOverridableMethod", "PMD.CallSuperInConstructor"})
     public ServiceExceptionType(String code, Throwable cause, String arg) {
+        super();
         setMessageId(code);
         setMessage(SoapFaultServiceException.getMessage(code, arg));
         setMessageArgs(arg);
@@ -51,7 +49,7 @@ public class ServiceExceptionType extends ServiceException {
     public DfsExceptionHolder addHolder(String message, String messageId, Throwable cause, String arg) {
         DfsAttributeHolder exceptionTypeAttribute = new DfsAttributeHolder();
         exceptionTypeAttribute.setName(ATTRIBUTE_EXCEPTION_TYPE);
-        exceptionTypeAttribute.setType(String.class.getName());
+        exceptionTypeAttribute.setValue(cause.getClass().getCanonicalName());
 
         DfsAttributeHolder messageArgsAttribute = new DfsAttributeHolder();
         messageArgsAttribute.setName(ATTRIBUTE_MESSAGE_ARGS);

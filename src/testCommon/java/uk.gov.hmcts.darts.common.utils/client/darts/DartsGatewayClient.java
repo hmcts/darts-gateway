@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.common.utils.client.darts;
 
+import com.emc.documentum.fs.rt.ServiceException;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
 import com.service.mojdarts.synapps.com.AddCaseResponse;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
@@ -18,15 +19,23 @@ public interface DartsGatewayClient extends uk.gov.hmcts.darts.common.utils.clie
 
     SoapAssertionUtil<GetCasesResponse> getCases(URL uri, String payload) throws MalformedURLException, JAXBException;
 
-    SoapAssertionUtil<AddDocumentResponse> addDocument(URL uri, String payload) throws JAXBException;
+    SoapAssertionUtil<AddDocumentResponse> addDocument(URL uri, String payload);
 
-    SoapAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload) throws JAXBException;
+    SoapAssertionUtil<ServiceException> addDocumentException(URL uri, String payload);
 
-    SoapAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload) throws JAXBException;
+    SoapAssertionUtil<GetCourtLogResponse> getCourtLogs(URL uri, String payload);
+
+    SoapAssertionUtil<AddLogEntryResponse> postCourtLogs(URL uri, String payload);
+
+    SoapAssertionUtil<ServiceException> postCourtLogsException(URL uri, String payload);
 
     SoapAssertionUtil<AddCaseResponse> addCases(URL uri, String payload) throws MalformedURLException, JAXBException;
 
-    SoapAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload) throws JAXBException;
+    SoapAssertionUtil<RegisterNodeResponse> registerNode(URL uri, String payload);
 
-    SoapAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload) throws JAXBException;
+    SoapAssertionUtil<AddAudioResponse> addAudio(URL uri, String payload);
+
+    SoapAssertionUtil<ServiceException> addAudioException(URL uri, String payload);
+
+    SoapAssertionUtil<ServiceException> getCasesException(URL uri, String payload);
 }

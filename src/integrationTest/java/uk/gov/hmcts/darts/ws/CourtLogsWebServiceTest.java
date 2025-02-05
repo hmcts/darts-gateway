@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
+import com.emc.documentum.fs.rt.ServiceException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddLogEntryResponse;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
+import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
@@ -82,7 +84,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             client.getCourtLogs(
                 getGatewayUri(),
                 getCourtLogs.getContentAsString(
-                   Charset.defaultCharset())
+                    Charset.defaultCharset())
             );
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
@@ -163,7 +165,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     void testRoutesGetCourtLogRequestWithAuthenticationTokenRefresh(DartsGatewayClient client) throws Exception {
 
         when(tokenValidator.test(Mockito.any(),
-                                Mockito.eq("downstreamtoken"))).thenReturn(true);
+                                 Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
@@ -174,7 +176,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             courtLogsApi.returnsCourtLogs(dartsApiCourtLogsResponse);
 
             when(tokenValidator.test(Mockito.any(),
-                                         Mockito.eq("downstreamtoken"))).thenReturn(false);
+                                     Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<GetCourtLogResponse> response = client.getCourtLogs(
                 getGatewayUri(),
@@ -283,14 +285,11 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     void testPostCourtLogsRouteFailOnInvalidServiceResponse(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             postCourtLogsApi.returnsFailureWhenAddingCourtLogs();
-
-            SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(
-                getGatewayUri(),
-                postCourtLogs.getContentAsString(Charset.defaultCharset())
-            );
-            SoapAssertionUtil.assertErrorResponse("404", "Courthouse Not Found",
-                                                  response.getResponse().getValue().getReturn()
-            );
+            SoapAssertionUtil<ServiceException> response = client.postCourtLogsException(getGatewayUri(),
+                                                                                         postCourtLogs.getContentAsString(Charset.defaultCharset()));
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/courtlogs/courthouseNotFoundResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
 
@@ -303,14 +302,11 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     void testPostCourtLogsRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             postCourtLogsApi.returnsEventResponse();
-
-            SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(
-                getGatewayUri(),
-                invalidSoapMessage.getContentAsString(Charset.defaultCharset())
-            );
-            SoapAssertionUtil.assertErrorResponse("400", "Invalid XML Document",
-                                                  response.getResponse().getValue().getReturn()
-            );
+            SoapAssertionUtil<ServiceException> response = client.postCourtLogsException(getGatewayUri(),
+                                                                                         invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/courtlogs/dartsExceptionInvalidXmlResponse.xml"),
+                ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         postCourtLogsApi.verifyDoesntReceiveRequest();

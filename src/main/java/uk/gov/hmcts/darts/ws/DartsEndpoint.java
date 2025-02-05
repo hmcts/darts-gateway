@@ -19,6 +19,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.xml.bind.JAXBElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -127,7 +128,7 @@ public class DartsEndpoint {
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "addAudio")
     @ResponsePayload
-    public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> addAudio) {
+    public JAXBElement<AddAudioResponse> addAudio(@RequestPayload JAXBElement<AddAudio> addAudio, MessageContext messageContext) {
 
         AddAudioResponse addAudioResponse = ResponseFactory.getAddAudioResponse();
 
@@ -139,5 +140,4 @@ public class DartsEndpoint {
 
         return new ObjectFactory().createAddAudioResponse(addAudioResponse);
     }
-
 }
