@@ -64,7 +64,7 @@ public class LogApiImpl implements LogApi {
     @Override
     public void failedToLinkAudioToCases(String courthouse, String courtroom, OffsetDateTime startedAt, OffsetDateTime endedAt, List<String> cases,
                                          String checksum, UUID storageBlobId) {
-        log.error("Failed to link audio to cases: courthouse={}, courtroom={}, startedAt={}, endedAt={}, cases={}, checksum={}, blob_store_id={}",
+        log.error("Failed to link audio to cases: courthouse={}, courtroom={}, started_at={}, ended_at={}, cases={}, checksum={}, blob_store_id={}",
                   courthouse,
                   courtroom,
                   startedAt.format(DateTimeFormatter.ISO_DATE_TIME),
