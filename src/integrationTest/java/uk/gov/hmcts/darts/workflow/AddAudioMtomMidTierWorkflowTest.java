@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -30,10 +30,10 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("int-test-jwt-token-error-log-level")
 @org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
 class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
-    @MockBean
+    @MockitoBean
     private TokenGenerator generator;
 
-    @MockBean
+    @MockitoBean
     private TokenValidator validator;
 
     @BeforeEach
