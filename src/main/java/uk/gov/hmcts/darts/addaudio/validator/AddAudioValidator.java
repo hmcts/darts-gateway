@@ -75,7 +75,7 @@ public class AddAudioValidator {
 
     private void validateSize() {
         Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
-        if (!request.isPresent()) {
+        if (request.isEmpty()) {
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
         try {

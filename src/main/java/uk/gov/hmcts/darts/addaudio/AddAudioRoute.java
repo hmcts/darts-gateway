@@ -51,6 +51,7 @@ public class AddAudioRoute {
         String audioXml = addAudio.getDocument();
 
         Audio addAudioLegacy;
+        AtomicReference<UUID> blobStoreUuid = new AtomicReference<>();
 
         try {
             addAudioLegacy = XmlParser.unmarshal(audioXml, Audio.class);
@@ -75,12 +76,11 @@ public class AddAudioRoute {
                     metaData.setFileSize(request.get().getBinarySize());
                     metaData.setChecksum(checksum.get());
                     multipartFileValidator.validate(multipartFile);
-                    UUID blobStoreUuid;
                     try {
-                        blobStoreUuid = dataManagementService.saveBlobData(
+                        blobStoreUuid.set(dataManagementService.saveBlobData(
                             dataManagementConfiguration.getInboundContainerName(),
                             multipartFile.getInputStream(),
-                            DataUtil.toMap(metaData));
+                            DataUtil.toMap(metaData)));
                     } catch (Exception e) {
                         log.error("Failed to upload audio file to the inbound blob store", e);
                         logApi.failedToLinkAudioToCases(
@@ -98,7 +98,7 @@ public class AddAudioRoute {
                     if (tempForceChecksumFailure) {
                         metaData.setChecksum(metaData.getChecksum() + "1");
                     }
-                    audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid));
+                    audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid.get()));
                 });
             } else {
                 log.error("The add audio endpoint requires a file to be specified. No file was found");
@@ -106,6 +106,11 @@ public class AddAudioRoute {
             }
         } catch (IOException ioe) {
             throw new DartsException(ioe, CodeAndMessage.ERROR);
+        } catch (Exception e) {
+            if (blobStoreUuid.get() != null) {
+                dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid.get());
+            }
+            throw e;
         }
 
         CodeAndMessage message = CodeAndMessage.OK;
