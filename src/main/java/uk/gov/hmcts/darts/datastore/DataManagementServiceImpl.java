@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.datastore.azure.DataManagementAzureClientFactory;
 
 import java.io.InputStream;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
 
@@ -54,6 +52,7 @@ public class DataManagementServiceImpl implements DataManagementService {
     public void deleteBlobData(String containerName, UUID blobId) {
         if (dataManagementConfiguration.isDisableUpload()) {
             log.info("Azure upload is disabled in properties. Skipping file deletion");
+            return;
         }
 
         try {
@@ -61,8 +60,9 @@ public class DataManagementServiceImpl implements DataManagementService {
             BlobContainerClient containerClient = blobServiceFactory.getBlobContainerClient(containerName, serviceClient);
 
             BlobClient client = blobServiceFactory.getBlobClient(containerClient, blobId);
-            Response<Boolean> response = client.deleteIfExistsWithResponse(DeleteSnapshotsOptionType.INCLUDE, null,
-                                                                           dataManagementConfiguration.getBlobClientDeleteTimeout(), null
+            Response<Boolean> response = client.deleteIfExistsWithResponse(
+                DeleteSnapshotsOptionType.INCLUDE, null,
+                dataManagementConfiguration.getBlobClientDeleteTimeout(), null
             );
 
             HttpStatus httpStatus = valueOf(response.getStatusCode());

@@ -44,6 +44,7 @@ public class AddAudioRoute {
     @Value("${temp.force-checksum-failure:false}")
     private boolean tempForceChecksumFailure;
 
+    @SuppressWarnings("PMD.ExceptionAsFlowControl")//Try/Catch used to clean up resources in case of any failure
     public DARTSResponse route(AddAudio addAudio) {
 
         addAudioValidator.validate(addAudio);
