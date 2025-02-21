@@ -37,7 +37,7 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
 
         String extension = FilenameUtils.getExtension(addAudioFileRequest.getOriginalFilename());
         if (!allowedMediaConfig.getAllowedMediaExtensions().contains(extension)) {
-            log.info("Add Audio failed due to invalid Extension");
+            log.info("Add Audio failed due to invalid Extension. Got '{}' but expected one of '{}'", extension, allowedMediaConfig.getAllowedMediaExtensions());
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
