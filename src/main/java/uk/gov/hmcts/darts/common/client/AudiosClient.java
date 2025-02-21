@@ -4,18 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
 import uk.gov.hmcts.darts.common.client.component.HttpHeadersInterceptor;
 import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
 import uk.gov.hmcts.darts.log.api.LogApi;
-import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequestWithStorageGUID;
 
 import java.util.List;
@@ -40,17 +37,6 @@ public class AudiosClient extends AbstractRestTemplateClient implements AudiosAp
         this.logApi = logApi;
     }
 
-    /**
-     * Add an audio using streaming.
-     *
-     * @param multipartFile The multipart audio file to transfer. A default one that disableS in memory loading
-     *                      can be found {@link uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart}
-     * @param audio         The audio meta data
-     */
-    public void streamAudio(MultipartFile multipartFile, AddAudioMetadataRequest audio) {
-        streamFileWithMetaData(multipartFile, audio, baseUrl + "/audios");
-    }
-
     @Override
     protected RestTemplate getTemplate() {
         return template;
@@ -59,12 +45,6 @@ public class AudiosClient extends AbstractRestTemplateClient implements AudiosAp
     @Override
     protected DartsClientProblemDecoder getProblemDecoder() {
         return decoder;
-    }
-
-    @Override
-    public ResponseEntity<Void> addAudio(MultipartFile file, AddAudioMetadataRequest metadata) {
-        streamAudio(file, metadata);
-        return new ResponseEntity<>(HttpStatusCode.valueOf(200));
     }
 
     @Override

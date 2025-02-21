@@ -54,6 +54,7 @@ darts-gateway:
         max-single-upload-size-bytes: 10_000_000
         max-concurrency: 5
         timeout: 15m
+        delete-timeout: 1m
         disable-upload: false
       container-name:
         inbound: darts-inbound-container
