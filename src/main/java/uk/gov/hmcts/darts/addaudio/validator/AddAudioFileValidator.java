@@ -25,19 +25,21 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
     @SuppressWarnings("PMD.CyclomaticComplexity")
     @Override
     public void validate(MultipartFile addAudioFileRequest) {
-        if (addAudioFileRequest.getSize() <= 0) {
-            log.info("Add Audio failed due size too small");
+        final int minSize = 0;
+        if (addAudioFileRequest.getSize() <= minSize) {
+            log.info("Add Audio failed due size too small. Got Size: '{}' but expected at least {}", addAudioFileRequest.getSize(), minSize);
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
         if (addAudioFileRequest.getContentType() != null && !allowedMediaConfig.getAllowedMediaFormats().contains(addAudioFileRequest.getContentType())) {
-            log.info("Add Audio failed due to invalid Content Type");
+            log.info("Add Audio failed due to invalid Content Type. Got '{}' but expected one of '{}'", addAudioFileRequest.getContentType(),
+                     allowedMediaConfig.getAllowedMediaFormats());
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
         String extension = FilenameUtils.getExtension(addAudioFileRequest.getOriginalFilename());
         if (!allowedMediaConfig.getAllowedMediaExtensions().contains(extension)) {
-            log.info("Add Audio failed due to invalid Extension");
+            log.info("Add Audio failed due to invalid Extension. Got '{}' but expected one of '{}'", extension, allowedMediaConfig.getAllowedMediaExtensions());
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
 
@@ -48,11 +50,12 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
                 = tika.detect(addAudioFileRequest.getInputStream());
 
             if (!allowedMediaConfig.getAllowedMediaMimeTypes().contains(mimeType)) {
-                log.info("Add Audio failed due to invalid Signature");
+                log.info("Add Audio failed due to invalid Signature. Got '{}' but expected one of '{}'", mimeType,
+                         allowedMediaConfig.getAllowedMediaMimeTypes());
                 throw new DartsValidationException(CodeAndMessage.ERROR);
             }
         } catch (IOException ioException) {
-            log.info("Add Audio failed during signature validation");
+            log.warn("Add Audio failed during signature validation", ioException);
             throw new DartsValidationException(ioException, CodeAndMessage.ERROR);
         }
     }
