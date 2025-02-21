@@ -40,8 +40,8 @@ class LogApiImplTest {
                          "Failed to link audio to cases: " +
                              "courthouse=courtHouse, " +
                              "courtroom=courtroom, " +
-                             "startedAt=2025-01-29T10:44:25.028498Z, " +
-                             "endedAt=2025-01-31T10:44:25.028526Z, " +
+                             "started_at=2025-01-29T10:44:25.028498Z, " +
+                             "ended_at=2025-01-31T10:44:25.028526Z, " +
                              "cases=[case1, case2], " +
                              "checksum=checksum, " +
                              "blob_store_id=2250b3a7-933f-4358-a770-5f5ebf3c17b9",
