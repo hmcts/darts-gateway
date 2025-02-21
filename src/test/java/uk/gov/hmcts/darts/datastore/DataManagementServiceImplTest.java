@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -70,6 +71,7 @@ class DataManagementServiceImplTest {
         verify(dataManagementFactory, times(1)).getBlobServiceClient("connection");
         verify(dataManagementFactory, times(1)).getBlobContainerClient(BLOB_CONTAINER_NAME, serviceClient);
         verify(dataManagementFactory, times(1)).getBlobClient(eq(blobContainerClient), any(UUID.class));
+        verify(blobClient, never()).deleteIfExistsWithResponse(any(), any(), any(), any());
     }
 
     @Test
