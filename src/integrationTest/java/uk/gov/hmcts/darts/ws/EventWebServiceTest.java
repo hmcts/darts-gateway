@@ -295,7 +295,7 @@ class EventWebServiceTest extends IntegrationBase {
             dailyListApiStub.verifyPostRequest();
 
             // ensure that the payload logging is turned off for this api call
-            Assertions.assertTrue(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
+            Assertions.assertFalse(logAppender.searchLogs("Payload was not logged as it matched the following exclusion criteria.", null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         dailyListApiStub.verifyPostRequest();
