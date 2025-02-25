@@ -535,7 +535,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             Assertions.assertFalse(logAppender
                                        .searchLogs(
                                            AbstractClientProblemDecoder.RESPONSE_PREFIX +
-                                               "500 Server Error: \"{<EOL>" +
+                                               "500 Server Error on POST request for \"http://localhost:8090/audios/metadata\": \"{<EOL>" +
                                                "  \"code\": \"200\",<EOL>  \"message\": \"OK\"<EOL>}<EOL>\"", null, null).isEmpty());
 
             verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
@@ -571,7 +571,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsExceptionResponse.xml"),
                                                      ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
-                                                              + "500 Server Error: \"<html><body>Internal Server Error</body></html>\"", null, null).isEmpty());
+                                                              + "500 Server Error on POST request for \"http://localhost:8090/audios/metadata\": \"<html><body>Internal Server Error</body></html>\"", null, null).isEmpty());
             verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
