@@ -7,7 +7,7 @@ plugins {
     id "io.freefair.lombok" version "8.12.1"
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.springframework.boot' version '3.4.2'
-    id 'org.owasp.dependencycheck' version '12.0.2'
+    id 'org.owasp.dependencycheck' version '12.1.0'
     id 'com.github.ben-manes.versions' version '0.52.0'
     id 'org.sonarqube' version '6.0.1.5171'
     id 'java-library'
@@ -358,9 +358,9 @@ sourceSets {
 
 dependencies {
     implementation group: 'io.rest-assured', name: 'rest-assured'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.35'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.35'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.35'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.36'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.36'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.36'
     implementation 'org.apache.santuario:xmlsec:4.0.3'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -374,7 +374,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
     implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
     implementation group: 'org.springframework', name: 'spring-context'
-    implementation 'org.springframework.integration:spring-integration-redis:6.4.1'
+    implementation 'org.springframework.integration:spring-integration-redis:6.4.2'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.0.1'
 
     implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
