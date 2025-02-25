@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
@@ -34,10 +34,10 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("int-test-jwt-token-shared")
 class RegisterNodeWebServiceTest extends IntegrationBase {
 
-    @MockBean
+    @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
-    @MockBean
+    @MockitoBean
     private TokenValidator tokenValidator;
 
     @BeforeEach

@@ -8,9 +8,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
@@ -33,10 +33,10 @@ class EventWebServiceLoggingTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
-    @MockBean
+    @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
-    @MockBean
+    @MockitoBean
     private TokenValidator tokenValidator;
 
     @BeforeEach
