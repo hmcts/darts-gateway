@@ -79,6 +79,8 @@ public class AddAudioValidator {
             throw new DartsValidationException(CodeAndMessage.ERROR);
         }
         try {
+            log.info("Add Audio file size " + request.get().getBinarySize());
+
             if (request.get().getBinarySize() > getBytes(expectedFileSize)) {
                 log.info("Add Audio failed due to Audio too large");
                 throw new DartsValidationException(CodeAndMessage.AUDIO_TOO_LARGE);
