@@ -12,6 +12,7 @@ import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
 import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
+import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequest;
 import uk.gov.hmcts.darts.common.multipart.XmlWithFileMultiPartRequestHolder;
 import uk.gov.hmcts.darts.datastore.DataManagementConfiguration;
@@ -74,6 +75,7 @@ public class AddAudioRoute {
                         uploadedStream
                     );
                     AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
+                    addAudioValidator.validateSize(metaData, request.get().getBinarySize());
                     metaData.setFileSize(request.get().getBinarySize());
                     metaData.setChecksum(checksum.get());
                     multipartFileValidator.validate(multipartFile);
@@ -105,6 +107,8 @@ public class AddAudioRoute {
                 log.error("The add audio endpoint requires a file to be specified. No file was found");
                 throw new DartsException(CodeAndMessage.ERROR);
             }
+        } catch (DartsValidationException e) {
+            throw e;
         } catch (IOException ioe) {
             throw new DartsException(ioe, CodeAndMessage.ERROR);
         } catch (Exception e) {
