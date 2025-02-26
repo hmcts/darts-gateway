@@ -17,7 +17,6 @@ import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.utilities.XmlValidator;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Optional;

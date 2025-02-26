@@ -5,7 +5,6 @@ import com.service.mojdarts.synapps.com.addaudio.Audio;
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioFileValidator;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.darts.utilities.FileContentChecksum;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,10 +40,10 @@ public class AddAudioRoute {
     private final DataManagementConfiguration dataManagementConfiguration;
     private final LogApi logApi;
 
-    @Value("${temp.force-checksum-failure:false}")
-    private boolean tempForceChecksumFailure;
-
-    @SuppressWarnings("PMD.ExceptionAsFlowControl")//Try/Catch used to clean up resources in case of any failure
+    @SuppressWarnings({
+        "PMD.ExceptionAsFlowControl",//Try/Catch used to clean up resources in case of any failure
+        "PMD.AvoidRethrowingException"//Required to rethrow the validation exception so we can return the correct error response
+    })
     public DARTSResponse route(AddAudio addAudio) {
 
         addAudioValidator.validate(addAudio);
@@ -62,60 +60,56 @@ public class AddAudioRoute {
 
             Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
 
-            if (request.isPresent()) {
-                addAudioValidator.validateCourtroom(addAudioLegacy);
-
-                AtomicReference<String> checksum = new AtomicReference<>(null);
-                request.get().consumeFileBinaryStream(uploadedStream -> checksum.set(FileContentChecksum.calculate(uploadedStream.getInputStream())));
-                // consume the uploaded file and proxy downstream
-                request.get().consumeFileBinaryStream(uploadedStream -> {
-                    StreamingMultipart multipartFile = new StreamingMultipart(
-                        addAudioLegacy.getMediafile(),
-                        addAudioLegacy.getMediaformat(),
-                        uploadedStream
-                    );
-                    AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
-                    addAudioValidator.validateSize(metaData, request.get().getBinarySize());
-                    metaData.setFileSize(request.get().getBinarySize());
-                    metaData.setChecksum(checksum.get());
-                    multipartFileValidator.validate(multipartFile);
-                    try {
-                        blobStoreUuid.set(dataManagementService.saveBlobData(
-                            dataManagementConfiguration.getInboundContainerName(),
-                            multipartFile.getInputStream(),
-                            DataUtil.toMap(metaData)));
-                    } catch (Exception e) {
-                        log.error("Failed to upload audio file to the inbound blob store", e);
-                        logApi.failedToLinkAudioToCases(
-                            metaData.getCourthouse(),
-                            metaData.getCourtroom(),
-                            metaData.getStartedAt(),
-                            metaData.getEndedAt(),
-                            metaData.getCases(),
-                            metaData.getChecksum(),
-                            null
-                        );
-                        throw new DartsException(e, CodeAndMessage.ERROR);
-                    }
-                    log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
-                    if (tempForceChecksumFailure) {
-                        metaData.setChecksum(metaData.getChecksum() + "1");
-                    }
-                    audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid.get()));
-                });
-            } else {
+            if (request.isEmpty()) {
                 log.error("The add audio endpoint requires a file to be specified. No file was found");
                 throw new DartsException(CodeAndMessage.ERROR);
             }
+            addAudioValidator.validateCourtroom(addAudioLegacy);
+
+            AtomicReference<String> checksum = new AtomicReference<>(null);
+            request.get().consumeFileBinaryStream(uploadedStream -> checksum.set(FileContentChecksum.calculate(uploadedStream.getInputStream())));
+            // consume the uploaded file and proxy downstream
+            request.get().consumeFileBinaryStream(uploadedStream -> {
+                StreamingMultipart multipartFile = new StreamingMultipart(
+                    addAudioLegacy.getMediafile(),
+                    addAudioLegacy.getMediaformat(),
+                    uploadedStream
+                );
+                multipartFileValidator.validate(multipartFile);
+
+                AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
+                addAudioValidator.validateSize(metaData, request.get().getBinarySize());
+
+                metaData.setFileSize(request.get().getBinarySize());
+                metaData.setChecksum(checksum.get());
+                try {
+                    blobStoreUuid.set(dataManagementService.saveBlobData(
+                        dataManagementConfiguration.getInboundContainerName(),
+                        multipartFile.getInputStream(),
+                        DataUtil.toMap(metaData)));
+                } catch (Exception e) {
+                    log.error("Failed to upload audio file to the inbound blob store", e);
+                    logApi.failedToLinkAudioToCases(
+                        metaData.getCourthouse(),
+                        metaData.getCourtroom(),
+                        metaData.getStartedAt(),
+                        metaData.getEndedAt(),
+                        metaData.getCases(),
+                        metaData.getChecksum(),
+                        null
+                    );
+                    throw new DartsException(e, CodeAndMessage.ERROR);
+                }
+                log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
+                audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid.get()));
+            });
         } catch (DartsValidationException e) {
             throw e;
-        } catch (IOException ioe) {
-            throw new DartsException(ioe, CodeAndMessage.ERROR);
         } catch (Exception e) {
             if (blobStoreUuid.get() != null) {
                 dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid.get());
             }
-            throw e;
+            throw new DartsException(e, CodeAndMessage.ERROR);
         }
 
         CodeAndMessage message = CodeAndMessage.OK;
