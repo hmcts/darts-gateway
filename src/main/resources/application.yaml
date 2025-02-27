@@ -88,7 +88,7 @@ darts-gateway:
     schema: "src/main/resources/schemas/addAudio.xsd"
     validate: false
     fileSizeInMegaBytes: ${MAX_FILE_UPLOAD_SIZE_MEGABYTES:350}
-    maxFileDuration: 1440m
+    maxFileDuration: ${MAX_FILE_UPLOAD_DURATION:1440m}
     allowed-media-mime-types:
       - "audio/mpeg"
       - "application/octet-stream"
