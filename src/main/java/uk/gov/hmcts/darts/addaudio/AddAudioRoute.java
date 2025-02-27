@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioFileValidator;
 import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
+import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.common.client.multipart.StreamingMultipart;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
@@ -103,7 +104,7 @@ public class AddAudioRoute {
                 log.info("Audio file uploaded successfully to the inbound blob store. BlobStoreUuid: {}", blobStoreUuid);
                 audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid.get()));
             });
-        } catch (DartsValidationException e) {
+        } catch (DartsValidationException | ClientProblemException e) {
             throw e;
         } catch (Exception e) {
             if (blobStoreUuid.get() != null) {

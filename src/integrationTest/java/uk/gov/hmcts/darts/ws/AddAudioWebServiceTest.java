@@ -47,6 +47,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -276,7 +277,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             final String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequest.xml");
 
-            XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
+            XmlWithFileMultiPartRequest request = spy(new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE));
             when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()) + 1);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
