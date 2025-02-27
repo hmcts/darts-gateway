@@ -1,11 +1,14 @@
 package uk.gov.hmcts.darts.addaudio.validator;
 
+import com.service.mojdarts.synapps.com.addaudio.Audio;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.darts.common.exceptions.DartsValidationException;
 import uk.gov.hmcts.darts.log.api.LogApi;
 import uk.gov.hmcts.darts.model.audio.AddAudioMetadataRequest;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
+import java.math.BigInteger;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -46,6 +49,83 @@ class AddAudioValidatorTest {
         DartsValidationException dartsValidationException =
             assertThrows(DartsValidationException.class,
                          () -> validator.validateSize(metaData, AddAudioValidator.getBytes(1001)));
+
+        assertThat(dartsValidationException.getCodeAndMessage()).isEqualTo(CodeAndMessage.AUDIO_TOO_LARGE);
+        verify(logApi).failedToLinkAudioToCases(
+            "courthouse",
+            "courtroom",
+            startedAt,
+            endedAt,
+            List.of("case1", "case2"),
+            "checksum",
+            null
+        );
+    }
+
+    @Test
+    void validateDuration_shouldNotThrowException_whenDurationIsLessThenMaxFileDuration() {
+        LogApi logApi = mock(LogApi.class);
+        AddAudioValidator validator = new AddAudioValidator(null, null, logApi);
+        validator.maxFileDuration = Duration.ofDays(1);
+        AddAudioMetadataRequest metaData = mock(AddAudioMetadataRequest.class);
+
+        Audio audio = new Audio();
+        Audio.Start start = new Audio.Start();
+        start.setY("2020");
+        start.setM("1");
+        start.setD("1");
+        start.setH("1");
+        start.setMIN("1");
+        start.setS("1");
+        audio.setStart(start);
+        Audio.End end = new Audio.End();
+        end.setY(new BigInteger("2020"));
+        end.setM(new BigInteger("1"));
+        end.setD(new BigInteger("1"));
+        end.setH(new BigInteger("23"));
+        end.setMIN(new BigInteger("59"));
+        end.setS(new BigInteger("59"));
+        audio.setEnd(end);
+        validator.validateDuration(metaData, audio);
+        verifyNoInteractions(logApi);
+    }
+
+    @Test
+    void validateDuration_shouldThrowException_whenDurationIsMoreThenMaxFileDuration() {
+        LogApi logApi = mock(LogApi.class);
+        AddAudioValidator validator = new AddAudioValidator(null, null, logApi);
+        validator.maxFileDuration = Duration.ofDays(1);
+        AddAudioMetadataRequest metaData = new AddAudioMetadataRequest();
+        metaData.setCourthouse("courthouse");
+        metaData.setCourtroom("courtroom");
+        OffsetDateTime startedAt = OffsetDateTime.now();
+        metaData.setStartedAt(startedAt);
+        OffsetDateTime endedAt = OffsetDateTime.now().plusDays(1);
+        metaData.setEndedAt(endedAt);
+        metaData.setCases(List.of("case1", "case2"));
+        metaData.setChecksum("checksum");
+
+        Audio audio = new Audio();
+        Audio.Start start = new Audio.Start();
+        start.setY("2020");
+        start.setM("1");
+        start.setD("1");
+        start.setH("1");
+        start.setMIN("1");
+        start.setS("1");
+        audio.setStart(start);
+        Audio.End end = new Audio.End();
+        end.setY(new BigInteger("2020"));
+        end.setM(new BigInteger("1"));
+        end.setD(new BigInteger("2"));
+        end.setH(new BigInteger("1"));
+        end.setMIN(new BigInteger("1"));
+        end.setS(new BigInteger("2"));
+        audio.setEnd(end);
+
+        DartsValidationException dartsValidationException =
+            assertThrows(DartsValidationException.class,
+                         () -> validator.validateDuration(metaData, audio));
 
         assertThat(dartsValidationException.getCodeAndMessage()).isEqualTo(CodeAndMessage.AUDIO_TOO_LARGE);
         verify(logApi).failedToLinkAudioToCases(

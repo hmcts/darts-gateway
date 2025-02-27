@@ -56,9 +56,6 @@ public class AddAudioRoute {
 
         try {
             addAudioLegacy = XmlParser.unmarshal(audioXml, Audio.class);
-
-            addAudioValidator.validate(addAudioLegacy);
-
             Optional<XmlWithFileMultiPartRequest> request = multiPartRequestHolder.getRequest();
 
             if (request.isEmpty()) {
@@ -79,7 +76,7 @@ public class AddAudioRoute {
                 multipartFileValidator.validate(multipartFile);
 
                 AddAudioMetadataRequest metaData = addAudioMapper.mapToDartsApi(addAudioLegacy);
-                addAudioValidator.validateSize(metaData, request.get().getBinarySize());
+                addAudioValidator.validate(metaData, request.get().getBinarySize(), addAudioLegacy);
 
                 metaData.setFileSize(request.get().getBinarySize());
                 metaData.setChecksum(checksum.get());
@@ -108,6 +105,7 @@ public class AddAudioRoute {
             throw e;
         } catch (Exception e) {
             if (blobStoreUuid.get() != null) {
+                log.error("Deleting blob {} from the inbound container as an unexpected error has occurred", blobStoreUuid.get(), e);
                 dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid.get());
             }
             throw new DartsException(e, CodeAndMessage.ERROR);

@@ -37,7 +37,7 @@ public class AddAudioValidator {
     @Value("${darts-gateway.add-audio.fileSizeInMegaBytes}")
     long expectedFileSize;
     @Value("${darts-gateway.add-audio.maxFileDuration}")
-    private Duration maxFileDuration;
+    Duration maxFileDuration;
 
     private final XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
     private final XmlValidator xmlValidator;
@@ -47,9 +47,12 @@ public class AddAudioValidator {
         validateXml(addAudio);
     }
 
-    public void validate(Audio audio) {
-        validateDuration(audio);
+
+    public void validate(AddAudioMetadataRequest metaData, long binarySize, Audio audio) {
+        validateDuration(metaData, audio);
+        validateSize(metaData, binarySize);
     }
+
 
     public void validateCourtroom(Audio audio) {
         //check courtroom in populated, if empty throw 500 to match legacy
@@ -92,7 +95,7 @@ public class AddAudioValidator {
         }
     }
 
-    private void validateDuration(Audio audio) {
+     void validateDuration(AddAudioMetadataRequest metaData, Audio audio) {
 
         OffsetDateTime startDate = getAudioStartDateTime(audio);
         OffsetDateTime finishDate = getAudioEndDateTime(audio);
@@ -101,6 +104,15 @@ public class AddAudioValidator {
 
         if (difference.compareTo(maxFileDuration) > 0) {
             log.info("Add Audio failed due to Duration too long");
+            logApi.failedToLinkAudioToCases(
+                metaData.getCourthouse(),
+                metaData.getCourtroom(),
+                metaData.getStartedAt(),
+                metaData.getEndedAt(),
+                metaData.getCases(),
+                metaData.getChecksum(),
+                null
+            );
             throw new DartsValidationException(CodeAndMessage.AUDIO_TOO_LARGE);
         }
     }
