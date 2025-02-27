@@ -169,7 +169,7 @@ public class AddAudioMidTierCommand implements Command {
         ImageFromDockerfile importDocker = new ImageFromDockerfile()
             .withDockerfileFromBuilder(builder ->
                                            builder
-                                               .from("williamyeh/java8")
+                                               .from("hmctspublic.azurecr.io/imported/williamyeh/java8")
                                                .cmd("tail", "-f", "/dev/null")
                                                .build());
         if (container == null || !container.isRunning()) {
