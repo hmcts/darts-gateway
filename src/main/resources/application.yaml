@@ -152,5 +152,3 @@ darts-gateway:
       - namespace: http://com.synapps.mojdarts.service.com
         tag: addDocument
         type: DL
-temp:
-  force-checksum-failure: ${FORCE_CHECKSUM_FAILURE:false}
