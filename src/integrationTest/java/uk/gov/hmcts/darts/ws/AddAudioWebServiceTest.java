@@ -453,7 +453,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             final String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/addAudio/register/soapRequestDurationExceeded.xml");
 
-            XmlWithFileMultiPartRequest request = mock(XmlWithFileMultiPartRequest.class);
+            XmlWithFileMultiPartRequest request = spy(new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE));
             when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()));
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 

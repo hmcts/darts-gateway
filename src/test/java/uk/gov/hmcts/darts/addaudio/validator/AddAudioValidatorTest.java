@@ -67,9 +67,7 @@ class AddAudioValidatorTest {
         LogApi logApi = mock(LogApi.class);
         AddAudioValidator validator = new AddAudioValidator(null, null, logApi);
         validator.maxFileDuration = Duration.ofDays(1);
-        AddAudioMetadataRequest metaData = mock(AddAudioMetadataRequest.class);
 
-        Audio audio = new Audio();
         Audio.Start start = new Audio.Start();
         start.setY("2020");
         start.setM("1");
@@ -77,15 +75,19 @@ class AddAudioValidatorTest {
         start.setH("1");
         start.setMIN("1");
         start.setS("1");
-        audio.setStart(start);
+
         Audio.End end = new Audio.End();
         end.setY(new BigInteger("2020"));
-        end.setM(new BigInteger("1"));
-        end.setD(new BigInteger("1"));
+        end.setM(BigInteger.ONE);
+        end.setD(BigInteger.ONE);
         end.setH(new BigInteger("23"));
         end.setMIN(new BigInteger("59"));
         end.setS(new BigInteger("59"));
+
+        Audio audio = new Audio();
+        audio.setStart(start);
         audio.setEnd(end);
+        AddAudioMetadataRequest metaData = mock(AddAudioMetadataRequest.class);
         validator.validateDuration(metaData, audio);
         verifyNoInteractions(logApi);
     }
@@ -105,7 +107,6 @@ class AddAudioValidatorTest {
         metaData.setCases(List.of("case1", "case2"));
         metaData.setChecksum("checksum");
 
-        Audio audio = new Audio();
         Audio.Start start = new Audio.Start();
         start.setY("2020");
         start.setM("1");
@@ -113,14 +114,17 @@ class AddAudioValidatorTest {
         start.setH("1");
         start.setMIN("1");
         start.setS("1");
-        audio.setStart(start);
+
         Audio.End end = new Audio.End();
         end.setY(new BigInteger("2020"));
-        end.setM(new BigInteger("1"));
-        end.setD(new BigInteger("2"));
-        end.setH(new BigInteger("1"));
-        end.setMIN(new BigInteger("1"));
-        end.setS(new BigInteger("2"));
+        end.setM(BigInteger.ONE);
+        end.setD(BigInteger.TWO);
+        end.setH(BigInteger.ONE);
+        end.setMIN(BigInteger.ONE);
+        end.setS(BigInteger.TWO);
+
+        Audio audio = new Audio();
+        audio.setStart(start);
         audio.setEnd(end);
 
         DartsValidationException dartsValidationException =

@@ -95,7 +95,7 @@ public class AddAudioValidator {
         }
     }
 
-     void validateDuration(AddAudioMetadataRequest metaData, Audio audio) {
+    void validateDuration(AddAudioMetadataRequest metaData, Audio audio) {
 
         OffsetDateTime startDate = getAudioStartDateTime(audio);
         OffsetDateTime finishDate = getAudioEndDateTime(audio);
