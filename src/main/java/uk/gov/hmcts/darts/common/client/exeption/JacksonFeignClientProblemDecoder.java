@@ -24,9 +24,10 @@ public class JacksonFeignClientProblemDecoder extends AbstractClientProblemDecod
 
     @Override
     protected Problem getProblem(InputStream response) throws IOException {
-        log.error("A problem occurred when communicating downstream {}", toString(response));
+        String responseStr = toString(response);
+        log.error("A problem occurred when communicating downstream {}", responseStr);
         ObjectMapper mapper = ServiceConfig.getServiceObjectMapper();
-        return mapper.readValue(response, Problem.class);
+        return mapper.readValue(responseStr, Problem.class);
     }
 
     private String toString(InputStream inputStream) {
