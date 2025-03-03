@@ -5,27 +5,39 @@ import com.service.viq.event.Event.CaseNumbers;
 import com.viqsoultions.DARNotifyEvent;
 import com.viqsoultions.DARNotifyEventResponse;
 import com.viqsoultions.ObjectFactory;
+import org.apache.http.HttpResponse;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpComponentsConnection;
 import uk.gov.hmcts.darts.event.model.DarNotifyEvent;
 import uk.gov.hmcts.darts.log.api.impl.LogApiImpl;
 import uk.gov.hmcts.darts.log.service.impl.DarNotificationLoggerServiceImpl;
+import uk.gov.hmcts.darts.utilities.TestUtils;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.MALFORMED;
 import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.NO_DESTINATION_DATA;
@@ -213,7 +225,63 @@ class DarNotifyEventClientTest {
         event.setCaseNumbers(caseNumbers);
 
         return event;
-
     }
 
+    @Nested
+    @ExtendWith(OutputCaptureExtension.class)
+    class DarPcTimeLogInterceptorTest {
+
+        @Test
+        void hasNullConnection_shouldDoNothing(CapturedOutput output) {
+            DarNotifyEventClient.DarPcTimeLogInterceptor darPcTimeLogInterceptor = new DarNotifyEventClient.DarPcTimeLogInterceptor(Clock.systemDefaultZone());
+
+            try (MockedStatic<TransportContextHolder> transportContextHolderMockedStatic = mockStatic(TransportContextHolder.class)) {
+                TransportContext transportContext = mock(TransportContext.class);
+                transportContextHolderMockedStatic.when(TransportContextHolder::getTransportContext).thenReturn(transportContext);
+                when(transportContext.getConnection()).thenReturn(null);
+
+                darPcTimeLogInterceptor.afterCompletion(null, null);
+                assertThat(output).isEmpty();
+            }
+        }
+
+        @Test
+        void hasNullHttpResponse_shouldDoNothing(CapturedOutput output) {
+            DarNotifyEventClient.DarPcTimeLogInterceptor darPcTimeLogInterceptor = new DarNotifyEventClient.DarPcTimeLogInterceptor(Clock.systemDefaultZone());
+
+            try (MockedStatic<TransportContextHolder> transportContextHolderMockedStatic = mockStatic(TransportContextHolder.class)) {
+                TransportContext transportContext = mock(TransportContext.class);
+                transportContextHolderMockedStatic.when(TransportContextHolder::getTransportContext).thenReturn(transportContext);
+                HttpComponentsConnection connection = mock(HttpComponentsConnection.class);
+                when(transportContext.getConnection()).thenReturn(connection);
+                when(connection.getHttpResponse()).thenReturn(null);
+
+                darPcTimeLogInterceptor.afterCompletion(null, null);
+                assertThat(output).isEmpty();
+            }
+        }
+
+        @Test
+        void hasNUllDateHeader_shouldDoNothing(CapturedOutput output) {
+            DarNotifyEventClient.DarPcTimeLogInterceptor darPcTimeLogInterceptor = new DarNotifyEventClient.DarPcTimeLogInterceptor(Clock.systemDefaultZone());
+
+            try (MockedStatic<TransportContextHolder> transportContextHolderMockedStatic = mockStatic(TransportContextHolder.class)) {
+                TransportContext transportContext = mock(TransportContext.class);
+                transportContextHolderMockedStatic.when(TransportContextHolder::getTransportContext).thenReturn(transportContext);
+
+                HttpComponentsConnection connection = mock(HttpComponentsConnection.class);
+                when(transportContext.getConnection()).thenReturn(connection);
+
+                HttpResponse httpResponse = mock(HttpResponse.class);
+                when(connection.getHttpResponse()).thenReturn(httpResponse);
+                when(httpResponse.getFirstHeader("Date")).thenReturn(null);
+                when(connection.getHttpResponse()).thenReturn(httpResponse);
+
+                darPcTimeLogInterceptor.afterCompletion(null, null);
+
+                TestUtils.waitUntilMessage(output, "Date header not found in DAR response", 10);
+                assertThat(output).contains("Date header not found in DAR response");
+            }
+        }
+    }
 }
