@@ -31,13 +31,10 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
 
     private HttpRequestDataSource source;
 
-    private static final int MAXIMUM_PARTS = 2;
-
     private MimeMultipart mimeMultipart;
 
     private boolean parseFailure;
 
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public JavaMailXmlWithFileMultiPartRequest(HttpServletRequest request) {
         super(request);
 
@@ -46,7 +43,8 @@ public class JavaMailXmlWithFileMultiPartRequest extends HttpServletRequestWrapp
             mimeMultipart = new MimeMultipart(source);
             parse();
         } catch (IOException | MessagingException e) {
-            log.warn("Invalid payload, forcing a payload error for Spring ws to handle");
+            log.error("Invalid payload, forcing a payload error for Spring ws to handle", e);
+            parseFailure = true;
         }
     }
 
