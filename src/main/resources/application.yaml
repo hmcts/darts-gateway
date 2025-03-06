@@ -70,7 +70,7 @@ darts-gateway:
     request-validation: true
     response-validation: false
   case-info:
-    validate: true
+    validate: false
     schema: "src/main/resources/schemas/xhibit/CaseInfo.xsd"
   events:
     validate: false
