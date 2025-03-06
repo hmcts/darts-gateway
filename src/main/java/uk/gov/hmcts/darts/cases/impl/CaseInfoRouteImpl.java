@@ -5,6 +5,9 @@ import com.service.mojdarts.synapps.com.caseinfo.CitizenNameStructure;
 import com.service.mojdarts.synapps.com.caseinfo.NewCaseMessageStructure;
 import com.service.mojdarts.synapps.com.caseinfo.UpdatedCaseMessageStructure;
 import com.synapps.moj.dfs.response.DARTSResponse;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,11 +47,11 @@ public class CaseInfoRouteImpl implements CaseInfoRoute {
         }
         CaseStructure caseStructure;
         if (NEW_CASE_TYPE.equals(type)) {
-            NewCaseMessageStructure newCaseMessageStructure = XmlParser.unmarshal(document, NewCaseMessageStructure.class);
-            caseStructure = newCaseMessageStructure.getCase();
+            NewCaseMessage newCaseMessage = XmlParser.unmarshal(document, NewCaseMessage.class);
+            caseStructure = newCaseMessage.getCase();
         } else if (UPDATE_CASE_TYPE.equals(type)) {
-            UpdatedCaseMessageStructure updatedCaseMessageStructure = XmlParser.unmarshal(document, UpdatedCaseMessageStructure.class);
-            caseStructure = updatedCaseMessageStructure.getCase();
+            UpdatedCaseMessage updatedCaseMessage = XmlParser.unmarshal(document, UpdatedCaseMessage.class);
+            caseStructure = updatedCaseMessage.getCase();
         } else {
             throw new UnsupportedOperationException("Unsupported type: " + type);
         }
@@ -77,5 +80,17 @@ public class CaseInfoRouteImpl implements CaseInfoRoute {
                 .map(DataUtil::trim)
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.joining(" ")));
+    }
+
+    @XmlRootElement(name = "NewCaseMessage", namespace = "http://www.hmcs.gov.uk/schemas/crowncourt/msg")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class NewCaseMessage extends NewCaseMessageStructure {
+
+    }
+
+    @XmlRootElement(name = "UpdatedCaseMessage", namespace = "http://www.hmcs.gov.uk/schemas/crowncourt/msg")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class UpdatedCaseMessage extends UpdatedCaseMessageStructure {
+
     }
 }
