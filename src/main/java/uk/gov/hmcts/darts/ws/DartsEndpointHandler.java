@@ -17,7 +17,7 @@ public class DartsEndpointHandler {
         try {
             return execute.get();
         } catch (DartsException de) {
-            log.error("Error sending " + taskName + "{}", de);
+            log.error("Error sending {} {}", taskName, de);
             throw de;
         }
     }
