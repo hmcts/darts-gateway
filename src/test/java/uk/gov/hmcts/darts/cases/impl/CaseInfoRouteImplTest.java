@@ -5,9 +5,7 @@ import com.service.mojdarts.synapps.com.caseinfo.CitizenNameStructure;
 import com.service.mojdarts.synapps.com.caseinfo.CourtHouseStructure;
 import com.service.mojdarts.synapps.com.caseinfo.DefendantStructure;
 import com.service.mojdarts.synapps.com.caseinfo.DefendantsStructure;
-import com.service.mojdarts.synapps.com.caseinfo.NewCaseMessageStructure;
 import com.service.mojdarts.synapps.com.caseinfo.PersonalDetailsStructure;
-import com.service.mojdarts.synapps.com.caseinfo.UpdatedCaseMessageStructure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,12 +58,12 @@ class CaseInfoRouteImplTest {
         ReflectionTestUtils.setField(caseInfoRoute, "validate", true);
 
         try (MockedStatic<XmlParser> xmlParserMockedStatic = mockStatic(XmlParser.class)) {
-            NewCaseMessageStructure newCaseMessageStructure = mock(NewCaseMessageStructure.class);
+            CaseInfoRouteImpl.NewCaseMessage newCaseMessage = mock(CaseInfoRouteImpl.NewCaseMessage.class);
             CaseStructure caseStructure = mock(CaseStructure.class);
-            when(newCaseMessageStructure.getCase()).thenReturn(caseStructure);
+            when(newCaseMessage.getCase()).thenReturn(caseStructure);
 
             xmlParserMockedStatic.when(() -> XmlParser.unmarshal(anyString(), any()))
-                .thenReturn(newCaseMessageStructure);
+                .thenReturn(newCaseMessage);
             AddCaseRequest addCaseRequest = mock(AddCaseRequest.class);
             doReturn(addCaseRequest).when(caseInfoRoute).mapToAddCaseRequest(any());
 
@@ -88,12 +86,12 @@ class CaseInfoRouteImplTest {
         ReflectionTestUtils.setField(caseInfoRoute, "validate", false);
 
         try (MockedStatic<XmlParser> xmlParserMockedStatic = mockStatic(XmlParser.class)) {
-            NewCaseMessageStructure newCaseMessageStructure = mock(NewCaseMessageStructure.class);
+            CaseInfoRouteImpl.NewCaseMessage newCaseMessage = mock(CaseInfoRouteImpl.NewCaseMessage.class);
             CaseStructure caseStructure = mock(CaseStructure.class);
-            when(newCaseMessageStructure.getCase()).thenReturn(caseStructure);
+            when(newCaseMessage.getCase()).thenReturn(caseStructure);
 
             xmlParserMockedStatic.when(() -> XmlParser.unmarshal(anyString(), any()))
-                .thenReturn(newCaseMessageStructure);
+                .thenReturn(newCaseMessage);
             AddCaseRequest addCaseRequest = mock(AddCaseRequest.class);
             doReturn(addCaseRequest).when(caseInfoRoute).mapToAddCaseRequest(any());
 
@@ -127,12 +125,12 @@ class CaseInfoRouteImplTest {
     @Test
     void handle_shouldCallCasesClient_whenTypeIsNewCase() {
         try (MockedStatic<XmlParser> xmlParserMockedStatic = mockStatic(XmlParser.class)) {
-            NewCaseMessageStructure newCaseMessageStructure = mock(NewCaseMessageStructure.class);
+            CaseInfoRouteImpl.NewCaseMessage newCaseMessage = mock(CaseInfoRouteImpl.NewCaseMessage.class);
             CaseStructure caseStructure = mock(CaseStructure.class);
-            when(newCaseMessageStructure.getCase()).thenReturn(caseStructure);
+            when(newCaseMessage.getCase()).thenReturn(caseStructure);
 
             xmlParserMockedStatic.when(() -> XmlParser.unmarshal(anyString(), any()))
-                .thenReturn(newCaseMessageStructure);
+                .thenReturn(newCaseMessage);
             AddCaseRequest addCaseRequest = mock(AddCaseRequest.class);
             doReturn(addCaseRequest).when(caseInfoRoute).mapToAddCaseRequest(any());
 
@@ -146,25 +144,24 @@ class CaseInfoRouteImplTest {
             verify(caseInfoRoute).mapToAddCaseRequest(caseStructure);
             verify(casesClient).casesPost(addCaseRequest);
             verify(xmlValidator).validate(document, SCHEMA_PATH);
-            xmlParserMockedStatic.verify(() -> XmlParser.unmarshal(document, NewCaseMessageStructure.class));
+            xmlParserMockedStatic.verify(() -> XmlParser.unmarshal(document, CaseInfoRouteImpl.NewCaseMessage.class));
         }
     }
 
     @Test
     void handle_shouldCallCasesClient_whenTypeIsUpdateCase() {
         try (MockedStatic<XmlParser> xmlParserMockedStatic = mockStatic(XmlParser.class)) {
-            UpdatedCaseMessageStructure updatedCaseMessageStructure = mock(UpdatedCaseMessageStructure.class);
+            CaseInfoRouteImpl.UpdatedCaseMessage updatedCaseMessage = mock(CaseInfoRouteImpl.UpdatedCaseMessage.class);
             CaseStructure caseStructure = mock(CaseStructure.class);
-            when(updatedCaseMessageStructure.getCase()).thenReturn(caseStructure);
+            when(updatedCaseMessage.getCase()).thenReturn(caseStructure);
 
             xmlParserMockedStatic.when(() -> XmlParser.unmarshal(anyString(), any()))
-                .thenReturn(updatedCaseMessageStructure);
+                .thenReturn(updatedCaseMessage);
             AddCaseRequest addCaseRequest = mock(AddCaseRequest.class);
             doReturn(addCaseRequest).when(caseInfoRoute).mapToAddCaseRequest(any());
 
             String document = "some-document";
             String type = "UPDCASE";
-
 
             assertThat(caseInfoRoute.handle(document, type))
                 .hasFieldOrPropertyWithValue("code", CodeAndMessage.OK.getCode())
@@ -173,7 +170,7 @@ class CaseInfoRouteImplTest {
             verify(caseInfoRoute).mapToAddCaseRequest(caseStructure);
             verify(casesClient).casesPost(addCaseRequest);
             verify(xmlValidator).validate(document, SCHEMA_PATH);
-            xmlParserMockedStatic.verify(() -> XmlParser.unmarshal(document, UpdatedCaseMessageStructure.class));
+            xmlParserMockedStatic.verify(() -> XmlParser.unmarshal(document, CaseInfoRouteImpl.UpdatedCaseMessage.class));
         }
     }
 
