@@ -72,4 +72,10 @@ public final class DataUtil {
             .map(String::valueOf)
             .orElse(null);
     }
+
+    public static String trim(String item) {
+        return Optional.ofNullable(item)
+            .map(String::trim)
+            .orElse(null);
+    }
 }

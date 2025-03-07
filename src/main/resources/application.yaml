@@ -69,6 +69,9 @@ darts-gateway:
   ws:
     request-validation: true
     response-validation: false
+  case-info:
+    validate: false
+    schema: "src/main/resources/schemas/xhibit/CaseInfo.xsd"
   events:
     validate: false
     schema: "src/main/resources/schemas/darts-event.xsd"

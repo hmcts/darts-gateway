@@ -38,6 +38,8 @@ import static org.mockito.Mockito.when;
 class EventWebServiceTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-event.xml") Resource validEvent;
+    private @Value("classpath:payloads/events/valid-newCaseMessage.xml") Resource validNewCaseEvent;
+    private @Value("classpath:payloads/events/valid-updateCaseMessage.xml") Resource validUpdateCaseEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validEventResponse;
     private @Value("classpath:payloads/events/valid-event-with-retention.xml") Resource validEventWithRetention;
     private @Value("classpath:payloads/events/invalid-soap-message.xml") Resource invalidSoapMessage;
@@ -254,6 +256,58 @@ class EventWebServiceTest extends IntegrationBase {
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-with-retention-request.json");
+
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void eventNewCaseMessage_shouldSendExpectedData(DartsGatewayClient client) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            postCasesApiStub.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validNewCaseEvent.getContentAsString(Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
+
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void eventUpdateCaseMessage_shouldSendExpectedData(DartsGatewayClient client) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            postCasesApiStub.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validUpdateCaseEvent.getContentAsString(Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }

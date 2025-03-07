@@ -6,29 +6,7 @@
             xmlns:cs="http://www.courtservice.gov.uk/schemas/courtservice" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.courtservice.gov.uk/schemas/courtservice" elementFormDefault="qualified"
             attributeFormDefault="unqualified" version="5.7" id="CourtService">
-	<xsd:annotation>
-		<xsd:appinfo>
-			<Metadata xmlns="http://www.govtalk.gov.uk/metadata/egms">
-				<Creator>Department for Constitutional Affairs</Creator>
-				<Created>2002-05-28</Created>
-				<Modified>2015-04-23</Modified>
-				<Format Schema="http://www.iana.org/assignments/media-types">text/xml</Format>
-				<Identifier>CourtService</Identifier>
-				<Language codeListID="ISO639-2" codeListURI="http://www.loc.gov/standards/iso639-2/langcodes.html">eng</Language>
-				<Publisher>Department for Constitutional Affairs, Clive House, 70 Petty France, London, SW1H 9HD</Publisher>
-				<ConformsTo>http://www.w3.org/2001/XMLSchema</ConformsTo>
-				<Copyright>Crown Copyright 2006</Copyright>
-				<ProtectiveMarking>unclassified</ProtectiveMarking>
-				<Status>final</Status>
-				<StatusDescription>definitive version for release</StatusDescription>
-				<Version>5.7</Version>
-				<Category codeListID="GCL">Justice System</Category>
-				<Title>Court Service XML Schema Type and Structure Definitions</Title>
-				<Type>architectural</Type>
-			</Metadata>
-		</xsd:appinfo>
-	</xsd:annotation>
-	<xsd:import namespace="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" schemaLocation="apd.xsd"/>
+		<xsd:import namespace="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" schemaLocation="apd.xsd"/>
 	<!--=================================================================	-->
 	<!--====================  Start of Simple Type Definition ==================== -->
 	<!--=================================================================	-->
@@ -145,10 +123,7 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="CounselTypeType">
-		<xsd:annotation>
-			<xsd:documentation>To be enumerated in future release</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:string"/>
+				<xsd:restriction base="xsd:string"/>
 	</xsd:simpleType>
 	<xsd:simpleType name="CRnumberType">
 		<xsd:restriction base="xsd:string">
@@ -437,12 +412,7 @@
 			<xsd:element name="ForLife" type="YesNoType" default="yes" minOccurs="0"/>
 		</xsd:sequence>
 		<xsd:attribute name="ChargeType" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
-					Charge type must be one of: indictment, summary, breach, committal, appeal.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
+					</xsd:attribute>
 		<xsd:attribute name="IndictmentNumber" type="xsd:int" use="optional"/>
 		<xsd:attribute name="IndictmentCountNumber" type="xsd:int" use="required"/>
 		<xsd:attribute name="CJSoffenceCode" type="xsd:string" use="optional"/>
@@ -572,10 +542,7 @@
 			<xsd:element name="CourtHouseTelephone" type="apd:TelephoneNumberType" minOccurs="0"/>
 			<xsd:element name="CourtHouseFax" type="apd:TelephoneNumberType" minOccurs="0"/>
 			<xsd:element name="Description" type="xsd:string" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>Used to hold High and Combined</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+							</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="CourtOrderHeaderStructure">
@@ -759,10 +726,7 @@
 						<xsd:complexType>
 							<xsd:sequence>
 								<xsd:element name="OriginalCharge" maxOccurs="unbounded">
-									<xsd:annotation>
-										<xsd:documentation>OriginalCharges are only applicable to trial cases. Each  OriginalCharge must be regarded as related to (and 'disposed' via) a defendant disposal. This relationship is relevant to, and identified in, the Trial Record Sheet XML Schema document. </xsd:documentation>
-									</xsd:annotation>
-									<xsd:complexType>
+																		<xsd:complexType>
 										<xsd:sequence>
 											<xsd:element name="OriginalChargeSequenceNumber" type="xsd:int"/>
 											<xsd:element name="OriginalChargeDescription" type="xsd:string"/>
@@ -792,10 +756,7 @@
 			<xsd:element name="XSLstylesheetURL" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="WelshTranslation" type="YesNoType" minOccurs="0"/>
 			<xsd:element name="DocumentInformation" type="xsd:string" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>Used to descibe version changes</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+							</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="DrugRehabilitationStructure">
@@ -913,10 +874,7 @@
 			<xsd:element name="BailChangeDate" type="xsd:date"/>
 			<xsd:choice>
 				<xsd:element name="HearingBailResult">
-					<xsd:annotation>
-						<xsd:documentation>Exists if application during preliminary hearing</xsd:documentation>
-					</xsd:annotation>
-					<xsd:simpleType>
+										<xsd:simpleType>
 						<xsd:restriction base="xsd:string">
 							<xsd:enumeration value="Granted"/>
 							<xsd:enumeration value="Refused"/>
@@ -924,10 +882,7 @@
 					</xsd:simpleType>
 				</xsd:element>
 				<xsd:element name="NewBailStatus" type="BailStatusType">
-					<xsd:annotation>
-						<xsd:documentation>Exists when bail status change during Main hearing</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+									</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -1123,10 +1078,7 @@
 	<xsd:complexType name="PersonStructure">
 		<xsd:sequence>
 			<xsd:element name="PersonalDetails" type="PersonalDetailsStructure">
-				<xsd:annotation>
-					<xsd:documentation>PersonalDetails must include at least one of  Name or MaskedName (it may include both)</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+							</xsd:element>
 			<xsd:element name="ContactDetails" type="apd:CitizenContactDetailsStructure" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>

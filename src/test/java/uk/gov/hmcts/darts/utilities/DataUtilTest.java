@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class DataUtilTest {
 
 
@@ -107,6 +109,16 @@ class DataUtilTest {
 
         AddAudioMetadataRequestWithStorageGUID actual = DataUtil.convertToStorageGuid(addAudioMetadataRequest, uuid);
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void trim_shouldRemoveWhiteSpace_whenNotNull() {
+        assertThat(DataUtil.trim(" test ")).isEqualTo("test");
+    }
+
+    @Test
+    void trim_shouldReturnNull_whenNull() {
+        assertThat(DataUtil.trim(null)).isNull();
     }
 
 }
