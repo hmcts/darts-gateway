@@ -146,9 +146,15 @@ public class DarNotifyEventClient {
         public void afterCompletion(MessageContext messageContext, Exception ex) {
             try {
                 HttpComponentsConnection connection = (HttpComponentsConnection) TransportContextHolder.getTransportContext().getConnection();
-
+                if (connection == null || connection.getHttpResponse() == null) {
+                    return;
+                }
 
                 Header dateHeader = connection.getHttpResponse().getFirstHeader("Date");
+                if (dateHeader == null) {
+                    log.info("Date header not found in DAR response");
+                    return;
+                }
                 OffsetDateTime responseDateTime = OffsetDateTime.parse(dateHeader.getValue(), DateTimeFormatter.RFC_1123_DATE_TIME);
                 OffsetDateTime currentTime = OffsetDateTime.now(clock);
 
