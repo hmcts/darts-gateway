@@ -55,7 +55,7 @@ public class CaseInfoRouteImpl implements CaseInfoRoute {
         } else {
             throw new UnsupportedOperationException("Unsupported type: " + type);
         }
-        casesClient.casesPost(mapToAddCaseRequest(caseStructure));
+        casesClient.casesAddDocumentPost(mapToAddCaseRequest(caseStructure));
         return CodeAndMessage.OK.getResponse();
     }
 

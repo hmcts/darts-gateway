@@ -59,7 +59,7 @@ public class CasesRouteImpl implements CasesRoute {
         Case caseDocument = XmlParser.unmarshal(caseDocumentXmlStr, Case.class);
         AddCaseRequest addCaseRequest = addCaseMapper.mapToDartsApi(caseDocument);
 
-        casesClient.casesPost(addCaseRequest);
+        casesClient.casesAddCasePost(addCaseRequest);
 
         CodeAndMessage okResponse = CodeAndMessage.OK;
         return okResponse.getResponse();

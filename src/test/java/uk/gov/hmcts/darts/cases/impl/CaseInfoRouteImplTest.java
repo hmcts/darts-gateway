@@ -76,7 +76,7 @@ class CaseInfoRouteImplTest {
                 .hasFieldOrPropertyWithValue("message", CodeAndMessage.OK.getMessage());
 
             verify(caseInfoRoute).mapToAddCaseRequest(caseStructure);
-            verify(casesClient).casesPost(addCaseRequest);
+            verify(casesClient).casesAddDocumentPost(addCaseRequest);
             verify(xmlValidator).validate(document, SCHEMA_PATH);
         }
     }
@@ -104,7 +104,7 @@ class CaseInfoRouteImplTest {
                 .hasFieldOrPropertyWithValue("message", CodeAndMessage.OK.getMessage());
 
             verify(caseInfoRoute).mapToAddCaseRequest(caseStructure);
-            verify(casesClient).casesPost(addCaseRequest);
+            verify(casesClient).casesAddDocumentPost(addCaseRequest);
             verifyNoInteractions(xmlValidator);
         }
 
@@ -142,7 +142,7 @@ class CaseInfoRouteImplTest {
                 .hasFieldOrPropertyWithValue("message", CodeAndMessage.OK.getMessage());
 
             verify(caseInfoRoute).mapToAddCaseRequest(caseStructure);
-            verify(casesClient).casesPost(addCaseRequest);
+            verify(casesClient).casesAddDocumentPost(addCaseRequest);
             verify(xmlValidator).validate(document, SCHEMA_PATH);
             xmlParserMockedStatic.verify(() -> XmlParser.unmarshal(document, CaseInfoRouteImpl.NewCaseMessage.class));
         }
@@ -168,7 +168,7 @@ class CaseInfoRouteImplTest {
                 .hasFieldOrPropertyWithValue("message", CodeAndMessage.OK.getMessage());
 
             verify(caseInfoRoute).mapToAddCaseRequest(caseStructure);
-            verify(casesClient).casesPost(addCaseRequest);
+            verify(casesClient).casesAddDocumentPost(addCaseRequest);
             verify(xmlValidator).validate(document, SCHEMA_PATH);
             xmlParserMockedStatic.verify(() -> XmlParser.unmarshal(document, CaseInfoRouteImpl.UpdatedCaseMessage.class));
         }
