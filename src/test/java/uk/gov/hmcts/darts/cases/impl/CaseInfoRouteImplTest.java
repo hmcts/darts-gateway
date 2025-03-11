@@ -159,7 +159,6 @@ class CaseInfoRouteImplTest {
                 .thenReturn(updatedCaseMessage);
             AddCaseRequest addCaseRequest = mock(AddCaseRequest.class);
             doReturn(addCaseRequest).when(caseInfoRoute).mapToAddCaseRequest(any());
-
             String document = "some-document";
             String type = "UPDCASE";
 
