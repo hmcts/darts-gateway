@@ -47,8 +47,6 @@ class EventWebServiceTest extends IntegrationBase {
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
     private @Value("classpath:payloads/events/valid-dailyList-with-line-breaks.xml") Resource dailyListWithLineBreak;
 
-    private static final DailyListAPIProblemResponseMapper
-        DAILY_LIST_API_PROBLEM_RESPONSE_MAPPER = new DailyListAPIProblemResponseMapper();
 
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
@@ -277,7 +275,7 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases"))
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
@@ -303,7 +301,7 @@ class EventWebServiceTest extends IntegrationBase {
             ).getValue());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases"))
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);

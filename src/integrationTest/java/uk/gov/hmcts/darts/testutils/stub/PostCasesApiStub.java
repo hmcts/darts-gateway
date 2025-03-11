@@ -16,7 +16,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 public class PostCasesApiStub {
 
-    private static final String CASE_API_PATH = "/cases";
+    private static final String CASE_API_PATH = "/cases/addDocument";
 
     public void willRespondSuccessfully() {
         stubFor(post(urlEqualTo(CASE_API_PATH))
