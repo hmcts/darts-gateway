@@ -18,7 +18,6 @@ import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
@@ -38,6 +37,8 @@ import static org.mockito.Mockito.when;
 class EventWebServiceTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-event.xml") Resource validEvent;
+    private @Value("classpath:payloads/events/valid-newCaseMessage.xml") Resource validNewCaseEvent;
+    private @Value("classpath:payloads/events/valid-updateCaseMessage.xml") Resource validUpdateCaseEvent;
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validEventResponse;
     private @Value("classpath:payloads/events/valid-event-with-retention.xml") Resource validEventWithRetention;
     private @Value("classpath:payloads/events/invalid-soap-message.xml") Resource invalidSoapMessage;
@@ -45,8 +46,6 @@ class EventWebServiceTest extends IntegrationBase {
     private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
     private @Value("classpath:payloads/events/valid-dailyList-with-line-breaks.xml") Resource dailyListWithLineBreak;
 
-    private static final DailyListAPIProblemResponseMapper
-        DAILY_LIST_API_PROBLEM_RESPONSE_MAPPER = new DailyListAPIProblemResponseMapper();
 
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
@@ -254,6 +253,58 @@ class EventWebServiceTest extends IntegrationBase {
 
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-with-retention-request.json");
+
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void eventNewCaseMessage_shouldSendExpectedData(DartsGatewayClient client) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            postCasesApiStub.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validNewCaseEvent.getContentAsString(Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
+
+        verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void eventUpdateCaseMessage_shouldSendExpectedData(DartsGatewayClient client) throws Exception {
+
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            postCasesApiStub.willRespondSuccessfully();
+
+            SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
+                getGatewayUri(),
+                validUpdateCaseEvent.getContentAsString(Charset.defaultCharset())
+            );
+            response.assertIdenticalResponse(client.convertData(
+                validEventResponse.getContentAsString(Charset.defaultCharset()),
+                AddDocumentResponse.class
+            ).getValue());
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
+                            .withHeader("Authorization", new RegexPattern("Bearer test")));
+
+        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
     }

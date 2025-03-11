@@ -241,7 +241,7 @@ class CasesWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/cases"))
+            stubFor(post(urlPathEqualTo("/cases/addCase"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
             String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/expectedResponse.xml");
@@ -265,7 +265,7 @@ class CasesWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/cases")).willReturn(ok(dartsApiResponseStr)));
+            stubFor(post(urlPathEqualTo("/cases/addCase")).willReturn(ok(dartsApiResponseStr)));
 
             Assertions.assertThrows(SoapFaultClientException.class, () -> {
                 client.addCases(getGatewayUri(), soapRequestStr);
@@ -285,7 +285,7 @@ class CasesWebServiceTest extends IntegrationBase {
             String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/dartsApiResponse.json");
 
-            stubFor(post(urlPathEqualTo("/cases"))
+            stubFor(post(urlPathEqualTo("/cases/addCase"))
                         .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
             String expectedResponseStr = TestUtils.getContentsFromFile(
                 "payloads/addCase/expectedResponse.xml");

@@ -26,6 +26,7 @@ import uk.gov.hmcts.darts.testutils.stub.DailyListApiStub;
 import uk.gov.hmcts.darts.testutils.stub.EventApiStub;
 import uk.gov.hmcts.darts.testutils.stub.GetCasesApiStub;
 import uk.gov.hmcts.darts.testutils.stub.GetCourtLogsApiStub;
+import uk.gov.hmcts.darts.testutils.stub.PostCasesApiStub;
 import uk.gov.hmcts.darts.testutils.stub.PostCourtLogsApiStub;
 import uk.gov.hmcts.darts.testutils.stub.TokenStub;
 import uk.gov.hmcts.darts.workflow.command.Command;
@@ -54,6 +55,7 @@ import java.util.Map;
 @TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE", "DARTS_LOG_LEVEL=TRACE"})
 public class IntegrationBase implements CommandHolder {
 
+    protected PostCasesApiStub postCasesApiStub = new PostCasesApiStub();
     protected EventApiStub theEventApi = new EventApiStub();
     protected DailyListApiStub dailyListApiStub = new DailyListApiStub();
     protected GetCourtLogsApiStub courtLogsApi = new GetCourtLogsApiStub();
@@ -98,7 +100,7 @@ public class IntegrationBase implements CommandHolder {
     }
 
     @BeforeEach
-    void clearStubs()  {
+    void clearStubs() {
         template.getConnectionFactory().getConnection().flushAll();
 
         WireMock.reset();
@@ -181,7 +183,7 @@ public class IntegrationBase implements CommandHolder {
 
     }
 
-    @SuppressWarnings({"PMD.DoNotUseThreads",  "PMD.SignatureDeclareThrowsException"})
+    @SuppressWarnings({"PMD.DoNotUseThreads", "PMD.SignatureDeclareThrowsException"})
     public String runOperationExpectingJwksRefresh(String token, JkwsRefreshableRunnable runnable)
         throws InterruptedException, IOException, JAXBException, JOSEException {
         // make sure we have left it enough time for the refresh to place

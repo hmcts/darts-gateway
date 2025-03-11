@@ -526,6 +526,7 @@ sourceSets {
             srcDir 'build/generated-sources/jaxbAddCase'
             srcDir 'build/generated-sources/jaxbAddAudio'
             srcDir 'build/generated-sources/jaxbViqEvent'
+            srcDir 'build/generated-sources/jaxbCaseInfo'
         }
     }
 }
@@ -632,6 +633,25 @@ task genJaxbAddAudio {
     }
 }
 
+task genJaxbCaseInfo {
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxbCaseInfo"
+    ext.schema = "src/main/resources/schemas/xhibit/CaseInfo.xsd"
+    outputs.dir sourcesDir
+
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+
+            xjc(destdir: sourcesDir, package: "com.service.mojdarts.synapps.com.caseinfo", schema: schema) {
+                arg(value: "-wsdl")
+
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+        }
+    }
+}
+
 wsdl2java {
     wsdlDir.set(layout.projectDirectory.dir("src/main/resources/ws/dartsService"))
     includes = [
@@ -681,7 +701,7 @@ project.tasks.processResources.dependsOn processDartsServiceWSDL
 project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
 compileJava.dependsOn generateCodeFromSpecification
 generateCodeFromSpecification.dependsOn extractOpenSpecification
-compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio, genJaxbViqEvent
+compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio, genJaxbViqEvent, genJaxbCaseInfo
 
 tasks.named { it == "generateEffectiveLombokConfig" }.configureEach {
     dependsOn(genJaxb)
@@ -689,6 +709,7 @@ tasks.named { it == "generateEffectiveLombokConfig" }.configureEach {
     dependsOn(genJaxbAddCase)
     dependsOn(genJaxbRegisterNode)
     dependsOn(genJaxbViqEvent)
+    dependsOn(genJaxbCaseInfo)
 }
 
 task runAllStyleChecks {

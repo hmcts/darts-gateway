@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.hmcs.gov.uk/schemas/crowncourt/msg" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:cs="http://www.courtservice.gov.uk/schemas/courtservice" xmlns:ccm="http://www.hmcs.gov.uk/schemas/crowncourt/msg"
+            targetNamespace="http://www.hmcs.gov.uk/schemas/crowncourt/msg" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.3"
+            id="CaseInfo">
+    <xsd:import namespace="http://www.courtservice.gov.uk/schemas/courtservice" schemaLocation="CourtService.xsd"/>
+    <!-- message types -->
+    <xsd:complexType name="NewCaseMessageStructure">
+        <xsd:sequence>
+            <xsd:element name="DocumentID" type="cs:DocumentIDstructure"/>
+            <xsd:element name="Case" type="ccm:CaseStructure"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="UpdatedCaseMessageStructure">
+        <xsd:sequence>
+            <xsd:element name="DocumentID" type="cs:DocumentIDstructure"/>
+            <xsd:element name="Case" type="ccm:CaseStructure"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="DiscontinuedCaseMessageStructure">
+        <xsd:sequence>
+            <xsd:element name="DocumentID" type="cs:DocumentIDstructure"/>
+            <xsd:element name="Case" type="ccm:CaseStructure"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- business types -->
+    <xsd:complexType name="DefendantsStructure">
+        <xsd:sequence>
+            <xsd:element name="Defendant" type="cs:DefendantStructure" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="CaseStructure">
+        <xsd:sequence>
+            <xsd:element name="CaseNumber" type="cs:CaseNumberType"/>
+            <xsd:element name="Court" type="cs:CourtHouseStructure"/>
+            <xsd:element name="CaseArrivedFrom" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:choice>
+                        <xsd:sequence>
+                            <xsd:element name="OriginatingCourt" type="cs:CourtHouseStructure"/>
+                            <xsd:element name="OriginatingCourtCaseNumber" type="cs:CaseNumberType" minOccurs="0"/>
+                        </xsd:sequence>
+                        <xsd:element name="Section53" type="cs:YesNoType" default="yes"/>
+                    </xsd:choice>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="Hearing" type="cs:HearingTypeStructure" minOccurs="0"/>
+            <xsd:element name="Defendants" type="ccm:DefendantsStructure" minOccurs="0"/>
+            <xsd:element name="Prosecution" type="cs:ProsecutionStructure" minOccurs="0"/>
+            <xsd:element name="MethodOfInstigation" type="cs:MethodOfInstigationType" minOccurs="0"/>
+            <xsd:element name="DateOfInstigation" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="CaseClassNumber" type="xsd:positiveInteger" minOccurs="0"/>
+            <xsd:element name="PTIURN" type="cs:URNtype" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="DiscontinuedCaseStructure">
+        <xsd:sequence>
+            <xsd:element name="CaseNumber" type="cs:CaseNumberType"/>
+            <xsd:element name="Court" type="cs:CourtHouseStructure"/>
+            <xsd:element name="PTIURN" type="cs:URNtype" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- global elements -->
+    <xsd:element name="NewCaseMessage" type="ccm:NewCaseMessageStructure"/>
+    <xsd:element name="UpdatedCaseMessage" type="ccm:UpdatedCaseMessageStructure"/>
+    <xsd:element name="DiscontinuedCaseMessage" type="ccm:DiscontinuedCaseMessageStructure"/>
+</xsd:schema>

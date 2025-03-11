@@ -1,0 +1,10 @@
+{
+  "courthouse": "COURT_HOUSE_NAME",
+  "case_number": "A12345678",
+  "defendants": [],
+  "judges": [],
+  "prosecutors": [],
+  "defenders": [
+    "FName FName2 SurName"
+  ]
+}
