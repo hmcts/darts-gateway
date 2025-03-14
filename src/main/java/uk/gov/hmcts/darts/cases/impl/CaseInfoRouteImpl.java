@@ -64,7 +64,7 @@ public class CaseInfoRouteImpl implements CaseInfoRoute {
         AddCaseRequest addCaseRequest = new AddCaseRequest();
         addCaseRequest.setCourthouse(request.getCourt().getCourtHouseName());
         addCaseRequest.setCaseNumber(request.getCaseNumber());
-        addCaseRequest.setDefenders(
+        addCaseRequest.setDefendants(
             request.getDefendants().getDefendant()
                 .stream()
                 .map(defendantStructure -> mapToName(defendantStructure.getPersonalDetails().getName()))

@@ -195,7 +195,7 @@ class CaseInfoRouteImplTest {
 
         assertThat(addCaseRequest.getCourthouse()).isEqualTo("Court House");
         assertThat(addCaseRequest.getCaseNumber()).isEqualTo("1234");
-        assertThat(addCaseRequest.getDefenders()).containsExactly("John Doe", "Jane Smith", "Ben Smith", "Jake", "Jake orange joe");
+        assertThat(addCaseRequest.getDefendants()).containsExactly("John Doe", "Jane Smith", "Ben Smith", "Jake", "Jake orange joe");
     }
 
     private DefendantStructure createDefendantStructure(List<String> foreName, String surname) {
