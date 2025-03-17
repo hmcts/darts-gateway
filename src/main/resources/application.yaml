@@ -83,7 +83,7 @@ darts-gateway:
     validate: false
   daily-list:
     schema: "src/main/resources/schemas/xhibit/DailyList.xsd"
-    validate: false
+    validate: true
   register-node:
     schema: "src/main/resources/schemas/darts-register-node.xsd"
     validate: false
