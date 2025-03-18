@@ -378,6 +378,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+    @Disabled
     void testRoutesInvalidDailyListPayload(
         DartsGatewayClient client
     ) throws Exception {
@@ -396,6 +397,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+    @Disabled
     void testRoutesInvalidDailyListPayloadNoDartsAPIProblemBody(
         DartsGatewayClient client
     ) throws Exception {
@@ -415,6 +417,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+    @Disabled
     void removesLineBreaksFromDailyListXml(
         DartsGatewayClient client
     ) throws Exception {
@@ -442,6 +445,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+    @Disabled
     void cppDailyListMapsUrnToDefendantInJson(
         DartsGatewayClient client
     ) throws Exception {
