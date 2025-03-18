@@ -82,7 +82,7 @@ darts-gateway:
     schema: "src/main/resources/schemas/darts-addcase.xsd"
     validate: false
   daily-list:
-    schema: "schemas/xhibit/DailyList.xsd"
+    schema: "/schemas/xhibit/DailyList.xsd"
     validate: true
   register-node:
     schema: "src/main/resources/schemas/darts-register-node.xsd"

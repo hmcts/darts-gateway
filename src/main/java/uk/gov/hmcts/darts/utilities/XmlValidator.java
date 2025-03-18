@@ -8,6 +8,7 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
@@ -22,8 +23,10 @@ public class XmlValidator {
     public void validate(String xmlDocument, String schemaFilePath) {
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
+            InputStream inputStream = getClass().getResourceAsStream(schemaFilePath);
+            assert inputStream != null;
             Validator validator = schemaFactory
-                .newSchema(new File(schemaFilePath))
+                .newSchema(new StreamSource(inputStream))
                 .newValidator();
             validator.validate(new StreamSource(new StringReader(xmlDocument)));
         } catch (IOException e) {
