@@ -17,11 +17,14 @@ import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.utilities.TestUtils;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class JacksonDartsClientProblemDecoderTest {
 
@@ -30,11 +33,11 @@ class JacksonDartsClientProblemDecoderTest {
     @BeforeEach
     public void before() throws IOException {
         dartsApiResponseStr = TestUtils.getContentsFromFile(
-                "tests/client/error/problemResponse.json");
+            "tests/client/error/problemResponse.json");
     }
 
     @Test
-    void testDecoderNoProblemMapperFound() throws Exception {
+    void testDecoderNoProblemMapperFound() {
 
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
         Mockito.when(mapper.getExceptionForProblem(Mockito.any(Problem.class))).thenReturn(Optional.empty());
@@ -51,7 +54,7 @@ class JacksonDartsClientProblemDecoderTest {
     }
 
     @Test
-    void testDecoderErrorsException() throws Exception {
+    void testDecoderErrorsException() {
 
         ClientProblemException exceptionToReturn = new ClientProblemException(null);
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
@@ -68,7 +71,7 @@ class JacksonDartsClientProblemDecoderTest {
     @Test
     void testDecoderProblemParsingException() throws Exception {
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
-                "tests/client/error/invalidProblemResponse.json");
+            "tests/client/error/invalidProblemResponse.json");
 
         ClientProblemException exceptionToReturn = new ClientProblemException(null);
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
@@ -82,8 +85,18 @@ class JacksonDartsClientProblemDecoderTest {
         Assertions.assertEquals(CodeAndMessage.ERROR, exception.getCodeAndMessage());
     }
 
-    class DummyBadRequest extends HttpClientErrorException {
-        @SuppressWarnings({"unchecked", "PMD.LooseCoupling"})
+    @Test
+    void getProblem_whenANoneJsonResponseIsReceived_returnInternalServerError() throws IOException {
+        String htmlResponseStr = "<html><body><h1>500 Internal Server Error</h1></body></html>";
+
+        Problem problem =  new JacksonDartsClientProblemDecoder(List.of()).getProblem(new ByteArrayInputStream(htmlResponseStr.getBytes()));
+        assertThat(problem.getTitle()).isEqualTo("An unknown error occurred");
+        assertThat(problem.getDetail()).isEqualTo(htmlResponseStr);
+        assertThat(problem.getStatus()).isEqualTo(500);
+    }
+
+    static class DummyBadRequest extends HttpClientErrorException {
+        @SuppressWarnings("PMD.LooseCoupling")
         public DummyBadRequest(String statusText, HttpHeaders headers, byte[] body, @Nullable Charset charset) {
             super(HttpStatus.BAD_REQUEST, statusText, headers, body, charset);
         }
