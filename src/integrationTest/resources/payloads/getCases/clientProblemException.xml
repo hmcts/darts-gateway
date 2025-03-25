@@ -3,7 +3,7 @@
    <exceptionBean>
       <attribute>
          <name>exceptionType</name>
-         <value>uk.gov.hmcts.darts.common.exceptions.DartsException</value>
+         <value>uk.gov.hmcts.darts.common.client.exeption.ClientProblemException</value>
       </attribute>
       <attribute>
          <name>messageArgs</name>
@@ -14,7 +14,7 @@
          <type>java.lang.String</type>
          <value>E_UNKNOWN_CODE</value>
       </attribute>a
-      <exceptionClass>uk.gov.hmcts.darts.common.exceptions.DartsException</exceptionClass>
+      <exceptionClass>uk.gov.hmcts.darts.common.client.exeption.ClientProblemException</exceptionClass>
       <genericType>java.lang.Exception</genericType>
       <message>An unknown exception occurred</message>
       <messageId>E_UNKNOWN_CODE</messageId>

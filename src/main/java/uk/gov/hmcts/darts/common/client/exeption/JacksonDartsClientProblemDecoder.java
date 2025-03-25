@@ -31,7 +31,7 @@ public class JacksonDartsClientProblemDecoder extends AbstractClientProblemDecod
             log.error("A problem occurred when communicating downstream {}", problem.toString());
             return problem;
         } catch (Exception e) {
-            log.error("Failed to read the problem json", e);
+            log.error("Failed to read the problem", e);
             return new Problem()
                 .title("An unknown error occurred")
                 .detail(responseStr)
