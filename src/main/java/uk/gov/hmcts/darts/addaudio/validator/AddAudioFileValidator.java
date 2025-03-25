@@ -22,8 +22,6 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
     @Autowired
     private final AllowedMediaConfig allowedMediaConfig;
 
-    private final Tika tika = new Tika();
-
     @SuppressWarnings("PMD.CyclomaticComplexity")
     @Override
     public void validate(MultipartFile addAudioFileRequest) {
@@ -47,7 +45,9 @@ public class AddAudioFileValidator implements Validator<MultipartFile> {
 
         // check the file signature is suitable
         try {
-            String mimeType = tika.detect(addAudioFileRequest.getInputStream());
+            Tika tika = new Tika();
+            String mimeType
+                = tika.detect(addAudioFileRequest.getInputStream());
 
             if (!allowedMediaConfig.getAllowedMediaMimeTypes().contains(mimeType)) {
                 log.info("Add Audio failed due to invalid Signature. Got '{}' but expected one of '{}'", mimeType,

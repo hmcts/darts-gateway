@@ -25,6 +25,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.common.client.exeption.DartsClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.exeption.JacksonDartsClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonFeignClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.CommonApiProblemResponseMapper;
 import uk.gov.hmcts.darts.common.client.mapper.DailyListAPIProblemResponseMapper;
@@ -126,7 +127,7 @@ public class ServiceConfig {
 
     @Bean
     public ErrorDecoder feignErrorDecoder(List<APIProblemResponseMapper> mappers) {
-        return new JacksonDartsClientProblemDecoder(mappers);
+        return new JacksonFeignClientProblemDecoder(mappers);
     }
 
     @Bean

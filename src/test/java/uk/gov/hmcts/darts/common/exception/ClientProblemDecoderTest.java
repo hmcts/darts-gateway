@@ -1,40 +1,43 @@
 package uk.gov.hmcts.darts.common.exception;
 
+import feign.Response;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
-import uk.gov.hmcts.darts.common.client.exeption.JacksonDartsClientProblemDecoder;
+import uk.gov.hmcts.darts.common.client.exeption.JacksonFeignClientProblemDecoder;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.model.audio.Problem;
 import uk.gov.hmcts.darts.utilities.TestUtils;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-class JacksonDartsClientProblemDecoderTest {
+class ClientProblemDecoderTest {
 
-    private String dartsApiResponseStr;
+    private Response response;
 
-    @BeforeEach
-    public void before() throws IOException {
-        dartsApiResponseStr = TestUtils.getContentsFromFile(
+
+    private void setupSuccessResponse() throws IOException {
+        response = Mockito.mock(Response.class);
+        Response.Body body = Mockito.mock(Response.Body.class);
+
+        Mockito.when(response.body()).thenReturn(body);
+
+        String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "tests/client/error/problemResponse.json");
+
+        Mockito.when(body.asInputStream()).thenReturn(new ByteArrayInputStream(dartsApiResponseStr.getBytes()));
     }
 
     @Test
-    void testDecoderNoProblemMapperFound() throws Exception {
+    void testDecoderNoProblemMapperFound() throws IOException {
+        setupSuccessResponse();
 
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
         Mockito.when(mapper.getExceptionForProblem(Mockito.any(Problem.class))).thenReturn(Optional.empty());
@@ -42,8 +45,7 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
-        Exception exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
+        Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
 
         Assertions.assertTrue(ClientProblemException.class.isAssignableFrom(exception.getClass()));
         Assertions.assertNotNull(((ClientProblemException) exception).getProblem());
@@ -51,7 +53,8 @@ class JacksonDartsClientProblemDecoderTest {
     }
 
     @Test
-    void testDecoderErrorsException() throws Exception {
+    void testDecoderErrorsException() throws IOException {
+        setupSuccessResponse();
 
         ClientProblemException exceptionToReturn = new ClientProblemException(null);
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
@@ -60,15 +63,22 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
-        DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
-        Assertions.assertSame(CodeAndMessage.ERROR, exception.getCodeAndMessage());
+        Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
+        Assertions.assertTrue(ClientProblemException.class.isAssignableFrom(exception.getClass()));
+        Assertions.assertSame(exception, exceptionToReturn);
     }
 
     @Test
-    void testDecoderProblemParsingException() throws Exception {
+    void testDecoderProblemParsingException() throws IOException {
+        response = Mockito.mock(Response.class);
+        Response.Body body = Mockito.mock(Response.Body.class);
+
+        Mockito.when(response.body()).thenReturn(body);
+
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "tests/client/error/invalidProblemResponse.json");
+
+        Mockito.when(body.asInputStream()).thenReturn(new ByteArrayInputStream(dartsApiResponseStr.getBytes()));
 
         ClientProblemException exceptionToReturn = new ClientProblemException(null);
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
@@ -77,15 +87,8 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
-        DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
-        Assertions.assertEquals(CodeAndMessage.ERROR, exception.getCodeAndMessage());
-    }
-
-    class DummyBadRequest extends HttpClientErrorException {
-        @SuppressWarnings({"unchecked", "PMD.LooseCoupling"})
-        public DummyBadRequest(String statusText, HttpHeaders headers, byte[] body, @Nullable Charset charset) {
-            super(HttpStatus.BAD_REQUEST, statusText, headers, body, charset);
-        }
+        Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
+        Assertions.assertEquals(DartsException.class, exception.getClass());
+        Assertions.assertEquals(CodeAndMessage.ERROR, ((DartsException) exception).getCodeAndMessage());
     }
 }
