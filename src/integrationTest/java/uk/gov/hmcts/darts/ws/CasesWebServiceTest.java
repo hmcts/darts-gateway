@@ -316,7 +316,7 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<ServiceException> response = client.getCasesException(getGatewayUri(), soapRequestStr);
             response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/getCases/dartsExceptionResponse.xml"),
+                TestUtils.getContentsFromFile("payloads/getCases/clientProblemException.xml"),
                 ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error:", null, null).isEmpty());
@@ -341,7 +341,7 @@ class CasesWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<ServiceException> response = client.getCasesException(getGatewayUri(), soapRequestStr);
             response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/getCases/dartsExceptionResponse.xml"),
+                TestUtils.getContentsFromFile("payloads/getCases/clientProblemException.xml"),
                 ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error:<html><body>Internal Server Error</body></html>", null, null).isEmpty());

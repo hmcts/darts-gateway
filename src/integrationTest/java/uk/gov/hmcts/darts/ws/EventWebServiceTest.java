@@ -403,7 +403,7 @@ class EventWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<ServiceException> response = client.addDocumentException(getGatewayUri(),
                                                                                        validDlEvent.getContentAsString(Charset.defaultCharset()));
             response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/events/dartsExceptionResponse.xml"),
+                TestUtils.getContentsFromFile("payloads/events/clientProblemExceptionResponse.xml"),
                 ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
