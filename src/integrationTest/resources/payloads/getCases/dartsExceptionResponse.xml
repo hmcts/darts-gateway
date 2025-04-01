@@ -13,7 +13,7 @@
          <name>messageId</name>
          <type>java.lang.String</type>
          <value>E_UNKNOWN_CODE</value>
-      </attribute>a
+      </attribute>
       <exceptionClass>uk.gov.hmcts.darts.common.exceptions.DartsException</exceptionClass>
       <genericType>java.lang.Exception</genericType>
       <message>An unknown exception occurred</message>
