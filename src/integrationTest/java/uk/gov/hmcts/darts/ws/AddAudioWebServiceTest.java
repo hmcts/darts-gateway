@@ -321,7 +321,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
             SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
             response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/dartsExceptionResponse.xml"), ServiceException.class);
+                "payloads/addAudio/register/clientProblemException.xml"), ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
             WireMock.matching(
@@ -530,7 +530,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsExceptionResponse.xml"),
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/clientProblemException.xml"),
                                                      ServiceException.class);
 
             Assertions.assertFalse(logAppender
@@ -569,7 +569,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
             SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsExceptionResponse.xml"),
+            response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/clientProblemException.xml"),
                                                      ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error on POST request for \"http://localhost:8090/audios/metadata\": \"<html><body>Internal Server Error</body></html>\"", null, null).isEmpty());

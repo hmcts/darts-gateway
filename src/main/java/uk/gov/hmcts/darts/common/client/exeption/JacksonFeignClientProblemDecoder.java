@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.common.client.exeption;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
 import uk.gov.hmcts.darts.config.ServiceConfig;
 import uk.gov.hmcts.darts.model.audio.Problem;
@@ -25,9 +26,17 @@ public class JacksonFeignClientProblemDecoder extends AbstractClientProblemDecod
     @Override
     protected Problem getProblem(InputStream response) throws IOException {
         String responseStr = toString(response);
-        log.error("A problem occurred when communicating downstream {}", responseStr);
-        ObjectMapper mapper = ServiceConfig.getServiceObjectMapper();
-        return mapper.readValue(responseStr, Problem.class);
+        try {
+            log.error("A problem occurred when communicating downstream {}", responseStr);
+            ObjectMapper mapper = ServiceConfig.getServiceObjectMapper();
+            return mapper.readValue(responseStr, Problem.class);
+        } catch (Exception e) {
+            log.error("Failed to read the problem", e);
+            return new Problem()
+                .title("An unknown error occurred")
+                .detail(responseStr)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
     }
 
     private String toString(InputStream inputStream) {
