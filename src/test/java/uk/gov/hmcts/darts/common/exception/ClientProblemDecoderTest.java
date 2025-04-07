@@ -88,7 +88,7 @@ class ClientProblemDecoderTest {
         responseMappers.add(mapper);
 
         Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
-        Assertions.assertEquals(DartsException.class, exception.getClass());
+        Assertions.assertEquals(ClientProblemException.class, exception.getClass());
         Assertions.assertEquals(CodeAndMessage.ERROR, ((DartsException) exception).getCodeAndMessage());
     }
 }
