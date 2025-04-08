@@ -33,8 +33,6 @@ public final class DataManagementConfiguration {
     @Value("${darts-gateway.storage.blob.client.delete-timeout}")
     private Duration blobClientDeleteTimeout;
 
-
-
     @Value("${darts-gateway.storage.blob.container-name.inbound}")
     private String inboundContainerName;
 }

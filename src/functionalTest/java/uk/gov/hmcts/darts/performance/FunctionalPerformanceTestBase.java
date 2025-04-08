@@ -31,15 +31,16 @@ import java.util.Objects;
 
 class FunctionalPerformanceTestBase extends FunctionalTestBase {
 
-    @SuppressWarnings({"PMD.LooseCoupling", "PMD.AvoidThreadGroup"})
     /**
      * A method that can be used to exercise jmeter. The underlying test asserts against a 200 response as well as a specific response duration
-     * for each request
+     * for each request.
      * @param numberOfThreads The number of threads to run
      * @param rampUpPeriodInMillis How quickly to ramp up in millis
-     * @param durationInMillis The duration that will be asserted for each reqyest
+     * @param durationInMillis The duration that will be asserted for each request
+     * @param body The body of the request
      * @param webContext The web context that will be used
      */
+    @SuppressWarnings({"PMD.LooseCoupling", "PMD.AvoidThreadGroup"})
     void testSendPerformanceTest(int numberOfThreads, int rampUpPeriodInMillis, int durationInMillis,
                                  String body, String webContext) throws MalformedURLException {
         String file = Objects.requireNonNull(ContextRegistryPerformanceTest.class.getClassLoader().getResource("jmeter.properties")).getFile();
