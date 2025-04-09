@@ -306,7 +306,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
                 ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        // Ensure deleteBlobData is not called
         Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
     }
 
@@ -596,7 +595,6 @@ class AddAudioWebServiceTest extends IntegrationBase {
                         "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
-            // Ensure deleteBlobData is not called
             Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
