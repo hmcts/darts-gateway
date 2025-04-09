@@ -172,7 +172,6 @@ class AddAudioRouteTest {
             assertThrows(RuntimeException.class,
                          () -> addAudioRoute.route(addAudio));
         }
-        verify(dataManagementService)
-            .deleteBlobData(containerName, blobUuid);
+        verify(dataManagementService).deleteBlobData(containerName, blobUuid);
     }
 }
