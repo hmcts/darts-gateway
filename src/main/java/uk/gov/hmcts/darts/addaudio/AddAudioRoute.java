@@ -102,10 +102,10 @@ public class AddAudioRoute {
                 audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid.get()));
             });
         } catch (DartsValidationException | ClientProblemException e) {
-            deleteBlobOnException(e, blobStoreUuid);
+            deleteBlobOnException(e, blobStoreUuid.get());
             throw e;
         } catch (Exception e) {
-            deleteBlobOnException(e, blobStoreUuid);
+            deleteBlobOnException(e, blobStoreUuid.get());
             throw new DartsException(e, CodeAndMessage.ERROR);
         }
 
@@ -113,10 +113,10 @@ public class AddAudioRoute {
         return message.getResponse();
     }
 
-    private void deleteBlobOnException(Exception e, AtomicReference<UUID> blobStoreUuid) {
-        if (blobStoreUuid.get() != null) {
-            log.error("Deleting blob {} from the inbound container as an unexpected error has occurred", blobStoreUuid.get(), e);
-            dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid.get());
+    private void deleteBlobOnException(Exception e, UUID blobStoreUuid) {
+        if (blobStoreUuid != null) {
+            log.error("Deleting blob {} from the inbound container as an unexpected error has occurred", blobStoreUuid, e);
+            dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid);
         }
     }
 }
