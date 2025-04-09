@@ -102,16 +102,21 @@ public class AddAudioRoute {
                 audiosClient.addAudioMetaData(DataUtil.convertToStorageGuid(metaData, blobStoreUuid.get()));
             });
         } catch (DartsValidationException | ClientProblemException e) {
+            deleteBlob(e, blobStoreUuid);
             throw e;
         } catch (Exception e) {
-            if (blobStoreUuid.get() != null) {
-                log.error("Deleting blob {} from the inbound container as an unexpected error has occurred", blobStoreUuid.get(), e);
-                dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid.get());
-            }
+            deleteBlob(e, blobStoreUuid);
             throw new DartsException(e, CodeAndMessage.ERROR);
         }
 
         CodeAndMessage message = CodeAndMessage.OK;
         return message.getResponse();
+    }
+
+    private void deleteBlob(Exception e, AtomicReference<UUID> blobStoreUuid) {
+        if (blobStoreUuid.get() != null) {
+            log.error("Deleting blob {} from the inbound container as an unexpected error has occurred", blobStoreUuid.get(), e);
+            dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid.get());
+        }
     }
 }

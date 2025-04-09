@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.darts.addaudio.validator.AddAudioFileValidator;
+import uk.gov.hmcts.darts.addaudio.validator.AddAudioValidator;
 import uk.gov.hmcts.darts.api.audio.AudiosApi;
 import uk.gov.hmcts.darts.common.function.ConsumerWithIoException;
 import uk.gov.hmcts.darts.common.multipart.SizeableInputSource;
@@ -43,6 +45,10 @@ class AddAudioRouteTest {
     private AddAudioMapper addAudioMapper;
     @Mock
     private XmlWithFileMultiPartRequestHolder multiPartRequestHolder;
+    @Mock
+    private AddAudioValidator addAudioValidator;
+    @Mock
+    private AddAudioFileValidator multipartFileValidator;
     @Mock
     private DataManagementService dataManagementService;
     @Mock
@@ -90,11 +96,12 @@ class AddAudioRouteTest {
         AddAudio addAudio = mock(AddAudio.class);
 
         when(addAudio.getDocument()).thenReturn("");
+        Audio audio = mock(Audio.class);
 
         try (MockedStatic<XmlParser> xmlParserMockedStatic = mockStatic(XmlParser.class)) {
 
             xmlParserMockedStatic.when(() -> XmlParser.unmarshal(anyString(), any()))
-                .thenReturn(mock(Audio.class));
+                .thenReturn(audio);
 
             assertThrows(RuntimeException.class,
                          () -> addAudioRoute.route(addAudio));
@@ -110,8 +117,8 @@ class AddAudioRouteTest {
                 "checksum",
                 null
             );
-        verify(dataManagementService, never())
-            .deleteBlobData(any(), any());
+        verify(dataManagementService, never()).deleteBlobData(any(), any());
+        verify(addAudioValidator).validateCourtroom(audio);
     }
 
     @Test

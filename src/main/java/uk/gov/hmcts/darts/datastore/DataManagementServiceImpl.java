@@ -71,7 +71,7 @@ public class DataManagementServiceImpl implements DataManagementService {
             }
             log.error("Failed to delete from storage container={}, blobId={}, httpStatus={}",
                       containerName, blobId, httpStatus);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("Failed to delete from storage container={}, blobId={}", containerName, blobId, e);
         }
     }

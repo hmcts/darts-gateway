@@ -354,7 +354,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                     "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                     "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container",uuid);
 
     }
 
@@ -411,7 +411,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container",uuid);
 
     }
 
@@ -595,7 +595,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                         "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                         "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
-            Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
+            Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container", uuid);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
@@ -631,7 +631,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             // ensure that the payload logging is turned off for this api call
             Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
 
-            Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+            Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container",uuid);
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
