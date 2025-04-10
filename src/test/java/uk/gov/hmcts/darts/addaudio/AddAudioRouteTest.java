@@ -96,11 +96,12 @@ class AddAudioRouteTest {
         AddAudio addAudio = mock(AddAudio.class);
 
         when(addAudio.getDocument()).thenReturn("");
+        Audio audio = mock(Audio.class);
 
         try (MockedStatic<XmlParser> xmlParserMockedStatic = mockStatic(XmlParser.class)) {
 
             xmlParserMockedStatic.when(() -> XmlParser.unmarshal(anyString(), any()))
-                .thenReturn(mock(Audio.class));
+                .thenReturn(audio);
 
             assertThrows(RuntimeException.class,
                          () -> addAudioRoute.route(addAudio));
@@ -116,8 +117,8 @@ class AddAudioRouteTest {
                 "checksum",
                 null
             );
-        verify(dataManagementService, never())
-            .deleteBlobData(any(), any());
+        verify(dataManagementService, never()).deleteBlobData(any(), any());
+        verify(addAudioValidator).validateCourtroom(audio);
     }
 
     @Test
@@ -172,7 +173,6 @@ class AddAudioRouteTest {
             assertThrows(RuntimeException.class,
                          () -> addAudioRoute.route(addAudio));
         }
-        verify(dataManagementService)
-            .deleteBlobData(containerName, blobUuid);
+        verify(dataManagementService).deleteBlobData(containerName, blobUuid);
     }
 }
