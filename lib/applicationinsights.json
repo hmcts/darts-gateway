@@ -4,7 +4,7 @@
     "name": "DARTS Gateway"
   },
   "customDimensions": {
-    "environment": "local-dev-3"
+    "environment": "local-dev-4"
   },
   "sampling": {
     "overrides": [
@@ -32,7 +32,8 @@
           "PEXPIRE",
           "REDIS GET",
           "REDIS SET",
-          "REDIS PEXPIRE"
+          "REDIS PEXPIRE",
+          "spring.data.redis"
         ]
       },
       "actions": [
@@ -40,12 +41,6 @@
           "key": "test-key",
           "value": "tracked",
           "action": "insert"
-        },
-        {
-          "key": "data",
-          "pattern": "darts-gateway-token-service:.*",
-          "replace": "darts-gateway-token-service: REDACTED",
-          "action": "mask"
         }
       ]
     }
