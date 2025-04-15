@@ -4,7 +4,7 @@
     "name": "DARTS Gateway"
   },
   "customDimensions": {
-    "environment": "local-dev-4"
+    "environment": "local-dev-5"
   },
   "sampling": {
     "overrides": [
@@ -21,34 +21,9 @@
       }
     ]
   },
-  "processors": [
-    {
-      "type": "attribute",
-      "include": {
-        "matchType": "strict",
-        "spanNames": [
-          "GET",
-          "SET",
-          "PEXPIRE",
-          "REDIS GET",
-          "REDIS SET",
-          "REDIS PEXPIRE",
-          "spring.data.redis"
-        ]
-      },
-      "actions": [
-        {
-          "key": "test-key",
-          "value": "tracked",
-          "action": "insert"
-        },
-        {
-          "key": "db.operation",
-          "pattern": ".*darts-gateway-token-service:.*",
-          "replace": "darts-gateway-token-service: REDACTED",
-          "action": "mask"
-        }
-      ]
+  "instrumentation": {
+    "redis": {
+      "enabled": false
     }
-  ]
+  }
 }
