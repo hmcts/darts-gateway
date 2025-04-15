@@ -41,6 +41,12 @@
           "key": "test-key",
           "value": "tracked",
           "action": "insert"
+        },
+        {
+          "key": "db.operation",
+          "pattern": ".*darts-gateway-token-service:.*",
+          "replace": "darts-gateway-token-service: REDACTED",
+          "action": "mask"
         }
       ]
     }
