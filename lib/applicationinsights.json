@@ -3,6 +3,9 @@
   "role": {
     "name": "DARTS Gateway"
   },
+  "customDimensions": {
+    "environment": "local-dev"
+  },
   "sampling": {
     "overrides": [
       {
@@ -18,9 +21,36 @@
       }
     ]
   },
-  "instrumentation": {
-    "redis": {
-      "enabled": false
+  "processors": [
+    {
+      "type": "attribute",
+      "include": {
+        "matchType": "strict",
+        "spanNames": [
+          "GET",
+          "SET",
+          "PEXPIRE"
+        ],
+        "attributes": [
+          {
+            "key": "Type",
+            "value": "redis"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "key": "test-key",
+          "value": "tracked",
+          "action": "insert"
+        },
+        {
+          "key": "data",
+          "pattern": "darts-gateway-token-service:.*",
+          "replace": "darts-gateway-token-service: REDACTED",
+          "action": "mask"
+        }
+      ]
     }
-  }
+  ]
 }
