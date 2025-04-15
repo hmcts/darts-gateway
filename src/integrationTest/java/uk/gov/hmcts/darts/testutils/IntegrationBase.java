@@ -14,6 +14,7 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
@@ -48,6 +49,7 @@ import java.util.Map;
 @SpringBootTest(classes = RedisConfiguration.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
+@TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE", "DARTS_LOG_LEVEL=TRACE"})
 public class IntegrationBase implements CommandHolder {
 
     protected PostCasesApiStub postCasesApiStub = new PostCasesApiStub();
