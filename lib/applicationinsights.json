@@ -4,7 +4,7 @@
     "name": "DARTS Gateway"
   },
   "customDimensions": {
-    "environment": "local-dev-2",
+    "environment": "local-dev-3"
   },
   "sampling": {
     "overrides": [
@@ -29,7 +29,10 @@
         "spanNames": [
           "GET",
           "SET",
-          "PEXPIRE"
+          "PEXPIRE",
+          "REDIS GET",
+          "REDIS SET",
+          "REDIS PEXPIRE"
         ]
       },
       "actions": [
