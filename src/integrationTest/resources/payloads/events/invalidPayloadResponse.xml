@@ -8,7 +8,7 @@
       <attribute>
          <name>messageArgs</name>
          <type>java.lang.String</type>
-         <value>Handler Not Found</value>
+         <value>Failed to process daily list</value>
       </attribute>
       <attribute>
          <name>messageId</name>
@@ -23,6 +23,6 @@
    <message>An unknown exception occurred</message>
    <messageArgs xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:type="xs:string">Handler Not Found</messageArgs>
+                xsi:type="xs:string">Failed to process daily list</messageArgs>
    <messageId>E_UNKNOWN_CODE</messageId>
 </ns2:ServiceException>
