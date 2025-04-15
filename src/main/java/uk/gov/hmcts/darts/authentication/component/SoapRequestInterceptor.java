@@ -323,6 +323,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
                         String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
                             + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
                             + MESSAGE_SEPERATOR + NEW_LINE;
+
+                        log.trace(messagePrefix, payloadMessage);
                     } else {
                         log.trace("REQUEST PAYLOAD. Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
                                   excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
