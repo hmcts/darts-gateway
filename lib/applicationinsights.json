@@ -4,7 +4,8 @@
     "name": "DARTS Gateway"
   },
   "customDimensions": {
-    "environment": "local-dev"
+    "environment": "local-dev",
+    "environment": "${env:ENVIRONMENT_NAME}"
   },
   "sampling": {
     "overrides": [
@@ -30,12 +31,6 @@
           "GET",
           "SET",
           "PEXPIRE"
-        ],
-        "attributes": [
-          {
-            "key": "Type",
-            "value": "redis"
-          }
         ]
       },
       "actions": [
