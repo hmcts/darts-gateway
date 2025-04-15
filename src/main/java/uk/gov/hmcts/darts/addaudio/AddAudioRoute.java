@@ -113,9 +113,9 @@ public class AddAudioRoute {
         return message.getResponse();
     }
 
-    private void deleteBlobOnException(Exception e, UUID blobStoreUuid) {
+    private void deleteBlobOnException(Exception exception, UUID blobStoreUuid) {
         if (blobStoreUuid != null) {
-            log.error("Deleting blob {} from the inbound container as an unexpected error has occurred", blobStoreUuid, e);
+            log.error("Deleting blob {} from the inbound container as an unexpected error has occurred", blobStoreUuid, exception);
             dataManagementService.deleteBlobData(dataManagementConfiguration.getInboundContainerName(), blobStoreUuid);
         }
     }

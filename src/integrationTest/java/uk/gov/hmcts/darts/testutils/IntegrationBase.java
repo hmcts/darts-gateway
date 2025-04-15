@@ -14,14 +14,10 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
-import uk.gov.hmcts.darts.common.client.mapper.APIProblemResponseMapper;
-import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMapping;
-import uk.gov.hmcts.darts.common.client.mapper.ProblemResponseMappingOperation;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.conf.RedisConfiguration;
-import uk.gov.hmcts.darts.test.TestSupportController;
 import uk.gov.hmcts.darts.testutils.stub.DailyListApiStub;
 import uk.gov.hmcts.darts.testutils.stub.EventApiStub;
 import uk.gov.hmcts.darts.testutils.stub.GetCasesApiStub;
@@ -51,8 +47,7 @@ import java.util.Map;
 @AutoConfigureWireMock(port = 8090)
 @SpringBootTest(classes = RedisConfiguration.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@org.testcontainers.junit.jupiter.Testcontainers(disabledWithoutDocker = true)
-@TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE", "DARTS_LOG_LEVEL=TRACE"})
+@Testcontainers(disabledWithoutDocker = true)
 public class IntegrationBase implements CommandHolder {
 
     protected PostCasesApiStub postCasesApiStub = new PostCasesApiStub();
@@ -82,9 +77,6 @@ public class IntegrationBase implements CommandHolder {
 
     @Autowired
     protected RedisTemplate<String, Object> template;
-
-    @Autowired
-    private TestSupportController testSupportController;
 
     @Autowired
     protected SecurityProperties securityProperties;
@@ -145,32 +137,12 @@ public class IntegrationBase implements CommandHolder {
         return ipaddressStr;
     }
 
-    protected ProblemResponseMapping<?> getSpecificSoapErrorCode(String soapToExpect, APIProblemResponseMapper mapper) {
-        for (ProblemResponseMappingOperation<?> responseMappingOperations : mapper.getResponseMappings()) {
-            for (ProblemResponseMapping<?> responseMapping : responseMappingOperations.getProblemResponseMappingList()) {
-                if (responseMapping.match(soapToExpect)) {
-                    return responseMapping;
-                }
-            }
-        }
-
-        return null;
-    }
-
     protected ContextRegistryClient getContextClient() {
-        if (!contextClients.values().isEmpty()) {
+        if (!contextClients.isEmpty()) {
             return contextClients.values().iterator().next();
         }
 
         throw new AssertionFailedError("Don't have a context registry client!!!");
-    }
-
-    protected void stopRedis() {
-        RedisConfiguration.getDeployRedisCommand().cleanupResources();
-    }
-
-    protected void startRedis() throws IOException {
-        RedisConfiguration.getDeployRedisCommand().executeWithDocker(RedisConfiguration.getDeployRedisCommand().getArguments());
     }
 
     @Override
