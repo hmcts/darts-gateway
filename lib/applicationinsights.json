@@ -4,8 +4,7 @@
     "name": "DARTS Gateway"
   },
   "customDimensions": {
-    "environment": "local-dev",
-    "environment": "${env:ENVIRONMENT_NAME}"
+    "environment": "local-dev-2",
   },
   "sampling": {
     "overrides": [
