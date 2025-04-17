@@ -4,13 +4,13 @@ import uk.gov.hmcts.darts.common.client.exeption.ClientProblemException;
 import uk.gov.hmcts.darts.model.event.EventErrorCode;
 import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
-@SuppressWarnings({"unchecked", "PMD.NonStaticInitializer"})
+@SuppressWarnings("PMD.NonStaticInitializer")
 public class EventAPIProblemResponseMapper extends AbstractAPIProblemResponseMapper {
 
     {
         // configure mappers for post event
         ProblemResponseMappingOperation<EventErrorCode> postEventOp = new ProblemResponseMappingOperation
-                .ProblemResponseMappingOperationBuilder<EventErrorCode>()
+            .ProblemResponseMappingOperationBuilder<EventErrorCode>()
             .operation(EventErrorCode.class)
             .exception(this::createException).build();
 
@@ -23,7 +23,10 @@ public class EventAPIProblemResponseMapper extends AbstractAPIProblemResponseMap
     }
 
     private ClientProblemException createException(ProblemAndMapping problemAndMapping) {
-        return new ClientProblemException(problemAndMapping.getMapping().getMessage(), problemAndMapping.getProblem());
+        return new ClientProblemException(
+            null,
+            problemAndMapping.getProblem().getDetail(),
+            problemAndMapping.getMapping().getMessage(),
+            problemAndMapping.getProblem());
     }
-
 }
