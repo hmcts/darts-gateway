@@ -155,3 +155,6 @@ darts-gateway:
       - namespace: http://com.synapps.mojdarts.service.com
         tag: addDocument
         type: DL
+logging:
+  level:
+    root: ${DARTS_LOG_LEVEL:info}

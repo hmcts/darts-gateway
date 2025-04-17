@@ -86,7 +86,6 @@ public class TokenValidatorImpl implements TokenValidator {
     @Override
     public boolean test(Token.TokenExpiryEnum useExpiryOffset, String accessToken) {
         log.trace("starting token validation");
-        log.debug("Validating JWT: {}", accessToken);
         boolean validated;
         try {
             validated = useExpiryOffset == Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY || validateTheTokenExpiry(accessToken);

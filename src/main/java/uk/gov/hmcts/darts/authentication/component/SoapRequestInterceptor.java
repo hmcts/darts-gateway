@@ -275,18 +275,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         if (StringUtils.isEmpty(decodedJSessionId)) {
             if (session != null) {
                 returnCookieString = " Header Details - %s : %s".formatted("Set-Cookie", session.getId());
-                log.trace(messagePrefix, returnCookieString);
             } else {
                 returnCookieString = " An inbound cookie was not found and an outbound cookie was not set";
-                log.trace(messagePrefix, returnCookieString);
             }
         } else if (session != null && !session.getId().equals(decodedJSessionId)) {
             returnCookieString = " An inbound cookie was present but not found. " +
                 "A new cookie was generated. Inbound: %s Outbound Set-Cookie: %s".formatted(decodedJSessionId, session.getId());
-            log.trace(messagePrefix, returnCookieString);
         } else {
             returnCookieString = " Using the same session as the inbound cookie %s".formatted(decodedJSessionId);
-            log.trace(messagePrefix, returnCookieString);
         }
 
         return returnCookieString;
