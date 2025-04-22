@@ -414,7 +414,7 @@ dependencies {
     }
 
     implementation 'org.zalando:problem-spring-web-starter:0.29.1'
-    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.apache.commons:commons-collections4:4.5.0'
 
     implementation 'org.mapstruct:mapstruct:1.6.3'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
