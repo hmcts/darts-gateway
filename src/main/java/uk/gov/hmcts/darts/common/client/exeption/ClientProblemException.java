@@ -12,9 +12,13 @@ public class ClientProblemException extends DartsException {
     //TODO: Work out why we cant have a central problem type when generating the API spec
     private final transient Problem problem;
 
-    public ClientProblemException(Throwable cause, CodeAndMessage codeAndMessage, Problem problem) {
-        super(cause, codeAndMessage);
+    public ClientProblemException(Throwable cause, String message, CodeAndMessage codeAndMessage, Problem problem) {
+        super(cause, message, codeAndMessage);
         this.problem = problem;
+    }
+
+    public ClientProblemException(Throwable cause, CodeAndMessage codeAndMessage, Problem problem) {
+        this(cause, codeAndMessage.getMessage(), codeAndMessage, problem);
     }
 
     public ClientProblemException(CodeAndMessage codeAndMessage, Problem problem) {
