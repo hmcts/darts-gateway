@@ -17,5 +17,10 @@
         "percentage": 1
       }
     ]
+  },
+  "instrumentation": {
+    "redis": {
+      "enabled": false
+    }
   }
 }
