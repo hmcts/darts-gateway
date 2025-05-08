@@ -40,3 +40,4 @@ java:
   environment:
     DARTS_API_URL: https://darts-api.staging.platform.hmcts.net
     TESTING_SUPPORT_ENDPOINTS_ENABLED: true
+
