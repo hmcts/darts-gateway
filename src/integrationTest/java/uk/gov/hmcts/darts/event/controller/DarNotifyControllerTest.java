@@ -10,8 +10,10 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.darts.conf.ServiceTestConfiguration;
+import uk.gov.hmcts.darts.log.api.LogApi;
 import uk.gov.hmcts.darts.testutils.stub.DarPcStub;
 
 import java.time.Clock;
@@ -20,6 +22,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +39,18 @@ class DarNotifyControllerTest {
           "notification_url": "http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx",
           "notification_type": "3",
           "timestamp": "2024-04-25T14:20:40.637Z",
+          "courthouse": "York",
+          "courtroom": "1",
+          "case_numbers": [
+            "T20240000"
+          ]
+        }
+        """;
+    private static final String VALID_NOTIFICATION_JSON_GMT = """
+        {
+          "notification_url": "http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx",
+          "notification_type": "3",
+          "timestamp": "2024-01-25T14:20:40.637Z",
           "courthouse": "York",
           "courtroom": "1",
           "case_numbers": [
@@ -60,6 +76,8 @@ class DarNotifyControllerTest {
     private DarPcStub darPcStub;
     @Autowired
     private Clock clock;
+    @MockitoSpyBean
+    private LogApi logApi;
 
     @BeforeEach
     void setup() {
@@ -68,7 +86,7 @@ class DarNotifyControllerTest {
 
     @Test
     @ExtendWith(OutputCaptureExtension.class)
-    void shouldSendDarNotifyEventSoapAction(CapturedOutput capturedOutput) throws Exception {
+    void darNotifyEvent_shouldSendNotificationAndLogDarNotifyWithCorrectDateTime_whenEventDateTimeIsInBst(CapturedOutput capturedOutput) throws Exception {
         darPcStub.respondWithSuccessResponse(OffsetDateTime.now(clock));
 
         mockMvc.perform(post("/events/dar-notify")
@@ -79,6 +97,34 @@ class DarNotifyControllerTest {
         darPcStub.verifyNotificationReceivedWithBody(EXPECTED_DAR_PC_NOTIFICATION);
         assertThat(capturedOutput)
             .doesNotContain("Response time from DAR PC is outside max drift limits of");
+
+        verify(logApi, times(1)).notificationSucceeded(
+            "http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx",
+            "York",
+            "1",
+            "[T20240000]",
+            OffsetDateTime.parse("2024-04-25T14:20:40Z"),
+            0
+        );
+    }
+
+    @Test
+    void darNotifyEvent_shouldLogDarNotifyWithCorrectDateTime_whenEventDateTimeIsInGmt() throws Exception {
+        darPcStub.respondWithSuccessResponse(OffsetDateTime.now(clock));
+
+        mockMvc.perform(post("/events/dar-notify")
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .content(VALID_NOTIFICATION_JSON_GMT))
+            .andExpect(status().is2xxSuccessful());
+
+        verify(logApi, times(1)).notificationSucceeded(
+            "http://localhost:8090/VIQDARNotifyEvent/DARNotifyEvent.asmx",
+            "York",
+            "1",
+            "[T20240000]",
+            OffsetDateTime.parse("2024-01-25T14:20:40Z"),
+            0
+        );
     }
 
     @Test
