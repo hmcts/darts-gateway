@@ -464,8 +464,7 @@ dependencies {
 
     testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_http', version: '5.6.3'
 
-
-    openapispec 'com.github.hmcts:darts-api:master-SNAPSHOT:openapi'
+    openapispec 'com.github.hmcts:darts-api:0.0.1:openapi'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
