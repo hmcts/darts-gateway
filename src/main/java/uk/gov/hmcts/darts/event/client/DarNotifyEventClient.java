@@ -20,12 +20,14 @@ import org.springframework.ws.transport.context.TransportContextHolder;
 import org.springframework.ws.transport.http.HttpComponentsConnection;
 import uk.gov.hmcts.darts.event.enums.DarNotifyEventResult;
 import uk.gov.hmcts.darts.log.api.LogApi;
+import uk.gov.hmcts.darts.utilities.DateUtil;
 import uk.gov.hmcts.darts.utilities.XmlParser;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.Source;
@@ -106,16 +108,15 @@ public class DarNotifyEventClient {
     }
 
     private static OffsetDateTime dateTimeFrom(Event event) {
-        return OffsetDateTime.of(
+        LocalDateTime localDateTime = LocalDateTime.of(
             parseInt(event.getY()),
-            parseInt(event.getM()),
+            Month.of(parseInt(event.getM())),
             parseInt(event.getD()),
             parseInt(event.getH()),
             parseInt(event.getMIN()),
-            parseInt(event.getS()),
-            0,
-            ZoneOffset.UTC
+            parseInt(event.getS())
         );
+        return DateUtil.toOffsetDateTime(localDateTime);
     }
 
     @Component
