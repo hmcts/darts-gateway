@@ -297,6 +297,58 @@ ext {
 
 ext['snakeyaml.version'] = '2.0'
 
+
+task generateCodeFromSpecification() {
+    doFirst {
+
+        def openApiGenerateTaskList = []
+
+        //here we are going to store swagger files
+        def swaggerList = []
+
+        //iteration by swagger file root folder and save into swaggerList variable
+        def dir = new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath)
+
+        dir.eachFileRecurse(FILES) { file ->
+            if (file.getName().endsWith(".yaml") && !file.getName().contains("problem"))
+                swaggerList << file
+        }
+
+        // Iterate on all swagger files and generate a task for each one with the nomenclature openApiGenerate + swagger name
+        swaggerList.each {
+            def apiName = it.getName().replace(".yaml", "");
+            def apiLocation = it.getAbsolutePath();
+
+            def taskName = "openApiGenerate" + apiName.capitalize()
+            openApiGenerateTaskList << taskName
+
+            Task task = tasks.create(taskName, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
+                generatorName = "spring"
+                inputSpec = "${apiLocation}"
+                outputDir = "$buildDir/generated/openapi".toString()
+                modelPackage = "uk.gov.hmcts.darts.model.".toString() + "${apiName}"
+                outputDir = "$buildDir/generated/openapi"
+                apiPackage = "uk.gov.hmcts.darts.api.${apiName}"
+                modelPackage = "uk.gov.hmcts.darts.model.${apiName}"
+                invokerPackage = "uk.gov.hmcts.darts.invoker.${apiName}"
+                library = "spring-cloud"
+                //    https://openapi-generator.tech/docs/generators/java/#config-options
+                skipOperationExample = true
+                skipValidateSpec = true
+                configOptions = [
+                        dateLibrary         : "java8",
+                        serializationLibrary: "jackson",
+                        useJakartaEe        : "true",
+                        library             : "spring-cloud",
+                        interfaceOnly       : "true"
+                ]
+            })
+
+            task.actions.each { it.execute(task) }
+        }
+    }
+}
+
 sourceSets {
     main {
         java {
@@ -378,6 +430,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
     implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 
+    openapispec 'com.github.hmcts:darts-api:0.1.4:openapi'
+
     implementation project(path: ':context')
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
     implementation platform('com.azure:azure-sdk-bom:1.2.34')
@@ -411,8 +465,6 @@ dependencies {
     }
 
     testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_http', version: '5.6.3'
-
-    openapispec 'com.github.hmcts:darts-api:0.0.1:openapi'
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
@@ -609,6 +661,32 @@ wsdl2java {
 
 compileJava.dependsOn genJaxb
 
+task extractOpenSpecification() {
+    doFirst {
+        configurations.openapispec.getFiles()
+                .each {
+                    def zip = new java.util.zip.ZipFile(it)
+                    for (def entry : zip.entries()) {
+                        if (entry == null) return
+
+                        String contents = zip.getInputStream(entry).text
+
+                        String name = entry.name
+
+                        if (name.endsWith(".yaml")) {
+                            //  Finally, we write the contents to a file
+                            new File(layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath).mkdirs()
+                            String newFileName = "${layout.buildDirectory.dir("extractedSpecs").get().asFile.absolutePath}/$name"
+
+                            def newFile = new File(newFileName)
+                            newFile.createNewFile()
+                            newFile.text = contents
+                        }
+                    }
+                }
+    }
+}
+
 /**
  * Run the custom task with the defaults to process the legacy darts service
  */
@@ -621,6 +699,8 @@ tasks.register('processDartsServiceWSDL', CreateAPIMWSDLFile)
 
 project.tasks.processResources.dependsOn processDartsServiceWSDL
 project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
+compileJava.dependsOn generateCodeFromSpecification
+generateCodeFromSpecification.dependsOn extractOpenSpecification
 compileJava.dependsOn genJaxbAddCase, genJaxbRegisterNode, genJaxbAddAudio, genJaxbViqEvent, genJaxbCaseInfo
 
 tasks.named { it == "generateEffectiveLombokConfig" }.configureEach {
