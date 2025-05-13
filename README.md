@@ -24,7 +24,7 @@ To build the project execute the following command:
 #### Prerequisites
 
 For this project to build successfully and run against the local darts api code, you need the darts open api artifact 
-in your local repository. This is likely already in jitpack anyhow.
+in your local repository. This is likely already in Azure Devops Artifacts which can be found in https://dev.azure.com/hmcts/Artifacts/_artifacts/feed/hmcts-lib.
 
 #### Environment variables
 
