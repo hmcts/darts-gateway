@@ -430,7 +430,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
     implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 
-    openapispec 'com.github.hmcts:darts-api:0.1.4:openapi'
+    openapispec 'com.github.hmcts:darts-api:latest.release:openapi'
 
     implementation project(path: ':context')
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
