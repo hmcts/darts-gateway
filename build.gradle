@@ -17,7 +17,7 @@ plugins {
 
 import static groovy.io.FileType.FILES
 
-group = 'uk.gov.hmcts'
+group 'com.github.hmcts'
 version = '0.0.1'
 
 java {
