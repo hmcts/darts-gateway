@@ -82,11 +82,15 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private void handleRequest(SaajSoapMessage soapMessage) {
+        log.info("Handling request start");
         if (isTokenAuthentication(soapMessage)) {
+            log.info("Token");
             authenticateToken(soapMessage);
         } else {
+            log.info("Username and password");
             authenticateUsernameAndPassword(soapMessage);
         }
+        log.info("Handling request end");
     }
 
     private boolean isTokenAuthentication(SaajSoapMessage message) {
