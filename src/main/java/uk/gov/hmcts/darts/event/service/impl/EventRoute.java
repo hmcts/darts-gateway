@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.event.service.impl;
 
 import com.synapps.moj.dfs.response.DARTSResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.darts.utilities.XmlValidator;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventRoute {
 
     @Value("${darts-gateway.events.schema}")
@@ -26,15 +28,19 @@ public class EventRoute {
 
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     public DARTSResponse handle(String document, String messageId, String type, String subType) {
+        log.info("Processing event with messageId: {}, type: {}, subType: {}", messageId, type, subType);
         if (validateEvent) {
             xmlValidator.validate(document, schemaPath);
         }
 
         DartsEvent dartsEvent = XmlParser.unmarshal(document, DartsEvent.class);
         uk.gov.hmcts.darts.model.event.DartsEvent eventRequest = dartsXmlMapper.toNewApi(dartsEvent, messageId, type, subType);
-
+        log.info("Start DartsEvent calling eventsClient with eventRequest");
         ResponseEntity<EventsResponse> eventResponse = eventsClient.eventsPost(eventRequest);
+        log.info("End DartsEvent calling eventsClient with eventResponse");
 
-        return MapperUtility.mapResponse(eventResponse.getBody(), true);
+        DARTSResponse response = MapperUtility.mapResponse(eventResponse.getBody(), true);
+        log.info("DartsResponse returned");
+        return response;
     }
 }

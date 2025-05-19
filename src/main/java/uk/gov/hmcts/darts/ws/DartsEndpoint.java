@@ -54,8 +54,10 @@ public class DartsEndpoint {
             () -> eventRoutingService.route(addDocument.getValue()),
             documentResponse::getReturn
         ));
-
-        return new ObjectFactory().createAddDocumentResponse(documentResponse);
+        log.info("creating response");
+        JAXBElement<AddDocumentResponse> res = new ObjectFactory().createAddDocumentResponse(documentResponse);
+        log.info("response created");
+        return res;
     }
 
     @PayloadRoot(namespace = "http://com.synapps.mojdarts.service.com", localPart = "getCases")

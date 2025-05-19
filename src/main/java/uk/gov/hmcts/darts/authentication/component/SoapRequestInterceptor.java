@@ -309,32 +309,33 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private void logPayloadMessage(String messagePrefix, WebServiceMessage message) {
         // lets not process any of the payloads if trace level is disabled
-        if (log.isTraceEnabled()) {
-            try {
-                Optional<ExcludePayloadLogging> excludePayloadLogging;
-                if (message.getPayloadSource() instanceof DOMSource) {
-                    excludePayloadLogging = logProperties.excludePayload((DOMSource) message.getPayloadSource());
+        if (!log.isTraceEnabled()) {
+            return;
+        }
+        try {
+            Optional<ExcludePayloadLogging> excludePayloadLogging;
+            if (message.getPayloadSource() instanceof DOMSource) {
+                excludePayloadLogging = logProperties.excludePayload((DOMSource) message.getPayloadSource());
 
-                    if (excludePayloadLogging.isEmpty()) {
-                        ByteArrayTransportOutputStream byteArrayTransportOutputStream =
-                            new ByteArrayTransportOutputStream();
-                        message.writeTo(byteArrayTransportOutputStream);
+                if (excludePayloadLogging.isEmpty()) {
+                    ByteArrayTransportOutputStream byteArrayTransportOutputStream =
+                        new ByteArrayTransportOutputStream();
+                    message.writeTo(byteArrayTransportOutputStream);
 
-                        String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
-                            + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
-                            + MESSAGE_SEPERATOR + NEW_LINE;
+                    String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
+                        + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
+                        + MESSAGE_SEPERATOR + NEW_LINE;
 
-                        log.trace(messagePrefix, payloadMessage);
-                    } else {
-                        log.trace("REQUEST PAYLOAD. Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
-                                  excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
-                    }
+                    log.trace(messagePrefix, payloadMessage);
                 } else {
-                    log.warn("Could not log due to suitable xml source not be identified");
+                    log.trace("REQUEST PAYLOAD. Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
+                              excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
                 }
-            } catch (IOException ex) {
-                log.error("Failed to write SOAP message", ex);
+            } else {
+                log.warn("Could not log due to suitable xml source not be identified");
             }
+        } catch (IOException ex) {
+            log.error("Failed to write SOAP message", ex);
         }
     }
 
