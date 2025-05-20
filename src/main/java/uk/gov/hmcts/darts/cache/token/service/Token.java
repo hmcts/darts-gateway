@@ -77,6 +77,7 @@ public class Token {
     }
 
     private static void setupSession(Token token, boolean mapToSession) {
+        //TODO only get the session id if actually need it
         String sessionId;
         if (doesSessionExist()) {
             sessionId = getHttpSessionId();

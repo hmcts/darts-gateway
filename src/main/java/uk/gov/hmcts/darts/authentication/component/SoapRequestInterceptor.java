@@ -108,17 +108,21 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         Iterator<SoapHeaderElement> securityToken = soapHeader.examineHeaderElements(
             QName.valueOf(SECURITY_HEADER));
 
+        log.info("Got security token");
         Optional<String> tokenToReturn = Optional.empty();
         if (securityToken.hasNext()) {
             SoapHeaderElement securityTokenElement = securityToken.next();
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
+            System.out.println("Converted soap header to token");
             String specifiedtoken = tokenToReturn.orElse("N/K");
+
             Token foundTokenInCache = tokenRegisterable.getToken(specifiedtoken);
             Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
-
+            System.out.println("Found token in cache: " + optRefreshableCacheValue.isPresent());
             if (optRefreshableCacheValue.isEmpty()) {
                 throw new ServiceContextLookupException(foundTokenInCache.getTokenString());
             } else {
+                log.info("Mapping tokens");
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         downstreamTokenisable);
