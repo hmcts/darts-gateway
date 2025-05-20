@@ -91,7 +91,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 return createdToken;
             } else {
                 log.debug("Not looking up shared token either turned off or not  forced");
-                Optional<Token> createdToken =  Optional.of(store(createValue(context), reuseTokenIfPossible).get());
+                Optional<Token> createdToken = Optional.of(store(createValue(context), reuseTokenIfPossible).get());
                 log.trace("stored new shared token");
                 return createdToken;
             }
@@ -133,8 +133,10 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             }
 
             if (val.isPresent()) {
+                //600ms
                 log.info("Resetting token expiration");
                 redisTemplate.opsForValue().set(tokenToLookup.getKey(), val.get(), secondsToExpire());
+                log.info("Set time to live for key: {}", tokenToLookup.getKey());
                 redisTemplate.expire(tokenToLookup.getKey(), secondsToExpire());
                 log.info("Reset token expiration");
             }
@@ -226,9 +228,10 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
      * This function is key for storing to redis. It takes a service context and if reuse of token is required looks
      * for the redis token and validates it (depending on the token representation). If the token is not valid then we acquire
      * a new token and store in redis. If we do not require reuse a new token is generated each time.
+     *
      * @param cachedValueIncludingDartsApiToken The value to cache.
-     * @param reuseTokenIfPossible Do we want to use a shared token if we can.
-     * @param validateToken Do we wish to validate the token if one exists and sharing is required.
+     * @param reuseTokenIfPossible              Do we want to use a shared token if we can.
+     * @param validateToken                     Do we wish to validate the token if one exists and sharing is required.
      * @return The token to use. This maybe a shared token or a branch new one.
      */
     @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
@@ -292,7 +295,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 redisTemplate.delete(tokenWithStatusFromCache.getToken().getKey());
             }
 
-            Token token =  createToken(value.getServiceContext());
+            Token token = createToken(value.getServiceContext());
 
             log.info("Locking finished");
             return token;

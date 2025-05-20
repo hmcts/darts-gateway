@@ -113,12 +113,13 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         if (securityToken.hasNext()) {
             SoapHeaderElement securityTokenElement = securityToken.next();
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
-            System.out.println("Converted soap header to token");
+            log.info("Converted soap header to token");
             String specifiedtoken = tokenToReturn.orElse("N/K");
 
             Token foundTokenInCache = tokenRegisterable.getToken(specifiedtoken);
+            //300Ms from start of IF to here
             Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
-            System.out.println("Found token in cache: " + optRefreshableCacheValue.isPresent());
+            log.info("Found token in cache: " + optRefreshableCacheValue.isPresent());
             if (optRefreshableCacheValue.isEmpty()) {
                 throw new ServiceContextLookupException(foundTokenInCache.getTokenString());
             } else {
