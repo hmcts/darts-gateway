@@ -375,7 +375,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
     implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
     implementation group: 'org.springframework', name: 'spring-context'
-    implementation 'org.springframework.integration:spring-integration-redis:6.4.4'
+    implementation 'org.springframework.integration:spring-integration-redis:6.5.0'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.3'
 
     implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
@@ -448,8 +448,8 @@ dependencies {
     testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.1.0'
     testImplementation group: 'commons-io', name: 'commons-io', version: '2.19.0'// CVE-2021-29425
     testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
-    testImplementation 'org.xmlunit:xmlunit-core:2.10.0'
-    testImplementation 'org.xmlunit:xmlunit-matchers:2.10.0'
+    testImplementation 'org.xmlunit:xmlunit-core:2.10.1'
+    testImplementation 'org.xmlunit:xmlunit-matchers:2.10.1'
     testImplementation 'org.testcontainers:testcontainers:1.21.0'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.2.1'
