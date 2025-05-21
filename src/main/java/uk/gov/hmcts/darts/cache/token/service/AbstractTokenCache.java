@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
@@ -167,8 +168,11 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     }
 
     private Optional<CacheValue> getRefreshValueWithResetExpiration(Token token) {
-        Object value = redisTemplate.opsForValue().get(token.getKey());
-
+        log.info("Looking up the token in cache 1");
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        System.out.println("Looking up the token in cache 1");
+        Object value = valueOperations.get(token.getKey());
+        System.out.println("Looking up the token in cache 3");
         if (value != null) {
             return Optional.of(getValue((CacheValue) value));
         }
