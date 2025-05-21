@@ -131,17 +131,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
                 downstreamToken.performRefresh();
                 log.info("Token cache value has been refreshed");
             }
-
-            if (val.isPresent()) {
-                //600ms
-                log.info("Resetting token expiration");
-                redisTemplate.opsForValue().set(tokenToLookup.getKey(), val.get(), secondsToExpire());
-                log.info("Set time to live for key: {}", tokenToLookup.getKey());
-                redisTemplate.expire(tokenToLookup.getKey(), secondsToExpire());
-                log.info("Reset token expiration");
-            }
         }
-
         log.info("Returning looked up token");
         return val;
     }
