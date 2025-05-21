@@ -158,3 +158,4 @@ darts-gateway:
 logging:
   level:
     root: ${DARTS_LOG_LEVEL:info}
+    org.springframework.cache.*: trace
