@@ -34,6 +34,7 @@ public interface SecurityProperties {
 
     @NonNull
     Duration getJwksCacheLifetimePeriod();
+
     @NonNull
     Duration getJwksCacheRefreshAheadTimePeriod();
 
