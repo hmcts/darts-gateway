@@ -170,9 +170,9 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     private Optional<CacheValue> getRefreshValueWithResetExpiration(Token token) {
         log.info("Looking up the token in cache 1");
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-        System.out.println("Looking up the token in cache 1");
+        log.info("Looking up the token in cache 1");
         Object value = valueOperations.get(token.getKey());
-        System.out.println("Looking up the token in cache 3");
+        log.info("Looking up the token in cache 3");
         if (value != null) {
             return Optional.of(getValue((CacheValue) value));
         }
