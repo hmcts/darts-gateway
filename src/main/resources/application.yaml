@@ -157,5 +157,8 @@ darts-gateway:
         type: DL
 logging:
   level:
-    root: ${DARTS_LOG_LEVEL:info}
-    org.springframework.cache.*: trace
+    org:
+      springframework:
+        data:
+          redis: trace
+    root: info
