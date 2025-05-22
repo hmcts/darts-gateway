@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import javax.xml.transform.TransformerException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DartsPayloadValidatingInterceptor extends PayloadValidatingInterceptor {
 
     @Value("${darts-gateway.ws.request-validation}")
@@ -77,6 +79,13 @@ public class DartsPayloadValidatingInterceptor extends PayloadValidatingIntercep
     public boolean handleRequest(MessageContext messageContext, Object endpoint)
         throws IOException, SAXException, TransformerException {
         String request = messageContext.getRequest().toString();
-        return (request.endsWith("addAudio") && !validateAddCase) || super.handleRequest(messageContext, endpoint);
+
+        if (request.endsWith("addAudio") && !validateAddCase) {
+            return true;
+        }
+        log.info("Validating request start: {}", request);
+        boolean res = super.handleRequest(messageContext, endpoint);
+        log.info("Validating request end: {}", request);
+        return res;
     }
 }

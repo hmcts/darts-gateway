@@ -82,11 +82,15 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     private void handleRequest(SaajSoapMessage soapMessage) {
+        log.info("Handling request start");
         if (isTokenAuthentication(soapMessage)) {
+            log.info("Token");
             authenticateToken(soapMessage);
         } else {
+            log.info("Username and password");
             authenticateUsernameAndPassword(soapMessage);
         }
+        log.info("Handling request end");
     }
 
     private boolean isTokenAuthentication(SaajSoapMessage message) {
@@ -104,17 +108,22 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         Iterator<SoapHeaderElement> securityToken = soapHeader.examineHeaderElements(
             QName.valueOf(SECURITY_HEADER));
 
+        log.info("Got security token");
         Optional<String> tokenToReturn = Optional.empty();
         if (securityToken.hasNext()) {
             SoapHeaderElement securityTokenElement = securityToken.next();
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
+            log.info("Converted soap header to token");
             String specifiedtoken = tokenToReturn.orElse("N/K");
-            Token foundTokenInCache = tokenRegisterable.getToken(specifiedtoken);
-            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
 
+            Token foundTokenInCache = tokenRegisterable.getToken(specifiedtoken);
+            //300Ms from start of IF to here
+            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
+            log.info("Found token in cache: " + optRefreshableCacheValue.isPresent());
             if (optRefreshableCacheValue.isEmpty()) {
                 throw new ServiceContextLookupException(foundTokenInCache.getTokenString());
             } else {
+                log.info("Mapping tokens");
                 if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
                     new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
                         downstreamTokenisable);
@@ -309,32 +318,33 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private void logPayloadMessage(String messagePrefix, WebServiceMessage message) {
         // lets not process any of the payloads if trace level is disabled
-        if (log.isTraceEnabled()) {
-            try {
-                Optional<ExcludePayloadLogging> excludePayloadLogging;
-                if (message.getPayloadSource() instanceof DOMSource) {
-                    excludePayloadLogging = logProperties.excludePayload((DOMSource) message.getPayloadSource());
+        if (!log.isTraceEnabled()) {
+            return;
+        }
+        try {
+            Optional<ExcludePayloadLogging> excludePayloadLogging;
+            if (message.getPayloadSource() instanceof DOMSource) {
+                excludePayloadLogging = logProperties.excludePayload((DOMSource) message.getPayloadSource());
 
-                    if (excludePayloadLogging.isEmpty()) {
-                        ByteArrayTransportOutputStream byteArrayTransportOutputStream =
-                            new ByteArrayTransportOutputStream();
-                        message.writeTo(byteArrayTransportOutputStream);
+                if (excludePayloadLogging.isEmpty()) {
+                    ByteArrayTransportOutputStream byteArrayTransportOutputStream =
+                        new ByteArrayTransportOutputStream();
+                    message.writeTo(byteArrayTransportOutputStream);
 
-                        String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
-                            + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
-                            + MESSAGE_SEPERATOR + NEW_LINE;
+                    String payloadMessage = NEW_LINE + MESSAGE_SEPERATOR
+                        + NEW_LINE + new String(byteArrayTransportOutputStream.toByteArray()) + NEW_LINE
+                        + MESSAGE_SEPERATOR + NEW_LINE;
 
-                        log.trace(messagePrefix, payloadMessage);
-                    } else {
-                        log.trace("REQUEST PAYLOAD. Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
-                                  excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
-                    }
+                    log.trace(messagePrefix, payloadMessage);
                 } else {
-                    log.warn("Could not log due to suitable xml source not be identified");
+                    log.trace("REQUEST PAYLOAD. Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
+                              excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
                 }
-            } catch (IOException ex) {
-                log.error("Failed to write SOAP message", ex);
+            } else {
+                log.warn("Could not log due to suitable xml source not be identified");
             }
+        } catch (IOException ex) {
+            log.error("Failed to write SOAP message", ex);
         }
     }
 
