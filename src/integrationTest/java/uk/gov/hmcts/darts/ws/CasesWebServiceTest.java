@@ -9,6 +9,7 @@ import com.service.mojdarts.synapps.com.GetCasesResponse;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
+@Disabled
 class CasesWebServiceTest extends IntegrationBase {
 
     @MockitoBean

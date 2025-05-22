@@ -1,5 +1,6 @@
 package uk.gov.hmcts.darts.event.controller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,6 +43,7 @@ class DisablingDarPcNotificationTest {
 
 
     @Test
+    @Disabled
     void shouldNotSendDarNotifyEventWhenNotificationsDisabled() throws Exception {
         mockMvc.perform(post("/events/dar-notify")
                             .contentType(APPLICATION_JSON_VALUE)

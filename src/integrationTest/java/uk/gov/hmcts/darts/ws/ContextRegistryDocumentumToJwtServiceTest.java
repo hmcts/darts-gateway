@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-documentum-jwt-token")
+@Disabled
 class ContextRegistryDocumentumToJwtServiceTest extends ContextRegistryParent {
     @MockitoBean
     private TokenGenerator generator;

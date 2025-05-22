@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.ws;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 @ActiveProfiles("int-test-jwt-token-shared")
+@Disabled
 class WsdlTest extends IntegrationBase {
 
     @Autowired

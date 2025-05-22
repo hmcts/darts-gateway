@@ -4,8 +4,9 @@ import uk.gov.hmcts.darts.cache.token.service.Token;
 
 import java.util.function.BiPredicate;
 
-@FunctionalInterface
 public interface TokenValidator extends BiPredicate<Token.TokenExpiryEnum, String> {
+
+    void validateToken(String token);
 
     /**
      * validates a token.

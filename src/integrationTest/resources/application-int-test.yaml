@@ -31,6 +31,7 @@ darts-gateway:
     validate: false
   security:
     jwks-cache-refresh_period: 5S
+    jwks-cache-refresh-ahead-time-period: 2S
     jwks-cache-lifetime_period: 10S
     token-uri: http://localhost:8090/token
     jwk-set-uri: http://localhost:8090/keys

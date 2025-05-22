@@ -11,8 +11,6 @@ import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 @Getter
 @Setter
 public class CachePropertiesImpl implements CacheProperties {
-    private String tokenGenerate;
-
     private boolean mapTokenToSession;
 
     private boolean shareTokenForSameCredentials;

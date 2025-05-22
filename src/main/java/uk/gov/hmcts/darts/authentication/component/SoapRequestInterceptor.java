@@ -23,6 +23,7 @@ import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
+import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.cache.token.service.Token;
@@ -66,6 +67,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     public static final String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD";
 
     public static final String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS";
+    private final TokenValidator tokenValidator;
 
     @Override
     public boolean understands(SoapHeaderElement header) {
@@ -99,7 +101,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         return serviceContextSoapHeaderElementIt.hasNext();
     }
 
-    private boolean authenticateToken(SaajSoapMessage message) {
+    private void authenticateToken(SaajSoapMessage message) {
         SoapHeader soapHeader = message.getSoapHeader();
         Iterator<SoapHeaderElement> securityToken = soapHeader.examineHeaderElements(
             QName.valueOf(SECURITY_HEADER));
@@ -108,28 +110,13 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         if (securityToken.hasNext()) {
             SoapHeaderElement securityTokenElement = securityToken.next();
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
-            String specifiedtoken = tokenToReturn.orElse("N/K");
-            Token foundTokenInCache = tokenRegisterable.getToken(specifiedtoken);
-            Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(foundTokenInCache);
-
-            if (optRefreshableCacheValue.isEmpty()) {
-                throw new ServiceContextLookupException(foundTokenInCache.getTokenString());
-            } else {
-                if (optRefreshableCacheValue.get() instanceof DownstreamTokenisableValue downstreamTokenisable) {
-                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                        downstreamTokenisable);
-                } else {
-                    new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                        specifiedtoken);
-                }
-            }
+            String token = tokenToReturn.orElse("N/K");
+            tokenValidator.validateToken(token);
+            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(token);
         }
-
         if (tokenToReturn.isEmpty()) {
             throw new ServiceContextLookupException("");
         }
-
-        return true;
     }
 
     private void authenticateUsernameAndPassword(SaajSoapMessage message) {

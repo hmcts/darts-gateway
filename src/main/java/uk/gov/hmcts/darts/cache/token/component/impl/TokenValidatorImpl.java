@@ -16,6 +16,7 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
@@ -81,6 +82,17 @@ public class TokenValidatorImpl implements TokenValidator {
             JWTClaimNames.ISSUED_AT,
             JWTClaimNames.SUBJECT,
             JWTClaimNames.EXPIRATION_TIME));
+    }
+
+
+    @Override
+    public void validateToken(String token) {
+        try {
+            jwtProcessor.process(token, null);
+        } catch (ParseException | JOSEException | BadJOSEException e) {
+            log.error("JWT Token Validation failed", e);
+            throw new AuthenticationFailedException(e);
+        }
     }
 
     @Override

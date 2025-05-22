@@ -6,6 +6,7 @@ import documentum.contextreg.ServiceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.support.locks.LockRegistry;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
@@ -24,6 +25,7 @@ import java.util.List;
  * stores and manages a downstream jwt token.
  */
 @Slf4j
+@Component("primarycache")
 public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratable {
 
     private final TokenGenerator generator;

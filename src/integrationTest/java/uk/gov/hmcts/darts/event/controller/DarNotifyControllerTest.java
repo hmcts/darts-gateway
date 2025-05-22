@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.event.controller;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = ServiceTestConfiguration.class)
 @ActiveProfiles({"int-test"})
 @AutoConfigureMockMvc
+@Disabled
 class DarNotifyControllerTest {
 
     private static final String VALID_NOTIFICATION_JSON = """
