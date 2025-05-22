@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.test;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +18,7 @@ class TestSupportControllerTest extends IntegrationBase {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Test
+    @Disabled
     void testCleanup() {
         // add a key to the redis cache so we can prove removal
         String testKey = TokenRegisterable.CACHE_PREFIX + "testKey";

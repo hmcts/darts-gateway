@@ -135,7 +135,7 @@ class BasicCacheTest {
         context.getIdentities().add(basicIdentity);
 
         String valueToken = "THIS IS MY VALUE TOKEN";
-        TokenValidator valueValidateToken = (expireBefore, t) -> true;
+        TokenValidator valueValidateToken = createTokenValidator(true);
         Token returnToken = Token.readToken(valueToken, false, valueValidateToken);
         Mockito.when(validateToken.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.notNull())).thenReturn(true);
         Mockito.when(generatable.createToken(Mockito.eq(context))).thenReturn(returnToken);
@@ -152,6 +152,20 @@ class BasicCacheTest {
         Assertions.assertNotNull(template.getExpireDuration().get(value.getSharedKey()));
         Assertions.assertNotNull(template.getExpireDuration().get(existingToken.get().getKey()));
         Assertions.assertEquals(existingToken.get().getKey(), token.get().getKey());
+    }
+
+    private TokenValidator createTokenValidator(boolean testResult) {
+        return new TokenValidator() {
+            @Override
+            public void validateToken(String token) {
+
+            }
+
+            @Override
+            public boolean test(Token.TokenExpiryEnum validateUsingExpiryOffset, String accessToken) {
+                return testResult;
+            }
+        };
     }
 
     @Test
@@ -219,8 +233,8 @@ class BasicCacheTest {
         // the token after refresh
         String valueTokenAlternative = "THIS IS MY VALUE TOKEN ALTERNATIVE";
 
-        TokenValidator valueValidateToken = (expire, t) -> true;
-        TokenValidator valueValidateTokenFalse = (expire, t) -> false;
+        TokenValidator valueValidateToken = createTokenValidator(true);
+        TokenValidator valueValidateTokenFalse = createTokenValidator(false);
 
         Token returnToken = Token.readToken(valueToken, false, valueValidateToken);
         Optional<Token> returnTokenAlternative = Optional.of(Token.readToken(valueTokenAlternative, false, valueValidateTokenFalse));

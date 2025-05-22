@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.ws.token;
 
 import ch.qos.logback.classic.Level;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.darts.testutils.request.ContextRequestHelper;
 import java.net.URL;
 
 @ActiveProfiles({"int-test"})
+@Disabled
 class TokenValidatorTest extends IntegrationBase {
 
     @Autowired

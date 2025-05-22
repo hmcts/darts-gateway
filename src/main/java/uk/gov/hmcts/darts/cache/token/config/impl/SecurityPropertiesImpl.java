@@ -30,6 +30,9 @@ public class SecurityPropertiesImpl implements SecurityProperties {
     @jakarta.validation.constraints.NotNull
     private Duration jwksCacheLifetimePeriod;
 
+    @jakarta.validation.constraints.NotNull
+    private Duration jwksCacheRefreshAheadTimePeriod;
+
     private boolean userExternalInternalMappingsEnabled;
     private List<ExternalUserToInternalUserMappingImpl> userExternalInternalMappings;
     private List<String> externalServiceBasicAuthorisationWhitelist;

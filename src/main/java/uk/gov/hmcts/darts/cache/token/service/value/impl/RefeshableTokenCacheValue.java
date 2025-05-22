@@ -23,6 +23,7 @@ public class RefeshableTokenCacheValue extends ServiceContextCacheValue implemen
     private String tokenString;
 
     @JsonIgnore
+    @SuppressWarnings("PMD.ImmutableField")
     private TokenGeneratable jwtCacheRegisterable;
 
     public RefeshableTokenCacheValue(ServiceContext context, TokenGeneratable registerable) {

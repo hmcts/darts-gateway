@@ -1,19 +1,16 @@
 package uk.gov.hmcts.darts.cache.token.config;
 
-import com.nimbusds.jose.jwk.source.DefaultJWKSetCache;
-import com.nimbusds.jose.jwk.source.JWKSetCache;
 import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.NonNull;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public interface SecurityProperties {
     String getTokenUri();
@@ -24,17 +21,11 @@ public interface SecurityProperties {
 
     String getJwkSetUri();
 
-    String getSignInPolicy();
-
     String getIssuerUri();
-
-    String getClaims();
 
     boolean isUserExternalInternalMappingsEnabled();
 
     List<ExternalUserToInternalUserMappingImpl> getUserExternalInternalMappings();
-
-    List<String> getExternalServiceBasicAuthorisationWhitelist();
 
     boolean isUserWhitelisted(String userName);
 
@@ -43,15 +34,15 @@ public interface SecurityProperties {
 
     @NonNull
     Duration getJwksCacheLifetimePeriod();
+    @NonNull
+    Duration getJwksCacheRefreshAheadTimePeriod();
 
     default JWKSource<SecurityContext> getJwkSource() throws MalformedURLException {
-        URL jwksUrl = new URL(getJwkSetUri());
-        return new RemoteJWKSet<>(jwksUrl, null, getJwkCache());
-    }
-
-    default JWKSetCache getJwkCache() {
-        return new DefaultJWKSetCache(getJwksCacheLifetimePeriod().get(ChronoUnit.SECONDS),
-                                      getJwksCacheRefreshPeriod().get(ChronoUnit.SECONDS),
-                                      TimeUnit.SECONDS);
+        URL jwksUrl = URI.create(getJwkSetUri()).toURL();
+        return JWKSourceBuilder.create(jwksUrl)
+            .rateLimited(false)
+            .refreshAheadCache(getJwksCacheRefreshAheadTimePeriod().toMillis(), true)
+            .cache(getJwksCacheLifetimePeriod().toMillis(), getJwksCacheRefreshPeriod().toMillis())
+            .build();
     }
 }
