@@ -77,7 +77,7 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
     @Transactional
     @SuppressWarnings({"java:S6809", "PMD.AvoidUncheckedExceptionsInSignatures"})
     public Optional<Token> store(ServiceContext context, Boolean reuseTokenIfPossible) throws CacheException {
-        log.trace("storing new token");
+        log.info("storing new token");
         String sharedId = getIdForServiceContext(context);
         if (reuseTokenBasedOnCredentials(reuseTokenIfPossible)) {
             Object sharedToken = redisTemplate.opsForValue().get(sharedId);
@@ -88,18 +88,18 @@ public abstract class AbstractTokenCache implements TokenRegisterable {
             if (value.isPresent()) {
                 // store into redis without validation of the associated token
                 Optional<Token> createdToken = Optional.of(createNewTokenOrReuseExistingToken(value.get(), reuseTokenIfPossible, true).get());
-                log.trace("stored refreshed shared token");
+                log.info("stored refreshed shared token");
                 return createdToken;
             } else {
-                log.debug("Not looking up shared token either turned off or not  forced");
+                log.info("Not looking up shared token either turned off or not  forced");
                 Optional<Token> createdToken = Optional.of(store(createValue(context), reuseTokenIfPossible).get());
-                log.trace("stored new shared token");
+                log.info("stored new shared token");
                 return createdToken;
             }
         } else {
-            log.debug("Not looking up shared token either turned off or not forced");
+            log.info("Not looking up shared token either turned off or not forced");
             Optional<Token> createdToken = Optional.of(store(createValue(context), reuseTokenIfPossible).get());
-            log.trace("stored new token");
+            log.info("stored new token");
             return createdToken;
         }
     }
