@@ -142,12 +142,12 @@ darts-gateway:
         internal-password: ${XHIBIT_INTERNAL_PASSWORD:#{null}}
     external-service-basic-authorisation-whitelist: ${EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST:#{null}}
     jwks-cache-refresh_period: ${JWKS_REFRESH_PERIOD:30m}
-    jwks-cache-lifetime_period:  ${JWKS_LIFETIME_PERIOD:60m}
+    jwks-cache-lifetime_period: ${JWKS_LIFETIME_PERIOD:60m}
     jwks-cache-refresh-ahead-time-period: ${JWKS_REFRESH_AHEAD_PERIOD:5m}
   # Default payload logging to be disabled for daily list payloads 
   logging:
     exclude-payload-request-logging-based-on-payload-namespace-and-tag:
-      - namespace:  http://com.synapps.mojdarts.service.com
+      - namespace: http://com.synapps.mojdarts.service.com
         tag: addDocument
         type: CPPDL
       - namespace: http://com.synapps.mojdarts.service.com
@@ -155,4 +155,8 @@ darts-gateway:
         type: DL
 logging:
   level:
-    root: trace
+    org:
+      springframework:
+        data:
+          redis: trace
+    root: info

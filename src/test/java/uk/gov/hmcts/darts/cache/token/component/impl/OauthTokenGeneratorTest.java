@@ -8,9 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
-import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ class OauthTokenGeneratorTest {
 
         String invalidUserName = "invalidviqUser";
         String externalViqPassword = "viqExternalPassword";
-        Assertions.assertThrows(CacheTokenCreationException.class, () -> generatorCustom.acquireNewToken(invalidUserName, externalViqPassword));
+        Assertions.assertThrows(AuthenticationFailedException.class, () -> generatorCustom.acquireNewToken(invalidUserName, externalViqPassword));
     }
 
     @Test
@@ -112,7 +112,7 @@ class OauthTokenGeneratorTest {
         OauthTokenGeneratorCustom generatorCustom = new OauthTokenGeneratorCustom(securityProperties, tokenValue);
 
         String invalidExternalViqPassword = "viqExternalPassword";
-        Assertions.assertThrows(CacheTokenCreationException.class, () -> generatorCustom.acquireNewToken(username, invalidExternalViqPassword));
+        Assertions.assertThrows(AuthenticationFailedException.class, () -> generatorCustom.acquireNewToken(username, invalidExternalViqPassword));
     }
 
     @Test
@@ -126,7 +126,7 @@ class OauthTokenGeneratorTest {
         String username = "username";
         String password = "password";
 
-        Assertions.assertThrows(CacheTokenCreationException.class, () -> generatorCustom.acquireNewToken(username, password));
+        Assertions.assertThrows(AuthenticationFailedException.class, () -> generatorCustom.acquireNewToken(username, password));
         Assertions.assertEquals(5, generatorCustom.parameters.size());
         Assertions.assertEquals(TOKEN_URI, generatorCustom.uriSpecified.toString());
         Assertions.assertEquals("password", generatorCustom.parameters.get(OauthTokenGenerator.GRANT_TYPE_PARAMETER_KEY));

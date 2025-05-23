@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.AuthSupport;
 
 import java.util.Objects;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class TestSupportController {
 
     @DeleteMapping(value = "/functional-tests/clean")
     public void cleanUpDataAfterFunctionalTests() {
-        deleteKeyByPattern(TokenRegisterable.CACHE_PREFIX + "*");
+        deleteKeyByPattern(AuthSupport.CACHE_PREFIX + "*");
     }
 
     public void deleteKeyByPattern(String pattern) {

@@ -29,12 +29,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
-import org.springframework.integration.support.locks.LockRegistry;
-import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
-import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
-import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
-import uk.gov.hmcts.darts.cache.token.service.impl.TokenJwtCache;
 
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -160,13 +154,6 @@ public class CacheConfig {
             .disableCachingNullValues()
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()))
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
-    }
-
-
-    @Bean
-    TokenGeneratable getTokenGeneratable(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
-                                         CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
-        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
     }
 
     @Bean

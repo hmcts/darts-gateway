@@ -6,29 +6,23 @@ import documentum.contextreg.Register;
 import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBElement;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.RegisterNullServiceContextException;
-import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
-import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
-import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
-
-import java.util.Optional;
+import uk.gov.hmcts.darts.cache.AuthSupport;
 
 @Endpoint
 @Slf4j
+@AllArgsConstructor
 public class ContextRegistryEndpoint {
 
-    private final TokenRegisterable registerable;
+    private final AuthSupport authSupport;
 
-    public ContextRegistryEndpoint(@Qualifier("primarycache") TokenRegisterable registerable) {
-        this.registerable = registerable;
-    }
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
     @ResponsePayload
@@ -39,12 +33,9 @@ public class ContextRegistryEndpoint {
         RegisterResponse registerResponse = new RegisterResponse();
 
         try {
-            // create a session as the client needs this
-            Optional<Token> cacheValue = registerable.store(register.getValue().getContext());
-
-            // for now return a documentum id
-            cacheValue.ifPresent(value -> registerResponse.setReturn(value.getTokenString()));
-        } catch (CacheTokenCreationException cte) {
+            String token = authSupport.getOrCreateValidToken(register.getValue().getContext());
+            registerResponse.setReturn(token);
+        } catch (AuthenticationFailedException cte) {
             log.warn("Failed creation of token", cte);
         }
         return new ObjectFactory().createRegisterResponse(registerResponse);
@@ -54,11 +45,7 @@ public class ContextRegistryEndpoint {
     @ResponsePayload
     public JAXBElement<UnregisterResponse> unregister(@RequestPayload JAXBElement<documentum.contextreg.Unregister> unregister) {
         UnregisterResponse unregisterResponse = new UnregisterResponse();
-
-        Token token = registerable.getToken(unregister.getValue().getToken());
-
-        registerable.evict(token);
-
+        //No need to evict the token as it will be used by other services
         return new ObjectFactory().createUnregisterResponse(unregisterResponse);
     }
 
@@ -66,10 +53,6 @@ public class ContextRegistryEndpoint {
     @ResponsePayload
     public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> lookup) {
         LookupResponse lookupResponse = new LookupResponse();
-        Token token = registerable.getToken(lookup.getValue().getToken());
-
-        Optional<CacheValue> value = registerable.lookup(token);
-        value.ifPresent(refreshableCacheValue -> lookupResponse.setReturn(refreshableCacheValue.getServiceContext()));
 
         return new ObjectFactory().createLookupResponse(lookupResponse);
     }

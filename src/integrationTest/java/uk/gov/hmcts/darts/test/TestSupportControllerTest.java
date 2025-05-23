@@ -3,12 +3,11 @@ package uk.gov.hmcts.darts.test;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
+import uk.gov.hmcts.darts.cache.AuthSupport;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 @ActiveProfiles("int-test-jwt-token-shared")
@@ -21,7 +20,7 @@ class TestSupportControllerTest extends IntegrationBase {
 
     void testCleanup() {
         // add a key to the redis cache so we can prove removal
-        String testKey = TokenRegisterable.CACHE_PREFIX + "testKey";
+        String testKey = AuthSupport.CACHE_PREFIX + "testKey";
         redisTemplate.opsForValue().set(testKey, "testValue");
 
         // prove key is in the cache

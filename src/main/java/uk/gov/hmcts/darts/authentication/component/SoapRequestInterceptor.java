@@ -24,9 +24,7 @@ import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
 import uk.gov.hmcts.darts.cache.AuthSupport;
-import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 import uk.gov.hmcts.darts.log.conf.ExcludePayloadLogging;
 import uk.gov.hmcts.darts.log.conf.LogProperties;
 
@@ -65,7 +63,6 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     public static final String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD {}";
 
     public static final String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS {}";
-    private final TokenValidator tokenValidator;
 
     @Override
     public boolean understands(SoapHeaderElement header) {
@@ -110,7 +107,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             SoapHeaderElement securityTokenElement = securityToken.next();
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
             String token = tokenToReturn.orElse("N/K");
-            tokenValidator.validateToken(token);
+            authSupport.validateToken(token);
             setupToken(token);
         }
         if (tokenToReturn.isEmpty()) {
@@ -133,8 +130,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
         try {
             getAuthenticationToken(message, serviceContextOpt.get());
-        } catch (CacheTokenCreationException tokenCreationException) {
-            throw new AuthenticationFailedException(tokenCreationException);
+        } catch (Exception exception) {
+            throw new AuthenticationFailedException(exception);
         }
     }
 
@@ -143,29 +140,26 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         SoapHeader soapHeader = message.getSoapHeader();
         Iterator<SoapHeaderElement> serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
             QName.valueOf(SERVICE_CONTEXT_HEADER));
-        try {
-            int size = Iterators.size(serviceContextSoapHeaderElementIt);
-            if (size == 1) {
-                serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
-                    QName.valueOf(SERVICE_CONTEXT_HEADER));
-                while (serviceContextSoapHeaderElementIt.hasNext()) {
-                    SoapHeaderElement soapHeaderElement = serviceContextSoapHeaderElementIt.next();
-                    Optional<ServiceContext> serviceContextOpt = soapHeaderConverter.convertSoapHeader(soapHeaderElement);
-                    if (serviceContextOpt.isPresent()) {
-                        ServiceContext serviceContext = serviceContextOpt.get();
-                        if (!identitiesPresent(soapHeaderElement)) {
-                            throw new NoIdentitiesFoundException();
-                        }
-
-                        getAuthenticationToken(message, serviceContext);
+        int size = Iterators.size(serviceContextSoapHeaderElementIt);
+        if (size == 1) {
+            serviceContextSoapHeaderElementIt = soapHeader.examineHeaderElements(
+                QName.valueOf(SERVICE_CONTEXT_HEADER));
+            while (serviceContextSoapHeaderElementIt.hasNext()) {
+                SoapHeaderElement soapHeaderElement = serviceContextSoapHeaderElementIt.next();
+                Optional<ServiceContext> serviceContextOpt = soapHeaderConverter.convertSoapHeader(soapHeaderElement);
+                if (serviceContextOpt.isPresent()) {
+                    ServiceContext serviceContext = serviceContextOpt.get();
+                    if (!identitiesPresent(soapHeaderElement)) {
+                        throw new NoIdentitiesFoundException();
                     }
+
+                    getAuthenticationToken(message, serviceContext);
                 }
-            } else {
-                throw new NoIdentitiesFoundException();
             }
-        } catch (CacheTokenCreationException tokenCreationException) {
-            throw new AuthenticationFailedException(tokenCreationException);
+        } else {
+            throw new NoIdentitiesFoundException();
         }
+
         return true;
     }
 
@@ -295,8 +289,9 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
                         log.trace(messagePrefix, payloadMessage);
                     } else {
-                        log.trace("REQUEST PAYLOAD. Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
-                                  excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
+                        log.trace(
+                            "REQUEST PAYLOAD. Payload was not logged as it matched the following exclusion criteria. namespace: {} root tag: {} type:{} ",
+                            excludePayloadLogging.get().getNamespace(), excludePayloadLogging.get().getTag(), excludePayloadLogging.get().getType());
                     }
                 } else {
                     log.warn("Could not log due to suitable xml source not be identified");

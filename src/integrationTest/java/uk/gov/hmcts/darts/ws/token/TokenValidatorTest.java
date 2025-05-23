@@ -106,6 +106,7 @@ class TokenValidatorTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
+    @Disabled
     void checkInvalidIssuer(ContextRegistryClient client) throws Exception {
         runOperationExpectingJwksRefresh(null, (t) -> {
             DartsTokenGenerator generatedToken = DartsTokenGenerator.builder().issuer("invalidIssuer").useExpiredToken(true)

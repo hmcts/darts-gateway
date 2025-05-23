@@ -6,11 +6,21 @@ import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
 
 @XmlRootElement
 public class AuthenticationFailedException extends SoapFaultServiceException {
-    public AuthenticationFailedException(Throwable cause) {
-        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause, "");
-    }
+
 
     public AuthenticationFailedException() {
-        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, null, "");
+        this(null, null);
+    }
+
+    public AuthenticationFailedException(String message) {
+        this(message, null);
+    }
+
+    public AuthenticationFailedException(Throwable cause) {
+        this(null, cause);
+    }
+
+    public AuthenticationFailedException(String message, Throwable cause) {
+        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause, message);
     }
 }
