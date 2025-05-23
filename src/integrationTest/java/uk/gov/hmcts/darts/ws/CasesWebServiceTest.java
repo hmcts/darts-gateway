@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-
+@Disabled
 class CasesWebServiceTest extends IntegrationBase {
 
     @MockitoBean

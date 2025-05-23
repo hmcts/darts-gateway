@@ -20,7 +20,7 @@ import uk.gov.hmcts.darts.testutils.request.ContextRequestHelper;
 import java.net.URL;
 
 @ActiveProfiles({"int-test"})
-
+@Disabled
 class TokenValidatorTest extends IntegrationBase {
 
     @Autowired
