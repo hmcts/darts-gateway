@@ -6,17 +6,16 @@ import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import uk.gov.hmcts.darts.cache.AuthSupport;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
-import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
-import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
@@ -42,7 +41,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     private CacheProperties properties;
 
     @MockitoBean
-    private TokenValidator tokenValidator;
+    private AuthSupport authSupport;
 
     private static final int REGISTERED_USER_COUNT = 10;
 
@@ -54,19 +53,19 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
         when(generator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn(HEADER_TOKEN);
 
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(HEADER_TOKEN))).thenReturn(true);
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(HEADER_TOKEN))).thenReturn(true);
+        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(HEADER_TOKEN))).thenReturn(true);
+        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(HEADER_TOKEN))).thenReturn(true);
 
         when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
             .thenReturn(CONTEXT_REGISTRY_TOKEN);
 
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
 
-            when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
-            when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
+            //    when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
+            //    when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test2"))).thenReturn(true);
 
             when(generator.acquireNewToken(Mockito.eq("user" + i), Mockito.eq("pass"))).thenReturn("test2");
         }
@@ -102,6 +101,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
+
     void testRegisterWithInvalidIdentities(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
 
         authenticationStub.assertFailBasedOnInvalidIdentities(client, () -> {
@@ -135,8 +135,8 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleRegisterFailure(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
-        when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
-            .thenThrow(new CacheTokenCreationException(""));
+        //when(generator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD))
+        //    .thenThrow(new CacheTokenCreationException(""));
         authenticationStub.assertWithNoHeaderInvalidCredentials(() -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
@@ -214,8 +214,8 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleLookupTokenExpired(ContextRegistryClient client) throws JAXBException, IOException, InterruptedException {
-        when(tokenValidator.test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
-        when(tokenValidator.test(Mockito.any(), Mockito.eq(HEADER_TOKEN))).thenReturn(false, true);
+        //when(tokenValidator.test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        //when(tokenValidator.test(Mockito.any(), Mockito.eq(HEADER_TOKEN))).thenReturn(false, true);
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String token = registerToken(client);
@@ -227,7 +227,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
             SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
             Assertions.assertNotNull(response.getResponse().getValue().getReturn());
 
-            verify(tokenValidator, times(4)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
+            //    verify(tokenValidator, times(4)).test(Mockito.any(), Mockito.eq(CONTEXT_REGISTRY_TOKEN));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 

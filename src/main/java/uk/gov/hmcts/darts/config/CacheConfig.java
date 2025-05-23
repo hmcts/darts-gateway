@@ -12,7 +12,6 @@ import io.lettuce.core.resource.DnsResolvers;
 import io.lettuce.core.resource.MappingSocketAddressResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -30,13 +29,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
-import org.springframework.integration.support.locks.LockRegistry;
-import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
-import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
-import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
-import uk.gov.hmcts.darts.cache.token.service.impl.TokenDocumentumIdToJwtCache;
-import uk.gov.hmcts.darts.cache.token.service.impl.TokenJwtCache;
 
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -97,7 +89,7 @@ public class CacheConfig {
         );
         redisConfig.setPassword(RedisPassword.of(redisConnectionProperties.password()));
 
-        LettuceConnectionFactory factory =  new LettuceConnectionFactory(redisConfig, clientConfigurationBuilder.build());
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(redisConfig, clientConfigurationBuilder.build());
         factory.setShareNativeConnection(false);
         return factory;
     }
@@ -164,37 +156,6 @@ public class CacheConfig {
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
     }
 
-    @SuppressWarnings("PMD.UnnecessaryAnnotationValueElement")
-    @ConditionalOnProperty(
-        value = "darts-gateway.cache.token-generate",
-        havingValue = "documentum-to-jwt",
-        matchIfMissing = true)
-    @Bean(value = "primarycache")
-    TokenDocumentumIdToJwtCache getDefaultTokenCache(RedisTemplate<String, Object> template,
-                                                     CacheProperties properties,
-                                                     TokenGeneratable cache,
-                                                     LockRegistry registry) {
-        return new TokenDocumentumIdToJwtCache(template, cache, properties, registry);
-    }
-
-
-    @Bean
-    TokenGeneratable getTokenGeneratable(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
-                                         CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
-        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
-    }
-
-    @SuppressWarnings("PMD.UnnecessaryAnnotationValueElement")
-    @ConditionalOnProperty(
-        value = "darts-gateway.cache.token-generate",
-        havingValue = "jwt",
-        matchIfMissing = false)
-    @Bean(value = "primarycache")
-    TokenJwtCache getJwtTokenCache(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
-                                   CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
-        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
-    }
-
     @Bean
     public RedisTemplate<?, Object> redisTemplate(RedisConnectionFactory connectionFactory, RedisCacheConfiguration configuration) {
         RedisTemplate<?, Object> template = new RedisTemplate<>();
@@ -206,8 +167,8 @@ public class CacheConfig {
 
     @Bean
     public RedisLockRegistry lockRegistry(RedisConnectionFactory redisConnectionFactory) {
-        RedisLockRegistry registry =  new RedisLockRegistry(redisConnectionFactory, LOCK_REGISTRY_REDIS_KEY,
-                                  RELEASE_TIME_DURATION.toMillis());
+        RedisLockRegistry registry = new RedisLockRegistry(redisConnectionFactory, LOCK_REGISTRY_REDIS_KEY,
+                                                           RELEASE_TIME_DURATION.toMillis());
         registry.setRedisLockType(RedisLockRegistry.RedisLockType.PUB_SUB_LOCK);
         return registry;
     }

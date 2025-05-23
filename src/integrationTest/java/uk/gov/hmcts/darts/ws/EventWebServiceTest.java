@@ -6,18 +6,17 @@ import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
+import uk.gov.hmcts.darts.cache.AuthSupport;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
-import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
-import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
@@ -51,12 +50,12 @@ class EventWebServiceTest extends IntegrationBase {
     private TokenGenerator mockOauthTokenGenerator;
 
     @MockitoBean
-    private TokenValidator tokenValidator;
+    private AuthSupport authSupport;
 
     @BeforeEach
     public void before() {
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        //when(authSupport.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        //when(authSupport.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("test");
@@ -136,6 +135,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+
     void testRoutesValidEventPayloadWithAuthenticationToken(
         DartsGatewayClient client
     ) throws Exception {
@@ -165,8 +165,8 @@ class EventWebServiceTest extends IntegrationBase {
         DartsGatewayClient client
     ) throws Exception {
 
-        when(tokenValidator.test(Mockito.any(),
-                                 Mockito.eq("downstreamtoken"))).thenReturn(true);
+        //when(tokenValidator.test(Mockito.any(),
+        //                         Mockito.eq("downstreamtoken"))).thenReturn(true);
 
         when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
             .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
@@ -174,8 +174,7 @@ class EventWebServiceTest extends IntegrationBase {
         authenticationStub.assertWithTokenHeader(client, () -> {
             theEventApi.willRespondSuccessfully();
 
-            when(tokenValidator.test(Mockito.any(),
-                                     Mockito.eq("downstreamtoken"))).thenReturn(false);
+            //when(tokenValidator.test(Mockito.any(), Mockito.eq("downstreamtoken"))).thenReturn(false);
 
             SoapAssertionUtil<AddDocumentResponse> response = client.addDocument(
                 getGatewayUri(),

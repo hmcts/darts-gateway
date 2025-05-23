@@ -1,5 +1,7 @@
 package uk.gov.hmcts.darts.authentication.component;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
@@ -13,18 +15,14 @@ public final class ContextRegistryPayload {
 
     }
 
+    @Getter
+    @RequiredArgsConstructor
     public enum ContextRegistryOperation {
-        REGISTRY_OPERATION("register"), LOOKUP_OPERATION("lookup"), UNREGISTER_OPERATION("unregister");
+        REGISTRY_OPERATION("register"),
+        LOOKUP_OPERATION("lookup"),
+        UNREGISTER_OPERATION("unregister");
 
         private final String soapOperationName;
-
-        ContextRegistryOperation(String soapOperationName) {
-            this.soapOperationName = soapOperationName;
-        }
-
-        public String getSoapOperationName() {
-            return soapOperationName;
-        }
     }
 
     public static boolean isApplicable(SaajSoapMessage message, ContextRegistryOperation contextRegistryOperation) {

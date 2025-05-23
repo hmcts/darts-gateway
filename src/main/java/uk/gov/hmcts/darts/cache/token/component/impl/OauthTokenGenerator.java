@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.config.ExternalUserToInternalUserMapping;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
-import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -46,7 +46,7 @@ public class OauthTokenGenerator implements TokenGenerator {
         if (securityProperties.isUserExternalInternalMappingsEnabled()) {
             Optional<String> fndPassword = findInternalUserPassword(username, password);
             if (fndPassword.isEmpty()) {
-                throw new CacheTokenCreationException("No token found for user name and password");
+                throw new AuthenticationFailedException("No token found for user name and password");
             }
             foundPassword = fndPassword.get();
         }
@@ -66,10 +66,10 @@ public class OauthTokenGenerator implements TokenGenerator {
                     .readValue(response, TokenResponse.class);
 
             if (tokenResponse.accessToken() == null) {
-                throw new CacheTokenCreationException("No token found for user name and password");
+                throw new AuthenticationFailedException("No token found for user name and password");
             }
         } else {
-            throw new CacheTokenCreationException("No token found for user name and password");
+            throw new AuthenticationFailedException("No token found for user name and password");
         }
 
         log.trace("successfully acquired new jwt token");

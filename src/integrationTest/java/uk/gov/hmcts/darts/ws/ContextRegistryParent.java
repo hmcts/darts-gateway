@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
@@ -39,9 +39,9 @@ public class ContextRegistryParent extends IntegrationBase {
 
     void executeTestGetContextRegistryWsdl() throws IOException, InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(getGatewayUri() + "runtime/ContextRegistryService?wsdl"))
-                .timeout(Duration.ofMinutes(2))
-                .build();
+            .uri(new URI(getGatewayUri() + "runtime/ContextRegistryService?wsdl"))
+            .timeout(Duration.ofMinutes(2))
+            .build();
         HttpClient client = HttpClient.newBuilder().build();
         HttpResponse.BodyHandler<?> responseBodyHandler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<?> response = client.send(request, responseBodyHandler);
@@ -96,7 +96,7 @@ public class ContextRegistryParent extends IntegrationBase {
 
     void executeHandleRegisterWithSharing(ContextRegistryClient client) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/register/soapRequest.xml");
+            "payloads/ctxtRegistry/register/soapRequest.xml");
 
         soapRequestStr = soapRequestStr.replace("${USER}", SERVICE_CONTEXT_USER);
         soapRequestStr = soapRequestStr.replace("${PASSWORD}", SERVICE_CONTEXT_PASSWORD);
@@ -150,7 +150,7 @@ public class ContextRegistryParent extends IntegrationBase {
         String token = registerToken(client);
 
         String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/soapRequest.xml");
+            "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
         SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
@@ -166,13 +166,13 @@ public class ContextRegistryParent extends IntegrationBase {
         String token = registerToken(client);
 
         String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/soapRequest.xml");
+            "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
         SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse().getValue().getReturn());
 
-        int backAThird = (int)properties.getEntryTimeToIdleSeconds() / 3;
+        int backAThird = (int) properties.getEntryTimeToIdleSeconds() / 3;
         // take us to seconds before expiry
         Thread.sleep(CacheUtil.getMillisForTimeToIdleMinusSeconds(properties, backAThird));
 
@@ -236,7 +236,7 @@ public class ContextRegistryParent extends IntegrationBase {
 
         for (int i = 0; i < usersCount; i++) {
             ContextRegistryParent.LookupThread thread =
-                    new ContextRegistryParent.LookupThread(client, registerThreadLst.get(i).getToken(), lookupSemaphore, properties);
+                new ContextRegistryParent.LookupThread(client, registerThreadLst.get(i).getToken(), lookupSemaphore, properties);
             lookupThreadLst.add(thread);
             new Thread(thread).start();
         }
@@ -278,14 +278,14 @@ public class ContextRegistryParent extends IntegrationBase {
         lookup(client, token);
 
         String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/unregister/soapRequest.xml");
+            "payloads/ctxtRegistry/unregister/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
         SoapAssertionUtil<UnregisterResponse> response = client.unregister(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
         Assertions.assertNotNull(response.getResponse());
 
         soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/soapRequest.xml");
+            "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", token);
 
         Assertions.assertNotNull(client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr).getResponse().getValue().getReturn());
@@ -293,7 +293,7 @@ public class ContextRegistryParent extends IntegrationBase {
 
     private LookupResponse lookup(ContextRegistryClient client, String token) throws IOException, JAXBException {
         String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/ctxtRegistry/lookup/soapRequest.xml");
+            "payloads/ctxtRegistry/lookup/soapRequest.xml");
         soapRequestStr = soapRequestStr.replace("${TOKEN}", StringUtils.trimToEmpty(token));
 
         SoapAssertionUtil<LookupResponse> response = client.lookup(new URL(getGatewayUri() + "ContextRegistryService?wsdl"), soapRequestStr);
@@ -326,7 +326,7 @@ public class ContextRegistryParent extends IntegrationBase {
                 token = ContextRegistryParent.this.registerToken(client);
                 latch.countDown();
             } catch (Exception e) {
-                throw new CacheException("The register operation errored", e);
+                throw new AuthenticationFailedException("The register operation errored", e);
             }
         }
     }
@@ -357,7 +357,7 @@ public class ContextRegistryParent extends IntegrationBase {
                 value = ContextRegistryParent.this.lookup(client, token);
                 latch.countDown();
             } catch (Exception e) {
-                throw new CacheException("The lookup operation errored", e);
+                throw new AuthenticationFailedException("The lookup operation errored", e);
             }
         }
     }
