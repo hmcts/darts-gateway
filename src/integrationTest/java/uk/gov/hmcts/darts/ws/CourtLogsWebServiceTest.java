@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
+
 class CourtLogsWebServiceTest extends IntegrationBase {
 
     private static final String VALID_GET_COURTLOGS_XML = "classpath:payloads/courtlogs/valid-get-courtlogs.xml";

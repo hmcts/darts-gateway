@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
+
 class RegisterNodeWebServiceTest extends IntegrationBase {
 
     @MockitoBean

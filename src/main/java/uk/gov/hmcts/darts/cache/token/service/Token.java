@@ -30,7 +30,7 @@ public class Token {
 
     private final TokenValidator validator;
 
-    Token(String token,  TokenValidator validator) {
+    Token(String token, TokenValidator validator) {
         this.tokenString = token;
         this.validator = validator;
     }
@@ -45,10 +45,12 @@ public class Token {
     }
 
 
-    /**Ω
+    /**
+     * Ω
      * validates token taking into account the expiry offset if it is enabled.
      * See {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties#isShareTokenForSameCredentials()} and
      * {@link uk.gov.hmcts.darts.cache.token.config.CacheProperties#getSharedTokenEarlyExpirationMinutes()}
+     *
      * @param applyExpiryOffset Take into account the expiry of the token
      */
     public boolean validate(TokenExpiryEnum applyExpiryOffset) {
@@ -66,14 +68,8 @@ public class Token {
         this.sessionId = sessionId;
     }
 
-    public static Token readToken(String tokenStr, boolean mapToSession, TokenValidator validate) {
-        Token token;
-
-        token =  new Token(tokenStr, validate);
-
-        setupSession(token, mapToSession);
-
-        return token;
+    public static Token readToken(String tokenStr, TokenValidator validate) {
+        return new Token(tokenStr, validate);
     }
 
     private static void setupSession(Token token, boolean mapToSession) {
@@ -103,7 +99,7 @@ public class Token {
         String random = String.valueOf(secureRandom.nextLong());
 
         // create a cookie to send back to the client
-        Token token =  new Token(machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + COUNTER.incrementAndGet(), validate);
+        Token token = new Token(machineIdentifier + "-" + System.currentTimeMillis() + "-" + random + "-" + COUNTER.incrementAndGet(), validate);
         setupSession(token, mapToSession);
 
         return token;
@@ -118,8 +114,8 @@ public class Token {
 
     private static String getHttpSessionId() {
         HttpServletRequest curRequest =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                        .getRequest();
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest();
         return curRequest.getSession(false).getId();
     }
 

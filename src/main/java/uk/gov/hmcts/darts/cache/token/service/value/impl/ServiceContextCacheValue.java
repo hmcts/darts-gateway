@@ -11,6 +11,7 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import  jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import lombok.Setter;
 import org.springframework.xml.transform.StringSource;
 import uk.gov.hmcts.darts.cache.token.exception.CacheException;
 import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
@@ -22,6 +23,7 @@ import java.io.StringWriter;
 public class ServiceContextCacheValue implements CacheValue {
     private String contextStr;
 
+    @Setter
     private String sharedKey;
 
     private ServiceContext context;
@@ -114,9 +116,5 @@ public class ServiceContextCacheValue implements CacheValue {
 
     public static String getId(ServiceContext context) {
         return TokenRegisterable.CACHE_PREFIX + ":" + getUserName(context) + ":" + getPassword(context);
-    }
-
-    public void setSharedKey(String sharedKey) {
-        this.sharedKey = sharedKey;
     }
 }

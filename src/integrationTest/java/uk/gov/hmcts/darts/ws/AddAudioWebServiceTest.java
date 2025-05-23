@@ -47,6 +47,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -56,7 +57,7 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings("PMD.UnitTestShouldIncludeAssert")
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
+
 class AddAudioWebServiceTest extends IntegrationBase {
 
     @MockitoBean
@@ -232,7 +233,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            when(validator.test(any(), Mockito.eq("downstreamtoken"))).thenReturn(false);
+            doNothing().when(validator).validateToken(Mockito.eq("downstreamtoken"));
 
             SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddAudioResponse.class).getValue());

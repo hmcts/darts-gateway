@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = ServiceTestConfiguration.class)
 @ActiveProfiles({"int-test"})
 @AutoConfigureMockMvc
-@Disabled
+
 class DarNotifyControllerTest {
 
     private static final String VALID_NOTIFICATION_JSON = """

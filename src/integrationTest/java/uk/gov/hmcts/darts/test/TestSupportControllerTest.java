@@ -18,7 +18,7 @@ class TestSupportControllerTest extends IntegrationBase {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Test
-    @Disabled
+
     void testCleanup() {
         // add a key to the redis cache so we can prove removal
         String testKey = TokenRegisterable.CACHE_PREFIX + "testKey";

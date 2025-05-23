@@ -61,8 +61,6 @@ darts-gateway:
   testing-support-endpoints:
     enabled: ${TESTING_SUPPORT_ENDPOINTS_ENABLED:false}
   cache:
-    map-token-to-session: false
-    share-token-for-same-credentials: true
     entry-time-to-idle-seconds: 42900
     shared-token-early-expiration-minutes: 5
   ws:
@@ -157,4 +155,4 @@ darts-gateway:
         type: DL
 logging:
   level:
-    root: ${DARTS_LOG_LEVEL:info}
+    root: trace

@@ -23,13 +23,10 @@ import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
+import uk.gov.hmcts.darts.cache.AuthSupport;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.cache.token.exception.CacheTokenCreationException;
-import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.cache.token.service.TokenRegisterable;
-import uk.gov.hmcts.darts.cache.token.service.value.CacheValue;
-import uk.gov.hmcts.darts.cache.token.service.value.DownstreamTokenisableValue;
 import uk.gov.hmcts.darts.log.conf.ExcludePayloadLogging;
 import uk.gov.hmcts.darts.log.conf.LogProperties;
 
@@ -51,9 +48,10 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     private static final String SECURITY_HEADER = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security";
     private static final String JSESSIONID_KEY = "JSESSIONID";
 
+    private final AuthSupport authSupport;
+
     private final SoapHeaderConverter soapHeaderConverter;
     private final SoapBodyConverter soapBodyConverter;
-    private final TokenRegisterable tokenRegisterable;
     private final SecurityProperties securityProperties;
 
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -62,11 +60,11 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     private final LogProperties logProperties;
 
-    public static final String REQUEST_PAYLOAD_PREFIX = "REQUEST PAYLOAD";
+    public static final String REQUEST_PAYLOAD_PREFIX = "REQUEST PAYLOAD {}";
 
-    public static final String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD";
+    public static final String RESPONSE_PAYLOAD_PREFIX = "RESPONSE PAYLOAD {}";
 
-    public static final String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS";
+    public static final String FAULT_PAYLOAD_IS = "FAULT PAYLOAD IS {}";
     private final TokenValidator tokenValidator;
 
     @Override
@@ -76,19 +74,15 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
     @Override
     public boolean handleRequest(MessageContext messageContext, Object endpoint) {
-        logPayloadMessage(REQUEST_PAYLOAD_PREFIX + "{}", messageContext.getRequest());
+        logPayloadMessage(REQUEST_PAYLOAD_PREFIX, messageContext.getRequest());
 
         SaajSoapMessage message = (SaajSoapMessage) messageContext.getRequest();
-        handleRequest(message);
-        return true; // continue processing of the request interceptor chain
-    }
-
-    private void handleRequest(SaajSoapMessage soapMessage) {
-        if (isTokenAuthentication(soapMessage)) {
-            authenticateToken(soapMessage);
+        if (isTokenAuthentication(message)) {
+            authenticateUsingToken(message);
         } else {
-            authenticateUsernameAndPassword(soapMessage);
+            authenticateUsingUsernameAndPassword(message);
         }
+        return true; // continue processing of the request interceptor chain
     }
 
     private boolean isTokenAuthentication(SaajSoapMessage message) {
@@ -101,7 +95,12 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         return serviceContextSoapHeaderElementIt.hasNext();
     }
 
-    private void authenticateToken(SaajSoapMessage message) {
+
+    private void setupToken(String token) {
+        new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(token);
+    }
+
+    private void authenticateUsingToken(SaajSoapMessage message) {
         SoapHeader soapHeader = message.getSoapHeader();
         Iterator<SoapHeaderElement> securityToken = soapHeader.examineHeaderElements(
             QName.valueOf(SECURITY_HEADER));
@@ -112,14 +111,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
             String token = tokenToReturn.orElse("N/K");
             tokenValidator.validateToken(token);
-            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(token);
+            setupToken(token);
         }
         if (tokenToReturn.isEmpty()) {
             throw new ServiceContextLookupException("");
         }
     }
 
-    private void authenticateUsernameAndPassword(SaajSoapMessage message) {
+    private void authenticateUsingUsernameAndPassword(SaajSoapMessage message) {
         if (ContextRegistryPayload.isApplicable(message, ContextRegistryPayload.ContextRegistryOperation.REGISTRY_OPERATION)) {
             authenticateUsernameAndPasswordFromBody(message);
         } else {
@@ -190,26 +189,8 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
 
         verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
 
-        // always reuse the tokenOpt in the case of authentication
-        Optional<Token> tokenOpt = tokenRegisterable.store(serviceContext, true);
-
-        if (tokenOpt.isEmpty()) {
-            throw new AuthenticationFailedException();
-        }
-        Token token = tokenOpt.get();
-        Optional<CacheValue> optRefreshableCacheValue = tokenRegisterable.lookup(token);
-        CacheValue refreshableCacheValue = optRefreshableCacheValue.orElse(null);
-
-        if (refreshableCacheValue instanceof DownstreamTokenisableValue downstreamTokenisable) {
-            Token tokenDownstream = downstreamTokenisable.getToken();
-            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                tokenDownstream.getTokenString());
-        } else if (token.getTokenString().isEmpty()) {
-            throw new AuthenticationFailedException();
-        } else {
-            new SecurityRequestAttributesWrapper(RequestContextHolder.currentRequestAttributes()).setAuthenticationToken(
-                token.getTokenString());
-        }
+        BasicIdentity basicIdentity = basicIdentityOptional.get();
+        setupToken(authSupport.getOrCreateValidToken(basicIdentity.getUserName(), basicIdentity.getPassword()));
     }
 
     private boolean identitiesPresent(SoapHeaderElement soapHeader) {
@@ -221,14 +202,14 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     @Override
     public boolean handleResponse(MessageContext messageContext, Object endpoint) {
         logCookieInformation();
-        logPayloadMessage(RESPONSE_PAYLOAD_PREFIX + "{}", messageContext.getResponse());
+        logPayloadMessage(RESPONSE_PAYLOAD_PREFIX, messageContext.getResponse());
         return true;
     }
 
     @Override
     public boolean handleFault(MessageContext messageContext, Object endpoint) {
         logCookieInformation();
-        logPayloadMessage(FAULT_PAYLOAD_IS + "{}", messageContext.getResponse());
+        logPayloadMessage(FAULT_PAYLOAD_IS, messageContext.getResponse());
         return true;
     }
 
@@ -237,12 +218,13 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     }
 
     public void logCookieInformation() {
+        if (!log.isTraceEnabled()) {
+            return;
+        }
         try {
             HttpServletRequest curRequest =
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-            if (log.isTraceEnabled()) {
-                getCookieInformation(RESPONSE_PAYLOAD_PREFIX + "{}", curRequest);
-            }
+            getCookieInformation(RESPONSE_PAYLOAD_PREFIX, curRequest);
         } catch (Exception e) {
             log.error("Unable to log cookie information.", e);
         }

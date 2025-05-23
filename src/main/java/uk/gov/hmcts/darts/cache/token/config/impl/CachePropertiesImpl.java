@@ -11,10 +11,6 @@ import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 @Getter
 @Setter
 public class CachePropertiesImpl implements CacheProperties {
-    private boolean mapTokenToSession;
-
-    private boolean shareTokenForSameCredentials;
-
     private long entryTimeToIdleSeconds;
 
     private int sharedTokenEarlyExpirationMinutes;

@@ -43,14 +43,15 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
         when(validator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
 
-        AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(getIpAndPort(),
-                                                                                    AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE,
-                                                                                    "testuser", "testpassword");
+        AddAudioMidTierCommand audioMidTierCommand = CommandFactory.getAudioCommand(
+            getIpAndPort(),
+            AddAudioMidTierCommand.SAMPLE_XML, AddAudioMidTierCommand.SAMPLE_FILE,
+            "testuser", "testpassword"
+        );
         setCommand(audioMidTierCommand);
     }
 
     @Test
-    @Disabled
     void addAudioTest() throws Exception {
         File homeDirForTempFiles = new File(System.getProperty("user.home"));
         final int fileCountBefore = Objects.requireNonNull(homeDirForTempFiles.list()).length;
@@ -76,8 +77,8 @@ class AddAudioMtomMidTierWorkflowTest extends AbstractWorkflowCommand {
                     "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"123456789\"]," +
                     "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
-        Mockito.verify(validator, times(2)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
-        Mockito.verify(validator, times(3)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(1)).test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
+        Mockito.verify(validator, times(1)).test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.anyString());
 
         verify(postRequestedFor(urlPathEqualTo("/audios/metadata"))
                    .withHeader("Authorization", new RegexPattern("Bearer test")));

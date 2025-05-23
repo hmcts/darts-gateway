@@ -61,7 +61,7 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
             throw new CacheTokenCreationException("Could not get an identity in order to fetch a token");
         }
 
-        Identity identity = identities.get(0);
+        Identity identity = identities.getFirst();
         if (!(identity instanceof BasicIdentity basicIdentity)) {
             throw new CacheTokenCreationException("Require basic credentials to get a token");
         }
@@ -74,7 +74,7 @@ public class TokenJwtCache extends AbstractTokenCache implements TokenGeneratabl
             throw new CacheTokenCreationException("Could not get an identity", e);
         }
 
-        return Token.readToken(jwtToken, properties.isMapTokenToSession(), getTokenValidator());
+        return Token.readToken(jwtToken, getTokenValidator());
     }
 
 

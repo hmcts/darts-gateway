@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token")
 @Slf4j
-@Disabled
+
 class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @MockitoBean
     private TokenGenerator generator;
