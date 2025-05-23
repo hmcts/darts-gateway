@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token")
 @Slf4j
-@Disabled
 class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @MockitoBean
     private TokenGenerator generator;
@@ -102,7 +101,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    @Disabled
+
     void testRegisterWithInvalidIdentities(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
 
         authenticationStub.assertFailBasedOnInvalidIdentities(client, () -> {

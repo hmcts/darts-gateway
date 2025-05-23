@@ -77,7 +77,7 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    @Disabled
+
     void testBasicAuthorisationRequestFromNotWhitelistedServiceSucceeds(DartsGatewayClient client) throws Exception {
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {

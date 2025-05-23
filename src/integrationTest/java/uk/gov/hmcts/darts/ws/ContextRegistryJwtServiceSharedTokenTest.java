@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
 class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
 
     @MockitoBean
@@ -265,7 +264,6 @@ class ContextRegistryJwtServiceSharedTokenTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    @Disabled
     void testUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws Exception {
 
         when(generator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))

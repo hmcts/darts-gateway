@@ -33,7 +33,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
 class EventWebServiceTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-event.xml") Resource validEvent;
@@ -136,7 +135,7 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    @Disabled
+
     void testRoutesValidEventPayloadWithAuthenticationToken(
         DartsGatewayClient client
     ) throws Exception {

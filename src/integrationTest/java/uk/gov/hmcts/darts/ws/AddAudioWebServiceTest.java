@@ -55,7 +55,6 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings("PMD.UnitTestShouldIncludeAssert")
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
 class AddAudioWebServiceTest extends IntegrationBase {
 
     @MockitoBean

@@ -44,7 +44,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
 class CasesWebServiceTest extends IntegrationBase {
 
     @MockitoBean
@@ -232,7 +231,7 @@ class CasesWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    @Disabled
+
     void testHandlesAddCase(DartsGatewayClient client) throws IOException, JAXBException, InterruptedException {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(

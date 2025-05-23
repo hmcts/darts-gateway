@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
-@Disabled
 class RegisterNodeWebServiceTest extends IntegrationBase {
 
     @MockitoBean
@@ -163,7 +162,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    @Disabled
+
     void handlesRegisterNodeWithAuthenticationTokenRefresh(DartsGatewayClient client) throws Exception {
 
         //when(tokenValidator.test(Mockito.any(),

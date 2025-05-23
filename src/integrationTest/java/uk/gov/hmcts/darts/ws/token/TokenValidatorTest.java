@@ -20,7 +20,6 @@ import uk.gov.hmcts.darts.testutils.request.ContextRequestHelper;
 import java.net.URL;
 
 @ActiveProfiles({"int-test"})
-@Disabled
 class TokenValidatorTest extends IntegrationBase {
 
     @Autowired
@@ -106,7 +105,7 @@ class TokenValidatorTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
-    @Disabled
+
     void checkInvalidIssuer(ContextRegistryClient client) throws Exception {
         runOperationExpectingJwksRefresh(null, (t) -> {
             DartsTokenGenerator generatedToken = DartsTokenGenerator.builder().issuer("invalidIssuer").useExpiredToken(true)
