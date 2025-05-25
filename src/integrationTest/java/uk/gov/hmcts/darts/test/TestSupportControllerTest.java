@@ -7,20 +7,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.darts.cache.AuthSupport;
+import uk.gov.hmcts.darts.cache.AuthenticationCacheService;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 @ActiveProfiles("int-test-jwt-token-shared")
 class TestSupportControllerTest extends IntegrationBase {
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     @Test
 
     void testCleanup() {
         // add a key to the redis cache so we can prove removal
-        String testKey = AuthSupport.CACHE_PREFIX + "testKey";
+        String testKey = AuthenticationCacheService.CACHE_PREFIX + "testKey";
         redisTemplate.opsForValue().set(testKey, "testValue");
 
         // prove key is in the cache

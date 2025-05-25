@@ -323,7 +323,7 @@ public class ContextRegistryParent extends IntegrationBase {
         @Override
         public void run() {
             try {
-                token = ContextRegistryParent.this.registerToken(client);
+                token = registerToken(getGatewayUri(), client, user, SERVICE_CONTEXT_PASSWORD);
                 latch.countDown();
             } catch (Exception e) {
                 throw new AuthenticationFailedException("The register operation errored", e);

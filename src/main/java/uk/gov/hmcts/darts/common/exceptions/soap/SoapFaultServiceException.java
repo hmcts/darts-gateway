@@ -33,6 +33,9 @@ public class SoapFaultServiceException extends RuntimeException {
     }
 
     public static String getMessage(String key, String... args) {
+        if (args == null || args.length == 0) {
+            return BUNDLE.getString(key);
+        }
         return MessageFormat.format(BUNDLE.getString(key), (Object[]) args);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.darts.cache.AuthSupport;
+import uk.gov.hmcts.darts.cache.AuthenticationCacheService;
 
 import java.util.Objects;
 import java.util.Set;
@@ -18,11 +18,11 @@ import java.util.Set;
 @ConditionalOnProperty(prefix = "darts-gateway.testing-support-endpoints", name = "enabled", havingValue = "true")
 public class TestSupportController {
 
-    private final RedisTemplate<String, Object> template;
+    private final RedisTemplate<String, String> template;
 
     @DeleteMapping(value = "/functional-tests/clean")
     public void cleanUpDataAfterFunctionalTests() {
-        deleteKeyByPattern(AuthSupport.CACHE_PREFIX + "*");
+        deleteKeyByPattern(AuthenticationCacheService.CACHE_PREFIX + "*");
     }
 
     public void deleteKeyByPattern(String pattern) {

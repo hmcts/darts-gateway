@@ -52,14 +52,14 @@ class CasesWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_USER);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_USER);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCasesRequestWithAuthenticationFailure(DartsGatewayClient client) throws IOException, TransformerException, InterruptedException {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
@@ -68,7 +68,7 @@ class CasesWebServiceTest extends IntegrationBase {
             client.getCases(getGatewayUri(), soapRequestStr);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -127,7 +127,7 @@ class CasesWebServiceTest extends IntegrationBase {
             SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, GetCasesResponse.class).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(authSupport).validateToken(DEFAULT_TOKEN);
+        verify(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -155,7 +155,7 @@ class CasesWebServiceTest extends IntegrationBase {
             // ensure that the payload logging is turned off for this api call
             Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
@@ -176,7 +176,7 @@ class CasesWebServiceTest extends IntegrationBase {
                 TestUtils.getContentsFromFile("payloads/getCases/courtHouseNotFoundResponse.xml"),
                 ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -199,7 +199,7 @@ class CasesWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, AddCaseResponse.class).getValue());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -218,7 +218,7 @@ class CasesWebServiceTest extends IntegrationBase {
                 client.addCases(getGatewayUri(), soapRequestStr);
             });
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -244,7 +244,7 @@ class CasesWebServiceTest extends IntegrationBase {
             assertTrue(body.contains("\"case_type\":\"1\""));
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -265,7 +265,7 @@ class CasesWebServiceTest extends IntegrationBase {
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error:", null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
     }
@@ -288,7 +288,7 @@ class CasesWebServiceTest extends IntegrationBase {
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
                                                               + "500 Server Error:<html><body>Internal Server Error</body></html>", null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 

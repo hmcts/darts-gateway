@@ -17,8 +17,6 @@ import documentum.contextreg.ServiceContext;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
-import uk.gov.hmcts.darts.common.exceptions.DartsException;
 
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -37,24 +34,24 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
 @Slf4j
-public class AuthSupport {
+public class AuthenticationCacheService {
     public static final String CACHE_PREFIX = "darts-gateway-token-service";
     private final DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final TokenGenerator generator;
     private final Duration durationToExpire;
+    private final JAXBContext jaxbContext = JAXBContext.newInstance(ServiceContext.class);
 
 
-    public AuthSupport(RedisTemplate<String, Object> redisTemplate,
-                       TokenGenerator generator,
-                       SecurityProperties securityProperties,
-                       CacheProperties cacheProperties) throws MalformedURLException, JAXBException {
+    public AuthenticationCacheService(RedisTemplate<String, String> redisTemplate,
+                                      TokenGenerator generator,
+                                      SecurityProperties securityProperties,
+                                      CacheProperties cacheProperties) throws MalformedURLException, JAXBException {
         this.redisTemplate = redisTemplate;
         this.generator = generator;
         this.durationToExpire = Duration.of(cacheProperties.getEntryTimeToIdleSeconds(), ChronoUnit.SECONDS);
@@ -90,8 +87,6 @@ public class AuthSupport {
 
 
     public String getOrCreateValidToken(ServiceContext context) {
-
-
         BasicIdentity basicIdentity = getBasicIdentity(context);
         try {
             return getOrCreateValidToken(basicIdentity.getUserName(), basicIdentity.getPassword());
@@ -101,30 +96,15 @@ public class AuthSupport {
         }
     }
 
-    private BasicIdentity getBasicIdentity(ServiceContext context) {
-        List<Identity> identities = context.getIdentities();
-        if (identities.isEmpty()) {
-            throw new AuthenticationFailedException("Could not get an identity in order to fetch a token");
-        }
-
-        Identity identity = identities.getFirst();
-        if (!(identity instanceof BasicIdentity basicIdentity)) {
-            throw new AuthenticationFailedException("Require basic credentials to get a token");
-        }
-        return basicIdentity;
-    }
-
 
     public String getOrCreateValidToken(String username, String password) {
-        System.out.println("TMP: Getting or creating valid token for user: " + username + " and password: " + password);
         return getOrCreateValidToken(username, password, false);
     }
-
 
     public String getOrCreateValidToken(String username, String password, boolean isRetry) {
         String redisKey = createCacheRedisKey(username, password);
         try {
-            String token = (String) redisTemplate.opsForValue().get(redisKey);
+            String token = redisTemplate.opsForValue().get(redisKey);
             if (token == null) {
                 token = createToken(username, password);
                 redisTemplate.opsForValue().set(redisKey, token, durationToExpire);
@@ -156,17 +136,17 @@ public class AuthSupport {
 
     public void validateToken(String token) {
         try {
-            System.out.println("TMP: Validating JWT Token: " + token);
             jwtProcessor.process(token, null);
         } catch (ParseException | JOSEException | BadJOSEException e) {
             log.error("JWT Token Validation failed", e);
-            throw new AuthenticationFailedException(e);
+            throw new AuthenticationFailedException("JWT Token Validation failed", e);
         }
     }
 
     public void storeTokenContext(String token, ServiceContext context) {
         String redisKey = createServiceContextRedisKey(token);
         try {
+            //Set the service context in Redis with an expiration time
             redisTemplate.opsForValue().set(redisKey, serviceContextCacheValue(context), durationToExpire);
         } catch (Exception e) {
             log.error("Error storing service context in Redis", e);
@@ -174,34 +154,41 @@ public class AuthSupport {
         }
     }
 
-
-    private final JAXBContext jaxbContext = JAXBContext.newInstance(ServiceContext.class);
-    private final Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-    final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
-
     public String serviceContextCacheValue(ServiceContext context) {
         try {
-            JAXBElement<ServiceContext> serviceContextJAXBElement = new ObjectFactory().createServiceContext(context);
+            JAXBElement<ServiceContext> serviceContextJaxbElement = new ObjectFactory().createServiceContext(context);
             StringWriter stringWriter = new StringWriter();
-            jaxbMarshaller.marshal(serviceContextJAXBElement, stringWriter);
+            jaxbContext.createMarshaller().marshal(serviceContextJaxbElement, stringWriter);
             return stringWriter.toString();
-        } catch (JAXBException e) {
+        } catch (Exception e) {
             throw new AuthenticationFailedException("Failed to marshal ServiceContext", e);
         }
     }
 
     public ServiceContext getServiceContextFromToken(String token) {
-        Object serviceContext = redisTemplate.opsForValue().get(createServiceContextRedisKey(token));
+        //Get the cached value and reset its expiration time
+        String serviceContext = redisTemplate.opsForValue().getAndExpire(createServiceContextRedisKey(token), durationToExpire);
         if (serviceContext == null) {
             throw new AuthenticationFailedException("Service context not found");
         }
-        String contextString = String.valueOf(serviceContext);
         try {
-            StringSource stringSource = new StringSource(contextString);
-            return jaxbUnmarshaller.unmarshal(stringSource, ServiceContext.class).getValue();
-        } catch (JAXBException e) {
+            StringSource stringSource = new StringSource(serviceContext);
+            return jaxbContext.createUnmarshaller().unmarshal(stringSource, ServiceContext.class).getValue();
+        } catch (Exception e) {
             throw new AuthenticationFailedException("Failed to unmarshal ServiceContext", e);
         }
+    }
+
+    private BasicIdentity getBasicIdentity(ServiceContext context) {
+        List<Identity> identities = context.getIdentities();
+        if (identities.isEmpty()) {
+            throw new AuthenticationFailedException("Could not get an identity in order to fetch a token");
+        }
+
+        Identity identity = identities.getFirst();
+        if (!(identity instanceof BasicIdentity basicIdentity)) {
+            throw new AuthenticationFailedException("Require basic credentials to get a token");
+        }
+        return basicIdentity;
     }
 }

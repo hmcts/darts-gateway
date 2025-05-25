@@ -3,14 +3,11 @@ package uk.gov.hmcts.darts.ws;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import uk.gov.hmcts.darts.cache.AuthSupport;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
@@ -26,10 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
 class BasicAuthorisationTest extends ContextRegistryParent {
@@ -44,13 +38,13 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken("not_whitelisted_service", DEFAULT_HEADER_PASSWORD);
-        doReturn(CONTEXT_REGISTRY_TOKEN).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_USER);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken("not_whitelisted_service", DEFAULT_HEADER_PASSWORD);
+        doReturn(CONTEXT_REGISTRY_TOKEN).when(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_USER);
 
-        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
-        doNothing().when(authSupport).validateToken(CONTEXT_REGISTRY_TOKEN);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
+        doNothing().when(authenticationCacheService).validateToken(CONTEXT_REGISTRY_TOKEN);
     }
 
     @ParameterizedTest
@@ -89,7 +83,7 @@ class BasicAuthorisationTest extends ContextRegistryParent {
             client.getCases(getGatewayUri(), soapRequestStr);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
     }

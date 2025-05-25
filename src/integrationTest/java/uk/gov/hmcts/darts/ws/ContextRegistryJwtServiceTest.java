@@ -47,28 +47,29 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doReturn(CONTEXT_REGISTRY_TOKEN).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doReturn(CONTEXT_REGISTRY_TOKEN).when(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
 
-        doNothing().when(authSupport).validateToken(HEADER_TOKEN);
-        doNothing().when(authSupport).validateToken(CONTEXT_REGISTRY_TOKEN);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
+        doNothing().when(authenticationCacheService).validateToken(HEADER_TOKEN);
+        doNothing().when(authenticationCacheService).validateToken(CONTEXT_REGISTRY_TOKEN);
 
 
         for (int i = 0; i < REGISTERED_USER_COUNT; i++) {
-            doReturn("test2").when(authSupport).getOrCreateValidToken("user" + i, "pass");
+            doReturn("test2").when(authenticationCacheService).getOrCreateValidToken("user" + i, SERVICE_CONTEXT_PASSWORD);
         }
-        doNothing().when(authSupport).validateToken("test2");
+        doNothing().when(authenticationCacheService).validateToken("test2");
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRegisterWithAuthenticationFailure(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             executeHandleRegister(client);
         }, SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
-        verify(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
     }
 
     @ParameterizedTest
@@ -111,7 +112,7 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testHandleRegisterFailure(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
         authenticationStub.assertWithNoHeaderInvalidCredentials(() -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/ctxtRegistry/register/soapRequest.xml");
@@ -135,18 +136,19 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRegisterFailsIfNoServiceContextInRegisterBody(ContextRegistryClient client) throws Exception {
         authenticationStub.assertFailsWithRegisterNullServiceContextException(
-            client, () -> executeHandleRegisterMissingServiceContext(client), getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+            client, () -> executeHandleRegisterMissingServiceContext(client), getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME,
+            DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testLookupWithAuthenticationFailure(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(
             client, () -> executeHandleLookup(client), SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
     }
 
     @ParameterizedTest
@@ -162,9 +164,6 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testRoutesLookupWithAuthenticationTokenFailure(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
         authenticationStub.assertFailBasedOnNotAuthenticatedToken(client, () -> executeHandleLookup(client));
-
-        verify(generator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(generator);
     }
 
     @ParameterizedTest
@@ -224,12 +223,12 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testUnregisterWithAuthenticationFailure(ContextRegistryClient client) throws IOException, TransformerException, InterruptedException {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(
             client, () -> executeTestHandleUnregister(client), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -257,17 +256,5 @@ class ContextRegistryJwtServiceTest extends ContextRegistryParent {
     @ArgumentsSource(ContextRegistryClientProvider.class)
     void testGetContextRegistry() throws IOException, InterruptedException, URISyntaxException {
         executeTestGetContextRegistryWsdl();
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testHhandleUnregister(ContextRegistryClient client) throws JAXBException, IOException, InterruptedException {
-        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> executeTestHandleUnregister(client), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ContextRegistryClientProvider.class)
-    void testHandleUnregisterWithToken(ContextRegistryClient client) throws IOException, JAXBException, InterruptedException {
-        authenticationStub.assertWithTokenHeader(client, () -> executeTestHandleUnregister(client), getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 }

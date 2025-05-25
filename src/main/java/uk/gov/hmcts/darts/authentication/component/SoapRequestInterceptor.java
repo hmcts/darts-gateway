@@ -23,7 +23,7 @@ import org.springframework.ws.soap.server.SoapEndpointInterceptor;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
-import uk.gov.hmcts.darts.cache.AuthSupport;
+import uk.gov.hmcts.darts.cache.AuthenticationCacheService;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.log.conf.ExcludePayloadLogging;
 import uk.gov.hmcts.darts.log.conf.LogProperties;
@@ -46,7 +46,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
     private static final String SECURITY_HEADER = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security";
     private static final String JSESSIONID_KEY = "JSESSIONID";
 
-    private final AuthSupport authSupport;
+    private final AuthenticationCacheService authenticationCacheService;
 
     private final SoapHeaderConverter soapHeaderConverter;
     private final SoapBodyConverter soapBodyConverter;
@@ -107,7 +107,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
             SoapHeaderElement securityTokenElement = securityToken.next();
             tokenToReturn = soapHeaderConverter.convertSoapHeaderToToken(securityTokenElement);
             String token = tokenToReturn.orElse("N/K");
-            authSupport.validateToken(token);
+            authenticationCacheService.validateToken(token);
             setupToken(token);
         }
         if (tokenToReturn.isEmpty()) {
@@ -123,6 +123,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
     }
 
+    @SuppressWarnings("PMD.AvoidRethrowingException")//Required to rethrow specific exceptions preventing complex exception nesting
     private void authenticateUsernameAndPasswordFromBody(SaajSoapMessage message) {
         Optional<ServiceContext> serviceContextOpt = soapBodyConverter.getServiceContext(message);
         if (serviceContextOpt.isEmpty()) {
@@ -130,11 +131,9 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
         try {
             getAuthenticationToken(message, serviceContextOpt.get());
+        } catch (NoIdentitiesFoundException | InvalidIdentitiesFoundException e) {
+            throw e; // rethrow the specific exceptions
         } catch (Exception exception) {
-            if (exception instanceof NoIdentitiesFoundException
-                || exception instanceof InvalidIdentitiesFoundException) {
-                throw exception;
-            }
             throw new AuthenticationFailedException(exception);
         }
     }
@@ -188,7 +187,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         verifyBasicAuthorisationRequestIsAllowed(basicIdentityOptional.get().getUserName(), message);
 
         BasicIdentity basicIdentity = basicIdentityOptional.get();
-        setupToken(authSupport.getOrCreateValidToken(basicIdentity.getUserName(), basicIdentity.getPassword()));
+        setupToken(authenticationCacheService.getOrCreateValidToken(basicIdentity.getUserName(), basicIdentity.getPassword()));
     }
 
     private boolean identitiesPresent(SoapHeaderElement soapHeader) {

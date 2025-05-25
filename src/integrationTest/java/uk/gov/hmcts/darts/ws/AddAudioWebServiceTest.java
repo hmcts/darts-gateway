@@ -73,15 +73,15 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
         when(dataManagementService.saveBlobData(any(), any(), any())).thenReturn(uuid);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesAddAudioRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
@@ -99,7 +99,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             client.addAudio(getGatewayUri(), soapRequestStr);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        Mockito.verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 

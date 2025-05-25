@@ -53,18 +53,18 @@ class EventWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
 
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(ContextRegistryParent.SERVICE_CONTEXT_USER,
-                                                                        ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
-        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(ContextRegistryParent.SERVICE_CONTEXT_USER,
+                                                                                       ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesAddDocumentRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             theEventApi.willRespondSuccessfully();
@@ -79,7 +79,7 @@ class EventWebServiceTest extends IntegrationBase {
                 AddDocumentResponse.class
             ).getValue());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -147,7 +147,7 @@ class EventWebServiceTest extends IntegrationBase {
 
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-request.json");
 
-        verify(authSupport).validateToken(DEFAULT_TOKEN);
+        verify(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -182,7 +182,7 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
                             .withHeader("Authorization", new RegexPattern("Bearer " + DEFAULT_TOKEN)));
 
-        verify(authSupport).validateToken(DEFAULT_TOKEN);
+        verify(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -211,7 +211,7 @@ class EventWebServiceTest extends IntegrationBase {
         // ensure that the payload logging is turned off for this api call
         Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-request.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -240,7 +240,7 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-with-retention-request.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -266,7 +266,7 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -292,7 +292,7 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -311,7 +311,7 @@ class EventWebServiceTest extends IntegrationBase {
             theEventApi.verifyDoesntReceiveEvent();
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -340,7 +340,7 @@ class EventWebServiceTest extends IntegrationBase {
         dailyListApiStub.verifyPostRequest();
         dailyListApiStub.verifyPatchRequest();
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -357,7 +357,7 @@ class EventWebServiceTest extends IntegrationBase {
             });
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -374,7 +374,7 @@ class EventWebServiceTest extends IntegrationBase {
                 ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -392,7 +392,7 @@ class EventWebServiceTest extends IntegrationBase {
                 ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -418,7 +418,7 @@ class EventWebServiceTest extends IntegrationBase {
 
         dailyListApiStub.verifyPostRequestWithoutLineBreaks();
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest

@@ -21,6 +21,7 @@ public class AuthenticationFailedException extends SoapFaultServiceException {
     }
 
     public AuthenticationFailedException(String message, Throwable cause) {
-        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause, message);
+        super(FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause,
+              message == null ? "Please review the identities provided" : message);
     }
 }

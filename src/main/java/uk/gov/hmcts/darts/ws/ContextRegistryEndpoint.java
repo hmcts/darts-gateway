@@ -14,14 +14,14 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.authentication.exception.RegisterNullServiceContextException;
-import uk.gov.hmcts.darts.cache.AuthSupport;
+import uk.gov.hmcts.darts.cache.AuthenticationCacheService;
 
 @Endpoint
 @Slf4j
 @AllArgsConstructor
 public class ContextRegistryEndpoint {
 
-    private final AuthSupport authSupport;
+    private final AuthenticationCacheService authenticationCacheService;
 
 
     @PayloadRoot(namespace = "http://services.rt.fs.documentum.emc.com/", localPart = "register")
@@ -33,8 +33,8 @@ public class ContextRegistryEndpoint {
         RegisterResponse registerResponse = new RegisterResponse();
 
         try {
-            String token = authSupport.getOrCreateValidToken(register.getValue().getContext());
-            authSupport.storeTokenContext(token, register.getValue().getContext());
+            String token = authenticationCacheService.getOrCreateValidToken(register.getValue().getContext());
+            authenticationCacheService.storeTokenContext(token, register.getValue().getContext());
             registerResponse.setReturn(token);
         } catch (AuthenticationFailedException cte) {
             log.warn("Failed creation of token", cte);
@@ -54,7 +54,11 @@ public class ContextRegistryEndpoint {
     @ResponsePayload
     public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> lookup) {
         LookupResponse lookupResponse = new LookupResponse();
-        lookupResponse.setReturn(authSupport.getServiceContextFromToken(lookup.getValue().getToken()));
+        try {
+            lookupResponse.setReturn(authenticationCacheService.getServiceContextFromToken(lookup.getValue().getToken()));
+        } catch (Exception e) {
+            log.error("Failed to lookup service context for token: {}", lookup.getValue().getToken(), e);
+        }
         return new ObjectFactory().createLookupResponse(lookupResponse);
     }
 

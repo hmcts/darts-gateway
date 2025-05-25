@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import uk.gov.hmcts.darts.cache.AuthSupport;
+import uk.gov.hmcts.darts.cache.AuthenticationCacheService;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.conf.RedisConfiguration;
@@ -55,7 +55,7 @@ import java.util.Map;
 public class IntegrationBase implements CommandHolder {
 
     @MockitoSpyBean
-    protected AuthSupport authSupport;
+    protected AuthenticationCacheService authenticationCacheService;
 
     protected PostCasesApiStub postCasesApiStub = new PostCasesApiStub();
     protected EventApiStub theEventApi = new EventApiStub();
@@ -85,7 +85,7 @@ public class IntegrationBase implements CommandHolder {
     private static String localhost;
 
     @Autowired
-    protected RedisTemplate<String, Object> template;
+    protected RedisTemplate<String, String> template;
 
     @Autowired
     protected SecurityProperties securityProperties;
@@ -102,7 +102,7 @@ public class IntegrationBase implements CommandHolder {
 
     @BeforeEach
     void clearStubs() {
-        authenticationStub.setAuthSupport(authSupport);
+        authenticationStub.setAuthenticationCacheService(authenticationCacheService);
         template.getConnectionFactory().getConnection().flushAll();
 
         WireMock.reset();

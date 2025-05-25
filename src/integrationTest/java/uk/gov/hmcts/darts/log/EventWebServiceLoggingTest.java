@@ -32,8 +32,8 @@ class EventWebServiceLoggingTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest

@@ -22,10 +22,12 @@ public class MemoryLogAppender extends AppenderBase<ILoggingEvent> {
 
     public List<ILoggingEvent> searchLogs(String searchString, String causeMessage, Level level) {
         try {
+            final String searchStringFinal;
             if (searchString.endsWith("{}")) {
-                searchString = searchString.substring(0, searchString.length() - 2);
+                searchStringFinal = searchString.substring(0, searchString.length() - 2);
+            } else {
+                searchStringFinal = searchString;
             }
-            final String searchStringFinal = searchString;
             instanceLock.lock();
             return GENERAL_LOGS.stream()
                 .filter(event -> event.toString().contains(searchStringFinal)

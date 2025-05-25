@@ -60,14 +60,14 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesGetCourtLogsRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             List<CourtLog> dartsApiCourtLogsResponse = someListOfCourtLog(3);
@@ -80,7 +80,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             );
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -143,7 +143,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
         courtLogsApi.verifyReceivedGetCourtLogsRequestFor(SOME_COURTHOUSE, "some-case");
 
-        verify(authSupport).validateToken(DEFAULT_TOKEN);
+        verify(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -179,7 +179,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         WireMock.verify(getRequestedFor(urlMatching("/courtlogs.*"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -198,7 +198,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         courtLogsApi.verifyDoesntReceiveRequest();
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -216,7 +216,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             assertEquals("200", response.getResponse().getValue().getReturn().getCode());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -232,7 +232,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -248,7 +248,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         postCourtLogsApi.verifyDoesntReceiveRequest();
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
 

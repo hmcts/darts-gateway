@@ -41,15 +41,16 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
     @BeforeEach
     public void before() {
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER);
-        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService)
+            .getOrCreateValidToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void routesRegisterNodeRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doThrow(new AuthenticationFailedException()).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
@@ -70,7 +71,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -121,7 +122,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
 
         });
-        verify(authSupport, never()).getOrCreateValidToken(any(), any());
+        verify(authenticationCacheService, never()).getOrCreateValidToken(any(), any());
     }
 
     @ParameterizedTest
@@ -146,7 +147,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).validateToken(DEFAULT_TOKEN);
+        verify(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -177,7 +178,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
         WireMock.verify(postRequestedFor(urlPathEqualTo("/register-devices"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -200,7 +201,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             });
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
 }
