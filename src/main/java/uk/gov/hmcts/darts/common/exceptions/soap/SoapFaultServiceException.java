@@ -29,6 +29,11 @@ public class SoapFaultServiceException extends RuntimeException {
             serviceExceptionType.addHolderCause(getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), arg),
                                                 FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause, arg
             );
+        } else {
+            serviceExceptionType.addHolderCause(((SoapFaultServiceException) cause).getServiceExceptionType().getMessage(),
+                                                ((SoapFaultServiceException) cause).getServiceExceptionType().getMessageId(),
+                                                cause, arg
+            );
         }
     }
 
