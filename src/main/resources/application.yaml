@@ -159,4 +159,4 @@ logging:
       springframework:
         data:
           redis: trace
-    root: info
+    root: ${DARTS_LOG_LEVEL:info}

@@ -21,21 +21,18 @@ public class SoapFaultServiceException extends RuntimeException {
         super(getMessage(code.name(), arg), cause);
         serviceExceptionType = new ServiceExceptionType(code.name(), this, arg);
 
-        if (cause != null) {
-            if (cause != null && !(cause instanceof SoapFaultServiceException)) {
-                serviceExceptionType.addHolderCause(getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), arg),
-                                               FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause, arg
-                );
-            } else if (cause instanceof SoapFaultServiceException) {
-                serviceExceptionType.addHolderCause(((SoapFaultServiceException) cause).getServiceExceptionType().getMessage(),
-                                               ((SoapFaultServiceException) cause).getServiceExceptionType().getMessageId(),
-                                               cause, arg
-                );
-            }
+        if (cause == null) {
+            return;
+        }
+
+        if (!(cause instanceof SoapFaultServiceException)) {
+            serviceExceptionType.addHolderCause(getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), arg),
+                                                FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause, arg
+            );
         }
     }
 
     public static String getMessage(String key, String... args) {
-        return MessageFormat.format(BUNDLE.getString(key), (Object[])args);
+        return MessageFormat.format(BUNDLE.getString(key), (Object[]) args);
     }
 }

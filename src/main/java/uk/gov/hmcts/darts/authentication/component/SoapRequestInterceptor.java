@@ -131,6 +131,10 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         try {
             getAuthenticationToken(message, serviceContextOpt.get());
         } catch (Exception exception) {
+            if (exception instanceof NoIdentitiesFoundException
+                || exception instanceof InvalidIdentitiesFoundException) {
+                throw exception;
+            }
             throw new AuthenticationFailedException(exception);
         }
     }

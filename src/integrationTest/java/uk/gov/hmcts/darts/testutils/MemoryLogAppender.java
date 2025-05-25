@@ -20,11 +20,15 @@ public class MemoryLogAppender extends AppenderBase<ILoggingEvent> {
     }
 
 
-    public List<ILoggingEvent> searchLogs(String string, String causeMessage, Level level) {
+    public List<ILoggingEvent> searchLogs(String searchString, String causeMessage, Level level) {
         try {
+            if (searchString.endsWith("{}")) {
+                searchString = searchString.substring(0, searchString.length() - 2);
+            }
+            final String searchStringFinal = searchString;
             instanceLock.lock();
             return GENERAL_LOGS.stream()
-                .filter(event -> event.toString().contains(string)
+                .filter(event -> event.toString().contains(searchStringFinal)
                     && causeMessage == null || causeMessage != null && event.getThrowableProxy() != null
                     && event.getThrowableProxy().getMessage().contains(causeMessage)
                     && level == null || level != null && level.equals(event.getLevel()))

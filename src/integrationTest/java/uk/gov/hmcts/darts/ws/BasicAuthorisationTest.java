@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,6 +24,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -36,24 +39,18 @@ class BasicAuthorisationTest extends ContextRegistryParent {
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
-    @MockitoBean
-    private AuthSupport authSupport;
-
     @Autowired
     private CacheProperties properties;
 
     @BeforeEach
     public void before() {
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD)).thenReturn("test");
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(mockOauthTokenGenerator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_USER)).thenReturn("test");
-        when(mockOauthTokenGenerator.acquireNewToken("not_whitelisted_service", DEFAULT_HEADER_PASSWORD)).thenReturn("test");
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(mockOauthTokenGenerator.acquireNewToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD)).thenReturn(CONTEXT_REGISTRY_TOKEN);
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq(CONTEXT_REGISTRY_TOKEN))).thenReturn(true);
+        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken("not_whitelisted_service", DEFAULT_HEADER_PASSWORD);
+        doReturn(CONTEXT_REGISTRY_TOKEN).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(SERVICE_CONTEXT_USER, SERVICE_CONTEXT_USER);
+
+        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
+        doNothing().when(authSupport).validateToken(CONTEXT_REGISTRY_TOKEN);
     }
 
     @ParameterizedTest
@@ -77,7 +74,6 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-
     void testBasicAuthorisationRequestFromNotWhitelistedServiceSucceeds(DartsGatewayClient client) throws Exception {
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
@@ -92,8 +88,8 @@ class BasicAuthorisationTest extends ContextRegistryParent {
 
             client.getCases(getGatewayUri(), soapRequestStr);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         WireMock.verify(getRequestedFor(urlPathEqualTo("/cases"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
     }

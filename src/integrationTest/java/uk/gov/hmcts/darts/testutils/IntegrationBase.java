@@ -15,7 +15,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import uk.gov.hmcts.darts.cache.AuthSupport;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 import uk.gov.hmcts.darts.conf.RedisConfiguration;
@@ -52,6 +54,9 @@ import java.util.Map;
 @TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE", "DARTS_LOG_LEVEL=TRACE"})
 public class IntegrationBase implements CommandHolder {
 
+    @MockitoSpyBean
+    protected AuthSupport authSupport;
+
     protected PostCasesApiStub postCasesApiStub = new PostCasesApiStub();
     protected EventApiStub theEventApi = new EventApiStub();
     protected DailyListApiStub dailyListApiStub = new DailyListApiStub();
@@ -68,6 +73,8 @@ public class IntegrationBase implements CommandHolder {
     protected static final String DEFAULT_REGISTER_USERNAME = "user";
 
     protected static final String DEFAULT_REGISTER_PASSWORD = "pass";
+    protected static final String DEFAULT_TOKEN = "test";
+
 
     @Value("${local.server.port}")
     protected int port;
@@ -95,6 +102,7 @@ public class IntegrationBase implements CommandHolder {
 
     @BeforeEach
     void clearStubs() {
+        authenticationStub.setAuthSupport(authSupport);
         template.getConnectionFactory().getConnection().flushAll();
 
         WireMock.reset();

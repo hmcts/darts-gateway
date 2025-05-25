@@ -6,7 +6,6 @@ import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddDocumentResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
-import uk.gov.hmcts.darts.cache.AuthSupport;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
@@ -27,6 +26,9 @@ import java.nio.charset.Charset;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -49,27 +51,20 @@ class EventWebServiceTest extends IntegrationBase {
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
-    @MockitoBean
-    private AuthSupport authSupport;
-
     @BeforeEach
     public void before() {
-        //when(authSupport.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        //when(authSupport.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
+        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
 
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
-            .thenReturn("test");
-
-        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD))
-            .thenReturn("test");
+        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(ContextRegistryParent.SERVICE_CONTEXT_USER,
+                                                                        ContextRegistryParent.SERVICE_CONTEXT_PASSWORD);
+        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testRoutesAddDocumentRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
-            .thenThrow(new RuntimeException());
+        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             theEventApi.willRespondSuccessfully();
@@ -84,9 +79,7 @@ class EventWebServiceTest extends IntegrationBase {
                 AddDocumentResponse.class
             ).getValue());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -135,7 +128,6 @@ class EventWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-
     void testRoutesValidEventPayloadWithAuthenticationToken(
         DartsGatewayClient client
     ) throws Exception {
@@ -155,8 +147,7 @@ class EventWebServiceTest extends IntegrationBase {
 
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-request.json");
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -189,10 +180,9 @@ class EventWebServiceTest extends IntegrationBase {
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
-                            .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
+                            .withHeader("Authorization", new RegexPattern("Bearer " + DEFAULT_TOKEN)));
 
-        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -221,7 +211,7 @@ class EventWebServiceTest extends IntegrationBase {
         // ensure that the payload logging is turned off for this api call
         Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-request.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -250,7 +240,7 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/events"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         theEventApi.verifyPostRequest("payloads/events/valid-event-api-with-retention-request.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -276,7 +266,7 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -302,7 +292,7 @@ class EventWebServiceTest extends IntegrationBase {
         WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addDocument"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         postCasesApiStub.verifyPostRequest("payloads/events/valid-case-api.json");
 
         verifyNoMoreInteractions(mockOauthTokenGenerator);
@@ -321,8 +311,7 @@ class EventWebServiceTest extends IntegrationBase {
             theEventApi.verifyDoesntReceiveEvent();
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -351,8 +340,7 @@ class EventWebServiceTest extends IntegrationBase {
         dailyListApiStub.verifyPostRequest();
         dailyListApiStub.verifyPatchRequest();
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -369,8 +357,7 @@ class EventWebServiceTest extends IntegrationBase {
             });
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -387,8 +374,7 @@ class EventWebServiceTest extends IntegrationBase {
                 ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -406,8 +392,7 @@ class EventWebServiceTest extends IntegrationBase {
                 ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -433,8 +418,7 @@ class EventWebServiceTest extends IntegrationBase {
 
         dailyListApiStub.verifyPostRequestWithoutLineBreaks();
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest

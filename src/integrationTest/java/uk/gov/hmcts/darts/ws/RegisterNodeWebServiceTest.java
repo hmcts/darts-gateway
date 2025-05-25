@@ -5,14 +5,13 @@ import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.RegisterNodeResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
-import uk.gov.hmcts.darts.cache.AuthSupport;
+import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
@@ -25,10 +24,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ActiveProfiles("int-test-jwt-token-shared")
 class RegisterNodeWebServiceTest extends IntegrationBase {
@@ -36,27 +39,17 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
-    @MockitoBean
-    private AuthSupport authSupport;
-
     @BeforeEach
     public void before() {
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        //when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
-            .thenReturn("test");
-
-        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER))
-            .thenReturn("test");
+        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doReturn(DEFAULT_TOKEN).when(authSupport).getOrCreateValidToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_USER);
+        doNothing().when(authSupport).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void routesRegisterNodeRequestWithAuthenticationFailure(DartsGatewayClient client) throws Exception {
-
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
-            .thenThrow(new RuntimeException());
+        doThrow(new AuthenticationFailedException()).when(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         authenticationStub.assertFailBasedOnNotAuthenticatedForUsernameAndPassword(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(
@@ -77,8 +70,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -129,9 +121,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
 
         });
-
-        verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport, never()).getOrCreateValidToken(any(), any());
     }
 
     @ParameterizedTest
@@ -156,51 +146,12 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).validateToken(DEFAULT_TOKEN);
     }
-
-    @ParameterizedTest
-    @ArgumentsSource(DartsClientProvider.class)
-
-    void handlesRegisterNodeWithAuthenticationTokenRefresh(DartsGatewayClient client) throws Exception {
-
-        //when(tokenValidator.test(Mockito.any(),
-        //                             Mockito.eq("downstreamtoken"))).thenReturn(true);
-
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
-            .thenReturn("downstreamtoken", "test", "downstreamrefresh", "downstreamrefreshoutsidecache");
-
-        authenticationStub.assertWithTokenHeader(client, () -> {
-            String soapRequestStr = TestUtils.getContentsFromFile(
-                "payloads/registernode/soapRequest.xml");
-
-            String dartsApiResponseStr = TestUtils.getContentsFromFile(
-                "payloads/registernode/dartsApiResponse.json");
-
-            stubFor(post(urlPathEqualTo("/register-devices"))
-                        .willReturn(ok(dartsApiResponseStr).withHeader("Content-Type", "application/json")));
-
-            String expectedResponseStr = TestUtils.getContentsFromFile(
-                "payloads/registernode/expectedResponse.xml");
-
-            //    when(tokenValidator.test(Mockito.any(), Mockito.eq("downstreamtoken"))).thenReturn(false);
-
-            SoapAssertionUtil<RegisterNodeResponse> response = client.registerNode(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalResponse(client.convertData(expectedResponseStr, RegisterNodeResponse.class).getValue());
-        }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-
-        WireMock.verify(postRequestedFor(urlPathEqualTo("/register-devices"))
-                            .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
-        verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
-    }
-
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
     void testHandlesRegisterNode(DartsGatewayClient client) throws Exception {
-
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
 
             String soapRequestStr = TestUtils.getContentsFromFile(
@@ -226,8 +177,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
 
         WireMock.verify(postRequestedFor(urlPathEqualTo("/register-devices"))
                             .withHeader("Authorization", new RegexPattern("Bearer test")));
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
     @ParameterizedTest
@@ -250,8 +200,7 @@ class RegisterNodeWebServiceTest extends IntegrationBase {
             });
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
+        verify(authSupport).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
     }
 
 }

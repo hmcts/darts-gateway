@@ -34,6 +34,7 @@ public class ContextRegistryEndpoint {
 
         try {
             String token = authSupport.getOrCreateValidToken(register.getValue().getContext());
+            authSupport.storeTokenContext(token, register.getValue().getContext());
             registerResponse.setReturn(token);
         } catch (AuthenticationFailedException cte) {
             log.warn("Failed creation of token", cte);
@@ -53,7 +54,7 @@ public class ContextRegistryEndpoint {
     @ResponsePayload
     public JAXBElement<LookupResponse> lookup(@RequestPayload JAXBElement<documentum.contextreg.Lookup> lookup) {
         LookupResponse lookupResponse = new LookupResponse();
-
+        lookupResponse.setReturn(authSupport.getServiceContextFromToken(lookup.getValue().getToken()));
         return new ObjectFactory().createLookupResponse(lookupResponse);
     }
 
