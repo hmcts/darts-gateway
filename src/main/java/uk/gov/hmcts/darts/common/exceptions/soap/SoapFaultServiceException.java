@@ -25,15 +25,13 @@ public class SoapFaultServiceException extends RuntimeException {
             return;
         }
 
-        if (!(cause instanceof SoapFaultServiceException)) {
-            serviceExceptionType.addHolderCause(getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), arg),
-                                                FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause, arg
-            );
+        if (cause instanceof SoapFaultServiceException soapFaultServiceException) {
+            serviceExceptionType.addHolderCause(soapFaultServiceException.getServiceExceptionType().getMessage(),
+                                                soapFaultServiceException.getServiceExceptionType().getMessageId(),
+                                                cause, arg);
         } else {
-            serviceExceptionType.addHolderCause(((SoapFaultServiceException) cause).getServiceExceptionType().getMessage(),
-                                                ((SoapFaultServiceException) cause).getServiceExceptionType().getMessageId(),
-                                                cause, arg
-            );
+            serviceExceptionType.addHolderCause(getMessage(FaultErrorCodes.E_UNKNOWN_TOKEN.name(), arg),
+                                                FaultErrorCodes.E_UNKNOWN_TOKEN.name(), cause, arg);
         }
     }
 
