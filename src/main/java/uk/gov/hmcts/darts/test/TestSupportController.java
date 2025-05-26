@@ -3,13 +3,14 @@ package uk.gov.hmcts.darts.test;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.darts.cache.AuthenticationCacheService;
 
-import java.util.Objects;
-import java.util.Set;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,13 +23,21 @@ public class TestSupportController {
 
     @DeleteMapping(value = "/functional-tests/clean")
     public void cleanUpDataAfterFunctionalTests() {
-        deleteKeyByPattern(AuthenticationCacheService.CACHE_PREFIX + "*");
+        deleteKeyByPattern(AuthenticationCacheService.CACHE_PREFIX + ":*");
     }
 
     public void deleteKeyByPattern(String pattern) {
-        Set<byte[]> patternResultConf = template.getConnectionFactory().getConnection().keys(pattern.getBytes());
-        if (Objects.nonNull(patternResultConf) && !patternResultConf.isEmpty()) {
-            template.getConnectionFactory().getConnection().del(patternResultConf.toArray(new byte[0][]));
+        List<String> keys;
+        try (Cursor<String> cursor = template.scan(
+            ScanOptions.scanOptions()
+                .match(pattern)
+                .build())) {
+            keys = cursor.stream().toList();
         }
+        log.info("Found {} redis keys matching pattern '{}'", keys.size(), pattern);
+        keys.forEach(s -> {
+            log.info("Deleting redis key: {}", s);
+            template.delete(s);
+        });
     }
 }
