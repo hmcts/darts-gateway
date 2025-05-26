@@ -42,6 +42,7 @@ class DisablingDarPcNotificationTest {
 
 
     @Test
+
     void shouldNotSendDarNotifyEventWhenNotificationsDisabled() throws Exception {
         mockMvc.perform(post("/events/dar-notify")
                             .contentType(APPLICATION_JSON_VALUE)

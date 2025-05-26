@@ -5,7 +5,10 @@ import com.emc.documentum.fs.rt.DfsExceptionHolder;
 import com.emc.documentum.fs.rt.ServiceContextLookupException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.xml.transform.StringSource;
@@ -13,6 +16,7 @@ import uk.gov.hmcts.darts.authentication.exception.AuthenticationFailedException
 import uk.gov.hmcts.darts.authentication.exception.InvalidIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.NoIdentitiesFoundException;
 import uk.gov.hmcts.darts.authentication.exception.RegisterNullServiceContextException;
+import uk.gov.hmcts.darts.cache.AuthenticationCacheService;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
 import uk.gov.hmcts.darts.common.exceptions.soap.FaultErrorCodes;
 import uk.gov.hmcts.darts.common.exceptions.soap.SoapFaultServiceException;
@@ -34,12 +38,17 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import static org.mockito.Mockito.lenient;
+
+@TestComponent
 public class AuthenticationAssertion {
 
     private static final String EXPECTED_DOCUMENTUM_LOOKUP_CLASS = "com.emc.documentum.fs.rt.ServiceContextLookupException";
+    @Setter
+    private AuthenticationCacheService authenticationCacheService;
 
     void runBlock(GeneralRunnableOperationWithException runnable, Class<?> ex,
-                  FaultErrorCodes expectedFaultCode, FaultErrorCodes expectedFaultCodeCause, String invalidToken)
+                  FaultErrorCodes expectedFaultCode, FaultErrorCodes expectedFaultCodeCause, String messageArgs)
         throws IOException, TransformerException, InterruptedException {
         try {
             runnable.run();
@@ -52,7 +61,7 @@ public class AuthenticationAssertion {
                 Assertions.assertEquals(EXPECTED_DOCUMENTUM_LOOKUP_CLASS, ServiceContextLookupException.class.getCanonicalName());
             }
 
-            assertErrorResponse(e, ex, expectedFaultCode, expectedFaultCodeCause, invalidToken);
+            assertErrorResponse(e,ex, expectedFaultCode, expectedFaultCodeCause, messageArgs);
         } catch (JAXBException e) {
             Assertions.fail("JAXBException, never expect to get here");
         }
@@ -71,12 +80,14 @@ public class AuthenticationAssertion {
 
         String token = ContextRegistryParent.registerToken(baseUrl, contextClient, userName, password);
 
+        lenient().doNothing().when(authenticationCacheService).validateToken(token);
+
         soapHeaderServiceContextStr = TestUtils.getContentsFromFile(
             "payloads/soapHeaderSecurityToken.xml");
 
         String headerWithToken = soapHeaderServiceContextStr.replace("${TOKEN}", token);
         client.setHeaderBlock(headerWithToken);
-
+        Mockito.clearInvocations(authenticationCacheService);
         runnable.run();
 
         return token;
@@ -108,7 +119,8 @@ public class AuthenticationAssertion {
      */
     public void assertWithNoHeaderInvalidCredentials(GeneralRunnableOperationWithException runnable)
         throws TransformerException, IOException, InterruptedException {
-        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.E_UNKNOWN_TOKEN, null);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED,
+                 "Please review the identities provided");
     }
 
     public void assertFailBasedOnNoIdentities(SoapTestClient client,
@@ -165,7 +177,8 @@ public class AuthenticationAssertion {
 
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, FaultErrorCodes.E_UNKNOWN_TOKEN, null);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED,
+                 null, "Please review the identities provided");
     }
 
     private void assertErrorResponse(SoapFaultClientException faultClientException,
@@ -183,20 +196,17 @@ public class AuthenticationAssertion {
             );
         }
 
-        Assertions.assertEquals(cause == null ? 1 : 2, type.getExceptionBean().size());
         Assertions.assertNotNull(type.getStackTraceAsString());
 
         // assert the exception block
-        DfsExceptionHolder exceptionHolder = type.getExceptionBean().get(cause == null ? 0 : 1);
+        DfsExceptionHolder exceptionHolder = type.getExceptionBean().getLast();
         Assertions.assertEquals(type.getMessageId(), exceptionHolder.getMessageId());
         Assertions.assertEquals(faultClientException.getMessage(), exceptionHolder.getMessage());
         Assertions.assertEquals(Exception.class.getCanonicalName(), exceptionHolder.getGenericType());
         Assertions.assertEquals(ex.getCanonicalName(), exceptionHolder.getExceptionClass());
 
         // assert the three core attributes
-        assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID,
-                             String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute()
-        );
+        assertAttributeValue(ServiceExceptionType.ATTRIBUTE_MESSAGE_ID, String.class.getCanonicalName(), type.getMessageId(), exceptionHolder.getAttribute());
     }
 
     private void assertAttributeValue(String name, String assertType, String assertValue, List<DfsAttributeHolder> atts) {
@@ -221,7 +231,8 @@ public class AuthenticationAssertion {
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${TOKEN}", invalidToken);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, ServiceContextLookupException.class, FaultErrorCodes.E_UNKNOWN_TOKEN, null, invalidToken);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED,
+                 FaultErrorCodes.E_UNKNOWN_TOKEN, "JWT Token Validation failed");
     }
 
     public void assertFailsWithServiceAuthorisationFailedError(SoapTestClient client,
@@ -234,7 +245,7 @@ public class AuthenticationAssertion {
         soapHeaderServiceContextStr = soapHeaderServiceContextStr.replace("${PASSWORD}", password);
         client.setHeaderBlock(soapHeaderServiceContextStr);
 
-        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause, null);
+        runBlock(runnable, AuthenticationFailedException.class, FaultErrorCodes.E_SERVICE_AUTHORIZATION_FAILED, cause, "Please review the identities provided");
 
     }
 
@@ -264,7 +275,6 @@ public class AuthenticationAssertion {
     @FunctionalInterface
     public interface GeneralRunnableOperationWithException {
         @SuppressWarnings("PMD.AvoidUncheckedExceptionsInSignatures")
-
         void run() throws SoapFaultClientException, JAXBException, IOException, InterruptedException;
     }
 }

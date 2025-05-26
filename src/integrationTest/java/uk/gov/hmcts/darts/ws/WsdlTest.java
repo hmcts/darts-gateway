@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
 
 @ActiveProfiles("int-test-jwt-token-shared")
+
 class WsdlTest extends IntegrationBase {
 
     @Autowired

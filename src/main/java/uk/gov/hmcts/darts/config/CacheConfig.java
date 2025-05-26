@@ -11,8 +11,8 @@ import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DnsResolvers;
 import io.lettuce.core.resource.MappingSocketAddressResolver;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -25,23 +25,14 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.integration.redis.util.RedisLockRegistry;
-import org.springframework.integration.support.locks.LockRegistry;
-import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
-import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.config.CacheProperties;
-import uk.gov.hmcts.darts.cache.token.service.TokenGeneratable;
-import uk.gov.hmcts.darts.cache.token.service.impl.TokenDocumentumIdToJwtCache;
-import uk.gov.hmcts.darts.cache.token.service.impl.TokenJwtCache;
 
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
-import java.time.Duration;
 import java.util.function.UnaryOperator;
 
 import static java.nio.charset.Charset.defaultCharset;
@@ -51,14 +42,15 @@ import static java.time.Duration.ofSeconds;
 @EnableCaching
 @Slf4j
 public class CacheConfig {
-    private static final String LOCK_REGISTRY_REDIS_KEY = "MY_REDIS_KEY";
-    private static final Duration RELEASE_TIME_DURATION = ofSeconds(30);
 
     @Value("${darts-gateway.redis.connection-string}")
     private String redisConnectionString;
 
     @Value("${darts-gateway.redis.ssl-enabled}")
     private boolean sslEnabled;
+
+    @Autowired
+    private CacheProperties cacheProperties;
 
     @Bean
     public LettuceConnectionFactory connectionFactory() {
@@ -97,7 +89,7 @@ public class CacheConfig {
         );
         redisConfig.setPassword(RedisPassword.of(redisConnectionProperties.password()));
 
-        LettuceConnectionFactory factory =  new LettuceConnectionFactory(redisConfig, clientConfigurationBuilder.build());
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(redisConfig, clientConfigurationBuilder.build());
         factory.setShareNativeConnection(false);
         return factory;
     }
@@ -108,7 +100,7 @@ public class CacheConfig {
             try {
                 addresses = DnsResolvers.JVM_DEFAULT.resolve(host);
             } catch (UnknownHostException unknownHostException) {
-                log.error("Failed to resolve: " + host, unknownHostException);
+                log.error("Failed to resolve: {}", host, unknownHostException);
             }
 
             String hostIp = addresses[0].getHostAddress();
@@ -116,7 +108,6 @@ public class CacheConfig {
             if (hostAndPort.hostText.equals(hostIp)) {
                 finalAddress = HostAndPort.of(host, hostAndPort.getPort());
             }
-
             return finalAddress;
         };
     }
@@ -157,59 +148,11 @@ public class CacheConfig {
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-            //.enableTimeToIdle()
-            .entryTtl(ofSeconds(10))
+            .enableTimeToIdle()
+            .entryTtl(ofSeconds(cacheProperties.getEntryTimeToIdleSeconds()))
             .disableCachingNullValues()
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()))
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
-    }
-
-    @SuppressWarnings("PMD.UnnecessaryAnnotationValueElement")
-    @ConditionalOnProperty(
-        value = "darts-gateway.cache.token-generate",
-        havingValue = "documentum-to-jwt",
-        matchIfMissing = true)
-    @Bean(value = "primarycache")
-    TokenDocumentumIdToJwtCache getDefaultTokenCache(RedisTemplate<String, Object> template,
-                                                     CacheProperties properties,
-                                                     TokenGeneratable cache,
-                                                     LockRegistry registry) {
-        return new TokenDocumentumIdToJwtCache(template, cache, properties, registry);
-    }
-
-
-    @Bean
-    TokenGeneratable getTokenGeneratable(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
-                                         CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
-        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
-    }
-
-    @SuppressWarnings("PMD.UnnecessaryAnnotationValueElement")
-    @ConditionalOnProperty(
-        value = "darts-gateway.cache.token-generate",
-        havingValue = "jwt",
-        matchIfMissing = false)
-    @Bean(value = "primarycache")
-    TokenJwtCache getJwtTokenCache(RedisTemplate<String, Object> template, TokenGenerator jwtGenerator,
-                                   CacheProperties cxtProperties, LockRegistry registry, TokenValidator jwtValidator) {
-        return new TokenJwtCache(template, jwtGenerator, cxtProperties, registry, jwtValidator);
-    }
-
-    @Bean
-    public RedisTemplate<?, Object> redisTemplate(RedisConnectionFactory connectionFactory, RedisCacheConfiguration configuration) {
-        RedisTemplate<?, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-        template.setValueSerializer(redisSerializer());
-        template.setKeySerializer(new StringRedisSerializer());
-        return template;
-    }
-
-    @Bean
-    public RedisLockRegistry lockRegistry(RedisConnectionFactory redisConnectionFactory) {
-        RedisLockRegistry registry =  new RedisLockRegistry(redisConnectionFactory, LOCK_REGISTRY_REDIS_KEY,
-                                  RELEASE_TIME_DURATION.toMillis());
-        registry.setRedisLockType(RedisLockRegistry.RedisLockType.PUB_SUB_LOCK);
-        return registry;
     }
 
     private static GenericJackson2JsonRedisSerializer redisSerializer() {

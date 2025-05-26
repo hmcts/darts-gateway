@@ -6,27 +6,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
-import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
-import uk.gov.hmcts.darts.cache.token.service.Token;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
 import uk.gov.hmcts.darts.testutils.IntegrationBase;
-import uk.gov.hmcts.darts.ws.ContextRegistryParent;
 
 import java.nio.charset.Charset;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 
 @ActiveProfiles({"int-test-jwt-token-shared", "no-payload-log-exclusions"})
 class EventWebServiceLoggingTest extends IntegrationBase {
@@ -36,19 +30,10 @@ class EventWebServiceLoggingTest extends IntegrationBase {
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
-    @MockitoBean
-    private TokenValidator tokenValidator;
-
     @BeforeEach
     public void before() {
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.DO_NOT_APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-        when(tokenValidator.test(Mockito.eq(Token.TokenExpiryEnum.APPLY_EARLY_TOKEN_EXPIRY), Mockito.eq("test"))).thenReturn(true);
-
-        when(mockOauthTokenGenerator.acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD))
-            .thenReturn("test");
-
-        when(mockOauthTokenGenerator.acquireNewToken(ContextRegistryParent.SERVICE_CONTEXT_USER, ContextRegistryParent.SERVICE_CONTEXT_PASSWORD))
-            .thenReturn("test");
+        doReturn(DEFAULT_TOKEN).when(authenticationCacheService).getOrCreateValidToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+        doNothing().when(authenticationCacheService).validateToken(DEFAULT_TOKEN);
     }
 
     @ParameterizedTest
@@ -56,7 +41,6 @@ class EventWebServiceLoggingTest extends IntegrationBase {
     void testRoutesValidDailyListPayload(
         DartsGatewayClient client
     ) throws Exception {
-
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             dailyListApiStub.willRespondSuccessfully();
 
@@ -78,8 +62,5 @@ class EventWebServiceLoggingTest extends IntegrationBase {
 
         dailyListApiStub.verifyPostRequest();
         dailyListApiStub.verifyPatchRequest();
-
-        verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
-        verifyNoMoreInteractions(mockOauthTokenGenerator);
     }
 }
