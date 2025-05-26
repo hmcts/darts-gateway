@@ -23,7 +23,7 @@ public class TestSupportController {
 
     @DeleteMapping(value = "/functional-tests/clean")
     public void cleanUpDataAfterFunctionalTests() {
-        deleteKeyByPattern(AuthenticationCacheService.CACHE_PREFIX + ":*");
+        deleteKeyByPattern(AuthenticationCacheService.CACHE_PREFIX + "*");
     }
 
     public void deleteKeyByPattern(String pattern) {
