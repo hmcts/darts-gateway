@@ -1,7 +1,6 @@
 package uk.gov.hmcts.darts.ws;
 
 import com.synapps.moj.dfs.response.DARTSResponse;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.darts.common.exceptions.DartsException;
@@ -10,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DartsEndpointHandlerTest {
-    ;
 
     @ParameterizedTest
     @EnumSource(value = CodeAndMessage.class, names = "ERROR", mode = EnumSource.Mode.INCLUDE)
