@@ -222,10 +222,8 @@ class CasesWebServiceTest extends IntegrationBase {
             String soapRequestStr = TestUtils.getContentsFromFile(
                 "payloads/getCases/soapRequest.xml");
 
-            SoapAssertionUtil<ServiceException> response = client.getCasesException(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/getCases/courtHouseNotFoundResponse.xml"),
-                ServiceException.class);
+            SoapAssertionUtil<GetCasesResponse> response = client.getCases(getGatewayUri(), soapRequestStr);
+            response.assertCodeAndMessage(CodeAndMessage.NOT_FOUND_COURTHOUSE);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);

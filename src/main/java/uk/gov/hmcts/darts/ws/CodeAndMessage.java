@@ -8,16 +8,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CodeAndMessage {
 
-    ERROR("500", null),
-    INVALID_XML("400", "Invalid XML Document"),
-    SYSTEM_TYPE_NOT_FOUND("400", "System type not found"),
-    NOT_FOUND_COURTHOUSE("404", "Courthouse Not Found"),
-    NOT_FOUND_HANLDER("404", "Handler Not Found"),
-    AUDIO_TOO_LARGE("404", "Audio Too Large"),
-    OK("200", "OK");
+    ERROR("500", null, false),
+    INVALID_XML("400", "Invalid XML Document", true),
+    SYSTEM_TYPE_NOT_FOUND("400", "System type not found", true),
+    NOT_FOUND_COURTHOUSE("404", "Courthouse Not Found", true),
+    NOT_FOUND_HANLDER("404", "Handler Not Found", true),
+    AUDIO_TOO_LARGE("404", "Audio Too Large", true),
+    OK("200", "OK", true);
 
     private final String code;
     private final String message;
+    private final boolean isSuccessResponse;
 
     public DARTSResponse getResponse() {
         return getResponse(code, message);
