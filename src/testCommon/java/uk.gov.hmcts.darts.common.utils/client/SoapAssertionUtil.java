@@ -10,9 +10,14 @@ import jakarta.xml.bind.Marshaller;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.xml.transform.StringSource;
+import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.StringWriter;
+import java.lang.reflect.Method;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 @Getter
 public class SoapAssertionUtil<O> {
@@ -37,6 +42,25 @@ public class SoapAssertionUtil<O> {
     public static void assertErrorResponse(String code, String message, DARTSResponse response) {
         Assertions.assertEquals(code, response.getCode(), "Expected code to be equal");
         Assertions.assertEquals(message, response.getMessage(), "Expected message to be equal");
+    }
+
+    @SneakyThrows
+    public <T extends DARTSResponse> void assertCodeAndMessage(CodeAndMessage codeAndMessage) {
+        Object value = response.getValue();
+        if (value instanceof JAXBElement<?> jaxbElement) {
+            value = jaxbElement.getValue();
+        }
+
+        Method method = ReflectionUtils.findMethod(value.getClass(), "getReturn");
+        if (method != null) {
+            value = method.invoke(value);
+        }
+
+        if (value instanceof DARTSResponse dartsResponse) {
+            assertErrorResponse(codeAndMessage.getCode(), codeAndMessage.getMessage(), dartsResponse);
+            return;
+        }
+        fail("Expected response to be of type DARTSResponse but was: " + value.getClass().getName());
     }
 
     public static void assertErrorResponse(String code, DARTSResponse response) {

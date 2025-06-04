@@ -4,6 +4,7 @@ import com.emc.documentum.fs.rt.ServiceException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
+import com.synapps.moj.dfs.response.DARTSResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -111,7 +113,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
         Mockito.verify(mockOauthTokenGenerator).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -139,7 +141,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
         Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -165,7 +167,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
         Mockito.verify(mockOauthTokenGenerator, times(0)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -201,7 +203,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
         }, getContextClient(), getGatewayUri(), DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -247,7 +249,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                    .withHeader("Authorization", new RegexPattern("Bearer downstreamrefreshoutsidecache")));
         Mockito.verify(mockOauthTokenGenerator, times(4)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -285,7 +287,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -300,10 +302,8 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()) + 1);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionAudioTooLargeResponse.xml"),
-                ServiceException.class);
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertCodeAndMessage(CodeAndMessage.AUDIO_TOO_LARGE);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
@@ -320,13 +320,11 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(request.getBinarySize()).thenReturn(maxByteSize.toBytes());
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionInvalidXmlDocumentResponse.xml"),
-                ServiceException.class);
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertCodeAndMessage(CodeAndMessage.INVALID_XML);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -354,7 +352,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                     "\"checksum\":\"81ef8524d69c7ae6605baf37e425b574\",\"cases\":\\[\"T20230294\",\"U20230907-112949\"]," +
                     "\"storage_guid\":\"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"}")));
 
-        Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -375,7 +373,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
                                                      ServiceException.class);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -393,14 +391,11 @@ class AddAudioWebServiceTest extends IntegrationBase {
                         .willReturn(aResponse().withStatus(404)
                                         .withBody(dartsApiResponseStr)));
 
-            String expectedResponseStr = TestUtils.getContentsFromFile(
-                "payloads/addAudio/register/courtHouseNotFoundResponse.xml");
-
             XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalErrorResponseXml(expectedResponseStr, ServiceException.class);
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertCodeAndMessage(CodeAndMessage.NOT_FOUND_COURTHOUSE);
 
             verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
                 WireMock.matching(
@@ -411,7 +406,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -435,7 +430,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
         response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertTrue(response.body().contains(FaultErrorCodes.E_UNKNOWN_CODE.name()));
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -457,10 +452,10 @@ class AddAudioWebServiceTest extends IntegrationBase {
         HttpResponse<String> response;
 
         response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        Assertions.assertEquals(400, response.statusCode());
+        assertEquals(400, response.statusCode());
         Assertions.assertTrue(response.body().isEmpty());
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -482,10 +477,10 @@ class AddAudioWebServiceTest extends IntegrationBase {
         HttpResponse<String> response;
 
         response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        Assertions.assertEquals(400, response.statusCode());
+        assertEquals(400, response.statusCode());
         Assertions.assertTrue(response.body().isEmpty());
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -500,13 +495,11 @@ class AddAudioWebServiceTest extends IntegrationBase {
             when(request.getBinarySize()).thenReturn(AddAudioValidator.getBytes(maxByteSize.toBytes()));
             when(requestHolder.getRequest()).thenReturn(Optional.of(request));
 
-            SoapAssertionUtil<ServiceException> response = client.addAudioException(getGatewayUri(), soapRequestStr);
-            response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionAudioTooLargeResponse.xml"),
-                ServiceException.class);
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequestStr);
+            response.assertCodeAndMessage(CodeAndMessage.AUDIO_TOO_LARGE);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
-        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+        Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
     }
 
@@ -556,7 +549,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/dartsValidationExceptionResponse.xml"),
                                                      ServiceException.class);
 
-            Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container",uuid);
+            Mockito.verify(dataManagementService, never()).deleteBlobData("darts-inbound-container", uuid);
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
@@ -620,7 +613,8 @@ class AddAudioWebServiceTest extends IntegrationBase {
             response.assertIdenticalErrorResponseXml(TestUtils.getContentsFromFile("payloads/addAudio/register/clientProblemException.xml"),
                                                      ServiceException.class);
             Assertions.assertFalse(logAppender.searchLogs(AbstractClientProblemDecoder.RESPONSE_PREFIX
-                                                              + "500 Server Error on POST request for \"http://localhost:8090/audios/metadata\": \"<html><body>Internal Server Error</body></html>\"", null, null).isEmpty());
+                                                              + "500 Server Error on POST request for \"http://localhost:8090/audios/metadata\": \"<html><body>Internal Server Error</body></html>\"",
+                                                          null, null).isEmpty());
             verify(postRequestedFor(urlPathEqualTo("/audios/metadata")).withRequestBody(
                 WireMock.matching(
                     "\\{\"started_at\":1694082411.000000000,\"ended_at\":1694082589.000000000,\"channel\":1,\"total_channels\":4,\"format\":\"mpeg2\"," +
@@ -631,7 +625,7 @@ class AddAudioWebServiceTest extends IntegrationBase {
             // ensure that the payload logging is turned off for this api call
             Assertions.assertFalse(logAppender.searchLogs(SoapRequestInterceptor.REQUEST_PAYLOAD_PREFIX, null, null).isEmpty());
 
-            Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container",uuid);
+            Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container", uuid);
 
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
