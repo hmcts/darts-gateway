@@ -19,7 +19,6 @@ import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;

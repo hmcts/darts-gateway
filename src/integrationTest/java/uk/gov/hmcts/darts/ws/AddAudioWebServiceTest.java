@@ -4,7 +4,6 @@ import com.emc.documentum.fs.rt.ServiceException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RegexPattern;
 import com.service.mojdarts.synapps.com.AddAudioResponse;
-import com.synapps.moj.dfs.response.DARTSResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

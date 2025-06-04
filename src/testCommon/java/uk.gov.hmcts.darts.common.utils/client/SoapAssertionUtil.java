@@ -63,11 +63,6 @@ public class SoapAssertionUtil<O> {
         fail("Expected response to be of type DARTSResponse but was: " + value.getClass().getName());
     }
 
-    public static void assertErrorResponse(String code, DARTSResponse response) {
-        Assertions.assertEquals(code, response.getCode(), "Expected code to be equal");
-    }
-
-
     public void assertIdenticalErrorResponseXml(String xml, Class<O> clazz) {
         assertIdenticalErrorResponseXml(xml, clazz, true);
     }
