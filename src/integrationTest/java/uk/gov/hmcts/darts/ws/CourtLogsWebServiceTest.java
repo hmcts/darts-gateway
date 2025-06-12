@@ -19,7 +19,6 @@ import uk.gov.hmcts.darts.authentication.component.SoapRequestInterceptor;
 import uk.gov.hmcts.darts.cache.token.component.TokenGenerator;
 import uk.gov.hmcts.darts.cache.token.component.TokenValidator;
 import uk.gov.hmcts.darts.cache.token.service.Token;
-import uk.gov.hmcts.darts.common.utils.TestUtils;
 import uk.gov.hmcts.darts.common.utils.client.SoapAssertionUtil;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsClientProvider;
 import uk.gov.hmcts.darts.common.utils.client.darts.DartsGatewayClient;
@@ -287,9 +286,7 @@ class CourtLogsWebServiceTest extends IntegrationBase {
             postCourtLogsApi.returnsFailureWhenAddingCourtLogs();
             SoapAssertionUtil<ServiceException> response = client.postCourtLogsException(getGatewayUri(),
                                                                                          postCourtLogs.getContentAsString(Charset.defaultCharset()));
-            response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/courtlogs/courthouseNotFoundResponse.xml"),
-                ServiceException.class);
+            response.assertCodeAndMessage(CodeAndMessage.NOT_FOUND_COURTHOUSE);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         postCourtLogsApi.verifyReceivedPostCourtLogsRequestForCaseNumber("CASE000001");
 
@@ -302,11 +299,9 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     void testPostCourtLogsRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             postCourtLogsApi.returnsEventResponse();
-            SoapAssertionUtil<ServiceException> response = client.postCourtLogsException(getGatewayUri(),
-                                                                                         invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
-            response.assertIdenticalErrorResponseXml(
-                TestUtils.getContentsFromFile("payloads/courtlogs/dartsExceptionInvalidXmlResponse.xml"),
-                ServiceException.class);
+            SoapAssertionUtil<AddLogEntryResponse> response = client.postCourtLogs(getGatewayUri(),
+                                                                                   invalidSoapMessage.getContentAsString(Charset.defaultCharset()));
+            response.assertCodeAndMessage(CodeAndMessage.INVALID_XML);
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
 
         postCourtLogsApi.verifyDoesntReceiveRequest();

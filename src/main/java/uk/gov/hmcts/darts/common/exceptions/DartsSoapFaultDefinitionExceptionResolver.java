@@ -72,7 +72,6 @@ public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointE
             message,
             Locale.ENGLISH
         );
-
         final SoapFaultDetail faultDetail = soapFault.addFaultDetail();
         final Result result = faultDetail.getResult();
 
