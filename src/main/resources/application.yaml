@@ -5,7 +5,7 @@ server:
       store-type: redis
       cookie:
         name: JSESSIONID
-      timeout: 245m
+      timeout: 721m # 12 hours 1 minute - to last slightly beyond the 12h token lifetime
 
 management:
   endpoint:
