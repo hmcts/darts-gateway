@@ -44,6 +44,8 @@ spring:
 
 azure:
 darts-gateway:
+  shutdown:
+    wait-time: ${GRACEFUL_SHUTDOWN_TIMEOUT:30s}
   dar-pc-max-time-drift: ${DAR_PC_MAX_TIME_DRIFT:90s}
   storage:
     blob:

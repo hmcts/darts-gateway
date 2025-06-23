@@ -1,5 +1,7 @@
 java:
   applicationPort: 8070
+  readinessPeriod: 5
+  terminationGracePeriodSeconds: 65
   image: 'sdshmctspublic.azurecr.io/darts/gateway:latest'
   ingressHost: darts-gateway.{{ .Values.global.environment }}.platform.hmcts.net
   aadIdentityName: darts
@@ -47,3 +49,4 @@ java:
     ACTIVE_DIRECTORY_B2C_ON_MICROSOFT_URI: https://hmctsstgextid.onmicrosoft.com
     JWKS_REFRESH_PERIOD: 30m
     JWKS_LIFETIME_PERIOD: 60m
+    GRACEFUL_SHUTDOWN_TIMEOUT: '35s'
