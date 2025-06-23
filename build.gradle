@@ -239,7 +239,8 @@ def sonarExclusions = [
         '**/CacheValueWithJwt*',
         '**/com/service/viq/event/**',
         '**/uk/gov/hmcts/darts/cache/token/service/**',
-        '**/uk/gov/hmcts/darts/test/**'
+        '**/uk/gov/hmcts/darts/test/**',
+        '**/uk/gov/hmcts/darts/Application.java',
 ]
 
 sonarqube {
