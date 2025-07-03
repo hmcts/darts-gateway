@@ -81,7 +81,7 @@ class TokenValidatorTest extends IntegrationBase {
         }
         );
 
-        Assertions.assertFalse(logAppender.searchLogs("JWT Token could not be validated", "Expired JWT", Level.ERROR).isEmpty());
+        Assertions.assertFalse(logAppender.searchLogs("JWT Token is expired", "Expired JWT", Level.WARN).isEmpty());
     }
 
     @ParameterizedTest
