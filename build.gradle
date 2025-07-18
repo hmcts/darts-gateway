@@ -391,7 +391,7 @@ dependencies {
     implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
     jaxb('org.glassfish.jaxb:jaxb-xjc:4.0.5')
     implementation('org.glassfish.jaxb:jaxb-runtime:4.0.5')
-    implementation group: 'org.apache.tika', name: 'tika-core', version: '3.1.0'
+    implementation group: 'org.apache.tika', name: 'tika-core', version: '3.2.1'
 
     // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind'
