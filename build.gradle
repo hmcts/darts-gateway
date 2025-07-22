@@ -449,7 +449,7 @@ dependencies {
     testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.1.0'
     testImplementation group: 'commons-io', name: 'commons-io', version: '2.19.0'// CVE-2021-29425
     testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
-    testImplementation 'org.xmlunit:xmlunit-core:2.10.1'
+    testImplementation 'org.xmlunit:xmlunit-core:2.10.3'
     testImplementation 'org.xmlunit:xmlunit-matchers:2.10.1'
     testImplementation 'org.testcontainers:testcontainers:1.21.0'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
