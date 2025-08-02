@@ -446,7 +446,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
-    testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.1.0'
+    testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.1.1'
     testImplementation group: 'commons-io', name: 'commons-io', version: '2.19.0'// CVE-2021-29425
     testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
     testImplementation 'org.xmlunit:xmlunit-core:2.10.3'
