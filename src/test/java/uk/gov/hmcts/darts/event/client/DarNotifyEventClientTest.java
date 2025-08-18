@@ -47,7 +47,6 @@ import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.OTHER_ERROR;
 import static uk.gov.hmcts.darts.event.enums.DarNotifyEventResult.WRONG_DESTINATION;
 
 @TestInstance(Lifecycle.PER_CLASS)
-@SuppressWarnings("PMD.TooManyMethods")
 class DarNotifyEventClientTest {
 
     private static final String EVENT_DATE_TIME_ATTRIBUTE = "%d";
