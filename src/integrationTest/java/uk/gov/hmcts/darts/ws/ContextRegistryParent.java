@@ -215,7 +215,7 @@ public class ContextRegistryParent extends IntegrationBase {
     }
 
 
-    @SuppressWarnings({"PMD.SimplifiableTestAssertion", "PMD.DoNotUseThreads", "PMD.AvoidInstantiatingObjectsInLoops"})
+    @SuppressWarnings({"PMD.DoNotUseThreads", "PMD.AvoidInstantiatingObjectsInLoops"})
     void executeBasicConcurrency(ContextRegistryClient client, int usersCount, CacheProperties properties) throws InterruptedException {
         CountDownLatch semaphore = new CountDownLatch(usersCount);
         CountDownLatch lookupSemaphore = new CountDownLatch(usersCount);

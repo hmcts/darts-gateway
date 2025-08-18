@@ -26,7 +26,6 @@ import static uk.gov.hmcts.darts.common.configuration.ContextClientConfiguration
     AzureAdB2CAuthenticationProperties.class, FunctionalProperties.class, MtomClientConfig.class})
 @ActiveProfiles({"functionalTest"})
 @Slf4j
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class FunctionalTestBase {
 
 

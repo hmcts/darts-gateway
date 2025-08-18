@@ -28,7 +28,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({"PMD.ExcessivePublicCount", "PMD.CyclomaticComplexity", "PMD.TooManyMethods"})
+@SuppressWarnings({"PMD.ExcessivePublicCount", "PMD.CyclomaticComplexity"})
 public class XmlWithFileMultiPartRequestGuard implements XmlWithFileMultiPartRequest {
 
     @Override

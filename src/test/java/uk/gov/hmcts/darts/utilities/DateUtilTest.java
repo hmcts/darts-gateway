@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.darts.utilities.DateUtil.LONDON_ZONE_ID;
 import static uk.gov.hmcts.darts.utilities.DateUtil.UTC;
 
-@SuppressWarnings("PMD.LineLength")
+@SuppressWarnings("PMD.ReplaceJavaUtilCalendar")
 class DateUtilTest {
 
     @Test
