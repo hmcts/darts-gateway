@@ -102,7 +102,11 @@ public class TokenValidatorImpl implements TokenValidator {
             }
             return false;
         } catch (Exception e) {
-            log.error("Major token validation failure", e);
+            if (e.getMessage().contains("Expired JWT")) {
+                log.warn("JWT Token is expired", e);
+            } else {
+                log.error("Major token validation failure", e);
+            }
             throw new CacheTokenValidationException("The token validation failed", e);
         }
         log.trace("ended token validation");
