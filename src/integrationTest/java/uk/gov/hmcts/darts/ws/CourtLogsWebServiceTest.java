@@ -242,7 +242,6 @@ class CourtLogsWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
-    @SuppressWarnings("PMD.LawOfDemeter")
     void testRejectsInvalidSoapMessage(DartsGatewayClient client) throws Exception {
 
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {

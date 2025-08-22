@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @SpringBootTest
-@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert"})
 class DailyListRequestMapperTest {
 
     @Autowired
