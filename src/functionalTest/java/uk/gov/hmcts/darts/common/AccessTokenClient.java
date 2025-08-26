@@ -52,7 +52,6 @@ public class AccessTokenClient {
         return tokenResponse.accessToken();
     }
 
-    @SuppressWarnings("PMD.LawOfDemeter")
     private BodyPublisher encode(Map<String, String> params) {
         String urlEncoded = params.entrySet()
             .stream()
