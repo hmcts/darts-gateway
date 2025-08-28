@@ -18,8 +18,6 @@ darts-gateway:
     share-token-for-same-credentials: false
     entry-time-to-idle-seconds: 5
     shared-token-early-expiration-minutes: 5
-  redis:
-    ssl-enabled: false
   darts-api:
     base-url: http://localhost:8090
   ws:
