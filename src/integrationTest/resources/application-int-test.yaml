@@ -19,7 +19,6 @@ darts-gateway:
     entry-time-to-idle-seconds: 5
     shared-token-early-expiration-minutes: 5
   redis:
-    connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
     ssl-enabled: false
   darts-api:
     base-url: http://localhost:8090
