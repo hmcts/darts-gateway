@@ -20,6 +20,7 @@ import java.util.List;
 
 @Builder
 @Slf4j
+@SuppressWarnings("PMD.ReplaceJavaUtilDate")
 public class DartsTokenGenerator {
 
     private String issuer;

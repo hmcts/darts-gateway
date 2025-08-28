@@ -157,7 +157,7 @@ public class IntegrationBase implements CommandHolder {
 
     }
 
-    @SuppressWarnings({"PMD.DoNotUseThreads", "PMD.SignatureDeclareThrowsException"})
+    @SuppressWarnings({"PMD.DoNotUseThreads"})
     public String runOperationExpectingJwksRefresh(String token, JkwsRefreshableRunnable runnable)
         throws InterruptedException, IOException, JAXBException, JOSEException {
         // make sure we have left it enough time for the refresh to place

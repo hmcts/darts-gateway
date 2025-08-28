@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-@SuppressWarnings("PMD.LinguisticNaming")
+@SuppressWarnings("PMD.ReplaceJavaUtilCalendar")
 public class CourtLogAssert extends AbstractAssert<CourtLogAssert, com.synapps.moj.dfs.response.CourtLog> {
 
     public CourtLogAssert(com.synapps.moj.dfs.response.CourtLog actual) {
