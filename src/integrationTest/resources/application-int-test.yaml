@@ -20,6 +20,8 @@ darts-gateway:
     shared-token-early-expiration-minutes: 5
   darts-api:
     base-url: http://localhost:8090
+  redis:
+    ssl-enabled: false
   ws:
     request-validation: true
     response-validation: false
