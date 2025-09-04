@@ -465,7 +465,10 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy'
     }
 
-    testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_http', version: '5.6.3'
+    testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_http', version: '5.6.3', {
+        exclude group: 'org.codehaus.groovy' // blocks all Groovy 3 modules
+    }
+
 }
 
 mainClassName = 'uk.gov.hmcts.darts.Application'
