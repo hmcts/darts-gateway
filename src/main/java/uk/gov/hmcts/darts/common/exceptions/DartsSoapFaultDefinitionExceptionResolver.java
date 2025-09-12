@@ -34,6 +34,12 @@ public class DartsSoapFaultDefinitionExceptionResolver extends AbstractEndpointE
 
     @Override
     protected boolean resolveExceptionInternal(MessageContext messageContext, Object endpoint, Exception ex) {
+        //Handle expected JWT expiry with WARN
+        if (ex instanceof SoapFaultServiceException soapFaultServiceException && ex.getMessage().contains("not found in registry central")) {
+
+            log.warn("JWT Token is expired", ex.getMessage());
+            return resolveSoapFaultServiceException(messageContext, soapFaultServiceException);
+        }
         log.error("Error occurred", ex);
         if (ex instanceof DartsException dartsException) {
             return resolveDartsException(messageContext, dartsException);
