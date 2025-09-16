@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles({"int-test-jwt-token-shared", "no-payload-log-exclusions"})
+@ActiveProfiles({"int-test-jwt-token-shared", "no-payload-log-exclusions", "int-test"})
 class EventWebServiceLoggingTest extends IntegrationBase {
 
     private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
