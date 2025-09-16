@@ -35,6 +35,7 @@ services:
       - AAD_B2C_TENANT_ID
       - JWKS_REFRESH_PERIOD
       - JWKS_LIFETIME_PERIOD
+      - ENTRY_TIME_TO_IDLE_SECONDS
       # Allow local debugging
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:8002,server=y,suspend=n
 
