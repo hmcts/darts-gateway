@@ -52,6 +52,7 @@ The required value of each variable is stored in Azure Key Vault as a Secret.
 | CP_EXTERNAL_PASSWORD                           | The common platform facing password i.e. used by the client                                                    |
 | CP_INTERNAL_PASSWORD                           | The common platform facing password i.e. used by the gateway to talk to the Idp for token acquisition          |
 | EXTERNAL_SERVICE_BASIC_AUTHORISATION_WHITELIST | comma separated list of external services ids which are allowed to call the DARTS API with basic authorisation |
+| ENTRY_TIME_TO_IDLE_SECONDS                     | The amount of time the redis cache item will be live for                                                       |
 
 To obtain the secret value, you may retrieve the keys from the Azure Vault by running the `az keyvault secret show`
 command in the terminal. E.g. to obtain the value for `GOVUK_NOTIFY_API_KEY`, you should run:
