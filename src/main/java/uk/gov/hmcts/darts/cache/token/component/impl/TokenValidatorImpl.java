@@ -95,10 +95,18 @@ public class TokenValidatorImpl implements TokenValidator {
             }
             log.debug("JWT Token Validation successful");
         } catch (ParseException | JOSEException | BadJOSEException e) {
-            log.error("JWT Token could not be validated", e);
+            if (e.getMessage().contains("Expired JWT") || e.getMessage().contains("not found in registry central")) {
+                log.warn("JWT Token is expired", e);
+            } else {
+                log.error("JWT Token could not be validated", e);
+            }
             return false;
         } catch (Exception e) {
-            log.error("Major token validation failure", e);
+            if (e.getMessage().contains("Expired JWT") || e.getMessage().contains("not found in registry central")) {
+                log.warn("JWT Token is expired", e);
+            } else {
+                log.error("Major token validation failure", e);
+            }
             throw new CacheTokenValidationException("The token validation failed", e);
         }
         log.trace("ended token validation");

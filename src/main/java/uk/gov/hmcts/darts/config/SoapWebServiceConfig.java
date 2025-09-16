@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SoapWebServiceConfig implements WsConfigurer {
 
-
-
     public static final String BASE_WEB_CONTEXT = "/service/darts/";
 
     private final SoapRequestInterceptor soapRequestInterceptor;

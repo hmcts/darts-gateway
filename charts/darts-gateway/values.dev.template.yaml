@@ -40,3 +40,5 @@ java:
   environment:
     DARTS_API_URL: https://darts-api.staging.platform.hmcts.net
     TESTING_SUPPORT_ENDPOINTS_ENABLED: true
+    ENTRY_TIME_TO_IDLE_SECONDS: 1200
+    APPLICATIONINSIGHTS_ROLE_NAME: "DARTS Gateway PR-${CHANGE_ID}"
