@@ -30,7 +30,9 @@ def secrets = [
                 secret('AzureAdB2CFuncTestROPCUsername', 'FUNC_TEST_ROPC_USERNAME'),
                 secret('AzureAdB2CFuncTestROPCPassword', 'FUNC_TEST_ROPC_PASSWORD'),
                 secret('AzureAdB2CFuncTestROPCClientId', 'AAD_B2C_ROPC_CLIENT_ID'),
-                secret('AzureAdB2CFuncTestROPCClientSecret', 'AAD_B2C_ROPC_CLIENT_SECRET')
+                secret('AzureAdB2CFuncTestROPCClientSecret', 'AAD_B2C_ROPC_CLIENT_SECRET'),
+
+                secret('redis-connection-string', 'REDIS_CONNECTION_STRING')
         ]
 ]
 
