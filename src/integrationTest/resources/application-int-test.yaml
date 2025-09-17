@@ -21,7 +21,7 @@ darts-gateway:
   darts-api:
     base-url: http://localhost:8090
   redis:
-    connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
+    connection-string: ${REDIS_CONNECTION_STRING:redis://darts-redis:6379}
     ssl-enabled: ${REDIS_SSL_ENABLED:false}
   ws:
     request-validation: true
