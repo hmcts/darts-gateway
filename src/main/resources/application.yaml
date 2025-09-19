@@ -122,8 +122,8 @@ darts-gateway:
   darts-api:
     base-url: ${DARTS_API_URL:http://localhost:4550}
   redis:
-    connection-string: ${REDIS_CONNECTION_STRING:redis://localhost:6379}
-    ssl-enabled: ${REDIS_SSL_ENABLED:false}
+    connection-string: ${REDIS_CONNECTION_STRING:rediss://localhost:6379}
+    ssl-enabled: ${REDIS_SSL_ENABLED:true}
   security:
     base-uri: ${ACTIVE_DIRECTORY_B2C_BASE_URI:https://hmctsstgextid.b2clogin.com}
     auth-uri: ${ACTIVE_DIRECTORY_B2C_AUTH_URI:https://hmctsstgextid.b2clogin.com/hmctsstgextid.onmicrosoft.com}
