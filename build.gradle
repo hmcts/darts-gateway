@@ -361,8 +361,8 @@ sourceSets {
 dependencies {
     implementation group: 'io.rest-assured', name: 'rest-assured'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.46'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.45'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.45'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.46'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.46'
     implementation 'org.apache.santuario:xmlsec:4.0.4'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -376,7 +376,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
     implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
     implementation group: 'org.springframework', name: 'spring-context'
-    implementation 'org.springframework.integration:spring-integration-redis:6.5.1'
+    implementation 'org.springframework.integration:spring-integration-redis:6.5.2'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.5'
 
     implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.7'
@@ -394,7 +394,7 @@ dependencies {
     implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
     jaxb('org.glassfish.jaxb:jaxb-xjc:4.0.5')
     implementation('org.glassfish.jaxb:jaxb-runtime:4.0.5')
-    implementation group: 'org.apache.tika', name: 'tika-core', version: '3.2.2'
+    implementation group: 'org.apache.tika', name: 'tika-core', version: '3.2.3'
 
     // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind'
