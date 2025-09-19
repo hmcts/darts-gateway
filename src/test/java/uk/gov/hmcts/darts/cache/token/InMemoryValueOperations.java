@@ -16,16 +16,6 @@ public class InMemoryValueOperations implements ValueOperations<String, Object> 
     private final Map<String, Object> memoryBackedDataStore = new HashMap<>();
 
     @Override
-    public Object setGet(String key, Object value, long timeout, TimeUnit unit) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object setGet(String key, Object value, Duration duration)  {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void set(String key, Object value) {
         throw new UnsupportedOperationException();
     }
