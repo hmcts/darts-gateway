@@ -10,8 +10,6 @@ logging:
     root: ERROR
 
 darts-gateway:
-  redis:
-    ssl-enabled: false
   testing-support-endpoints:
     enabled: true
   cache:
