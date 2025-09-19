@@ -20,7 +20,9 @@ public class DeployRedisCommand implements Command {
         container = container.withExposedPorts(6379);
 
         container.start();
-        System.setProperty("darts-gateway.redis.connection-string", "redis://localhost:" + container.getMappedPort(6379).toString());
+        String host = container.getHost();
+        Integer port = container.getMappedPort(6379);
+        System.setProperty("darts-gateway.redis.connection-string", "redis://" + host + ":" + port);
         System.setProperty("darts-gateway.redis.ssl-enabled", "false");
     }
 
