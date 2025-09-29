@@ -159,4 +159,8 @@ darts-gateway:
         type: DL
 logging:
   level:
+    org:
+      springframework:
+        data:
+          redis: trace
     root: ${DARTS_LOG_LEVEL:info}
