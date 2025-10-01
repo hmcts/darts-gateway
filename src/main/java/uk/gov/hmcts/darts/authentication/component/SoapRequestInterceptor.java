@@ -123,7 +123,7 @@ public class SoapRequestInterceptor implements SoapEndpointInterceptor {
         }
     }
 
-    @SuppressWarnings("PMD.AvoidRethrowingException")//Required to rethrow specific exceptions preventing complex exception nesting
+    @SuppressWarnings("PMD.AvoidRethrowingException")//Required to rethrow specific exceptions preventing complex  exception nesting
     private void authenticateUsernameAndPasswordFromBody(SaajSoapMessage message) {
         Optional<ServiceContext> serviceContextOpt = soapBodyConverter.getServiceContext(message);
         if (serviceContextOpt.isEmpty()) {
