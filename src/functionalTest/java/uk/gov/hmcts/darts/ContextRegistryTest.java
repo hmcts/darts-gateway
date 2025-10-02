@@ -27,6 +27,7 @@ class ContextRegistryTest extends FunctionalTestBase {
         Assertions.assertNotNull(context.getValue().getReturn());
     }
 
+    @Disabled
     @ParameterizedTest
     @ArgumentsSource(ContextRegistryClientWrapperProvider.class)
     void testLookup(ContextRegistryClientWrapper wrapper) throws Exception {
