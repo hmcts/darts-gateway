@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ws.config.annotation.EnableWs;
-import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.config.annotation.WsConfigurer;
 import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 @EnableWs
 @Configuration
 @RequiredArgsConstructor
-public class SoapWebServiceConfig extends WsConfigurerAdapter {
+public class SoapWebServiceConfig implements WsConfigurer {
+
+
 
     public static final String BASE_WEB_CONTEXT = "/service/darts/";
 
