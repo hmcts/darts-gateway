@@ -3,6 +3,7 @@ package uk.gov.hmcts.darts.testutils;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.JOSEException;
 import jakarta.xml.bind.JAXBException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,11 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.containers.Container;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.hmcts.darts.cache.token.config.SecurityProperties;
 import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
@@ -26,9 +31,6 @@ import uk.gov.hmcts.darts.testutils.stub.GetCourtLogsApiStub;
 import uk.gov.hmcts.darts.testutils.stub.PostCasesApiStub;
 import uk.gov.hmcts.darts.testutils.stub.PostCourtLogsApiStub;
 import uk.gov.hmcts.darts.testutils.stub.TokenStub;
-import uk.gov.hmcts.darts.workflow.command.Command;
-import uk.gov.hmcts.darts.workflow.command.CommandHolder;
-import uk.gov.hmcts.darts.workflow.command.DeployRedisCommand;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -50,7 +52,8 @@ import java.util.Map;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE", "DARTS_LOG_LEVEL=TRACE"})
-public class IntegrationBase implements CommandHolder {
+@Slf4j
+public class IntegrationBase  {
 
     protected PostCasesApiStub postCasesApiStub = new PostCasesApiStub();
     protected EventApiStub theEventApi = new EventApiStub();
@@ -85,7 +88,19 @@ public class IntegrationBase implements CommandHolder {
 
     protected TokenStub tokenStub = new TokenStub();
 
+    private static final GenericContainer<?> REDIS = new GenericContainer<>(
+        "hmctspublic.azurecr.io/imported/redis:7.2.4-alpine"
+    ).withExposedPorts(6379);
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+
+        System.setProperty("darts-gateway.redis.connection-string", "redis://localhost:" + REDIS.getMappedPort(6379).toString());
+        System.setProperty("darts-gateway.redis.ssl-enabled", "false");
+    }
+
     static {
+        REDIS.start();
         try {
             localhost = InetAddress.getByName("localhost").getHostAddress();
         } catch (UnknownHostException he) {
@@ -95,7 +110,14 @@ public class IntegrationBase implements CommandHolder {
 
     @BeforeEach
     void clearStubs() {
-        template.getConnectionFactory().getConnection().flushAll();
+        try {
+            Container.ExecResult flushResult = REDIS.execInContainer("redis-cli", "FLUSHDB");
+            if (flushResult.getExitCode() != 0) {
+                log.error("redis-cli failed: " + flushResult.getStderr());
+            }
+        } catch (Exception e) {
+            log.error("Failed to flush redis", e);
+        }
 
         WireMock.reset();
 
@@ -145,16 +167,6 @@ public class IntegrationBase implements CommandHolder {
         }
 
         throw new AssertionFailedError("Don't have a context registry client!!!");
-    }
-
-    @Override
-    public Command getCommand() {
-        return new DeployRedisCommand();
-    }
-
-    @Override
-    public void setCommand(Command command) {
-
     }
 
     @SuppressWarnings({"PMD.DoNotUseThreads"})
