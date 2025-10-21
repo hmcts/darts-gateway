@@ -360,9 +360,9 @@ sourceSets {
 
 dependencies {
     implementation group: 'io.rest-assured', name: 'rest-assured'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.46'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.46'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.46'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.48'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.48'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.48'
     implementation 'org.apache.santuario:xmlsec:4.0.4'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -386,7 +386,7 @@ dependencies {
         exclude group: 'org.opensaml', module: 'opensaml-xacml-impl'
         exclude group: 'org.opensaml', module: 'opensaml-xacml-saml-impl'
     }
-    implementation group: 'com.google.guava', name: 'guava', version: '33.4.8-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.81'
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.81'
     implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.81'
@@ -413,7 +413,7 @@ dependencies {
 
     implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.6'
     constraints {
-        implementation('com.squareup.okio:okio:3.16.0') {
+        implementation('com.squareup.okio:okio:3.16.2') {
             because 'version 3.0.0 has vulnerability CVE-2023-3635'
         }
     }
@@ -452,8 +452,8 @@ dependencies {
     testImplementation group: 'org.springframework.ws', name: 'spring-ws-test', version: '4.1.1'
     testImplementation group: 'commons-io', name: 'commons-io', version: '2.20.0'// CVE-2021-29425
     testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
-    testImplementation 'org.xmlunit:xmlunit-core:2.10.3'
-    testImplementation 'org.xmlunit:xmlunit-matchers:2.10.3'
+    testImplementation 'org.xmlunit:xmlunit-core:2.10.4'
+    testImplementation 'org.xmlunit:xmlunit-matchers:2.10.4'
     testImplementation 'org.testcontainers:testcontainers:1.21.3'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.0'
