@@ -6,7 +6,6 @@
       CVE-2016-1000027 - https://github.com/spring-projects/spring-framework/issues/24434#issuecomment-579669626
     </notes>
     <cve>CVE-2016-1000027</cve>
-    <cve>CVE-2023-20873</cve>
     <cve>CVE-2023-24998</cve>
     <cve>CVE-2023-35116</cve>
   </suppress>
