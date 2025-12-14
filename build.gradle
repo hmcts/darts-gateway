@@ -389,7 +389,7 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.81'
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.82'
-    implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.82'
+    implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.83'
 
     implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
     jaxb('org.glassfish.jaxb:jaxb-xjc:4.0.5')
