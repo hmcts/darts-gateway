@@ -36,16 +36,15 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("int-test-jwt-token-shared")
 class EventWebServiceTest extends IntegrationBase {
 
-    private @Value("classpath:payloads/events/valid-event.xml") Resource validEvent;
-    private @Value("classpath:payloads/events/valid-newCaseMessage.xml") Resource validNewCaseEvent;
-    private @Value("classpath:payloads/events/valid-updateCaseMessage.xml") Resource validUpdateCaseEvent;
-    private @Value("classpath:payloads/events/valid-event-response.xml") Resource validEventResponse;
-    private @Value("classpath:payloads/events/valid-event-with-retention.xml") Resource validEventWithRetention;
-    private @Value("classpath:payloads/events/invalid-soap-message.xml") Resource invalidSoapMessage;
-    private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
-    private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
-    private @Value("classpath:payloads/events/valid-dailyList-with-line-breaks.xml") Resource dailyListWithLineBreak;
-
+    @Value("classpath:payloads/events/valid-event.xml") private Resource validEvent;
+    @Value("classpath:payloads/events/valid-newCaseMessage.xml") private Resource validNewCaseEvent;
+    @Value("classpath:payloads/events/valid-updateCaseMessage.xml") private Resource validUpdateCaseEvent;
+    @Value("classpath:payloads/events/valid-event-response.xml") private Resource validEventResponse;
+    @Value("classpath:payloads/events/valid-event-with-retention.xml") private Resource validEventWithRetention;
+    @Value("classpath:payloads/events/invalid-soap-message.xml") private Resource invalidSoapMessage;
+    @Value("classpath:payloads/events/valid-dailyList.xml") private Resource validDlEvent;
+    @Value("classpath:payloads/events/valid-event-response.xml") private Resource validDlEventResponse;
+    @Value("classpath:payloads/events/valid-dailyList-with-line-breaks.xml") private Resource dailyListWithLineBreak;
 
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;

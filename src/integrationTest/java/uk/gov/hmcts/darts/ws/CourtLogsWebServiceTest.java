@@ -48,11 +48,11 @@ class CourtLogsWebServiceTest extends IntegrationBase {
     private static final String SOME_CASE_NUMBER = "some-case-number";
     private static final String SOME_COURTHOUSE = "some-courthouse";
 
-    private @Value(VALID_GET_COURTLOGS_XML) Resource getCourtLogs;
+    @Value(VALID_GET_COURTLOGS_XML) private Resource getCourtLogs;
 
-    private @Value(INVALID_COURTLOGS_XML) Resource invalidSoapMessage;
+    @Value(INVALID_COURTLOGS_XML) private Resource invalidSoapMessage;
 
-    private @Value(VALID_POST_COURTLOGS_XML) Resource postCourtLogs;
+    @Value(VALID_POST_COURTLOGS_XML) private Resource postCourtLogs;
 
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;

@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.darts.datastore.azure.DataManagementAzureClientFactory;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
@@ -32,7 +33,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DataManagementServiceImplTest {
-    public static final String BLOB_CONTAINER_NAME = "dummy_container";
+
+    private static final String BLOB_CONTAINER_NAME = "dummy_container";
     private static final String TEST_BINARY_STRING = "Test String to be converted to binary!";
     @Mock
     private DataManagementAzureClientFactory dataManagementFactory;
@@ -64,7 +66,9 @@ class DataManagementServiceImplTest {
         when(dataManagementConfiguration.getBlobClientTimeout()).thenReturn(Duration.ofMinutes(1));
 
         // When
-        UUID uuid = dataManagementService.saveBlobData(BLOB_CONTAINER_NAME, new ByteArrayInputStream(TEST_BINARY_STRING.getBytes()), Map.of("key", "value"));
+        UUID uuid = dataManagementService.saveBlobData(BLOB_CONTAINER_NAME,
+                                                       new ByteArrayInputStream(TEST_BINARY_STRING.getBytes(StandardCharsets.UTF_8)),
+                                                       Map.of("key", "value"));
 
         // Then
         assertNotNull(uuid);

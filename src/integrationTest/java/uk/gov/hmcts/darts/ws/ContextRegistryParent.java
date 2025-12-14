@@ -30,7 +30,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@SuppressWarnings("PMD.DoNotUseThreads")
+@SuppressWarnings({"PMD.DoNotUseThreads","PMD.AvoidCatchingGenericException"})
 public class ContextRegistryParent extends IntegrationBase {
 
     public static final String SERVICE_CONTEXT_USER = "user";
@@ -213,7 +213,6 @@ public class ContextRegistryParent extends IntegrationBase {
         SoapAssertionUtil<RegisterResponse> response = client.register(new URL(baseUrl + "ContextRegistryService?wsdl"), soapRequestStr);
         return response.getResponse().getValue().getReturn();
     }
-
 
     @SuppressWarnings({"PMD.DoNotUseThreads", "PMD.AvoidInstantiatingObjectsInLoops"})
     void executeBasicConcurrency(ContextRegistryClient client, int usersCount, CacheProperties properties) throws InterruptedException {

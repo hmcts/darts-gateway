@@ -9,12 +9,13 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.springframework.xml.transform.StringSource;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
 
 import java.io.ByteArrayOutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 public class AbstractSoapClient {
     @Setter
@@ -38,7 +39,8 @@ public class AbstractSoapClient {
         return token != null && !token.isEmpty();
     }
 
-    public AbstractSoapClient(URI urlToCommunicateWith, ExternalUserToInternalUserMappingImpl externalUserToInternalUserMapping) throws MalformedURLException {
+    @SneakyThrows
+    public AbstractSoapClient(URI urlToCommunicateWith, ExternalUserToInternalUserMappingImpl externalUserToInternalUserMapping)  {
         this.urlToCommunicateWith = urlToCommunicateWith;
         this.externalUserToInternalUserMapping = externalUserToInternalUserMapping;
     }
@@ -57,6 +59,6 @@ public class AbstractSoapClient {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.marshal(object, byteArrayOutputStream);
 
-        return byteArrayOutputStream.toString();
+        return byteArrayOutputStream.toString(StandardCharsets.UTF_8);
     }
 }

@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -42,7 +43,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         DefaultInputServletStream servletFileStream = new DefaultInputServletStream(payloadBody
             .replace(BINARY_PLACEHOLDER, fileContents)
             .replace(XML_PLACEHOLDER, xmlContents)
-            .getBytes("UTF-8"));
+            .getBytes(StandardCharsets.UTF_8));
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
@@ -52,11 +53,11 @@ class JavaMailXmlWithFileMultiPartRequestTest {
 
         // make the assertions
         requestUnderTest.consumeXmlBody(is -> {
-            Assertions.assertEquals(IOUtils.toString(xmlContents.getBytes()), IOUtils.toString(is.readAllBytes())); });
+            Assertions.assertEquals(IOUtils.toString(xmlContents.getBytes(StandardCharsets.UTF_8)), IOUtils.toString(is.readAllBytes())); });
         Assertions.assertTrue(requestUnderTest.consumeFileBinaryStream(is -> {
-            Assertions.assertEquals(IOUtils.toString(fileContents.getBytes()), IOUtils.toString(is.getInputStream().readAllBytes())); }));
+            Assertions.assertEquals(IOUtils.toString(fileContents.getBytes(StandardCharsets.UTF_8)), IOUtils.toString(is.getInputStream().readAllBytes())); }));
         Assertions.assertTrue(requestUnderTest.consumeFileBinary(file -> {
-            Assertions.assertEquals(IOUtils.toString(fileContents.getBytes()), IOUtils.toString(
+            Assertions.assertEquals(IOUtils.toString(fileContents.getBytes(StandardCharsets.UTF_8)), IOUtils.toString(
                     Files.newInputStream(Paths.get(file.getAbsolutePath())))); }));
     }
 
@@ -70,15 +71,18 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         String xmlContents =  IOUtils.toString(Files.newInputStream(Paths.get(payloadXmlContents.getAbsolutePath())));
         DefaultInputServletStream servletFileStream = new DefaultInputServletStream(payloadBody
                                                                                         .replace(XML_PLACEHOLDER, xmlContents)
-                                                                                        .getBytes("UTF-8"));
+                                                                                        .getBytes(StandardCharsets.UTF_8));
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
 
         // run the test
         requestUnderTest = new JavaMailXmlWithFileMultiPartRequest(request);
-        requestUnderTest.consumeXmlBody(is -> {
-            Assertions.assertEquals(IOUtils.toString(xmlContents.getBytes()), new String(is.readAllBytes())); });
+        requestUnderTest.consumeXmlBody(
+            is -> {
+                Assertions.assertEquals(IOUtils.toString(xmlContents.getBytes(StandardCharsets.UTF_8)),
+                                        new String(is.readAllBytes(), StandardCharsets.UTF_8));
+            });
         Assertions.assertFalse(requestUnderTest.consumeFileBinaryStream(is -> { }));
     }
 
@@ -92,7 +96,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         String fileContents = IOUtils.toString(Files.newInputStream(Paths.get(payloadFileUploadContents.getAbsolutePath())));
         DefaultInputServletStream servletFileStream = new DefaultInputServletStream(payloadBody
                                                                                         .replace(BINARY_PLACEHOLDER, fileContents)
-                                                                                        .getBytes("UTF-8"));
+                                                                                        .getBytes(StandardCharsets.UTF_8));
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
@@ -115,7 +119,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         DefaultInputServletStream servletFileStream = new DefaultInputServletStream(payloadBody
                 .replace(BINARY_PLACEHOLDER, fileContents)
                 .replace(XML_PLACEHOLDER, xmlContents)
-                .getBytes("UTF-8"));
+                .getBytes(StandardCharsets.UTF_8));
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);
@@ -139,7 +143,7 @@ class JavaMailXmlWithFileMultiPartRequestTest {
         DefaultInputServletStream servletFileStream = new DefaultInputServletStream(payloadBody
                 .replace(BINARY_PLACEHOLDER, fileContents)
                 .replace(XML_PLACEHOLDER, xmlContents)
-                .getBytes("UTF-8"));
+                .getBytes(StandardCharsets.UTF_8));
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getInputStream()).thenReturn(servletFileStream);

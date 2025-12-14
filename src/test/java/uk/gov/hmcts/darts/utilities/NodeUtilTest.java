@@ -7,6 +7,7 @@ import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,6 +39,6 @@ class NodeUtilTest {
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
 
-        return builder.parse(new ByteArrayInputStream(myDocumentStr.getBytes()));
+        return builder.parse(new ByteArrayInputStream(myDocumentStr.getBytes(StandardCharsets.UTF_8)));
     }
 }

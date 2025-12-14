@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 class SoapRequestInterceptorTest {
@@ -15,7 +16,7 @@ class SoapRequestInterceptorTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
         String requestSessionInBase64 = "YjdiODRlY2YtMmEwNC00MDgyLWI3ODktM2M1M2M1N2M3NzU1";
-        String sessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes()));
+        String sessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes(StandardCharsets.UTF_8)),StandardCharsets.UTF_8);
         String cookieInRequest = "JSESSIONID=" + requestSessionInBase64;
         Mockito.when(request.getHeader("Cookie")).thenReturn(cookieInRequest);
         Mockito.when(request.getSession()).thenReturn(session);
@@ -30,7 +31,7 @@ class SoapRequestInterceptorTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
         String requestSessionInBase64 = "MDQzNzVkNDEtZTdkNi00MzUzLWE5NWItZjBjNzFkZmU2ZTFl";
-        String sessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes()));
+        String sessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes(StandardCharsets.UTF_8)),StandardCharsets.UTF_8);
         String cookieInRequest = "ROUTEID=.0;SameSite=Lax;JSESSIONID=MDQzNzVkNDEtZTdkNi00MzUzLWE5NWItZjBjNzFkZmU2ZTFl;";
         Mockito.when(request.getHeader("Cookie")).thenReturn(cookieInRequest);
         Mockito.when(request.getSession()).thenReturn(session);
@@ -45,7 +46,7 @@ class SoapRequestInterceptorTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
         String requestSessionInBase64 = "MDQzNzVkNDEtZTdkNi00MzUzLWE5NWItZjBjNzFkZmU2ZTFl";
-        String sessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes()));
+        String sessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes(StandardCharsets.UTF_8)),StandardCharsets.UTF_8);
         String cookieInRequest = "ROUTEID=.0;SameSite=Lax;JSESSIONID=MDQzNzVkNDEtZTdkNi00MzUzLWE5NWItZjBjNzFkZmU2ZTFl1;";
         Mockito.when(request.getHeader("Cookie")).thenReturn(cookieInRequest);
         Mockito.when(request.getSession()).thenReturn(session);
@@ -60,7 +61,8 @@ class SoapRequestInterceptorTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
         String requestSessionInBase64 = "YjdiODRlY2YtMmEwNC00MDgyLWI3ODktM2M1M2M1N2M3NzU1";
-        String serverSessionId = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes())) + "diff";
+        String serverSessionId = new String(Base64.getDecoder().decode(
+            requestSessionInBase64.getBytes(StandardCharsets.UTF_8)),StandardCharsets.UTF_8) + "diff";
 
         String cookieInRequest = "JSESSIONID=" + requestSessionInBase64;
         Mockito.when(request.getHeader("Cookie")).thenReturn(cookieInRequest);
@@ -68,7 +70,7 @@ class SoapRequestInterceptorTest {
         Mockito.when(session.getId()).thenReturn(
             serverSessionId);
         String prefix = "prefix {}";
-        String requestSessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes()));
+        String requestSessionIdDecoded = new String(Base64.getDecoder().decode(requestSessionInBase64.getBytes(StandardCharsets.UTF_8)),StandardCharsets.UTF_8);
         String cookieInformation = SoapRequestInterceptor.getCookieInformation(prefix, request).trim();
         Assertions.assertEquals("An inbound cookie was present but not found. A new cookie was generated. Inbound: "
                                     + requestSessionIdDecoded + " Outbound Set-Cookie: " + serverSessionId, cookieInformation);
@@ -79,7 +81,7 @@ class SoapRequestInterceptorTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
         String sessionInBase64 = "YjdiODRlY2YtMmEwNC00MDgyLWI3ODktM2M1M2M1N2M3NzU1";
-        String sessionIdDecoded = new String(Base64.getDecoder().decode(sessionInBase64.getBytes()));
+        String sessionIdDecoded = new String(Base64.getDecoder().decode(sessionInBase64.getBytes(StandardCharsets.UTF_8)),StandardCharsets.UTF_8);
         Mockito.when(request.getSession()).thenReturn(session);
         Mockito.when(session.getId()).thenReturn(sessionIdDecoded);
         String prefix = "prefix {}";
