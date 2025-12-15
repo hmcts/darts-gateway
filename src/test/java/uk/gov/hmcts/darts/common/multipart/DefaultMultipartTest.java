@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 class DefaultMultipartTest {
 
@@ -30,7 +31,7 @@ class DefaultMultipartTest {
 
             @Override
             public InputStream getInputStream() {
-                return new ByteArrayInputStream(contents.getBytes());
+                return new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8));
             }
         };
     }
@@ -48,7 +49,7 @@ class DefaultMultipartTest {
     @Test
     void testInputStreamFailOnSecondCall() throws Exception {
         InputStream stream = multipart.getInputStream();
-        Assertions.assertEquals(IS_BYTES.getBytes().length, multipart.getInputStream().available());
+        Assertions.assertEquals(IS_BYTES.getBytes(StandardCharsets.UTF_8).length, multipart.getInputStream().available());
         Assertions.assertEquals(IS_BYTES, IOUtils.toString(stream, Charset.defaultCharset()));
         Assertions.assertEquals(0L, multipart.getInputStream().available());
     }

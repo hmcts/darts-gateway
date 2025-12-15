@@ -19,6 +19,7 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,8 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
+        HttpStatusCodeException ex =
+            new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(StandardCharsets.UTF_8), Charset.defaultCharset());
         Exception exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
 
         Assertions.assertTrue(ClientProblemException.class.isAssignableFrom(exception.getClass()));
@@ -60,7 +62,8 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
+        HttpStatusCodeException ex =
+            new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(StandardCharsets.UTF_8), Charset.defaultCharset());
         DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
         Assertions.assertSame(CodeAndMessage.ERROR, exception.getCodeAndMessage());
     }
@@ -77,7 +80,8 @@ class JacksonDartsClientProblemDecoderTest {
         List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
         responseMappers.add(mapper);
 
-        HttpStatusCodeException ex = new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(), Charset.defaultCharset());
+        HttpStatusCodeException ex =
+            new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(StandardCharsets.UTF_8), Charset.defaultCharset());
         DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
         Assertions.assertEquals(CodeAndMessage.ERROR, exception.getCodeAndMessage());
     }

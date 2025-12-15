@@ -8,6 +8,7 @@ import documentum.contextreg.RegisterResponse;
 import documentum.contextreg.Unregister;
 import documentum.contextreg.UnregisterResponse;
 import jakarta.xml.bind.JAXBException;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import uk.gov.hmcts.darts.cache.token.config.impl.ExternalUserToInternalUserMappingImpl;
@@ -18,16 +19,17 @@ import uk.gov.hmcts.darts.common.utils.client.ctxt.ContextRegistryClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 public class ContextRegistryClientWrapper extends AbstractSoapClient {
 
     private final ContextRegistryClient client;
 
+    @SneakyThrows
     public ContextRegistryClientWrapper(URI urlToCommunicateWith,
                                         ExternalUserToInternalUserMappingImpl externalUserToInternalUserMapping,
-                                        ContextRegistryClient client) throws MalformedURLException {
+                                        ContextRegistryClient client) {
         super(urlToCommunicateWith, externalUserToInternalUserMapping);
         this.client = client;
     }
@@ -110,7 +112,7 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         File file = new File(classLoader.getResource(filelocation).getFile());
 
-        String fileContents = FileUtils.readFileToString(file, "UTF-8");
+        String fileContents = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 
         fileContents = fileContents.replace(SubstituteKey.USER_NAME.getKey(), username);
         fileContents = fileContents.replace(SubstituteKey.PASSWORD.getKey(), password);
@@ -131,7 +133,7 @@ public class ContextRegistryClientWrapper extends AbstractSoapClient {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         File file = new File(classLoader.getResource(filelocation).getFile());
 
-        String fileContents = FileUtils.readFileToString(file, "UTF-8");
+        String fileContents = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 
         fileContents = fileContents.replace(SubstituteKey.TOKEN.getKey(), token);
 

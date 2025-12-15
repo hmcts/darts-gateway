@@ -14,6 +14,7 @@ import uk.gov.hmcts.darts.ws.CodeAndMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +33,7 @@ class ClientProblemDecoderTest {
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "tests/client/error/problemResponse.json");
 
-        Mockito.when(body.asInputStream()).thenReturn(new ByteArrayInputStream(dartsApiResponseStr.getBytes()));
+        Mockito.when(body.asInputStream()).thenReturn(new ByteArrayInputStream(dartsApiResponseStr.getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -78,7 +79,7 @@ class ClientProblemDecoderTest {
         String dartsApiResponseStr = TestUtils.getContentsFromFile(
                 "tests/client/error/invalidProblemResponse.json");
 
-        Mockito.when(body.asInputStream()).thenReturn(new ByteArrayInputStream(dartsApiResponseStr.getBytes()));
+        Mockito.when(body.asInputStream()).thenReturn(new ByteArrayInputStream(dartsApiResponseStr.getBytes(StandardCharsets.UTF_8)));
 
         ClientProblemException exceptionToReturn = new ClientProblemException(null);
         APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);

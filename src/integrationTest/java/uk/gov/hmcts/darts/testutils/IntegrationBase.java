@@ -53,6 +53,7 @@ import java.util.Map;
 @Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(properties = {"DARTS_SOAP_REQUEST_LOG_LEVEL=TRACE", "DARTS_LOG_LEVEL=TRACE"})
 @Slf4j
+@SuppressWarnings({"PMD.AvoidCatchingGenericException"})
 public class IntegrationBase  {
 
     protected PostCasesApiStub postCasesApiStub = new PostCasesApiStub();

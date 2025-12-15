@@ -11,6 +11,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -22,7 +23,7 @@ public class TestUtils {
     public String getContentsFromFile(String filelocation) throws IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         File file = new File(classLoader.getResource(filelocation).getFile());
-        return FileUtils.readFileToString(file, "UTF-8");
+        return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     }
 
     public void compareJson(String expected, String actual) throws JSONException {

@@ -31,8 +31,9 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles({"int-test-jwt-token-shared", "no-payload-log-exclusions"})
 class EventWebServiceLoggingTest extends IntegrationBase {
 
-    private @Value("classpath:payloads/events/valid-dailyList.xml") Resource validDlEvent;
-    private @Value("classpath:payloads/events/valid-event-response.xml") Resource validDlEventResponse;
+    @Value("classpath:payloads/events/valid-dailyList.xml") private Resource validDlEvent;
+    @Value("classpath:payloads/events/valid-event-response.xml") private Resource validDlEventResponse;
+
     @MockitoBean
     private TokenGenerator mockOauthTokenGenerator;
 
