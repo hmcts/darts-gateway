@@ -408,8 +408,8 @@ dependencies {
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.22'
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.22'
 
     implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.6'
     constraints {
