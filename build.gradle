@@ -392,8 +392,8 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.83'
 
     implementation group: 'wsdl4j', name: 'wsdl4j', version: wsdl4jVersion
-    jaxb('org.glassfish.jaxb:jaxb-xjc:4.0.5')
-    implementation('org.glassfish.jaxb:jaxb-runtime:4.0.5')
+    jaxb('org.glassfish.jaxb:jaxb-xjc:4.0.6')
+    implementation('org.glassfish.jaxb:jaxb-runtime:4.0.6')
     implementation group: 'org.apache.tika', name: 'tika-core', version: '3.2.3'
 
     // https://mvnrepository.com/artifact/io.github.openfeign/feign-jackson
