@@ -360,9 +360,9 @@ sourceSets {
 
 dependencies {
     implementation group: 'io.rest-assured', name: 'rest-assured'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.50'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.50'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-el:10.1.50'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.15'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:11.0.15'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-el:11.0.15'
     implementation 'org.apache.santuario:xmlsec:4.0.4'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
