@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@test-containers-acr-auth")
 
 def type = "java"
 def product = "darts"
@@ -33,10 +33,6 @@ def secrets = [
                 secret('AzureAdB2CFuncTestROPCClientSecret', 'AAD_B2C_ROPC_CLIENT_SECRET')
         ]
 ]
-
-
-
-
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     [$class     : 'AzureKeyVaultSecret',
