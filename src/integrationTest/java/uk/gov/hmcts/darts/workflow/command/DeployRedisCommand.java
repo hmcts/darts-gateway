@@ -13,7 +13,7 @@ public class DeployRedisCommand implements Command {
         ImageFromDockerfile redisImage = new ImageFromDockerfile()
             .withDockerfileFromBuilder(builder ->
                                            builder
-                                               .from("hmctspublic.azurecr.io/imported/redis:7.2.4-alpine")
+                                               .from("hmctsprod.azurecr.io/imported/redis:7.2.4-alpine")
                                                .build());
 
         GenericContainer<?> container = new GenericContainer<>(redisImage);
