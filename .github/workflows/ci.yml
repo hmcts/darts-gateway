@@ -1,5 +1,9 @@
 name: Template CI
 
+permissions:
+  contents: read
+  id-token: write
+
 on:
   pull_request:
     branches:
@@ -18,5 +22,17 @@ jobs:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '21'
           cache: 'gradle'
+
+      - name: "Az CLI login"
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43
+        with:
+          client-id: 82f79201-9a30-4160-b264-7bbed775c7f4 # DTS Developers GitHub Actions ACR Publisher 3
+          tenant-id: 531ff96d-0ae9-462a-8d2d-bec7c0b42082 # HMCTS.NET
+          allow-no-subscriptions: true
+
+      - name: 'ACR Login'
+        run: |
+          az acr login --name hmctsprod
+
       - name: Build
         run: ./gradlew check
