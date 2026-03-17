@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@test-containers-acr-auth")
+@Library("Infrastructure")
 
 def type = "java"
 def product = "darts"
