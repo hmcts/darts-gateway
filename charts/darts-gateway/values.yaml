@@ -2,7 +2,7 @@ java:
   applicationPort: 8070
   readinessPeriod: 5
   terminationGracePeriodSeconds: 65
-  image: 'sdshmctspublic.azurecr.io/darts/gateway:latest'
+  image: 'hmctsprod.azurecr.io/darts/gateway:latest'
   ingressHost: darts-gateway.{{ .Values.global.environment }}.platform.hmcts.net
   aadIdentityName: darts
   keyVaults:

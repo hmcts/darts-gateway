@@ -90,7 +90,7 @@ public class IntegrationBase  {
     protected TokenStub tokenStub = new TokenStub();
 
     private static final GenericContainer<?> REDIS = new GenericContainer<>(
-        "hmctspublic.azurecr.io/imported/redis:7.2.4-alpine"
+        "hmctsprod.azurecr.io/imported/redis:7.2.4-alpine"
     ).withExposedPorts(6379);
 
     @DynamicPropertySource
