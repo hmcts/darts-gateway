@@ -704,6 +704,12 @@ tasks.register('processDartsServiceWSDL', CreateAPIMWSDLFile)
             outputFile = new File("src/main/resources/ws/dartsService.wsdl")
         }
 
+tasks.register('printVersionInit') {
+    doLast {
+        println "Version: ${version}"
+    }
+}
+
 project.tasks.processResources.dependsOn processDartsServiceWSDL
 project.tasks.wsdl2java.dependsOn processDartsServiceWSDL
 compileJava.dependsOn generateCodeFromSpecification
