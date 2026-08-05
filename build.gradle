@@ -454,11 +454,11 @@ dependencies {
     testImplementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
     testImplementation 'org.xmlunit:xmlunit-core:2.11.0'
     testImplementation 'org.xmlunit:xmlunit-matchers:2.11.0'
-    testImplementation 'org.testcontainers:testcontainers:2.0.3'
+    testImplementation 'org.testcontainers:testcontainers:2.0.5'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.4'
 
-    testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.3'
+    testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.4'
     testImplementation 'it.ozimov:embedded-redis:0.7.3'
     testImplementation 'io.github.hakky54:logcaptor:2.12.6'
     testImplementation group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.6.3', {
