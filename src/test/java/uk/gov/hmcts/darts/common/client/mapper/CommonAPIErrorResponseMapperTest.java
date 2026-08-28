@@ -45,4 +45,17 @@ class CommonAPIErrorResponseMapperTest {
             exception.get().getCodeAndMessage()
         );
     }
+
+    @Test
+    void testExceptionForInvalidRequestProblem() {
+        CommonErrorCode problemCode = CommonErrorCode.INVALID_REQUEST;
+        URI uriType = URI.create(problemCode.getValue());
+        problem.setType(uriType);
+        Optional<ClientProblemException> exception = responseMapper.getExceptionForProblem(problem);
+        Assertions.assertTrue(exception.isPresent());
+        Assertions.assertEquals(
+            CodeAndMessage.INVALID_XML,
+            exception.get().getCodeAndMessage()
+        );
+    }
 }
