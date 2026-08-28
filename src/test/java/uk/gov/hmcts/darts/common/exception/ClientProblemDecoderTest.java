@@ -34,6 +34,16 @@ class ClientProblemDecoderTest {
         }
         """;
 
+    private static final String SPRING_BOOT_BAD_REQUEST_PROBLEM_RESPONSE = """
+        {
+          "type": "about:blank",
+          "title": "Bad Request",
+          "status": 400,
+          "detail": "JSON parse error",
+          "instance": "/events"
+        }
+        """;
+
     private Response response;
 
 
@@ -117,5 +127,21 @@ class ClientProblemDecoderTest {
         Assertions.assertEquals("A descriptive title", problem.getTitle());
         Assertions.assertEquals(400, problem.getStatus());
         Assertions.assertEquals("A useful detail", problem.getDetail());
+    }
+
+    @Test
+    void testDecoderMapsSpringBootBadRequestProblemResponseToInvalidXml() throws IOException {
+        setupResponse(SPRING_BOOT_BAD_REQUEST_PROBLEM_RESPONSE);
+
+        APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
+        Mockito.when(mapper.getExceptionForProblem(Mockito.any(Problem.class))).thenReturn(Optional.empty());
+
+        List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
+        responseMappers.add(mapper);
+
+        Exception exception = new JacksonFeignClientProblemDecoder(responseMappers).decode("", response);
+
+        Assertions.assertEquals(ClientProblemException.class, exception.getClass());
+        Assertions.assertEquals(CodeAndMessage.INVALID_XML, ((ClientProblemException) exception).getCodeAndMessage());
     }
 }
