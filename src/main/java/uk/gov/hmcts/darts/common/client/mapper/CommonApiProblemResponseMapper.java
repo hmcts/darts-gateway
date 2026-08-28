@@ -16,6 +16,9 @@ public class CommonApiProblemResponseMapper extends AbstractAPIProblemResponseMa
         getCaseOp.addMapping(getCaseOp.createProblemResponseMapping()
                                  .problem(CommonErrorCode.COURTHOUSE_PROVIDED_DOES_NOT_EXIST)
                                  .message(CodeAndMessage.NOT_FOUND_COURTHOUSE).build());
+        getCaseOp.addMapping(getCaseOp.createProblemResponseMapping()
+                                 .problem(CommonErrorCode.INVALID_REQUEST)
+                                 .message(CodeAndMessage.INVALID_XML).build());
 
         addOperationMappings(getCaseOp);
     }
