@@ -26,6 +26,29 @@ import java.util.Optional;
 
 class JacksonDartsClientProblemDecoderTest {
 
+    private static final String PROBLEM_RESPONSE_WITH_UNKNOWN_FIELDS = """
+        {
+          "type": "TEST_TYPE",
+          "title": "A descriptive title",
+          "status": 400,
+          "detail": "A useful detail",
+          "instance": "/admin/users/search",
+          "properties": {
+            "emailAddress": "size must be between 1 and 256"
+          }
+        }
+        """;
+
+    private static final String SPRING_BOOT_BAD_REQUEST_PROBLEM_RESPONSE = """
+        {
+          "type": "about:blank",
+          "title": "Bad Request",
+          "status": 400,
+          "detail": "JSON parse error",
+          "instance": "/events"
+        }
+        """;
+
     private String dartsApiResponseStr;
 
     @BeforeEach
@@ -84,6 +107,48 @@ class JacksonDartsClientProblemDecoderTest {
             new DummyBadRequest("404", new HttpHeaders(), dartsApiResponseStr.getBytes(StandardCharsets.UTF_8), Charset.defaultCharset());
         DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
         Assertions.assertEquals(CodeAndMessage.ERROR, exception.getCodeAndMessage());
+    }
+
+    @Test
+    void testDecoderHandlesProblemResponseWithUnknownFields() {
+        APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
+        Mockito.when(mapper.getExceptionForProblem(Mockito.any(Problem.class))).thenReturn(Optional.empty());
+
+        List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
+        responseMappers.add(mapper);
+
+        HttpStatusCodeException ex = new DummyBadRequest(
+            "400",
+            new HttpHeaders(),
+            PROBLEM_RESPONSE_WITH_UNKNOWN_FIELDS.getBytes(StandardCharsets.UTF_8),
+            Charset.defaultCharset());
+        DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
+
+        Assertions.assertEquals(ClientProblemException.class, exception.getClass());
+        Problem problem = ((ClientProblemException) exception).getProblem();
+        Assertions.assertEquals("TEST_TYPE", problem.getType());
+        Assertions.assertEquals("A descriptive title", problem.getTitle());
+        Assertions.assertEquals(400, problem.getStatus());
+        Assertions.assertEquals("A useful detail", problem.getDetail());
+    }
+
+    @Test
+    void testDecoderMapsSpringBootBadRequestProblemResponseToInvalidXml() {
+        APIProblemResponseMapper mapper = Mockito.mock(APIProblemResponseMapper.class);
+        Mockito.when(mapper.getExceptionForProblem(Mockito.any(Problem.class))).thenReturn(Optional.empty());
+
+        List<APIProblemResponseMapper> responseMappers = new ArrayList<>();
+        responseMappers.add(mapper);
+
+        HttpStatusCodeException ex = new DummyBadRequest(
+            "400",
+            new HttpHeaders(),
+            SPRING_BOOT_BAD_REQUEST_PROBLEM_RESPONSE.getBytes(StandardCharsets.UTF_8),
+            Charset.defaultCharset());
+        DartsException exception = new JacksonDartsClientProblemDecoder(responseMappers).decode(ex);
+
+        Assertions.assertEquals(ClientProblemException.class, exception.getClass());
+        Assertions.assertEquals(CodeAndMessage.INVALID_XML, exception.getCodeAndMessage());
     }
 
     class DummyBadRequest extends HttpClientErrorException {
