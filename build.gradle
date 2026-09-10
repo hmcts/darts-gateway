@@ -423,7 +423,7 @@ dependencies {
 
     implementation 'org.mapstruct:mapstruct:1.6.3'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.11'
-    implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.3.0'
+    implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.4.0'
 
     // https://mvnrepository.com/artifact/org.apache.ws.xmlschema/xmlschema-core
     implementation group: 'org.apache.ws.xmlschema', name: 'xmlschema-core', version: '2.3.2'
