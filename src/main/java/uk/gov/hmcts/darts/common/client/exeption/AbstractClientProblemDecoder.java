@@ -23,6 +23,7 @@ public abstract class AbstractClientProblemDecoder {
 
     private final List<APIProblemResponseMapper> responseMappers;
     public static final String RESPONSE_PREFIX = "Problem response from upstream : ";
+    private static final String ABOUT_BLANK = "about:blank";
 
     public Exception decode(String methodKey, Response response) {
         Exception returnEx;
@@ -61,6 +62,8 @@ public abstract class AbstractClientProblemDecoder {
             if (exception.isPresent()) {
                 returnEx = exception.get();
             }
+        } else if (isSpringBootBadRequest(problem)) {
+            returnEx = new ClientProblemException(CodeAndMessage.INVALID_XML, problem);
         } else {
             returnEx = new ClientProblemException(cause, CodeAndMessage.ERROR, problem);
         }
@@ -68,6 +71,11 @@ public abstract class AbstractClientProblemDecoder {
         return returnEx;
     }
 
+    private boolean isSpringBootBadRequest(Problem problem) {
+        return problem != null
+            && Integer.valueOf(400).equals(problem.getStatus())
+            && ABOUT_BLANK.equals(String.valueOf(problem.getType()));
+    }
 
     protected abstract Problem getProblem(InputStream response) throws IOException;
 }
