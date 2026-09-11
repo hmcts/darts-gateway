@@ -3,10 +3,10 @@ appVersion: "1.0"
 description: A Helm chart for darts-gateway App
 name: darts-gateway
 home: https://github.com/hmcts/darts-gateway
-version: 0.0.43
+version: 0.1.0
 maintainers:
   - name: HMCTS darts team
 dependencies:
   - name: java
-    version: 6.0.0
+    version: 6.1.1
     repository: 'oci://hmctsprod.azurecr.io/helm'
