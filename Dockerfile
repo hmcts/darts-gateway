@@ -3,7 +3,7 @@
 ARG APP_INSIGHTS_AGENT_VERSION=3.7.10
 
  # renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
-FROM hmctsprod.azurecr.io/base/java:21-distroless
+FROM hmctsprod.azurecr.io/base/java:25-distroless
 
 COPY lib/applicationinsights.json /opt/app/
 COPY build/libs/darts-gateway.jar /opt/app/
