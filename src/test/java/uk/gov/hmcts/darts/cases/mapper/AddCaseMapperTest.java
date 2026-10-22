@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AddCaseMapperTest {
 
@@ -50,16 +51,16 @@ class AddCaseMapperTest {
         assertEquals(COURTHOUSE, result.getCourthouse());
         assertEquals(CASE_NUMBER, result.getCaseNumber());
 
-        assert result.getDefendants() != null;
+        assertNotNull(result.getDefendants());
         assertEquals(1, result.getDefendants().size());
 
-        assert result.getJudges() != null;
+        assertNotNull(result.getJudges());
         assertEquals(1, result.getJudges().size());
 
-        assert result.getProsecutors() != null;
+        assertNotNull(result.getProsecutors());
         assertEquals(1, result.getProsecutors().size());
 
-        assert result.getDefenders() != null;
+        assertNotNull(result.getDefenders());
         assertEquals(1, result.getDefenders().size());
 
         assertEquals("1", result.getCaseType());

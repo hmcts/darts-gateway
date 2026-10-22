@@ -7,6 +7,11 @@
   <description>HMCTS PMD rule set</description>
 
   <rule ref="category/java/bestpractices.xml">
+    <!-- Temporary PMD 7.28 baseline exclusions: start. Address in follow-up cleanup tickets. -->
+    <exclude name="UnnecessaryWarningSuppression"/>
+    <exclude name="RelianceOnDefaultCharset"/>
+    <exclude name="EnumComparison"/>
+    <!-- Temporary PMD 7.28 baseline exclusions: end. -->
     <exclude name="GuardLogStatement"/>
     <exclude name="UnitTestContainsTooManyAsserts"/>
     <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
@@ -18,6 +23,9 @@
     <exclude name="LongVariable"/>
     <exclude name="MethodArgumentCouldBeFinal"/>
     <exclude name="MethodNamingConventions"/>
+    <!-- Temporary PMD 7.28 baseline exclusions: start. Address in follow-up cleanup tickets. -->
+    <exclude name="UnnecessaryInterfaceDeclaration"/>
+    <!-- Temporary PMD 7.28 baseline exclusions: end. -->
     <exclude name="OnlyOneReturn"/>
     <exclude name="TooManyStaticImports"/>
     <exclude name="CommentDefaultAccessModifier"/>
@@ -36,15 +44,18 @@
     </properties>
   </rule>
   <rule ref="category/java/design.xml">
-    <exclude name="AvoidCatchingGenericException"/>
     <!--    <exclude name="AvoidThrowingRawExceptionTypes"/>-->
-    <exclude name="UseUtilityClass"/>
+    <exclude name="InstantiableUtilityClass"/>
     <exclude name="LoosePackageCoupling"/>
     <exclude name="DataClass"/>
     <exclude name="TooManyFields"/>
     <exclude name="TooManyMethods"/>
     <exclude name="ExcessiveImports"/>
     <exclude name="LawOfDemeter"/>
+    <!-- Temporary PMD 7.28 baseline exclusions: start. Address in follow-up cleanup tickets. -->
+    <exclude name="PublicMemberInNonPublicType"/>
+    <exclude name="AvoidDeeplyNestedIfStmts"/>
+    <!-- Temporary PMD 7.28 baseline exclusions: end. -->
   </rule>
   <rule ref="category/java/design.xml/SignatureDeclareThrowsException">
     <properties>
@@ -62,6 +73,12 @@
     <exclude name="AvoidDuplicateLiterals"/>
     <exclude name="UseProperClassLoader"/>
     <exclude name="CloseResource"/>
+    <exclude name="AvoidCatchingGenericException"/>
+    <!-- Temporary PMD 7.28 baseline exclusions: start. Address in follow-up cleanup tickets. -->
+    <exclude name="ReplaceJavaUtilDate"/>
+    <exclude name="ReplaceJavaUtilCalendar"/>
+    <exclude name="InvalidLogMessageFormat"/>
+    <!-- Temporary PMD 7.28 baseline exclusions: end. -->
   </rule>
   <rule ref="category/java/errorprone.xml/AvoidLiteralsInIfCondition">
     <properties>

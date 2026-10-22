@@ -35,8 +35,6 @@ class DataUtilTest {
 
     @Test
     void positiveToMap() {
-        AddAudioMetadataRequest addAudioMetadataRequest = getAddAudioMetadataRequest();
-
         Map<String, String> expectedMap = new HashMap<>();
         expectedMap.put("startedAt", "2021-01-01T00:00:00Z");
         expectedMap.put("endedAt", "2022-01-01T00:00:00Z");
@@ -51,6 +49,7 @@ class DataUtilTest {
         expectedMap.put("checksum", "checksum");
         expectedMap.put("cases", "case1,case2");
 
+        AddAudioMetadataRequest addAudioMetadataRequest = getAddAudioMetadataRequest();
         Map<String, String> actualMap = DataUtil.toMap(addAudioMetadataRequest);
         Assertions.assertEquals(expectedMap, actualMap);
     }
@@ -79,7 +78,6 @@ class DataUtilTest {
 
     @Test
     void positiveConvertToStorageGuid() {
-        AddAudioMetadataRequest addAudioMetadataRequest = getAddAudioMetadataRequest();
         UUID uuid = UUID.randomUUID();
         AddAudioMetadataRequestWithStorageGUID expected = new AddAudioMetadataRequestWithStorageGUID();
         expected.setStartedAt(OffsetDateTime.parse("2021-01-01T00:00:00Z"));
@@ -96,6 +94,7 @@ class DataUtilTest {
         expected.setCases(List.of("case1", "case2"));
         expected.setStorageGuid(uuid);
 
+        AddAudioMetadataRequest addAudioMetadataRequest = getAddAudioMetadataRequest();
         AddAudioMetadataRequestWithStorageGUID actual = DataUtil.convertToStorageGuid(addAudioMetadataRequest, uuid);
         Assertions.assertEquals(expected, actual);
     }
