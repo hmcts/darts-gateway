@@ -1,0 +1,7 @@
+{
+  "type": "DAILYLIST_100",
+  "title": "Failed to process daily list",
+  "status": 500,
+  "detail": "Daily list processing failed",
+  "instance": "/dailylists"
+}

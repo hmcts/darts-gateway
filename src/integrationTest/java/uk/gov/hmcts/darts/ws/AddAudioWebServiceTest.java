@@ -377,6 +377,29 @@ class AddAudioWebServiceTest extends IntegrationBase {
 
     @ParameterizedTest
     @ArgumentsSource(DartsClientProvider.class)
+    void givenSpringJsonParseProblem_whenAddingAudio_thenReturnsInvalidXml(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String payload = TestUtils.getContentsFromFile("problem-details/malformed-json.json");
+            stubFor(post(urlPathEqualTo("/audios/metadata"))
+                        .willReturn(aResponse().withStatus(400)
+                                        .withHeader("Content-Type", "application/problem+json")
+                                        .withBody(payload)));
+
+            XmlWithFileMultiPartRequest request = new DummyXmlWithFileMultiPartRequest(AddAudioMidTierCommand.SAMPLE_FILE);
+            when(requestHolder.getRequest()).thenReturn(Optional.of(request));
+
+            String soapRequest = TestUtils.getContentsFromFile("payloads/addAudio/register/soapRequest.xml");
+            SoapAssertionUtil<AddAudioResponse> response = client.addAudio(getGatewayUri(), soapRequest);
+
+            response.assertCodeAndMessage(CodeAndMessage.INVALID_XML);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        verify(postRequestedFor(urlPathEqualTo("/audios/metadata")));
+        Mockito.verify(dataManagementService).deleteBlobData("darts-inbound-container", uuid);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
     void testAddAudioHandleUnknownCourthouse(DartsGatewayClient client) throws Exception {
         authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
             String soapRequestStr = TestUtils.getContentsFromFile(

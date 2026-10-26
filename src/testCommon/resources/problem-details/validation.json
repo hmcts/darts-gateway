@@ -1,0 +1,8 @@
+{
+  "type": "COMMON_104",
+  "title": "Invalid request",
+  "status": 400,
+  "instance": "/cases/addCase",
+  "courthouse": "must not be blank",
+  "case_numbers": "size must be between 1 and 2147483647"
+}
