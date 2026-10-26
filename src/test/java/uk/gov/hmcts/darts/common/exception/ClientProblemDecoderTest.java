@@ -123,7 +123,7 @@ class ClientProblemDecoderTest {
 
         Assertions.assertEquals(ClientProblemException.class, exception.getClass());
         Problem problem = ((ClientProblemException) exception).getProblem();
-        Assertions.assertEquals("TEST_TYPE", problem.getType());
+        Assertions.assertEquals("TEST_TYPE", problem.getType().toString());
         Assertions.assertEquals("A descriptive title", problem.getTitle());
         Assertions.assertEquals(400, problem.getStatus());
         Assertions.assertEquals("A useful detail", problem.getDetail());
