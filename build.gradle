@@ -61,7 +61,7 @@ sourceSets {
             runtimeClasspath += main.output
             srcDir file('src/testCommon/java')
         }
-        resources.srcDir file('src/testCommon/resources')
+        resources.setSrcDirs(['src/testCommon/resources'])
     }
 
     functionalTest {
