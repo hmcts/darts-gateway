@@ -61,7 +61,6 @@ sourceSets {
             runtimeClasspath += main.output
             srcDir file('src/testCommon/java')
         }
-        resources.srcDir file('src/testCommon/resources')
     }
 
     functionalTest {
@@ -72,7 +71,6 @@ sourceSets {
             runtimeClasspath += testCommon.output
             srcDir file('src/functionalTest/java')
         }
-        resources.srcDir file('src/functionalTest/resources')
     }
 
     integrationTest {
@@ -83,7 +81,6 @@ sourceSets {
             runtimeClasspath += testCommon.output
             srcDir file('src/integrationTest/java')
         }
-        resources.srcDir file('src/integrationTest/resources')
     }
 
     smokeTest {
@@ -92,7 +89,6 @@ sourceSets {
             runtimeClasspath += main.output
             srcDir file('src/smokeTest/java')
         }
-        resources.srcDir file('src/smokeTest/resources')
     }
 
     test {
@@ -103,7 +99,6 @@ sourceSets {
             runtimeClasspath += testCommon.output
             srcDir file('src/test/java')
         }
-        resources.srcDir file('src/test/resources')
     }
 }
 
