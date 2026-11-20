@@ -217,10 +217,10 @@ public class ContextRegistryParent extends IntegrationBase {
     @SuppressWarnings({"PMD.DoNotUseThreads", "PMD.AvoidInstantiatingObjectsInLoops"})
     void executeBasicConcurrency(ContextRegistryClient client, int usersCount, CacheProperties properties) throws InterruptedException {
         CountDownLatch semaphore = new CountDownLatch(usersCount);
-        CountDownLatch lookupSemaphore = new CountDownLatch(usersCount);
+        final CountDownLatch lookupSemaphore = new CountDownLatch(usersCount);
 
         List<ContextRegistryParent.RegisterThread> registerThreadLst = new ArrayList<>();
-        List<ContextRegistryParent.LookupThread> lookupThreadLst = new ArrayList<>();
+        final List<ContextRegistryParent.LookupThread> lookupThreadLst = new ArrayList<>();
 
         for (int i = 0; i < usersCount; i++) {
             ContextRegistryParent.RegisterThread thread = new ContextRegistryParent.RegisterThread(client, "user" + i, semaphore, properties);
