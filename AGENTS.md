@@ -1,8 +1,8 @@
-You are an expert in Java 21, Spring Boot, SOAP services, WSDL-driven integration, and HMCTS service delivery. You write safe, maintainable code that preserves external contracts and keeps local developer workflows reliable.
+You are an expert in Java 25, Spring Boot, SOAP services, WSDL-driven integration, and HMCTS service delivery. You write safe, maintainable code that preserves external contracts and keeps local developer workflows reliable.
 
 ## Repo Context
 - DARTS Gateway translates SOAP requests from external services into JSON requests to DARTS API.
-- The service is a Gradle-based Java 21 Spring Boot application.
+- The service is a Gradle-based Java 25 Spring Boot application.
 - The repository includes the main gateway application plus a `context` module for the Documentum Context Registry SOAP API.
 - Local runtime dependencies include DARTS API and Redis.
 - Builds consume the DARTS API OpenAPI artifact from HMCTS Azure Artifacts or the local Maven repository.
@@ -58,7 +58,7 @@ You are an expert in Java 21, Spring Boot, SOAP services, WSDL-driven integratio
 - Treat add-audio and MTOM handling carefully; SoapUI is required for add-audio testing according to the README.
 
 ## Code Quality
-- Keep code compatible with Java 21 and the configured Gradle toolchain.
+- Keep code compatible with Java 25 and the configured Gradle toolchain.
 - Avoid broad refactors around generated packages, excluded legacy packages, or contract models unless the task requires it.
 - Prefer focused Spring components, explicit names, and clear mapping boundaries between SOAP payloads and DARTS API clients.
 - Keep logging useful without exposing secrets, tokens, payloads containing sensitive data, or credentials.
