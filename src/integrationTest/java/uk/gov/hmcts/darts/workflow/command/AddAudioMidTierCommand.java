@@ -8,7 +8,6 @@ import jakarta.xml.bind.Unmarshaller;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.File;
@@ -166,14 +165,9 @@ public class AddAudioMidTierCommand implements Command {
 
     private GenericContainer getContainer(File xmlFile) {
 
-        ImageFromDockerfile importDocker = new ImageFromDockerfile()
-            .withDockerfileFromBuilder(builder ->
-                                           builder
-                                               .from("hmctsprod.azurecr.io/imported/williamyeh/java8")
-                                               .cmd("tail", "-f", "/dev/null")
-                                               .build());
         if (container == null || !container.isRunning()) {
-            container = new GenericContainer<>(importDocker)
+            container = new GenericContainer<>("hmctsprod.azurecr.io/imported/williamyeh/java8:latest")
+                .withCommand("tail", "-f", "/dev/null")
                 .withCopyToContainer(MountableFile.forHostPath(AUDIO_DIR.toPath(), 777), "/")
                 .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio", 777), "/")
                 .withCopyToContainer(MountableFile.forHostPath("./src/integrationTest/resources/addaudio/Lib", 777), "/")
