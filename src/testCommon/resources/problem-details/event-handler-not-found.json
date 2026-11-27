@@ -1,0 +1,7 @@
+{
+  "type": "EVENT_101",
+  "title": "No event handler mapping found in database",
+  "status": 404,
+  "detail": "No event handler for the supplied event type",
+  "instance": "/events"
+}

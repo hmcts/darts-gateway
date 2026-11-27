@@ -36,6 +36,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getAllServeEvents;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -227,6 +228,45 @@ class CasesWebServiceTest extends IntegrationBase {
         }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verify(mockOauthTokenGenerator, times(2)).acquireNewToken(DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
         verifyNoMoreInteractions(mockOauthTokenGenerator);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void givenSpringValidationProblem_whenAddingCase_thenReturnsInvalidXml(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String payload = TestUtils.getContentsFromFile("problem-details/validation.json");
+            stubFor(post(urlPathEqualTo("/cases/addCase"))
+                        .willReturn(aResponse().withStatus(400)
+                                        .withHeader("Content-Type", "application/problem+json")
+                                        .withBody(payload)));
+
+            String request = TestUtils.getContentsFromFile("payloads/addCase/soapRequest.xml");
+            SoapAssertionUtil<AddCaseResponse> response = client.addCases(getGatewayUri(), request);
+
+            response.assertCodeAndMessage(CodeAndMessage.INVALID_XML);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        WireMock.verify(postRequestedFor(urlPathEqualTo("/cases/addCase")));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(DartsClientProvider.class)
+    void givenSpringServerProblem_whenGettingCases_thenReturnsSoapFault(DartsGatewayClient client) throws Exception {
+        authenticationStub.assertWithUserNameAndPasswordHeader(client, () -> {
+            String payload = TestUtils.getContentsFromFile("problem-details/internal-server-error.json");
+            stubFor(get(urlPathEqualTo("/cases"))
+                        .willReturn(aResponse().withStatus(500)
+                                        .withHeader("Content-Type", "application/problem+json")
+                                        .withBody(payload)));
+
+            String request = TestUtils.getContentsFromFile("payloads/getCases/soapRequest.xml");
+            SoapAssertionUtil<ServiceException> response = client.getCasesException(getGatewayUri(), request);
+
+            response.assertIdenticalErrorResponseXml(
+                TestUtils.getContentsFromFile("payloads/getCases/clientProblemException.xml"), ServiceException.class);
+        }, DEFAULT_HEADER_USERNAME, DEFAULT_HEADER_PASSWORD);
+
+        WireMock.verify(getRequestedFor(urlPathEqualTo("/cases")));
     }
 
     @ParameterizedTest
